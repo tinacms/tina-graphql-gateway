@@ -19,7 +19,7 @@ yarn dev
 
 Once that's done you should be good to go. Here's a walkthrough of getting started:
 
-https://www.loom.com/share/86e5637595304f95845d709359e58913
+https://www.loom.com/share/595b92be7a3f4999a0db0baf82e47dae
 
 ## GraphQL Server
 
