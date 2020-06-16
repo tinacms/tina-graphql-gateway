@@ -6,6 +6,8 @@ To use, make sure you've got yarn V2 installed [by following these instructions]
 
 ```sh
 yarn install
+# build the builder
+yarn workspace @forestry/build run build
 # build the GraphQL package
 yarn workspace @forestry/graphql run build
 # cd to apps/demo, open 2 terminal tabs
@@ -46,6 +48,8 @@ For now there are a lot of footguns when developing in this repo.
 [Use this branch](https://github.com/tinacms/tinacms/tree/forestry-gql-compatible) locally.
 
 Tina isn't working properly with Yarn V2, I get a few errors depending on what I try but can't pinpoint the issue yet. There is also a custom `list` component in this branch that we make use of. For now, it's easiest to run Tina locally on the branch called `forestry-gql-compatible` and rely on the `next.config.js` aliases.
+
+NOTE: The Tina aliases can be seen in the `demo/next.config.js` file, ensure the paths resolve to your local Tina install and you've built all the necessary Tina packages.
 
 For reference, here is one of the errors we get, which seems to indicate we have 2 React-Beautiful-DND contexts:
 
