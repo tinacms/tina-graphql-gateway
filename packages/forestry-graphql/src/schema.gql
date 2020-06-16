@@ -1,0 +1,818 @@
+type Query {
+  document(path: String!): DocumentUnion
+}
+
+union DocumentUnion = BlockPage | Post | Author | Menu
+
+type BlockPage {
+  form: BlockPageFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: BlockPageData!
+}
+
+type BlockPageFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [BlockPageFieldConfig_component_config]
+}
+
+union BlockPageFieldConfig_component_config = TextFormField | BlocksFieldConfig
+
+type TextFormField {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+}
+
+type BlocksFieldConfig {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  templates: BlocksTemplates
+}
+
+type BlocksTemplates {
+  SidecarFieldConfig: SidecarFieldConfig
+  ExcerptPostFieldConfig: ExcerptPostFieldConfig
+  PostListFieldConfig: PostListFieldConfig
+  PriceListFieldConfig: PriceListFieldConfig
+  AuthorListFieldConfig: AuthorListFieldConfig
+  SponsorListFieldConfig: SponsorListFieldConfig
+  PageReferenceFieldConfig: PageReferenceFieldConfig
+  SectionIndexFieldConfig: SectionIndexFieldConfig
+}
+
+type SidecarFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [SidecarFieldConfig_component_config]
+}
+
+union SidecarFieldConfig_component_config = TextFormField | ImageFormField | CtaFieldsListSidecarConfig | ActionsFieldConfig | SelectFormField
+
+type ImageFormField {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+}
+
+type CtaFieldsListSidecarConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [CtaFieldsListSidecarConfig_component_config]
+}
+
+union CtaFieldsListSidecarConfig_component_config = TextFormField
+
+type ActionsFieldConfig {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  templates: ActionsTemplates
+}
+
+type ActionsTemplates {
+  ActionVideoFieldConfig: ActionVideoFieldConfig
+  ActionNewsletterFieldConfig: ActionNewsletterFieldConfig
+  ActionPageReferenceFieldConfig: ActionPageReferenceFieldConfig
+}
+
+type ActionVideoFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [ActionVideoFieldConfig_component_config]
+}
+
+union ActionVideoFieldConfig_component_config = TextFormField
+
+type ActionNewsletterFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [ActionNewsletterFieldConfig_component_config]
+}
+
+union ActionNewsletterFieldConfig_component_config = TextFormField
+
+type ActionPageReferenceFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [ActionPageReferenceFieldConfig_component_config]
+}
+
+union ActionPageReferenceFieldConfig_component_config = SelectFormField | ButtonSettingsFieldsListActionPageReferenceConfig
+
+type SelectFormField {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  options: [String]
+}
+
+type ButtonSettingsFieldsListActionPageReferenceConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [ButtonSettingsFieldsListActionPageReferenceConfig_component_config]
+}
+
+union ButtonSettingsFieldsListActionPageReferenceConfig_component_config = TextFormField
+
+type ExcerptPostFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [ExcerptPostFieldConfig_component_config]
+}
+
+union ExcerptPostFieldConfig_component_config = SelectFormField | TextFormField
+
+type PostListFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PostListFieldConfig_component_config]
+}
+
+union PostListFieldConfig_component_config = PostsFieldsListPostListConfig
+
+type PostsFieldsListPostListConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PostsFieldsListPostListConfig_component_config]
+}
+
+union PostsFieldsListPostListConfig_component_config = SelectFormField
+
+type PriceListFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PriceListFieldConfig_component_config]
+}
+
+union PriceListFieldConfig_component_config = TextFormField | PricesFieldsListPriceListConfig
+
+type PricesFieldsListPriceListConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PricesFieldsListPriceListConfig_component_config]
+}
+
+union PricesFieldsListPriceListConfig_component_config = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField
+
+type BulletPointsListPriceListPricesConfig {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  itemField: BulletPointsListPriceListPricesConfigItem
+}
+
+type BulletPointsListPriceListPricesConfigItem {
+  name: String
+  label: String
+  component: String
+}
+
+type AuthorListFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [AuthorListFieldConfig_component_config]
+}
+
+union AuthorListFieldConfig_component_config = AuthorsListAuthorListConfig
+
+type AuthorsListAuthorListConfig {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  itemField: AuthorsListAuthorListConfigItem
+}
+
+type AuthorsListAuthorListConfigItem {
+  name: String
+  label: String
+  component: String
+  options: [String]
+}
+
+type SponsorListFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [SponsorListFieldConfig_component_config]
+}
+
+union SponsorListFieldConfig_component_config = TextFormField | SponsorFieldsListSponsorListConfig
+
+type SponsorFieldsListSponsorListConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [SponsorFieldsListSponsorListConfig_component_config]
+}
+
+union SponsorFieldsListSponsorListConfig_component_config = TextFormField | ImageFormField
+
+type PageReferenceFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PageReferenceFieldConfig_component_config]
+}
+
+union PageReferenceFieldConfig_component_config = TextFormField | SelectFormField
+
+type SectionIndexFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [SectionIndexFieldConfig_component_config]
+}
+
+union SectionIndexFieldConfig_component_config = TextFormField | SelectFormField
+
+type BlockPageData {
+  _template: String
+  title: String
+  blocks: [BlocksUnion]
+}
+
+union BlocksUnion = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData
+
+type SidecarData {
+  _template: String
+  text: String
+  image: ImageGallerySidecar
+  cta: CtaFieldsSidecar
+  actions: [ActionsUnion]
+  style: String
+}
+
+type ImageGallerySidecar {
+  path: String!
+  absolutePath: String!
+}
+
+type CtaFieldsSidecar {
+  header: String
+}
+
+union ActionsUnion = ActionVideoData | ActionNewsletterData | ActionPageReferenceData
+
+type ActionVideoData {
+  _template: String
+  url: String
+}
+
+type ActionNewsletterData {
+  _template: String
+  body: String
+  footer: String
+}
+
+type ActionPageReferenceData {
+  _template: String
+  page: PageSelectActionPageReference
+  button_settings: ButtonSettingsFieldsActionPageReference
+}
+
+union PageSelectActionPageReference = BlockPage
+
+type ButtonSettingsFieldsActionPageReference {
+  label: String
+}
+
+type ExcerptPostData {
+  _template: String
+  post: PostSelectExcerptPost
+  description: String
+  style: String
+}
+
+union PostSelectExcerptPost = Post
+
+type Post {
+  form: PostFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: PostData!
+}
+
+type PostFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [PostFieldConfig_component_config]
+}
+
+union PostFieldConfig_component_config = TextFormField | SelectFormField | ImageFormField | TagsFormField
+
+type TagsFormField {
+  name: String
+  label: String
+  value: [String]
+  description: String
+  component: String
+}
+
+type PostData {
+  _template: String
+  title: String
+  author: AuthorSelectPost
+  image: ImageGalleryPost
+  hashtags: [String]
+}
+
+union AuthorSelectPost = Author
+
+type Author {
+  form: AuthorFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: AuthorData!
+}
+
+type AuthorFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [AuthorFieldConfig_component_config]
+}
+
+union AuthorFieldConfig_component_config = TextFormField | ImageFormField | AnecdotesListAuthorConfig | AccoladesFieldsListAuthorConfig
+
+type AnecdotesListAuthorConfig {
+  name: String
+  label: String
+  value: String
+  description: String
+  component: String
+  itemField: AnecdotesListAuthorConfigItem
+}
+
+type AnecdotesListAuthorConfigItem {
+  name: String
+  label: String
+  component: String
+}
+
+type AccoladesFieldsListAuthorConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [AccoladesFieldsListAuthorConfig_component_config]
+}
+
+union AccoladesFieldsListAuthorConfig_component_config = TextFormField
+
+type AuthorData {
+  _template: String
+  name: String!
+  image: ImageGalleryAuthor
+  gallery: [GalleryGalleryAuthor]
+  anecdotes: [String]
+  accolades: [AccoladesFieldsListAuthor]
+}
+
+type ImageGalleryAuthor {
+  path: String!
+  absolutePath: String!
+}
+
+type GalleryGalleryAuthor {
+  path: String!
+  absolutePath: String!
+}
+
+type AccoladesFieldsListAuthor {
+  figure: String
+  description: String
+}
+
+type ImageGalleryPost {
+  path: String!
+  absolutePath: String!
+}
+
+type PostListData {
+  _template: String
+  posts: [PostsFieldsListPostList]
+}
+
+type PostsFieldsListPostList {
+  post: PostSelectPostListPosts
+}
+
+union PostSelectPostListPosts = Post
+
+type PriceListData {
+  _template: String
+  heading: String!
+  prices: [PricesFieldsListPriceList]
+}
+
+type PricesFieldsListPriceList {
+  title: String!
+  description: String!
+  bullet_points: [String]
+  category: String
+}
+
+type AuthorListData {
+  _template: String
+  authors: [AuthorsListAuthorList]
+}
+
+union AuthorsListAuthorList = Author
+
+type SponsorListData {
+  _template: String
+  description: String
+  sponsor: [SponsorFieldsListSponsorList]
+}
+
+type SponsorFieldsListSponsorList {
+  name: String
+  url: String
+  image: ImageGallerySponsorListSponsor
+}
+
+type ImageGallerySponsorListSponsor {
+  path: String!
+  absolutePath: String!
+}
+
+type PageReferenceData {
+  _template: String
+  description: String
+  page: PageSelectPageReference
+}
+
+union PageSelectPageReference = BlockPage
+
+type SectionIndexData {
+  _template: String
+  body: String
+  limit: Int
+  section: [SectionSelectSectionIndex]
+}
+
+union SectionSelectSectionIndex = ActionNewsletter | ActionPageReference | ActionVideo | AuthorList | Author | BlockPage | ExcerptPost | Menu | PageReference | PostList | Post | PriceList | SectionIndex | Sidecar | SponsorList
+
+type ActionNewsletter {
+  form: ActionNewsletterFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: ActionNewsletterData!
+}
+
+type ActionPageReference {
+  form: ActionPageReferenceFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: ActionPageReferenceData!
+}
+
+type ActionVideo {
+  form: ActionVideoFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: ActionVideoData!
+}
+
+type AuthorList {
+  form: AuthorListFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: AuthorListData!
+}
+
+type ExcerptPost {
+  form: ExcerptPostFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: ExcerptPostData!
+}
+
+type Menu {
+  form: MenuFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: MenuData!
+}
+
+type MenuFieldConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [MenuFieldConfig_component_config]
+}
+
+union MenuFieldConfig_component_config = ImageFormField | MenuItemFieldsListMenuConfig
+
+type MenuItemFieldsListMenuConfig {
+  label: String
+  key: String
+  name: String
+  component: String
+  fields: [MenuItemFieldsListMenuConfig_component_config]
+}
+
+union MenuItemFieldsListMenuConfig_component_config = TextFormField | SelectFormField
+
+type MenuData {
+  _template: String
+  logo: LogoGalleryMenu
+  menu_item: [MenuItemFieldsListMenu]
+}
+
+type LogoGalleryMenu {
+  path: String!
+  absolutePath: String!
+}
+
+type MenuItemFieldsListMenu {
+  label: String
+  page: PageSelectMenuMenuItem
+}
+
+union PageSelectMenuMenuItem = BlockPage
+
+type PageReference {
+  form: PageReferenceFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: PageReferenceData!
+}
+
+type PostList {
+  form: PostListFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: PostListData!
+}
+
+type PriceList {
+  form: PriceListFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: PriceListData!
+}
+
+type SectionIndex {
+  form: SectionIndexFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: SectionIndexData!
+}
+
+type Sidecar {
+  form: SidecarFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: SidecarData!
+}
+
+type SponsorList {
+  form: SponsorListFieldConfig
+  absolutePath: String!
+  path: String!
+  content: String!
+  excerpt: String
+  data: SponsorListData!
+}
+
+type Mutation {
+  document(path: String!, params: DocumentInput): DocumentUnion
+}
+
+input DocumentInput {
+  BlockPage_input: BlockPage_input
+  Post_input: Post_input
+  Author_input: Author_input
+  Menu_input: Menu_input
+}
+
+input BlockPage_input {
+  title: String
+  blocks: [BlocksInput]
+}
+
+input BlocksInput {
+  Sidecar_input: Sidecar_input
+  ExcerptPost_input: ExcerptPost_input
+  PostList_input: PostList_input
+  PriceList_input: PriceList_input
+  AuthorList_input: AuthorList_input
+  SponsorList_input: SponsorList_input
+  PageReference_input: PageReference_input
+  SectionIndex_input: SectionIndex_input
+}
+
+input Sidecar_input {
+  text: String
+  image: String
+  cta: CtaFieldsSidecarInput
+  actions: [ActionsInput]
+  style: StyleSelectSidecar
+}
+
+input CtaFieldsSidecarInput {
+  header: String
+}
+
+input ActionsInput {
+  ActionVideo_input: ActionVideo_input
+  ActionNewsletter_input: ActionNewsletter_input
+  ActionPageReference_input: ActionPageReference_input
+}
+
+input ActionVideo_input {
+  url: String
+}
+
+input ActionNewsletter_input {
+  body: String
+  footer: String
+}
+
+input ActionPageReference_input {
+  page: String
+  button_settings: ButtonSettingsFieldsActionPageReferenceInput
+}
+
+input ButtonSettingsFieldsActionPageReferenceInput {
+  label: String
+}
+
+enum StyleSelectSidecar {
+  Sidecar
+  Column
+  Slant
+}
+
+input ExcerptPost_input {
+  post: String
+  description: String
+  style: StyleSelectExcerptPost
+}
+
+enum StyleSelectExcerptPost {
+  Simple
+  Full
+}
+
+input PostList_input {
+  posts: [PostsFieldsListPostListInput]
+}
+
+input PostsFieldsListPostListInput {
+  post: String
+}
+
+input PriceList_input {
+  heading: String
+  prices: [PricesFieldsListPriceListInput]
+}
+
+input PricesFieldsListPriceListInput {
+  title: String
+  description: String
+  bullet_points: [String]
+  category: CategorySelectPriceListPrices
+}
+
+enum CategorySelectPriceListPrices {
+  Basic
+  Free
+  Pro
+}
+
+input AuthorList_input {
+  authors: [String]
+}
+
+input SponsorList_input {
+  description: String
+  sponsor: [SponsorFieldsListSponsorListInput]
+}
+
+input SponsorFieldsListSponsorListInput {
+  name: String
+  url: String
+  image: String
+}
+
+input PageReference_input {
+  description: String
+  page: String
+}
+
+input SectionIndex_input {
+  body: String
+  limit: Int
+  section: String
+}
+
+input Post_input {
+  title: String
+  author: String
+  image: String
+  hashtags: [String]
+}
+
+input Author_input {
+  name: String
+  image: String
+  gallery: [String]
+  anecdotes: [String]
+  accolades: [AccoladesFieldsListAuthorInput]
+}
+
+input AccoladesFieldsListAuthorInput {
+  figure: String
+  description: String
+}
+
+input Menu_input {
+  logo: String
+  menu_item: [MenuItemFieldsListMenuInput]
+}
+
+input MenuItemFieldsListMenuInput {
+  label: String
+  page: String
+}

@@ -1,0 +1,39 @@
+---
+label: Excerpt Post
+hide_body: true
+fields:
+- name: post
+  type: select
+  default: []
+  config:
+    required: false
+    options: []
+    source:
+      type: pages
+      section: posts
+      file: 
+      path: 
+  label: Post
+- name: description
+  type: textarea
+  default: ''
+  config:
+    required: false
+    wysiwyg: false
+    schema:
+      format: markdown
+  label: Description
+- name: style
+  type: select
+  default: Simple
+  config:
+    required: false
+    options:
+    - Simple
+    - Full
+    source:
+      type: simple
+      section: 
+      file: 
+      path: 
+  label: Style

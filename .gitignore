@@ -1,0 +1,10 @@
+env.sh
+.DS_Store
+dist
+node_modules
+.cache
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
