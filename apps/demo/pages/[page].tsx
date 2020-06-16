@@ -1,7 +1,8 @@
 import Head from "next/head";
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
-import { DocumentQueryQuery } from "../.forestry/types";
+import { onSubmit, prepareValues } from "@forestry/graphql-client";
+import { DocumentQueryQuery, BlocksUnion } from "../.forestry/types";
 import query from "../.forestry/query";
 
 const DocumentQuery = query;
@@ -38,7 +39,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const formConfig = {
     id: `content/pages/${params.page}.md`,
     label: `content/pages/${params.page}.md`,
-    initialValues: data.document.data,
+    initialValues: prepareValues(data.document.data),
     fields: data.document.form.fields,
   };
 
@@ -61,8 +62,9 @@ const Home = ({ document, formConfig }) => {
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
-      alert("Check the console for the full output");
+      onSubmit({ path: "content/pages/home.md", payload: values });
+      // console.log(JSON.stringify(values, null, 2));
+      // alert("Check the console for the full output");
     },
   });
   usePlugin(form);
@@ -98,17 +100,21 @@ const PageSwitch = ({
   }
 };
 
-const BlockOutput = ({ blocks }) => {
-  return blocks.map((block) => {
-    return (
-      <>
-        <h3>{block.__typename}</h3>
-        <pre>
-          <code>{JSON.stringify(block, null, 2)}</code>
-        </pre>
-      </>
-    );
-  });
+const BlockOutput = ({ blocks }: { blocks: BlocksUnion[] }) => {
+  return (
+    <>
+      {blocks.map((block) => {
+        return (
+          <>
+            <h3>{block.__typename}</h3>
+            <pre>
+              <code>{JSON.stringify(block, null, 2)}</code>
+            </pre>
+          </>
+        );
+      })}
+    </>
+  );
 };
 
 export default Home;

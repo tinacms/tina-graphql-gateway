@@ -660,29 +660,34 @@ type Mutation {
 }
 
 input DocumentInput {
-  BlockPage_input: BlockPage_input
-  Post_input: Post_input
-  Author_input: Author_input
-  Menu_input: Menu_input
+  BlockPageInput: BlockPageInput
+  PostInput: PostInput
+  AuthorInput: AuthorInput
+  MenuInput: MenuInput
 }
 
-input BlockPage_input {
+input BlockPageInput {
+  data: BlockPageDataInput
+  content: String
+}
+
+input BlockPageDataInput {
   title: String
   blocks: [BlocksInput]
 }
 
 input BlocksInput {
-  Sidecar_input: Sidecar_input
-  ExcerptPost_input: ExcerptPost_input
-  PostList_input: PostList_input
-  PriceList_input: PriceList_input
-  AuthorList_input: AuthorList_input
-  SponsorList_input: SponsorList_input
-  PageReference_input: PageReference_input
-  SectionIndex_input: SectionIndex_input
+  SidecarInput: SidecarDataInput
+  ExcerptPostInput: ExcerptPostDataInput
+  PostListInput: PostListDataInput
+  PriceListInput: PriceListDataInput
+  AuthorListInput: AuthorListDataInput
+  SponsorListInput: SponsorListDataInput
+  PageReferenceInput: PageReferenceDataInput
+  SectionIndexInput: SectionIndexDataInput
 }
 
-input Sidecar_input {
+input SidecarDataInput {
   text: String
   image: String
   cta: CtaFieldsSidecarInput
@@ -695,21 +700,21 @@ input CtaFieldsSidecarInput {
 }
 
 input ActionsInput {
-  ActionVideo_input: ActionVideo_input
-  ActionNewsletter_input: ActionNewsletter_input
-  ActionPageReference_input: ActionPageReference_input
+  ActionVideoInput: ActionVideoDataInput
+  ActionNewsletterInput: ActionNewsletterDataInput
+  ActionPageReferenceInput: ActionPageReferenceDataInput
 }
 
-input ActionVideo_input {
+input ActionVideoDataInput {
   url: String
 }
 
-input ActionNewsletter_input {
+input ActionNewsletterDataInput {
   body: String
   footer: String
 }
 
-input ActionPageReference_input {
+input ActionPageReferenceDataInput {
   page: String
   button_settings: ButtonSettingsFieldsActionPageReferenceInput
 }
@@ -724,7 +729,7 @@ enum StyleSelectSidecar {
   Slant
 }
 
-input ExcerptPost_input {
+input ExcerptPostDataInput {
   post: String
   description: String
   style: StyleSelectExcerptPost
@@ -735,7 +740,7 @@ enum StyleSelectExcerptPost {
   Full
 }
 
-input PostList_input {
+input PostListDataInput {
   posts: [PostsFieldsListPostListInput]
 }
 
@@ -743,7 +748,7 @@ input PostsFieldsListPostListInput {
   post: String
 }
 
-input PriceList_input {
+input PriceListDataInput {
   heading: String
   prices: [PricesFieldsListPriceListInput]
 }
@@ -761,11 +766,11 @@ enum CategorySelectPriceListPrices {
   Pro
 }
 
-input AuthorList_input {
+input AuthorListDataInput {
   authors: [String]
 }
 
-input SponsorList_input {
+input SponsorListDataInput {
   description: String
   sponsor: [SponsorFieldsListSponsorListInput]
 }
@@ -776,25 +781,35 @@ input SponsorFieldsListSponsorListInput {
   image: String
 }
 
-input PageReference_input {
+input PageReferenceDataInput {
   description: String
   page: String
 }
 
-input SectionIndex_input {
+input SectionIndexDataInput {
   body: String
   limit: Int
   section: String
 }
 
-input Post_input {
+input PostInput {
+  data: PostDataInput
+  content: String
+}
+
+input PostDataInput {
   title: String
   author: String
   image: String
   hashtags: [String]
 }
 
-input Author_input {
+input AuthorInput {
+  data: AuthorDataInput
+  content: String
+}
+
+input AuthorDataInput {
   name: String
   image: String
   gallery: [String]
@@ -807,7 +822,12 @@ input AccoladesFieldsListAuthorInput {
   description: String
 }
 
-input Menu_input {
+input MenuInput {
+  data: MenuDataInput
+  content: String
+}
+
+input MenuDataInput {
   logo: String
   menu_item: [MenuItemFieldsListMenuInput]
 }

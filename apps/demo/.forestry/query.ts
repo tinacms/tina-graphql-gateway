@@ -71,24 +71,24 @@ export default `query DocumentQuery($path: String!) {
                 label
                 component
                 fields {
-                  ...on TextFormField {
+                  ... on TextFormField {
                     name
                     label
                     value
                     component
                   }
-                  ...on SponsorFieldsListSponsorListConfig {
+                  ... on SponsorFieldsListSponsorListConfig {
                     label
                     key
                     name
                     component
                     fields {
-                      ...on TextFormField {
+                      ... on TextFormField {
                         name
                         label
                         component
                       }
-                      ...on ImageFormField {
+                      ... on ImageFormField {
                         name
                         label
                         component
@@ -102,13 +102,13 @@ export default `query DocumentQuery($path: String!) {
                 key
                 name
                 fields {
-                  ...on TextFormField {
+                  ... on TextFormField {
                     name
                     label
                     value
                     component
                   }
-                  ...on SelectFormField {
+                  ... on SelectFormField {
                     name
                     label
                     value
@@ -273,7 +273,7 @@ export default `query DocumentQuery($path: String!) {
         _template
         title
         blocks {
-        	__typename
+          __typename
           ... on ExcerptPostData {
             __typename
             _template
@@ -329,6 +329,7 @@ export default `query DocumentQuery($path: String!) {
             actions {
               ... on ActionPageReferenceData {
                 _template
+                __typename
                 page {
                   ... on BlockPage {
                     path
@@ -340,10 +341,12 @@ export default `query DocumentQuery($path: String!) {
               }
               ... on ActionVideoData {
                 _template
+                __typename
                 url
               }
               ... on ActionNewsletterData {
                 _template
+                __typename
                 body
                 footer
               }

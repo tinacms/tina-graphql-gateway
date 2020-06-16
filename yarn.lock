@@ -1754,6 +1754,7 @@ __metadata:
   resolution: "@forestry/gql-demo@workspace:apps/demo"
   dependencies:
     "@forestry/graphql": "workspace:packages/forestry-graphql"
+    "@forestry/graphql-client": "workspace:packages/forestry-graphql-client"
     "@tailwindcss/ui": ^0.3.0
     "@types/node": ^13.13.1
     "@types/react": ^16.9.34
@@ -1775,6 +1776,14 @@ __metadata:
     urql: ^1.9.7
     xstate: ^4.9.1
     yup: ^0.28.4
+  languageName: unknown
+  linkType: soft
+
+"@forestry/graphql-client@workspace:packages/forestry-graphql-client":
+  version: 0.0.0-use.local
+  resolution: "@forestry/graphql-client@workspace:packages/forestry-graphql-client"
+  dependencies:
+    "@forestry/build": "workspace:packages/build"
   languageName: unknown
   linkType: soft
 

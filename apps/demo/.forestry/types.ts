@@ -764,29 +764,34 @@ export type MutationDocumentArgs = {
 };
 
 export type DocumentInput = {
-  BlockPage_input?: Maybe<BlockPage_Input>;
-  Post_input?: Maybe<Post_Input>;
-  Author_input?: Maybe<Author_Input>;
-  Menu_input?: Maybe<Menu_Input>;
+  BlockPageInput?: Maybe<BlockPageInput>;
+  PostInput?: Maybe<PostInput>;
+  AuthorInput?: Maybe<AuthorInput>;
+  MenuInput?: Maybe<MenuInput>;
 };
 
-export type BlockPage_Input = {
+export type BlockPageInput = {
+  data?: Maybe<BlockPageDataInput>;
+  content?: Maybe<Scalars['String']>;
+};
+
+export type BlockPageDataInput = {
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksInput>>>;
 };
 
 export type BlocksInput = {
-  Sidecar_input?: Maybe<Sidecar_Input>;
-  ExcerptPost_input?: Maybe<ExcerptPost_Input>;
-  PostList_input?: Maybe<PostList_Input>;
-  PriceList_input?: Maybe<PriceList_Input>;
-  AuthorList_input?: Maybe<AuthorList_Input>;
-  SponsorList_input?: Maybe<SponsorList_Input>;
-  PageReference_input?: Maybe<PageReference_Input>;
-  SectionIndex_input?: Maybe<SectionIndex_Input>;
+  SidecarInput?: Maybe<SidecarDataInput>;
+  ExcerptPostInput?: Maybe<ExcerptPostDataInput>;
+  PostListInput?: Maybe<PostListDataInput>;
+  PriceListInput?: Maybe<PriceListDataInput>;
+  AuthorListInput?: Maybe<AuthorListDataInput>;
+  SponsorListInput?: Maybe<SponsorListDataInput>;
+  PageReferenceInput?: Maybe<PageReferenceDataInput>;
+  SectionIndexInput?: Maybe<SectionIndexDataInput>;
 };
 
-export type Sidecar_Input = {
+export type SidecarDataInput = {
   text?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   cta?: Maybe<CtaFieldsSidecarInput>;
@@ -799,21 +804,21 @@ export type CtaFieldsSidecarInput = {
 };
 
 export type ActionsInput = {
-  ActionVideo_input?: Maybe<ActionVideo_Input>;
-  ActionNewsletter_input?: Maybe<ActionNewsletter_Input>;
-  ActionPageReference_input?: Maybe<ActionPageReference_Input>;
+  ActionVideoInput?: Maybe<ActionVideoDataInput>;
+  ActionNewsletterInput?: Maybe<ActionNewsletterDataInput>;
+  ActionPageReferenceInput?: Maybe<ActionPageReferenceDataInput>;
 };
 
-export type ActionVideo_Input = {
+export type ActionVideoDataInput = {
   url?: Maybe<Scalars['String']>;
 };
 
-export type ActionNewsletter_Input = {
+export type ActionNewsletterDataInput = {
   body?: Maybe<Scalars['String']>;
   footer?: Maybe<Scalars['String']>;
 };
 
-export type ActionPageReference_Input = {
+export type ActionPageReferenceDataInput = {
   page?: Maybe<Scalars['String']>;
   button_settings?: Maybe<ButtonSettingsFieldsActionPageReferenceInput>;
 };
@@ -828,7 +833,7 @@ export enum StyleSelectSidecar {
   Slant = 'Slant'
 }
 
-export type ExcerptPost_Input = {
+export type ExcerptPostDataInput = {
   post?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   style?: Maybe<StyleSelectExcerptPost>;
@@ -839,7 +844,7 @@ export enum StyleSelectExcerptPost {
   Full = 'Full'
 }
 
-export type PostList_Input = {
+export type PostListDataInput = {
   posts?: Maybe<Array<Maybe<PostsFieldsListPostListInput>>>;
 };
 
@@ -847,7 +852,7 @@ export type PostsFieldsListPostListInput = {
   post?: Maybe<Scalars['String']>;
 };
 
-export type PriceList_Input = {
+export type PriceListDataInput = {
   heading?: Maybe<Scalars['String']>;
   prices?: Maybe<Array<Maybe<PricesFieldsListPriceListInput>>>;
 };
@@ -865,11 +870,11 @@ export enum CategorySelectPriceListPrices {
   Pro = 'Pro'
 }
 
-export type AuthorList_Input = {
+export type AuthorListDataInput = {
   authors?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
-export type SponsorList_Input = {
+export type SponsorListDataInput = {
   description?: Maybe<Scalars['String']>;
   sponsor?: Maybe<Array<Maybe<SponsorFieldsListSponsorListInput>>>;
 };
@@ -880,25 +885,35 @@ export type SponsorFieldsListSponsorListInput = {
   image?: Maybe<Scalars['String']>;
 };
 
-export type PageReference_Input = {
+export type PageReferenceDataInput = {
   description?: Maybe<Scalars['String']>;
   page?: Maybe<Scalars['String']>;
 };
 
-export type SectionIndex_Input = {
+export type SectionIndexDataInput = {
   body?: Maybe<Scalars['String']>;
   limit?: Maybe<Scalars['Int']>;
   section?: Maybe<Scalars['String']>;
 };
 
-export type Post_Input = {
+export type PostInput = {
+  data?: Maybe<PostDataInput>;
+  content?: Maybe<Scalars['String']>;
+};
+
+export type PostDataInput = {
   title?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
-export type Author_Input = {
+export type AuthorInput = {
+  data?: Maybe<AuthorDataInput>;
+  content?: Maybe<Scalars['String']>;
+};
+
+export type AuthorDataInput = {
   name?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
@@ -911,7 +926,12 @@ export type AccoladesFieldsListAuthorInput = {
   description?: Maybe<Scalars['String']>;
 };
 
-export type Menu_Input = {
+export type MenuInput = {
+  data?: Maybe<MenuDataInput>;
+  content?: Maybe<Scalars['String']>;
+};
+
+export type MenuDataInput = {
   logo?: Maybe<Scalars['String']>;
   menu_item?: Maybe<Array<Maybe<MenuItemFieldsListMenuInput>>>;
 };
@@ -1083,13 +1103,13 @@ export type DocumentQueryQuery = (
           { __typename?: 'CtaFieldsSidecar' }
           & Pick<CtaFieldsSidecar, 'header'>
         )>, actions?: Maybe<Array<Maybe<(
-          { __typename?: 'ActionVideoData' }
+          { __typename: 'ActionVideoData' }
           & Pick<ActionVideoData, '_template' | 'url'>
         ) | (
-          { __typename?: 'ActionNewsletterData' }
+          { __typename: 'ActionNewsletterData' }
           & Pick<ActionNewsletterData, '_template' | 'body' | 'footer'>
         ) | (
-          { __typename?: 'ActionPageReferenceData' }
+          { __typename: 'ActionPageReferenceData' }
           & Pick<ActionPageReferenceData, '_template'>
           & { page?: Maybe<(
             { __typename?: 'BlockPage' }

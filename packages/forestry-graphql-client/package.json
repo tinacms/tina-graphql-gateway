@@ -1,0 +1,13 @@
+{
+  "name": "@forestry/graphql-client",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "typings": "dist/types.d.ts",
+  "scripts": {
+    "build": "forestry-build",
+    "watch": "forestry-watch"
+  },
+  "dependencies": {
+    "@forestry/build": "workspace:packages/build"
+  }
+}

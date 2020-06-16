@@ -1,0 +1,47 @@
+{
+  "path": "content/pages/home.md",
+  "params": {
+    "BlockPageInput": {
+      "data": {
+        "title": "Hello",
+        "blocks": [
+          {
+            "SidecarInput": {
+              "text": "This is my text",
+              "image": "some-image-path",
+              "cta": {
+                "header": ""
+              }
+            }
+          },
+          {
+            "ExcerptPostInput": {
+              "description": ""
+            }
+          },
+          {
+            "PriceListInput": {
+              "heading": "strin",
+              "prices": [
+                {
+                  "title": "HEre",
+                  "description": "we",
+                  "bullet_points": ["has", "tobe"]
+                }
+              ]
+            }
+          },
+          {
+            "SponsorListInput": {
+              "sponsor": {
+                "name": "hi",
+                "url": "",
+                "image": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -433,6 +433,9 @@ const buildSchema = async (config: any) => {
 
   const fmtList = await getDirectoryList(PATH_TO_TEMPLATES);
 
+  const templateDataInputObjectTypes: {
+    [key: string]: GraphQLInputObjectType;
+  } = {};
   const templateInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
   } = {};
@@ -1099,8 +1102,8 @@ const buildSchema = async (config: any) => {
             name: friendlyName(field.name + "_input"),
             fields: () => {
               return arrayToObject(field.template_types, (obj, item) => {
-                obj[friendlyName(item) + "_input"] = {
-                  type: templateInputObjectTypes[shortFMTName(item)],
+                obj[friendlyName(item + "_input")] = {
+                  type: templateDataInputObjectTypes[shortFMTName(item)],
                 };
               });
             },
@@ -1220,9 +1223,17 @@ const buildSchema = async (config: any) => {
         fields: fmt.data.fields,
       });
 
-      const templateInputObjectType = new GraphQLInputObjectType({
-        name: friendlyFMTName(path) + "_input",
+      const templateDataInputObjectType = new GraphQLInputObjectType({
+        name: friendlyFMTName(path + "_data_input"),
         fields: mutators,
+      });
+
+      const templateInputObjectType = new GraphQLInputObjectType({
+        name: friendlyFMTName(path + "_input"),
+        fields: {
+          data: { type: templateDataInputObjectType },
+          content: { type: GraphQLString },
+        },
       });
 
       const templateFormObjectType = buildGroupSetter({
@@ -1261,6 +1272,9 @@ const buildSchema = async (config: any) => {
         },
       });
 
+      templateDataInputObjectTypes[
+        shortFMTName(path)
+      ] = templateDataInputObjectType;
       templateInputObjectTypes[shortFMTName(path)] = templateInputObjectType;
       templateFormObjectTypes[shortFMTName(path)] = templateFormObjectType;
       templateDataObjectTypes[shortFMTName(path)] = templateDataObjectType;
@@ -1383,10 +1397,7 @@ app.use(
       .toString();
 
     const res = await codegen({
-      // used by a plugin internally, although the 'typescript' plugin currently
-      // returns the string output, rather than writing to a file
       filename: __dirname + "/../src/schema.ts",
-      // schema: parse(printSchema(schema)),
       schema: parse(printSchema(schema)),
       documents: [
         {
@@ -1438,40 +1449,3 @@ export default \`${query}\`
   })
 );
 app.listen(4001);
-
-// mutation DocumentMutation($path: String!) {
-//   document(
-//     path: $path
-//     params: {
-//       BlockPage_input: {
-//         title: "Hello"
-//         blocks: [
-//           {
-//             Sidecar_input: {
-//               text: "This is my text"
-//               image: "some-image-path"
-//               cta: { header: "" }
-//               style: ""
-//             }
-//           },
-//           { ExcerptPost_input: { description: "" } },
-//           {
-//             PriceList_input: {
-//               heading: "strin"
-//               prices: [
-//                 {
-//                   title: "HEre"
-//                   description: "we"
-//                   bullet_points: ["has", "tobe"]
-//                 }
-//               ]
-//             }
-//           }
-//           { SponsorList_input: { sponsor: { name: "hi", url: "", image: "" } } }
-//         ]
-//       }
-//     }
-//   ) {
-//     __typename
-//   }
-// }
