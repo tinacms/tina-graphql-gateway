@@ -1,3 +1,11 @@
+type transformType = {
+  _template: string;
+  __typename: string;
+};
+type pathType = {
+  path: string;
+};
+
 const transform = (obj: any) => {
   if (!obj) {
     return "";
@@ -5,21 +13,17 @@ const transform = (obj: any) => {
   if (typeof obj == "string" || typeof obj === "number") {
     return obj;
   }
-  const { _template, __typename, ...rest } = obj;
-  if (_template && __typename) {
-    return { [__typename.replace("Data", "Input")]: transform(rest) };
-  }
-
   // FIXME unreliable
   if (obj.hasOwnProperty("path")) {
     return obj.path;
   }
+  const { _template, __typename, ...rest } = obj;
+  if (_template) {
+    return { [_template.replace("FieldConfig", "Input")]: transform(rest) };
+  }
 
   const meh = {};
   Object.keys(rest).forEach((key) => {
-    if (key === "section") {
-      console.log(rest);
-    }
     if (Array.isArray(rest[key])) {
       meh[key] = rest[key].map((item) => {
         return transform(item);
@@ -74,10 +78,9 @@ export const onSubmit = async ({
     __typename,
     data: rest,
   });
-  const data = await fetchAPI(mutation, {
+  await fetchAPI(mutation, {
     variables: { path: path, params: transformedPayload },
   });
-  console.log("fetched", data);
 };
 
 const prepare = (obj: any) => {
@@ -91,6 +94,7 @@ const prepare = (obj: any) => {
 
   const meh = {};
   Object.keys(rest).forEach((key) => {
+    // FIXME
     if (key === "section") {
       meh[key] = "posts";
     } else if (Array.isArray(rest[key])) {
@@ -123,6 +127,7 @@ const rehydrate = (obj: any, document: any) => {
   const meh = {};
   Object.keys(rest).forEach((key) => {
     if (key === "section") {
+      // FIXME
       meh[key] = document.data.blocks[2].section;
     } else if (Array.isArray(rest[key])) {
       meh[key] = rest[key].map((item) => {

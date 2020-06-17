@@ -1021,27 +1021,27 @@ export type DocumentQueryQuery = (
                 { __typename?: 'ActionsTemplates' }
                 & { ActionVideoFieldConfig?: Maybe<(
                   { __typename?: 'ActionVideoFieldConfig' }
-                  & Pick<ActionVideoFieldConfig, 'label' | 'key' | 'component'>
+                  & Pick<ActionVideoFieldConfig, 'label' | 'key' | 'name' | 'component'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'TextFormField' }
                     & Pick<TextFormField, 'label' | 'name' | 'component'>
                   )>>> }
                 )>, ActionNewsletterFieldConfig?: Maybe<(
                   { __typename?: 'ActionNewsletterFieldConfig' }
-                  & Pick<ActionNewsletterFieldConfig, 'label' | 'key' | 'component'>
+                  & Pick<ActionNewsletterFieldConfig, 'label' | 'key' | 'name' | 'component'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'TextFormField' }
                     & Pick<TextFormField, 'label' | 'name' | 'component'>
                   )>>> }
                 )>, ActionPageReferenceFieldConfig?: Maybe<(
                   { __typename?: 'ActionPageReferenceFieldConfig' }
-                  & Pick<ActionPageReferenceFieldConfig, 'label' | 'key' | 'component'>
+                  & Pick<ActionPageReferenceFieldConfig, 'label' | 'key' | 'component' | 'name'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'SelectFormField' }
                     & Pick<SelectFormField, 'name' | 'label' | 'component' | 'options'>
                   ) | (
                     { __typename?: 'ButtonSettingsFieldsListActionPageReferenceConfig' }
-                    & Pick<ButtonSettingsFieldsListActionPageReferenceConfig, 'label' | 'key' | 'component'>
+                    & Pick<ButtonSettingsFieldsListActionPageReferenceConfig, 'label' | 'key' | 'name' | 'component'>
                     & { fields?: Maybe<Array<Maybe<(
                       { __typename?: 'TextFormField' }
                       & Pick<TextFormField, 'name' | 'label' | 'component'>

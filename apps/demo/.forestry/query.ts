@@ -151,6 +151,7 @@ export default `query DocumentQuery($path: String!) {
                       ActionVideoFieldConfig {
                         label
                         key
+                        name
                         component
                         fields {
                           ... on TextFormField {
@@ -163,6 +164,7 @@ export default `query DocumentQuery($path: String!) {
                       ActionNewsletterFieldConfig {
                         label
                         key
+                        name
                         component
                         fields {
                           ... on TextFormField {
@@ -176,6 +178,7 @@ export default `query DocumentQuery($path: String!) {
                         label
                         key
                         component
+                        name
                         fields {
                           ... on SelectFormField {
                             name
@@ -186,6 +189,7 @@ export default `query DocumentQuery($path: String!) {
                           ... on ButtonSettingsFieldsListActionPageReferenceConfig {
                             label
                             key
+                            name
                             component
                             fields {
                               ... on TextFormField {
