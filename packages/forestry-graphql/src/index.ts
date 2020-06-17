@@ -38,7 +38,12 @@ import {
   tagInput,
   imageInput,
 } from "./inputFields";
-import { textarea } from "./fields";
+import { textarea, TextareaField } from "./fields/textarea";
+import { TextField, text } from "./fields/text";
+import { NumberField, number } from "./fields/number";
+import { DateField, datetime } from "./fields/datetime";
+import { BooleanField, boolean } from "./fields/boolean";
+import { FileField, file } from "./fields/file";
 
 type DirectorySection = {
   type: "directory";
@@ -120,25 +125,6 @@ type FMT = BaseDocumentType & {
   };
 };
 
-type TextField = {
-  label: string;
-  name: string;
-  type: "text";
-  default: string;
-  config?: {
-    required?: boolean;
-  };
-};
-type TextareaField = {
-  label: string;
-  name: string;
-  type: "textarea";
-  config: {
-    required: boolean;
-    wysiwyg: boolean;
-    schema: { format: "markdown" };
-  };
-};
 type TagListField = {
   label: string;
   name: string;
@@ -148,34 +134,7 @@ type TagListField = {
     required?: boolean;
   };
 };
-type BooleanField = {
-  label: string;
-  name: string;
-  type: "boolean";
-  config?: {
-    required?: boolean;
-  };
-};
-type NumberField = {
-  label: string;
-  name: string;
-  type: "number";
-  config?: {
-    required?: boolean;
-  };
-};
-type DateField = {
-  label: string;
-  name: string;
-  type: "datetime";
-  hidden: boolean;
-  default: "now";
-  config: {
-    date_format: string;
-    export_format: string;
-    required: boolean;
-  };
-};
+
 type BlocksField = {
   label: string;
   name: string;
@@ -200,15 +159,6 @@ type FieldGroupListField = WithFields & {
   type: "field_group_list";
   config?: {
     required?: boolean;
-  };
-};
-type FileField = {
-  label: string;
-  name: string;
-  type: "file";
-  config?: {
-    required?: boolean;
-    maxSize: null | number;
   };
 };
 type GalleryField = {
@@ -468,62 +418,6 @@ const buildSchema = async (config: any) => {
       templates,
     }));
 
-  const text = ({ field }: { fmt: string; field: TextField }) => ({
-    getter: {
-      type: field?.config?.required
-        ? GraphQLNonNull(GraphQLString)
-        : GraphQLString,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: field.type,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLString,
-    },
-  });
-
-  const number = ({ field }: { fmt: string; field: NumberField }) => ({
-    getter: {
-      // TODO: can be either Int or Float
-      type: field?.config?.required ? GraphQLNonNull(GraphQLInt) : GraphQLInt,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: field.type,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLInt,
-    },
-  });
-  const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
-    getter: {
-      type: field?.config?.required
-        ? GraphQLNonNull(GraphQLBoolean)
-        : GraphQLBoolean,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return "hi";
-      },
-    },
-    mutator: {
-      type: GraphQLBoolean,
-    },
-  });
   const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
     if (pluginsList.matches("select", field)) {
       return {
@@ -665,20 +559,7 @@ const buildSchema = async (config: any) => {
       };
     }
   };
-  const datetime = ({ fmt, field }: { fmt: string; field: DateField }) => ({
-    getter: {
-      type: GraphQLString,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return "hi";
-      },
-    },
-    mutator: {
-      type: GraphQLString,
-    },
-  });
+
   const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
     getter: {
       type: GraphQLList(GraphQLString),
@@ -835,42 +716,7 @@ const buildSchema = async (config: any) => {
       },
     };
   };
-  const file = ({ fmt, field }: { fmt: string; field: FileField }) => {
-    return {
-      getter: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_gallery_" + fmt),
-          fields: {
-            path: {
-              type: GraphQLNonNull(GraphQLString),
-              resolve: async (val) => {
-                return val;
-              },
-            },
-            absolutePath: {
-              type: GraphQLNonNull(GraphQLString),
-              resolve: async (val) => {
-                return config.rootPath + val;
-              },
-            },
-          },
-        }),
-      },
-      setter: {
-        type: imageInput,
-        resolve: () => {
-          return {
-            name: field.name,
-            label: field.label,
-            component: "file",
-          };
-        },
-      },
-      mutator: {
-        type: GraphQLString,
-      },
-    };
-  };
+
   const image_gallery = ({
     fmt,
     field,
@@ -1101,7 +947,7 @@ const buildSchema = async (config: any) => {
       case "list":
         return list({ fmt, field });
       case "file":
-        return file({ fmt, field });
+        return file({ fmt, field, rootPath: config.rootPath });
       case "image_gallery":
         return image_gallery({ fmt, field });
       case "field_group":

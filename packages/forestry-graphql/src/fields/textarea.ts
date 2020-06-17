@@ -1,7 +1,7 @@
-import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql";
-import { textInput } from "./inputFields";
+import { GraphQLNonNull, GraphQLString } from "graphql";
+import { textInput } from "../inputFields";
 
-type TextareaField = {
+export type TextareaField = {
   label: string;
   name: string;
   type: "textarea";
