@@ -46,6 +46,7 @@ import { BooleanField, boolean } from "./fields/boolean";
 import { FileField, file } from "./fields/file";
 import { TagListField, tag_list } from "./fields/tagList";
 import { image_gallery, GalleryField } from "./fields/imageGallery";
+import { SelectField, SectionSelect, select } from "./fields/select";
 
 type DirectorySection = {
   type: "directory";
@@ -65,41 +66,10 @@ type DocumentSection = {
   label: string;
   path: string;
 };
-type Section = DirectorySection | HeadingSection | DocumentSection;
+export type Section = DirectorySection | HeadingSection | DocumentSection;
 type Settings = {
   data: { sections: Section[] };
 };
-
-function isDirectorySection(section: Section): section is DirectorySection {
-  return section.type === "directory";
-}
-
-function isSelectField(field: FieldType): field is SelectField {
-  return field.type === "select";
-}
-function isSectionSelectField(field: FieldType): field is SectionSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
-
-function isListField(field: FieldType): field is SelectField {
-  return field.type === "list";
-}
-function isNotNull<T>(arg: T): arg is Exclude<T, null> {
-  return arg !== null;
-}
-function isString(arg: string | string[]): arg is string {
-  return typeof arg === "string";
-}
-
-function isSectionListField(field: FieldType): field is SectionList {
-  if (!isListField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
 
 type BaseDocumentType = {
   content: string;
@@ -167,7 +137,7 @@ type SimpleList = BaseListField & {
     max: null | number;
   };
 };
-type SectionList = BaseListField & {
+export type SectionList = BaseListField & {
   config?: {
     required?: boolean;
     use_select: boolean;
@@ -181,34 +151,7 @@ type SectionList = BaseListField & {
 };
 type ListField = SectionList | SimpleList;
 
-type BaseSelectField = {
-  label: string;
-  name: string;
-  type: "select";
-};
-type SectionSelect = BaseSelectField & {
-  config: {
-    required: boolean;
-    source: {
-      type: "pages";
-      section: string;
-      file: string;
-      path: string;
-    };
-  };
-};
-type SimpleSelect = BaseSelectField & {
-  default: string;
-  config: {
-    options: string[];
-    required: boolean;
-    source: {
-      type: "simple";
-    };
-  };
-};
-type SelectField = SectionSelect | SimpleSelect;
-type FieldType =
+export type FieldType =
   | TextField
   | TextareaField
   | BlocksField
@@ -223,9 +166,9 @@ type FieldType =
   | FieldGroupField
   | FieldGroupListField;
 
-type TemplatePage = { name: string; pages: string[] };
+export type TemplatePage = { name: string; pages: string[] };
 
-type Templates = {
+export type Templates = {
   [key: string]: null | GraphQLObjectType;
 };
 type TemplatesData = { [key: string]: GraphQLObjectType };
@@ -242,7 +185,7 @@ export type PluginFieldArgs = {
   }[];
 };
 
-type FieldSourceType = {
+export type FieldSourceType = {
   [key: string]: string | string[];
 };
 type FieldContextType = {};
@@ -401,148 +344,6 @@ const buildSchema = async (config: any) => {
       name: replaceFMTPathWithSlug(path),
       templates,
     }));
-
-  const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
-    if (pluginsList.matches("select", field)) {
-      return {
-        getter: pluginsList.run("select", {
-          fmt,
-          rootPath: config.rootPath,
-          field,
-          templates: templateObjectTypes,
-          sectionFmts,
-          templatePages,
-        }),
-        setter: {
-          type: selectInput,
-          resolve: (value: any) => {
-            return {
-              name: field.name,
-              label: field.label,
-              component: "select",
-              options: value?.config?.options || [],
-            };
-          },
-        },
-        mutator: {
-          type: GraphQLString,
-        },
-      };
-    } else {
-      if (isSectionSelectField(field)) {
-        return {
-          getter: {
-            type: new GraphQLUnionType({
-              name: friendlyName(field.name + "_select_" + fmt),
-              types: () => {
-                const activeSectionTemplates = sectionFmts.find(
-                  ({ name }) => name === field.config.source.section
-                );
-                const types = activeSectionTemplates?.templates
-                  .map(
-                    (templateName: string) => templateObjectTypes[templateName]
-                  )
-                  ?.filter(isNotNull) || [
-                  new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
-                ];
-
-                return types;
-              },
-              resolveType: async (val) => {
-                return templateObjectTypes[val.template];
-              },
-            }),
-            resolve: async (val: FieldSourceType) => {
-              const path = val[field.name];
-              if (isString(path)) {
-                const res = await getData<DocumentType>(
-                  config.rootPath + "/" + path
-                );
-                const activeTemplate = templatePages.find(({ pages }) => {
-                  return pages?.includes(path);
-                });
-                return {
-                  ...res,
-                  path: val[field.name],
-                  template: activeTemplate?.name,
-                };
-              } else {
-                return {};
-              }
-            },
-          },
-          setter: {
-            type: selectInput,
-            resolve: () => {
-              if (field?.config?.source?.type === "pages") {
-                const activeSectionTemplates = sectionFmts?.find(
-                  ({ name }) => name === field.config.source.section
-                )?.templates;
-                const options = flatten(
-                  activeSectionTemplates?.map((templateSlug) => {
-                    return templatePages?.find(
-                      ({ name }) => name === templateSlug
-                    )?.pages;
-                  })
-                );
-
-                return {
-                  ...field,
-                  component: "select",
-                  options,
-                };
-              }
-
-              return {
-                name: field.name,
-                label: field.label,
-                component: "select",
-                options: ["this shouldn", "be seen"],
-              };
-            },
-          },
-          mutator: {
-            type: GraphQLString,
-          },
-        };
-      }
-
-      const options: { [key: string]: { value: string } } = {};
-      field.config?.options.forEach(
-        (option) => (options[option] = { value: option })
-      );
-
-      return {
-        getter: {
-          // type: new GraphQLEnumType({
-          //   name: friendlyName(field.name + "_select_" + fmt),
-          //   values: options,
-          // }),
-          type: GraphQLString,
-          resolve: (value: any) => {
-            return value[field.name] || field.default;
-          },
-        },
-        setter: {
-          type: selectInput,
-          resolve: () => {
-            return {
-              name: field.name,
-              label: field.label,
-              component: "select",
-              options: field.config.options,
-            };
-          },
-        },
-        mutator: {
-          type: new GraphQLEnumType({
-            name: friendlyName(field.name + "_select_" + fmt),
-            values: options,
-          }),
-        },
-      };
-    }
-  };
 
   const list = ({ fmt, field }: { fmt: string; field: ListField }) => {
     if (isSectionListField(field)) {
@@ -862,7 +663,14 @@ const buildSchema = async (config: any) => {
       case "boolean":
         return boolean({ fmt, field });
       case "select":
-        return select({ fmt, field });
+        return select({
+          fmt,
+          field,
+          rootPath: config.rootPath,
+          sectionFmts,
+          templateObjectTypes,
+          templatePages,
+        });
       case "datetime":
         return datetime({ fmt, field });
       case "tag_list":
@@ -1157,6 +965,37 @@ export default \`${query}\`
   })
 );
 app.listen(4001);
+
+//utils
+export function isDirectorySection(
+  section: Section
+): section is DirectorySection {
+  return section.type === "directory";
+}
+
+export function isSelectField(field: FieldType): field is SelectField {
+  return field.type === "select";
+}
+export function isSectionSelectField(field: FieldType): field is SectionSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
+
+export function isListField(field: FieldType): field is SelectField {
+  return field.type === "list";
+}
+export function isNotNull<T>(arg: T): arg is Exclude<T, null> {
+  return arg !== null;
+}
+
+export function isSectionListField(field: FieldType): field is SectionList {
+  if (!isListField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
 
 // mutation DocumentMutation($path: String!) {
 //   document(
