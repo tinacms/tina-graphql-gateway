@@ -45,7 +45,6 @@ export const onSubmit = async ({
     mutation,
     { variables }: { variables: { path: string; params: any } }
   ) {
-    // console.log(JSON.stringify(variables, null, 2));
     const res = await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -81,8 +80,65 @@ export const onSubmit = async ({
   console.log("fetched", data);
 };
 
-export const prepareValues = (values: any) => {
-  console.log("prep", values);
+const prepare = (obj: any) => {
+  if (!obj) {
+    return "";
+  }
+  if (typeof obj == "string" || typeof obj === "number") {
+    return obj;
+  }
+  const { ...rest } = obj;
 
-  return values;
+  const meh = {};
+  Object.keys(rest).forEach((key) => {
+    if (key === "section") {
+      meh[key] = "posts";
+    } else if (Array.isArray(rest[key])) {
+      meh[key] = rest[key].map((item) => {
+        return prepare(item);
+      });
+    } else {
+      meh[key] = prepare(rest[key]);
+    }
+  });
+
+  return meh;
+};
+export const prepareValues = (values: any) => {
+  const preparedValues = prepare(values);
+  // console.log(JSON.stringify(preparedValues, null, 2));
+
+  return preparedValues;
+};
+
+const rehydrate = (obj: any, document: any) => {
+  if (!obj) {
+    return "";
+  }
+  if (typeof obj == "string" || typeof obj === "number") {
+    return obj;
+  }
+  const { ...rest } = obj;
+
+  const meh = {};
+  Object.keys(rest).forEach((key) => {
+    if (key === "section") {
+      meh[key] = document.data.blocks[2].section;
+    } else if (Array.isArray(rest[key])) {
+      meh[key] = rest[key].map((item) => {
+        return rehydrate(item, document);
+      });
+    } else {
+      meh[key] = rehydrate(rest[key], document);
+    }
+  });
+
+  return meh;
+};
+
+export const rehydrateValues = (formData, document) => {
+  return {
+    ...document,
+    data: rehydrate(formData, document),
+  };
 };

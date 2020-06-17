@@ -1,4 +1,4 @@
-import { getData, getDirectoryList } from "./util";
+import { getData, writeData, getDirectoryList } from "./util";
 import fs from "fs";
 import path from "path";
 import flatten from "lodash.flatten";
@@ -29,6 +29,7 @@ import {
   GraphQLFieldResolver,
 } from "graphql";
 import camelCase from "lodash.camelcase";
+import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
 
@@ -1369,8 +1370,42 @@ const buildSchema = async (config: any) => {
     mutation: rootMutation,
   });
 
-  const documentMutation = (payload: any) => {
-    console.log("mutation:", JSON.stringify(payload, null, 2));
+  const transform = (obj: any): any => {
+    const meh: { [key: string]: any } = {};
+    Object.keys(obj).map((key) => {
+      const val = obj[key];
+      if (Array.isArray(val)) {
+        meh[key] = val.map((item) => {
+          if (typeof item === "string" || typeof item === "number") {
+            return item;
+          }
+          // Get the first item in the object
+          const templateBigName = Object.keys(item)[0];
+
+          if (templateBigName.endsWith("Input")) {
+            const values = item[templateBigName];
+            const accumulator = {
+              template: kebabcase(templateBigName.replace("Input", "")),
+              ...values,
+            };
+            return transform(accumulator);
+          } else {
+            return item;
+          }
+        });
+      } else {
+        meh[key] = obj[key];
+      }
+    });
+    return meh;
+  };
+
+  const documentMutation = async (payload: any) => {
+    await writeData(
+      payload.path,
+      "",
+      transform(payload.params.BlockPageInput.data)
+    );
   };
 
   return { schema, documentMutation };

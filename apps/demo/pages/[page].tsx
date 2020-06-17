@@ -1,7 +1,11 @@
 import Head from "next/head";
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
-import { onSubmit, prepareValues } from "@forestry/graphql-client";
+import {
+  onSubmit,
+  prepareValues,
+  rehydrateValues,
+} from "@forestry/graphql-client";
 import { DocumentQueryQuery, BlocksUnion } from "../.forestry/types";
 import query from "../.forestry/query";
 
@@ -63,18 +67,11 @@ const Home = ({ document, formConfig }) => {
     ...formConfig,
     onSubmit: (values) => {
       onSubmit({ path: "content/pages/home.md", payload: values });
-      // console.log(JSON.stringify(values, null, 2));
-      // alert("Check the console for the full output");
     },
   });
   usePlugin(form);
 
-  // TODO: document contains `__typename` which we don't want to be editable
-  // so right now we're just merging them, probably a nicer way to do this
-  const documentWithFormData = {
-    ...document,
-    data: formData,
-  };
+  const documentWithFormData = rehydrateValues(formData, document);
 
   return (
     <div className="">

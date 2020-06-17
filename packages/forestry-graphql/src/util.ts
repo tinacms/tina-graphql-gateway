@@ -2,7 +2,17 @@ import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
 
 export const stringify = (content: string, data: object) => {
-  return matterOrig.stringify(content, data);
+  return matterOrig.stringify(content, data, {
+    // @ts-ignore
+    lineWidth: -1,
+    // sortKeys: (values: any) => {
+    //   console.log("hiii", values);
+    //   return values;
+    // },
+    // sortKeys: function () {
+    //   return 1;
+    // },
+  });
 };
 
 export const matter = <I extends Input, O extends GrayMatterOption<I, O>>(
@@ -25,4 +35,11 @@ export const getData = async <T>(filepath: string): Promise<T> => {
 
   // @ts-ignore
   return result;
+};
+
+export const writeData = async (path: string, content: any, data: any) => {
+  const string = stringify(content, data);
+  await fs.writeFileSync(path, string);
+
+  return await getData(path);
 };
