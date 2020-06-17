@@ -36,8 +36,9 @@ async function fetchAPI(
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const path = `content/pages/${params.page}.md`;
   const data = await fetchAPI(DocumentQuery, {
-    variables: { path: `content/pages/${params.page || "home"}.md` },
+    variables: { path },
   });
 
   const formConfig = {
@@ -47,7 +48,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     fields: data.document.form.fields,
   };
 
-  return { props: { document: data.document, formConfig } };
+  return { props: { path, document: data.document, formConfig } };
 };
 
 export async function getStaticPaths() {
@@ -61,12 +62,12 @@ export async function getStaticPaths() {
   };
 }
 
-const Home = ({ document, formConfig }) => {
+const Home = ({ path, document, formConfig }) => {
   // TODO: use the form data so changes are immediately reflected
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {
-      onSubmit({ path: "content/pages/home.md", payload: values });
+      onSubmit({ path, payload: values });
     },
   });
   usePlugin(form);

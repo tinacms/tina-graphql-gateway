@@ -1,11 +1,3 @@
-type transformType = {
-  _template: string;
-  __typename: string;
-};
-type pathType = {
-  path: string;
-};
-
 const transform = (obj: any) => {
   if (!obj) {
     return "";
@@ -78,6 +70,8 @@ export const onSubmit = async ({
     __typename,
     data: rest,
   });
+  // console.log(JSON.stringify(payload, null, 2));
+  // console.log(JSON.stringify(transformedPayload, null, 2));
   await fetchAPI(mutation, {
     variables: { path: path, params: transformedPayload },
   });

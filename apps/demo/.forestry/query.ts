@@ -135,6 +135,7 @@ export default `query DocumentQuery($path: String!) {
                     label
                     key
                     component
+                    name
                     fields {
                       ... on TextFormField {
                         name

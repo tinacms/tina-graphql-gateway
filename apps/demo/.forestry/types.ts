@@ -1009,7 +1009,7 @@ export type DocumentQueryQuery = (
               & Pick<ImageFormField, 'name' | 'label' | 'component'>
             ) | (
               { __typename?: 'CtaFieldsListSidecarConfig' }
-              & Pick<CtaFieldsListSidecarConfig, 'label' | 'key' | 'component'>
+              & Pick<CtaFieldsListSidecarConfig, 'label' | 'key' | 'component' | 'name'>
               & { fields?: Maybe<Array<Maybe<(
                 { __typename?: 'TextFormField' }
                 & Pick<TextFormField, 'name' | 'label' | 'component'>
