@@ -5,13 +5,6 @@ export const stringify = (content: string, data: object) => {
   return matterOrig.stringify(content, data, {
     // @ts-ignore
     lineWidth: -1,
-    // sortKeys: (values: any) => {
-    //   console.log("hiii", values);
-    //   return values;
-    // },
-    // sortKeys: function () {
-    //   return 1;
-    // },
   });
 };
 
