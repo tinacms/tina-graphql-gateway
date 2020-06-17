@@ -5,6 +5,7 @@ export const stringify = (content: string, data: object) => {
   return matterOrig.stringify(content, data, {
     // @ts-ignore
     lineWidth: -1,
+    noArrayIndent: true,
   });
 };
 
