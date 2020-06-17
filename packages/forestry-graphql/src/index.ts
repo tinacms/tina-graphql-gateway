@@ -31,6 +31,14 @@ import {
 import camelCase from "lodash.camelcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
+import {
+  baseInputFields,
+  textInput,
+  selectInput,
+  tagInput,
+  imageInput,
+} from "./inputFields";
+import { textarea } from "./fields";
 
 type DirectorySection = {
   type: "directory";
@@ -460,44 +468,6 @@ const buildSchema = async (config: any) => {
       templates,
     }));
 
-  const baseInputFields = {
-    name: { type: GraphQLString },
-    label: { type: GraphQLString },
-    value: { type: GraphQLString },
-    description: { type: GraphQLString },
-    component: { type: GraphQLString },
-  };
-
-  const textInput = new GraphQLObjectType({
-    name: "TextFormField",
-    fields: {
-      ...baseInputFields,
-    },
-  });
-
-  const selectInput = new GraphQLObjectType({
-    name: "SelectFormField",
-    fields: {
-      ...baseInputFields,
-      options: { type: GraphQLList(GraphQLString) },
-    },
-  });
-
-  const imageInput = new GraphQLObjectType({
-    name: "ImageFormField",
-    fields: {
-      ...baseInputFields,
-    },
-  });
-
-  const tagInput = new GraphQLObjectType({
-    name: "TagsFormField",
-    fields: {
-      ...baseInputFields,
-      value: { type: GraphQLList(GraphQLString) },
-    },
-  });
-
   const text = ({ field }: { fmt: string; field: TextField }) => ({
     getter: {
       type: field?.config?.required
@@ -519,26 +489,6 @@ const buildSchema = async (config: any) => {
     },
   });
 
-  const textarea = ({ field }: { fmt: string; field: TextareaField }) => ({
-    getter: {
-      type: field?.config?.required
-        ? GraphQLNonNull(GraphQLString)
-        : GraphQLString,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: field.type,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLString,
-    },
-  });
   const number = ({ field }: { fmt: string; field: NumberField }) => ({
     getter: {
       // TODO: can be either Int or Float
