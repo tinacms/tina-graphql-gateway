@@ -44,6 +44,8 @@ import { NumberField, number } from "./fields/number";
 import { DateField, datetime } from "./fields/datetime";
 import { BooleanField, boolean } from "./fields/boolean";
 import { FileField, file } from "./fields/file";
+import { TagListField, tag_list } from "./fields/tagList";
+import { image_gallery, GalleryField } from "./fields/imageGallery";
 
 type DirectorySection = {
   type: "directory";
@@ -125,16 +127,6 @@ type FMT = BaseDocumentType & {
   };
 };
 
-type TagListField = {
-  label: string;
-  name: string;
-  type: "tag_list";
-  default: string[];
-  config?: {
-    required?: boolean;
-  };
-};
-
 type BlocksField = {
   label: string;
   name: string;
@@ -161,15 +153,7 @@ type FieldGroupListField = WithFields & {
     required?: boolean;
   };
 };
-type GalleryField = {
-  label: string;
-  name: string;
-  type: "image_gallery";
-  config: {
-    required?: boolean;
-    maxSize: null | number;
-  };
-};
+
 type BaseListField = {
   label: string;
   name: string;
@@ -560,24 +544,6 @@ const buildSchema = async (config: any) => {
     }
   };
 
-  const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
-    getter: {
-      type: GraphQLList(GraphQLString),
-    },
-    setter: {
-      type: tagInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: "tags",
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLList(GraphQLString),
-    },
-  });
   const list = ({ fmt, field }: { fmt: string; field: ListField }) => {
     if (isSectionListField(field)) {
       return {
@@ -717,49 +683,6 @@ const buildSchema = async (config: any) => {
     };
   };
 
-  const image_gallery = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: GalleryField;
-  }) => {
-    return {
-      getter: {
-        type: GraphQLList(
-          new GraphQLObjectType({
-            name: friendlyName(field.name + "_gallery_" + fmt),
-            fields: {
-              path: {
-                type: GraphQLNonNull(GraphQLString),
-                resolve: async (val) => {
-                  return val;
-                },
-              },
-              absolutePath: {
-                type: GraphQLNonNull(GraphQLString),
-                resolve: async (val) => {
-                  return config.rootPath + val;
-                },
-              },
-            },
-          })
-        ),
-      },
-      setter: {
-        type: imageInput,
-        resolve: () => {
-          return {
-            name: field.name,
-            component: "image",
-          };
-        },
-      },
-      mutator: {
-        type: GraphQLList(GraphQLString),
-      },
-    };
-  };
   const field_group = ({
     fmt,
     field,
@@ -949,7 +872,7 @@ const buildSchema = async (config: any) => {
       case "file":
         return file({ fmt, field, rootPath: config.rootPath });
       case "image_gallery":
-        return image_gallery({ fmt, field });
+        return image_gallery({ fmt, field, rootPath: config.rootPath });
       case "field_group":
         return field_group({ fmt, field });
       case "field_group_list":
