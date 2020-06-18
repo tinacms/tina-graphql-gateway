@@ -26,7 +26,6 @@ union BlockPageFieldConfig_component_config = TextFormField | BlocksFieldConfig
 type TextFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
 }
@@ -34,7 +33,6 @@ type TextFormField {
 type BlocksFieldConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   templates: BlocksTemplates
@@ -64,7 +62,6 @@ union SidecarFieldConfig_component_config = TextFormField | ImageFormField | Cta
 type ImageFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
 }
@@ -82,7 +79,6 @@ union CtaFieldsListSidecarConfig_component_config = TextFormField
 type ActionsFieldConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   templates: ActionsTemplates
@@ -127,7 +123,6 @@ union ActionPageReferenceFieldConfig_component_config = SelectFormField | Button
 type SelectFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
   options: [String]
@@ -196,7 +191,6 @@ union PricesFieldsListPriceListConfig_component_config = TextFormField | BulletP
 type BulletPointsListPriceListPricesConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: BulletPointsListPriceListPricesConfigItem
@@ -221,7 +215,6 @@ union AuthorListFieldConfig_component_config = AuthorsListAuthorListConfig
 type AuthorsListAuthorListConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: AuthorsListAuthorListConfigItem
@@ -356,7 +349,6 @@ union PostFieldConfig_component_config = TextFormField | SelectFormField | Image
 type TagsFormField {
   name: String
   label: String
-  value: [String]
   description: String
   component: String
 }
@@ -393,7 +385,6 @@ union AuthorFieldConfig_component_config = TextFormField | ImageFormField | Anec
 type AnecdotesListAuthorConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: AnecdotesListAuthorConfigItem

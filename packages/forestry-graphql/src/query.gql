@@ -73,7 +73,6 @@ query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
                   ... on SponsorFieldsListSponsorListConfig {
@@ -104,13 +103,11 @@ query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
                   ... on SelectFormField {
                     name
                     label
-                    value
                     component
                     options
                   }

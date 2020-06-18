@@ -74,7 +74,6 @@ export default `query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
                   ... on SponsorFieldsListSponsorListConfig {
@@ -105,13 +104,11 @@ export default `query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
                   ... on SelectFormField {
                     name
                     label
-                    value
                     component
                     options
                   }
