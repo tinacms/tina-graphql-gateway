@@ -56,6 +56,157 @@ type Settings = {
   data: { sections: Section[] };
 };
 
+const arrayToObject = <T>(
+  array: T[],
+  func: (accumulator: { [key: string]: any }, item: T) => void
+) => {
+  const accumulator = {};
+  array.forEach((item) => {
+    func(accumulator, item);
+  });
+
+  return accumulator;
+};
+const getSectionFmtTypes = (
+  settings: Settings,
+  templateObjectTypes: Templates
+) => {
+  const sectionTemplates = flatten(
+    settings.data.sections
+      .filter(isDirectorySection)
+      .map(({ templates }) => templates)
+  );
+  return (
+    sectionTemplates
+      .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
+      ?.filter(isNotNull) || [
+      new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
+    ]
+  );
+};
+const getSectionFmtTypes2 = (
+  section: string,
+  sectionFmts: {
+    name: string;
+    templates: string[];
+  }[],
+  templateObjectTypes: Templates
+) => {
+  const activeSectionTemplates = sectionFmts.find(
+    ({ name }) => name === section
+  );
+  const types = activeSectionTemplates?.templates
+    .map((templateName: string) => templateObjectTypes[templateName])
+    ?.filter(isNotNull) || [
+    new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
+  ];
+
+  return types;
+};
+
+const getBlockFmtTypes = (
+  templateTypes: string[],
+  templateDataObjectTypes: TemplatesData
+) => {
+  return templateTypes.map((template) => templateDataObjectTypes[template]);
+};
+const getSetter = (
+  setters: {
+    [key: string]: GraphQLFieldConfig<
+      FieldSourceType,
+      FieldContextType,
+      {
+        [argName: string]: GraphQLType;
+      }
+    >;
+  },
+  name: string
+) => {
+  const setter = setters[name];
+  if (setter) {
+    return setter;
+  }
+  throw new Error("Unable to find setter by name");
+};
+
+const getPagesForSection = (
+  section: string,
+  sectionFmts: {
+    name: string;
+    templates: string[];
+  }[],
+  templatePages: {
+    name: string;
+    pages: string[];
+  }[]
+) => {
+  const templates = sectionFmts.find(
+    (sectionFmt) => sectionFmt.name === section
+  )?.templates;
+  return flatten(
+    templates?.map((templateName) => {
+      return templatePages?.find(({ name }) => name === templateName)?.pages;
+    })
+  );
+};
+const getFmtForDocument = (
+  itemPath: string,
+  templatePages: {
+    name: string;
+    pages: string[];
+  }[]
+) => {
+  return templatePages.find(({ pages }) => {
+    return pages?.includes(itemPath);
+  });
+};
+const getSectionFmtInputTypes = (
+  settings: Settings,
+  templateInputObjectTypes: {
+    [key: string]: GraphQLInputObjectType;
+  }
+) => {
+  const sectionTemplates = flatten(
+    settings.data.sections
+      .filter(isDirectorySection)
+      .map(({ templates }) => templates)
+  );
+
+  return arrayToObject<GraphQLInputObjectType>(
+    sectionTemplates
+      .map((sectionTemplate) => templateInputObjectTypes[sectionTemplate])
+      ?.filter(isNotNull),
+    (obj: any, item: any) => {
+      obj[(getNamedType(item) || "").toString()] = { type: item };
+    }
+  );
+};
+
+const getDocument = async (
+  templatePages: {
+    name: string;
+    pages: string[];
+  }[],
+  args: {
+    [argName: string]: any;
+  },
+  config: any
+): Promise<DocumentType> => {
+  const activeTemplate = templatePages.find(({ pages }) => {
+    return pages?.includes(args.path);
+  });
+
+  const document = await getData<DocumentType>(
+    config.rootPath + "/" + args.path
+  );
+
+  return {
+    ...document,
+    path: args.path,
+    template: activeTemplate?.name || "",
+  };
+};
+
 function isDirectorySection(section: Section): section is DirectorySection {
   return section.type === "directory";
 }
@@ -334,8 +485,6 @@ const buildGroupSetter = ({
   };
   field: WithFields;
 }) => {
-  const array = Object.values(setters);
-  const types = Array.from(new Set(array.map((item: any) => item.type)));
   return new GraphQLObjectType({
     name: name,
     fields: {
@@ -362,10 +511,16 @@ const buildGroupSetter = ({
         type: GraphQLList(
           new GraphQLUnionType({
             name: name + "_component_config",
-            types,
+            types: () => {
+              const array = Object.values(setters);
+              const meh = Array.from(
+                new Set(array.map((item: any) => item.type))
+              );
+              return meh;
+            },
             // @ts-ignore
             resolveType: (val) => {
-              return setters[val.name]?.type || types[0];
+              return setters[val.name]?.type;
             },
           })
         ),
@@ -412,18 +567,6 @@ const buildSchema = async (config: any) => {
         shortFMTName(path) + (options.suffix && delimiter + options.suffix)
       )
     );
-  };
-
-  const arrayToObject = <T>(
-    array: T[],
-    func: (accumulator: { [key: string]: any }, item: T) => void
-  ) => {
-    const accumulator = {};
-    array.forEach((item) => {
-      func(accumulator, item);
-    });
-
-    return accumulator;
   };
 
   const replaceFMTPathWithSlug = (path: string) => {
@@ -611,18 +754,11 @@ const buildSchema = async (config: any) => {
             type: new GraphQLUnionType({
               name: friendlyName(field.name + "_select_" + fmt),
               types: () => {
-                const activeSectionTemplates = sectionFmts.find(
-                  ({ name }) => name === field.config.source.section
+                return getSectionFmtTypes2(
+                  field.config.source.section,
+                  sectionFmts,
+                  templateObjectTypes
                 );
-                const types = activeSectionTemplates?.templates
-                  .map(
-                    (templateName: string) => templateObjectTypes[templateName]
-                  )
-                  ?.filter(isNotNull) || [
-                  new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
-                ];
-
-                return types;
               },
               resolveType: async (val) => {
                 return templateObjectTypes[val.template];
@@ -634,9 +770,7 @@ const buildSchema = async (config: any) => {
                 const res = await getData<DocumentType>(
                   config.rootPath + "/" + path
                 );
-                const activeTemplate = templatePages.find(({ pages }) => {
-                  return pages?.includes(path);
-                });
+                const activeTemplate = getFmtForDocument(path, templatePages);
                 return {
                   ...res,
                   path: val[field.name],
@@ -651,17 +785,11 @@ const buildSchema = async (config: any) => {
             type: selectInput,
             resolve: () => {
               if (field?.config?.source?.type === "pages") {
-                const activeSectionTemplates = sectionFmts?.find(
-                  ({ name }) => name === field.config.source.section
-                )?.templates;
-                const options = flatten(
-                  activeSectionTemplates?.map((templateSlug) => {
-                    return templatePages?.find(
-                      ({ name }) => name === templateSlug
-                    )?.pages;
-                  })
+                const options = getPagesForSection(
+                  field.config.source.section,
+                  sectionFmts,
+                  templatePages
                 );
-
                 return {
                   ...field,
                   component: "select",
@@ -759,18 +887,11 @@ const buildSchema = async (config: any) => {
             new GraphQLUnionType({
               name: friendlyName(field.name + "_list_" + fmt),
               types: () => {
-                const activeSectionTemplates = sectionFmts.find(
-                  ({ name }) => name === field.config?.source.section
+                return getSectionFmtTypes2(
+                  field.config?.source.section || "",
+                  sectionFmts,
+                  templateObjectTypes
                 );
-                const types = activeSectionTemplates?.templates
-                  .map(
-                    (templateName: string) => templateObjectTypes[templateName]
-                  )
-                  ?.filter(isNotNull) || [
-                  new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
-                ];
-
-                return types;
               },
               resolveType: async (val) => {
                 return templateObjectTypes[val.template];
@@ -786,9 +907,10 @@ const buildSchema = async (config: any) => {
                 const res = await getData<DocumentType>(
                   config.rootPath + "/" + itemPath
                 );
-                const activeTemplate = templatePages.find(({ pages }) => {
-                  return pages?.includes(itemPath);
-                });
+                const activeTemplate = getFmtForDocument(
+                  itemPath,
+                  templatePages
+                );
                 return {
                   ...res,
                   path: itemPath,
@@ -820,15 +942,10 @@ const buildSchema = async (config: any) => {
             },
           }),
           resolve: () => {
-            const section = field.config?.source.section;
-            const templates = sectionFmts.find(
-              (sectionFmt) => sectionFmt.name === section
-            )?.templates;
-            const possiblePages = flatten(
-              templates?.map((templateName) => {
-                return templatePages?.find(({ name }) => name === templateName)
-                  ?.pages;
-              })
+            const possiblePages = getPagesForSection(
+              field.config?.source.section || "",
+              sectionFmts,
+              templatePages
             );
 
             return {
@@ -1051,8 +1168,9 @@ const buildSchema = async (config: any) => {
           new GraphQLUnionType({
             name: friendlyName(field.name + "_union"),
             types: () => {
-              return field.template_types.map(
-                (template) => templateDataObjectTypes[template]
+              return getBlockFmtTypes(
+                field.template_types,
+                templateDataObjectTypes
               );
             },
             resolveType: (val) => {
@@ -1114,13 +1232,7 @@ const buildSchema = async (config: any) => {
     };
   };
 
-  const getFieldType = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: FieldType;
-  }): {
+  type fieldTypeType = {
     getter: GraphQLFieldConfig<
       FieldSourceType,
       FieldContextType,
@@ -1136,7 +1248,15 @@ const buildSchema = async (config: any) => {
       }
     >;
     mutator: { type: GraphQLInputType };
-  } => {
+  };
+
+  const getFieldType = ({
+    fmt,
+    field,
+  }: {
+    fmt: string;
+    field: FieldType;
+  }): fieldTypeType => {
     switch (field.type) {
       case "text":
         return text({ fmt, field });
@@ -1170,36 +1290,42 @@ const buildSchema = async (config: any) => {
     }
   };
 
+  type generatedFieldsType = {
+    getters: {
+      [key: string]: GraphQLFieldConfig<
+        FieldSourceType,
+        FieldContextType,
+        {
+          [argName: string]: GraphQLType;
+        }
+      >;
+    };
+    setters: {
+      [key: string]: GraphQLFieldConfig<
+        FieldSourceType,
+        FieldContextType,
+        {
+          [argName: string]: GraphQLType;
+        }
+      >;
+    };
+    mutators: {
+      [key: string]: { type: GraphQLInputType };
+    };
+  };
+
   const generateFields = ({
     fmt,
     fields,
   }: {
     fmt: string;
     fields: FieldType[];
-  }) => {
-    const accumulator: {
-      getters: {
-        [key: string]: GraphQLFieldConfig<
-          FieldSourceType,
-          FieldContextType,
-          {
-            [argName: string]: GraphQLType;
-          }
-        >;
-      };
-      setters: {
-        [key: string]: GraphQLFieldConfig<
-          FieldSourceType,
-          FieldContextType,
-          {
-            [argName: string]: GraphQLType;
-          }
-        >;
-      };
-      mutators: {
-        [key: string]: { type: GraphQLInputType };
-      };
-    } = { getters: {}, setters: {}, mutators: {} };
+  }): generatedFieldsType => {
+    const accumulator: generatedFieldsType = {
+      getters: {},
+      setters: {},
+      mutators: {},
+    };
 
     fields.forEach((field) => {
       const { getter, setter, mutator } = getFieldType({ fmt, field });
@@ -1285,20 +1411,7 @@ const buildSchema = async (config: any) => {
 
   const documentType = new GraphQLUnionType({
     name: friendlyName("document_union"),
-    types: () => {
-      const sectionTemplates = flatten(
-        settings.data.sections
-          .filter(isDirectorySection)
-          .map(({ templates }) => templates)
-      );
-      const types = sectionTemplates
-        .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
-        ?.filter(isNotNull) || [
-        new GraphQLObjectType({ name: "Woops", fields: {} }), // FIXME fallback to providing a type
-      ];
-
-      return types;
-    },
+    types: () => getSectionFmtTypes(settings, templateObjectTypes),
     resolveType: (val) => {
       return templateObjectTypes[val.template];
     },
@@ -1307,22 +1420,7 @@ const buildSchema = async (config: any) => {
   const documentInputType = {
     type: new GraphQLInputObjectType({
       name: "DocumentInput",
-      fields: () => {
-        const sectionTemplates = flatten(
-          settings.data.sections
-            .filter(isDirectorySection)
-            .map(({ templates }) => templates)
-        );
-
-        return arrayToObject<GraphQLInputObjectType>(
-          sectionTemplates
-            .map((sectionTemplate) => templateInputObjectTypes[sectionTemplate])
-            ?.filter(isNotNull),
-          (obj, item) => {
-            obj[getNamedType(item).toString()] = { type: item };
-          }
-        );
-      },
+      fields: () => getSectionFmtInputTypes(settings, templateInputObjectTypes),
     }),
   };
 
@@ -1334,21 +1432,7 @@ const buildSchema = async (config: any) => {
         args: {
           path: { type: GraphQLNonNull(GraphQLString) },
         },
-        resolve: async (_, args): Promise<DocumentType> => {
-          const activeTemplate = templatePages.find(({ pages }) => {
-            return pages?.includes(args.path);
-          });
-
-          const document = await getData<DocumentType>(
-            config.rootPath + "/" + args.path
-          );
-
-          return {
-            ...document,
-            path: args.path,
-            template: activeTemplate?.name || "",
-          };
-        },
+        resolve: async (_, args) => getDocument(templatePages, args, config),
       },
     },
   });
@@ -1400,7 +1484,7 @@ const buildSchema = async (config: any) => {
     return meh;
   };
 
-  const documentMutation = async (payload: any) => {
+  const documentMutation = async (payload: { path: string; params: any }) => {
     await writeData(
       payload.path,
       "",
