@@ -6,7 +6,7 @@ import {
 } from "graphql";
 import { friendlyName } from "../plugins";
 import { baseInputFields } from "../inputFields";
-import { Templates, TemplatePage, arrayToObject, shortFMTName } from "..";
+import { Templates, TemplatePage, arrayToObject, getFMTFilename } from "..";
 
 export type BlocksField = {
   label: string;
@@ -94,7 +94,9 @@ export const blocks = ({
             return arrayToObject(field.template_types, (obj, item) => {
               obj[friendlyName(item) + "_input"] = {
                 type:
-                  templateInputObjectTypes[shortFMTName(item, pathToTemplates)],
+                  templateInputObjectTypes[
+                    getFMTFilename(item, pathToTemplates)
+                  ],
               };
             });
           },

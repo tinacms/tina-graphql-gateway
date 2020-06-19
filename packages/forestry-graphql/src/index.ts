@@ -135,6 +135,11 @@ export type Plugin = {
   ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
 };
 
+// turns apple-pie into ApplePie
+const friendlyName = (name: string) => {
+  return upperFist(camelCase(name));
+};
+
 /**
  * This is the main function in this script, it returns all the types
  */
@@ -143,26 +148,8 @@ const buildSchema = async (config: any) => {
   const SETTINGS_PATH = "/.forestry/settings.yml";
   const PATH_TO_TEMPLATES = config.rootPath + "/" + FMT_BASE;
 
-  const _shortFMTName = (name: string) => shortFMTName(name, PATH_TO_TEMPLATES);
-
-  const friendlyName = (name: string, options = { suffix: "" }) => {
-    const delimiter = "_";
-
-    return upperFist(
-      camelCase(
-        _shortFMTName(name) + (options.suffix && delimiter + options.suffix)
-      )
-    );
-  };
-  const friendlyFMTName = (path: string, options = { suffix: "" }) => {
-    const delimiter = "_";
-
-    return upperFist(
-      camelCase(
-        _shortFMTName(path) + (options.suffix && delimiter + options.suffix)
-      )
-    );
-  };
+  const _getFMTFilename = (name: string) =>
+    getFMTFilename(name, PATH_TO_TEMPLATES);
 
   const replaceFMTPathWithSlug = (path: string) => {
     // FIXME: we reference the slug in "select" fields
@@ -180,13 +167,13 @@ const buildSchema = async (config: any) => {
   const templateObjectTypes: Templates = {};
 
   fmtList.forEach((path) => {
-    templateObjectTypes[_shortFMTName(path)] = null;
+    templateObjectTypes[_getFMTFilename(path)] = null;
   });
 
   const templatePages = await Promise.all(
     fmtList.map(async (fmt) => {
       return {
-        name: _shortFMTName(fmt),
+        name: _getFMTFilename(fmt),
         pages: (await getData<FMT>(fmt)).data.pages,
       };
     })
@@ -201,10 +188,12 @@ const buildSchema = async (config: any) => {
 
   await Promise.all(
     fmtList.map(async (path) => {
+      const fmtFilename = _getFMTFilename(path);
+
       const fmt = await getData<FMT>(path);
 
       const { getters, setters, mutators } = generateFields({
-        fmt: friendlyFMTName(path),
+        fmt: friendlyName(fmtFilename),
         fields: fmt.data.fields,
         rootPath: config.rootPath,
         templatePages,
@@ -217,29 +206,29 @@ const buildSchema = async (config: any) => {
       });
 
       const templateInputObjectType = new GraphQLInputObjectType({
-        name: friendlyFMTName(path) + "_input",
+        name: friendlyName(fmtFilename + "_input"),
         fields: mutators,
       });
 
       const templateFormObjectType = buildGroupSetter({
-        name: friendlyFMTName(path, { suffix: "field_config" }),
+        name: friendlyName(fmtFilename + "_field_config"),
         setters,
         field: fmt.data,
       });
 
       const templateDataObjectType = new GraphQLObjectType({
-        name: friendlyFMTName(path, { suffix: "data" }),
+        name: friendlyName(fmtFilename + "_data"),
         fields: {
           _template: {
             type: GraphQLString,
-            resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
+            resolve: () => friendlyName(fmtFilename + "_field_config"),
           },
           ...getters,
         },
       });
 
       const templateObjectType = new GraphQLObjectType({
-        name: friendlyFMTName(path),
+        name: friendlyName(fmtFilename),
         fields: {
           form: {
             type: templateFormObjectType,
@@ -257,10 +246,10 @@ const buildSchema = async (config: any) => {
         },
       });
 
-      templateInputObjectTypes[_shortFMTName(path)] = templateInputObjectType;
-      templateFormObjectTypes[_shortFMTName(path)] = templateFormObjectType;
-      templateDataObjectTypes[_shortFMTName(path)] = templateDataObjectType;
-      templateObjectTypes[_shortFMTName(path)] = templateObjectType;
+      templateInputObjectTypes[fmtFilename] = templateInputObjectType;
+      templateFormObjectTypes[fmtFilename] = templateFormObjectType;
+      templateDataObjectTypes[fmtFilename] = templateDataObjectType;
+      templateObjectTypes[fmtFilename] = templateObjectType;
     })
   );
 
@@ -675,7 +664,7 @@ export const generateFields = ({
   };
 };
 
-export const shortFMTName = (path: string, pathToTemplates: string) => {
+export const getFMTFilename = (path: string, pathToTemplates: string) => {
   return path.replace(`${pathToTemplates}/`, "").replace(".yml", "");
 };
 
