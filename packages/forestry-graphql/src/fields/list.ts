@@ -1,4 +1,4 @@
-import { FieldSourceType, Templates, TemplatePage } from "..";
+import { FieldSourceType, Templates, TemplatePage } from "../fieldTypes";
 import {
   GraphQLList,
   GraphQLUnionType,
@@ -9,7 +9,7 @@ import { getData } from "../util";
 import { baseInputFields } from "../inputFields";
 import flatten from "lodash.flatten";
 import { friendlyName } from "../formatFmt";
-import { isSectionListField, isNotNull } from "../utils";
+import { isSectionListField, isNotNull } from "../util";
 
 type BaseListField = {
   label: string;

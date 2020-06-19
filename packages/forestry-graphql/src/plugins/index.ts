@@ -2,8 +2,8 @@ import { matter } from "../util";
 import fs from "fs";
 import flatten from "lodash.flatten";
 import { GraphQLList, GraphQLUnionType, GraphQLString } from "graphql";
-import type { Plugin, PluginFieldArgs } from "..";
 import { friendlyName } from "../formatFmt";
+import { PluginFieldArgs, Plugin } from "../fieldTypes";
 
 function isNotNull<T>(arg: T): arg is Exclude<T, null> {
   return arg !== null;

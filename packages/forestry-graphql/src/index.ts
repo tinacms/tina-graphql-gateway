@@ -12,54 +12,19 @@ import {
   parse,
   getNamedType,
   GraphQLError,
-  GraphQLInputType,
-  GraphQLList,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
   GraphQLUnionType,
   GraphQLNonNull,
   printSchema,
-  GraphQLType,
-  GraphQLFieldConfig,
   GraphQLInputObjectType,
 } from "graphql";
-import { textarea, TextareaField } from "./fields/textarea";
-import { TextField, text } from "./fields/text";
-import { NumberField, number } from "./fields/number";
-import { DateField, datetime } from "./fields/datetime";
-import { BooleanField, boolean } from "./fields/boolean";
-import { FileField, file } from "./fields/file";
-import { TagListField, tag_list } from "./fields/tagList";
-import { image_gallery, GalleryField } from "./fields/imageGallery";
-import { SelectField, select } from "./fields/select";
-import { ListField, list } from "./fields/list";
-import { field_group, FieldGroupField } from "./fields/group";
-import { FieldGroupListField, field_group_list } from "./fields/groupList";
-import { BlocksField, blocks } from "./fields/blocks";
 import { friendlyName, getFMTFilename } from "./formatFmt";
-import camelCase from "lodash.camelcase";
-import { isDirectorySection, arrayToObject, isNotNull } from "./utils";
+import { isDirectorySection, arrayToObject, isNotNull } from "./util";
+import { Section, WithFields, Templates } from "./fieldTypes";
+import { generateFields, buildGroupSetter } from "./fields/group";
 
-export type DirectorySection = {
-  type: "directory";
-  label: string;
-  path: string;
-  create: "documents" | "all";
-  match: string;
-  new_doc_ext: string;
-  templates: string[];
-};
-type HeadingSection = {
-  type: "heading";
-  label: string;
-};
-type DocumentSection = {
-  type: "document";
-  label: string;
-  path: string;
-};
-export type Section = DirectorySection | HeadingSection | DocumentSection;
 type Settings = {
   data: { sections: Section[] };
 };
@@ -75,12 +40,7 @@ type DocumentType = BaseDocumentType & {
   template: string;
   data: object;
 };
-export type WithFields = {
-  label: string;
-  name: string;
-  type: string;
-  fields: FieldType[];
-};
+
 type FMT = BaseDocumentType & {
   data: WithFields & {
     label: string;
@@ -90,51 +50,7 @@ type FMT = BaseDocumentType & {
   };
 };
 
-export type FieldType =
-  | TextField
-  | TextareaField
-  | BlocksField
-  | DateField
-  | NumberField
-  | BooleanField
-  | TagListField
-  | SelectField
-  | ListField
-  | GalleryField
-  | FileField
-  | FieldGroupField
-  | FieldGroupListField;
-
-export type TemplatePage = { name: string; pages: string[] };
-
-export type Templates = {
-  [key: string]: null | GraphQLObjectType;
-};
 type TemplatesData = { [key: string]: GraphQLObjectType };
-
-export type PluginFieldArgs = {
-  fmt: string;
-  field: FieldType;
-  templatePages: TemplatePage[];
-  templates: Templates;
-  rootPath: string;
-  sectionFmts: {
-    name: string;
-    templates: string[];
-  }[];
-};
-
-export type FieldSourceType = {
-  [key: string]: string | string[];
-};
-type FieldContextType = {};
-export type Plugin = {
-  matches: (string: FieldType["type"], field: FieldType) => boolean;
-  run: (
-    string: FieldType["type"],
-    stuff: PluginFieldArgs
-  ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
-};
 
 /**
  * This is the main function in this script, it returns all the types
@@ -419,274 +335,6 @@ export default \`${query}\`
   })
 );
 app.listen(4001);
-
-const getFieldType = ({
-  fmt,
-  field,
-  rootPath,
-  sectionFmts,
-  templateObjectTypes,
-  templateInputObjectTypes,
-  templateFormObjectTypes,
-  templateDataObjectTypes,
-  templatePages,
-  pathToTemplates,
-}: {
-  fmt: string;
-  field: FieldType;
-  rootPath: string;
-  sectionFmts: {
-    name: string;
-    templates: string[];
-  }[];
-  templateObjectTypes: Templates;
-  templateInputObjectTypes: {
-    [key: string]: GraphQLInputObjectType;
-  };
-  templateDataObjectTypes: { [key: string]: GraphQLObjectType };
-  templateFormObjectTypes: { [key: string]: GraphQLObjectType };
-  templatePages: TemplatePage[];
-  pathToTemplates: string;
-}): {
-  getter: GraphQLFieldConfig<
-    FieldSourceType,
-    FieldContextType,
-    {
-      [argName: string]: GraphQLType;
-    }
-  >;
-  setter: GraphQLFieldConfig<
-    FieldSourceType,
-    FieldContextType,
-    {
-      [argName: string]: GraphQLType;
-    }
-  >;
-  mutator: { type: GraphQLInputType };
-} => {
-  switch (field.type) {
-    case "text":
-      return text({ fmt, field });
-    case "textarea":
-      return textarea({ fmt, field });
-    case "number":
-      return number({ fmt, field });
-    case "boolean":
-      return boolean({ fmt, field });
-    case "select":
-      return select({
-        fmt,
-        field,
-        rootPath: rootPath,
-        sectionFmts,
-        templateObjectTypes,
-        templatePages,
-      });
-    case "datetime":
-      return datetime({ fmt, field });
-    case "tag_list":
-      return tag_list({ fmt, field });
-    case "list":
-      return list({
-        fmt,
-        field,
-        rootPath: rootPath,
-        sectionFmts,
-        templateObjectTypes,
-        templatePages,
-      });
-    case "file":
-      return file({ fmt, field, rootPath: rootPath });
-    case "image_gallery":
-      return image_gallery({ fmt, field, rootPath: rootPath });
-    case "field_group":
-      return field_group({
-        fmt,
-        field,
-        rootPath: rootPath,
-        sectionFmts,
-        templateObjectTypes,
-        templateInputObjectTypes,
-        templateDataObjectTypes,
-        templateFormObjectTypes,
-        templatePages,
-        pathToTemplates,
-      });
-    case "field_group_list":
-      return field_group_list({
-        fmt,
-        field,
-        rootPath: rootPath,
-        sectionFmts,
-        templateObjectTypes,
-        templatePages,
-        templateInputObjectTypes,
-        templateDataObjectTypes,
-        templateFormObjectTypes,
-        pathToTemplates,
-      });
-    case "blocks":
-      return blocks({
-        fmt,
-        field,
-        templateInputObjectTypes,
-        templateDataObjectTypes,
-        templateFormObjectTypes,
-        pathToTemplates,
-      });
-    default:
-      // FIXME just a placeholder
-      return text({ fmt, field });
-  }
-};
-
-export const generateFields = ({
-  fmt,
-  fields,
-  rootPath,
-  sectionFmts,
-  templateObjectTypes,
-  templateInputObjectTypes,
-  templateDataObjectTypes,
-  templateFormObjectTypes,
-  templatePages,
-  pathToTemplates,
-}: {
-  fmt: string;
-  fields: FieldType[];
-  rootPath: string;
-  sectionFmts: {
-    name: string;
-    templates: string[];
-  }[];
-  templateObjectTypes: Templates;
-  templateInputObjectTypes: {
-    [key: string]: GraphQLInputObjectType;
-  };
-  templateDataObjectTypes: { [key: string]: GraphQLObjectType };
-  templateFormObjectTypes: { [key: string]: GraphQLObjectType };
-  templatePages: TemplatePage[];
-  pathToTemplates: string;
-}) => {
-  const accumulator: {
-    getters: {
-      [key: string]: GraphQLFieldConfig<
-        FieldSourceType,
-        FieldContextType,
-        {
-          [argName: string]: GraphQLType;
-        }
-      >;
-    };
-    setters: {
-      [key: string]: GraphQLFieldConfig<
-        FieldSourceType,
-        FieldContextType,
-        {
-          [argName: string]: GraphQLType;
-        }
-      >;
-    };
-    mutators: {
-      [key: string]: { type: GraphQLInputType };
-    };
-  } = { getters: {}, setters: {}, mutators: {} };
-
-  fields.forEach((field) => {
-    const { getter, setter, mutator } = getFieldType({
-      fmt,
-      field,
-      rootPath,
-      sectionFmts,
-      templateObjectTypes,
-      templatePages,
-      pathToTemplates,
-      templateInputObjectTypes,
-      templateDataObjectTypes,
-      templateFormObjectTypes,
-    });
-    accumulator.getters[field.name] = getter;
-    accumulator.setters[field.name] = setter;
-    accumulator.mutators[field.name] = mutator;
-  });
-
-  return {
-    getters: accumulator.getters,
-    setters: accumulator.setters,
-    mutators: accumulator.mutators,
-  };
-};
-
-/**
- * this function is used to help recursively set the `setter` for groups.
- * it currently treats groups and group-lists similarly which should be fixed
- */
-export const buildGroupSetter = ({
-  name,
-  setters,
-  field,
-}: {
-  name: string;
-  setters: {
-    [key: string]: GraphQLFieldConfig<
-      FieldSourceType,
-      FieldContextType,
-      {
-        [argName: string]: GraphQLType;
-      }
-    >;
-  };
-  field: WithFields;
-}) => {
-  const array = Object.values(setters);
-  const types = Array.from(new Set(array.map((item: any) => item.type)));
-  return new GraphQLObjectType({
-    name: name,
-    fields: {
-      label: {
-        type: GraphQLString,
-        resolve: () => {
-          return field.label;
-        },
-      },
-      key: {
-        type: GraphQLString,
-        resolve: () => {
-          return camelCase(field.label);
-        },
-      },
-      name: { type: GraphQLString, resolve: () => field.name },
-      component: {
-        type: GraphQLString,
-        resolve: () => {
-          return field.type === "field_group_list" ? "group-list" : "group";
-        },
-      },
-      fields: {
-        type: GraphQLList(
-          new GraphQLUnionType({
-            name: name + "_component_config",
-            types,
-            // @ts-ignore
-            resolveType: (val) => {
-              return setters[val.name]?.type || types[0];
-            },
-          })
-        ),
-        resolve: async (source, args, context, info) => {
-          return Promise.all(
-            field.fields.map(async (field) => {
-              // FIXME: calling resolve manually here, probably a sign that this is in the wrong place
-              const res = setters[field.name];
-              // @ts-ignore
-              return res?.resolve(field, args, context, info);
-            })
-          );
-        },
-      },
-    },
-  });
-};
 
 // mutation DocumentMutation($path: String!) {
 //   document(
