@@ -14,10 +14,10 @@ module.exports = {
     // This was awkard with the tinacms webpack helpers package
     // just doing this for now works fine
     config.resolve.alias["@tinacms"] = path.resolve(
-      "../../../tinacms/packages/@tinacms"
+      "../../../../tinacms/packages/@tinacms"
     );
     config.resolve.alias["tinacms"] = path.resolve(
-      "../../../tinacms/packages/tinacms"
+      "../../../../tinacms/packages/tinacms"
     );
     // Using yarn pnp - we rely on Yarn to set this properly, the file ends up looking like
     // <My-Root-Path>/code/scratch/sc/.yarn/$$virtual/react-dom-virtual-e706100de8/0/cache/react-dom-npm-16.13.1-b0abd8a83a-2.zip/node_modules/react-dom/index.js
