@@ -252,7 +252,7 @@ type BaseDocumentType = {
   excerpt: string;
 };
 
-type DocumentData = { [key: string]: any };
+type DocumentData = { [key: string]: unknown };
 type DocumentType = BaseDocumentType & {
   path: string;
   template: string;
@@ -1243,7 +1243,7 @@ const buildSchema = async (config: configType) => {
                   return arrayToObject(blockObjectTypes, (obj, item) => {
                     obj[item.name] = {
                       type: item,
-                      resolve: (val: any) => val,
+                      resolve: (val: unknown) => val,
                     };
                   });
                 },
@@ -1291,15 +1291,15 @@ const buildSchema = async (config: configType) => {
   >;
   type fieldSetter = {
     // FIXME: this is the spot to tell us what kind of type the resolver should expect
-    type: GraphQLObjectType<any, any>;
+    type: GraphQLObjectType<any>;
     resolve: (
       val: FieldSourceType,
       args: {
-        [argName: string]: any;
+        [argName: string]: unknown;
       },
-      context: any,
-      info: any
-    ) => any;
+      context: unknown,
+      info: unknown
+    ) => unknown;
   };
   type fieldTypeType = {
     getter: fieldGetter;
@@ -1530,7 +1530,7 @@ const buildSchema = async (config: configType) => {
     }),
   };
 
-  const rootQuery = new GraphQLObjectType<any, any>({
+  const rootQuery = new GraphQLObjectType({
     name: "Query",
     fields: {
       document: {
