@@ -3,19 +3,11 @@ import fs from "fs";
 import flatten from "lodash.flatten";
 import { GraphQLList, GraphQLUnionType, GraphQLString } from "graphql";
 import type { Plugin, PluginFieldArgs } from "..";
-import camelCase from "lodash.camelcase";
-import upperFist from "lodash.upperfirst";
+import { friendlyName } from "../formatFmt";
 
 function isNotNull<T>(arg: T): arg is Exclude<T, null> {
   return arg !== null;
 }
-export const friendlyName = (name: string, options = { suffix: "" }) => {
-  const delimiter = "_";
-
-  return upperFist(
-    camelCase(name + (options.suffix && delimiter + options.suffix))
-  );
-};
 
 const select = ({
   fmt,

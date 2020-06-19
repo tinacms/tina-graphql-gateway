@@ -1,5 +1,4 @@
 import { GraphQLInputObjectType, GraphQLObjectType } from "graphql";
-import { friendlyName } from "../plugins";
 import {
   generateFields,
   buildGroupSetter,
@@ -7,6 +6,7 @@ import {
   Templates,
   TemplatePage,
 } from "..";
+import { friendlyName } from "../formatFmt";
 
 export type FieldGroupField = WithFields & {
   label: string;

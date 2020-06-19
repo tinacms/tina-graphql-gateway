@@ -1,4 +1,4 @@
-import { pluginsList, friendlyName } from "../plugins";
+import { pluginsList } from "../plugins";
 import {
   GraphQLObjectType,
   GraphQLEnumType,
@@ -15,6 +15,7 @@ import {
   FieldSourceType,
   isNotNull,
 } from "..";
+import { friendlyName } from "../formatFmt";
 
 type BaseSelectField = {
   label: string;

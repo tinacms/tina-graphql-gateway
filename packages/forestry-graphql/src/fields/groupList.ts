@@ -10,7 +10,7 @@ import {
   GraphQLObjectType,
   GraphQLInputObjectType,
 } from "graphql";
-import { friendlyName } from "../plugins";
+import { friendlyName } from "../formatFmt";
 
 export type FieldGroupListField = WithFields & {
   label: string;

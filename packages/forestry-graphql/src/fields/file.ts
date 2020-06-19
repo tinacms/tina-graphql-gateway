@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql";
-import { friendlyName } from "../plugins";
 import { imageInput } from "../inputFields";
+import { friendlyName } from "../formatFmt";
 
 export type FileField = {
   label: string;

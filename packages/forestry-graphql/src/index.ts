@@ -24,8 +24,6 @@ import {
   GraphQLFieldConfig,
   GraphQLInputObjectType,
 } from "graphql";
-import camelCase from "lodash.camelcase";
-import upperFist from "lodash.upperfirst";
 import { textarea, TextareaField } from "./fields/textarea";
 import { TextField, text } from "./fields/text";
 import { NumberField, number } from "./fields/number";
@@ -39,6 +37,7 @@ import { ListField, list, SectionList } from "./fields/list";
 import { field_group, FieldGroupField } from "./fields/group";
 import { FieldGroupListField, field_group_list } from "./fields/groupList";
 import { BlocksField, blocks } from "./fields/blocks";
+import { friendlyName } from "./formatFmt";
 
 type DirectorySection = {
   type: "directory";
@@ -133,11 +132,6 @@ export type Plugin = {
     string: FieldType["type"],
     stuff: PluginFieldArgs
   ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
-};
-
-// turns apple-pie into ApplePie
-const friendlyName = (name: string) => {
-  return upperFist(camelCase(name));
 };
 
 /**

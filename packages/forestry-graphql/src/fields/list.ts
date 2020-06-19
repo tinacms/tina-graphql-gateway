@@ -11,10 +11,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql";
-import { friendlyName } from "../plugins";
 import { getData } from "../util";
 import { baseInputFields } from "../inputFields";
 import flatten from "lodash.flatten";
+import { friendlyName } from "../formatFmt";
 
 type BaseListField = {
   label: string;
