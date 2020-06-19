@@ -8,14 +8,9 @@ import {
 import { selectInput } from "../inputFields";
 import { getData } from "../util";
 import flatten from "lodash.flatten";
-import {
-  Templates,
-  TemplatePage,
-  isSectionSelectField,
-  FieldSourceType,
-  isNotNull,
-} from "..";
+import { Templates, TemplatePage, FieldSourceType } from "..";
 import { friendlyName } from "../formatFmt";
+import { isSectionSelectField, isNotNull } from "../utils";
 
 type BaseSelectField = {
   label: string;

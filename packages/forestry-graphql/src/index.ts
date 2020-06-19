@@ -32,15 +32,16 @@ import { BooleanField, boolean } from "./fields/boolean";
 import { FileField, file } from "./fields/file";
 import { TagListField, tag_list } from "./fields/tagList";
 import { image_gallery, GalleryField } from "./fields/imageGallery";
-import { SelectField, SectionSelect, select } from "./fields/select";
-import { ListField, list, SectionList } from "./fields/list";
+import { SelectField, select } from "./fields/select";
+import { ListField, list } from "./fields/list";
 import { field_group, FieldGroupField } from "./fields/group";
 import { FieldGroupListField, field_group_list } from "./fields/groupList";
 import { BlocksField, blocks } from "./fields/blocks";
-import { friendlyName } from "./formatFmt";
+import { friendlyName, getFMTFilename } from "./formatFmt";
 import camelCase from "lodash.camelcase";
+import { isDirectorySection, arrayToObject, isNotNull } from "./utils";
 
-type DirectorySection = {
+export type DirectorySection = {
   type: "directory";
   label: string;
   path: string;
@@ -419,49 +420,6 @@ export default \`${query}\`
 );
 app.listen(4001);
 
-//utils
-export function isDirectorySection(
-  section: Section
-): section is DirectorySection {
-  return section.type === "directory";
-}
-
-export function isSelectField(field: FieldType): field is SelectField {
-  return field.type === "select";
-}
-export function isSectionSelectField(field: FieldType): field is SectionSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
-
-export function isListField(field: FieldType): field is SelectField {
-  return field.type === "list";
-}
-export function isNotNull<T>(arg: T): arg is Exclude<T, null> {
-  return arg !== null;
-}
-
-export function isSectionListField(field: FieldType): field is SectionList {
-  if (!isListField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
-
-export const arrayToObject = <T>(
-  array: T[],
-  func: (accumulator: { [key: string]: any }, item: T) => void
-) => {
-  const accumulator = {};
-  array.forEach((item) => {
-    func(accumulator, item);
-  });
-
-  return accumulator;
-};
-
 const getFieldType = ({
   fmt,
   field,
@@ -657,10 +615,6 @@ export const generateFields = ({
     setters: accumulator.setters,
     mutators: accumulator.mutators,
   };
-};
-
-export const getFMTFilename = (path: string, pathToTemplates: string) => {
-  return path.replace(`${pathToTemplates}/`, "").replace(".yml", "");
 };
 
 /**

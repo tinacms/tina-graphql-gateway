@@ -5,8 +5,8 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import { baseInputFields } from "../inputFields";
-import { arrayToObject, getFMTFilename } from "..";
-import { friendlyName } from "../formatFmt";
+import { friendlyName, getFMTFilename } from "../formatFmt";
+import { arrayToObject } from "../utils";
 
 export type BlocksField = {
   label: string;

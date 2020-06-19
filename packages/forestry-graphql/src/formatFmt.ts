@@ -5,3 +5,7 @@ import upperFist from "lodash.upperfirst";
 export const friendlyName = (name: string) => {
   return upperFist(camelCase(name));
 };
+
+export const getFMTFilename = (path: string, pathToTemplates: string) => {
+  return path.replace(`${pathToTemplates}/`, "").replace(".yml", "");
+};
