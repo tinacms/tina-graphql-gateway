@@ -1255,7 +1255,7 @@ const buildSchema = async (config: configType) => {
     }
   >;
   type fieldSetter = {
-    // FIXME: this is the spot to tell us what kind of type the resolver should expect
+    // FIXME: any should be replaced with the resolver function payload type
     type: GraphQLObjectType<any>;
     resolve: (
       val: FieldSourceType,
@@ -1307,8 +1307,9 @@ const buildSchema = async (config: configType) => {
       case "blocks":
         return blocks({ fmt, field });
       default:
-        // FIXME just a placeholder
-        return text({ fmt, field });
+        throw new GraphQLError(
+          `No function provided for field type ${JSON.stringify(field)}`
+        );
     }
   };
 
