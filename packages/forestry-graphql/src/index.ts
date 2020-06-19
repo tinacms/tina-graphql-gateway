@@ -1558,12 +1558,15 @@ const buildSchema = async (config: configType) => {
     return meh;
   };
 
+  // Mutations are transformed from a payload that is type-safe to what we eventually want to store
+  // as a document - see https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md
   const documentMutation = async (payload: { path: string; params: any }) => {
-    await writeData(
-      payload.path,
-      "",
-      transform(payload.params.BlockPageInput.data)
-    );
+    const { content = "", data } = payload.params[
+      // Just grabbing the first item since we're following the Tagged Union pattern
+      Object.keys(payload.params)[0]
+    ];
+
+    await writeData(payload.path, content, transform(data));
   };
 
   return { schema, documentMutation };
