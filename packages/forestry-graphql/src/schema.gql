@@ -16,8 +16,6 @@ type BlockPage {
 type BlockPageFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [BlockPageFieldConfig_component_config]
 }
 
@@ -52,8 +50,6 @@ type BlocksTemplates {
 type SidecarFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SidecarFieldConfig_component_config]
 }
 
@@ -71,10 +67,10 @@ type CtaFieldsListSidecarConfig {
   key: String
   name: String
   component: String
-  fields: [CtaFieldsListSidecarConfig_component_config]
+  fields: [CtaFieldsListSidecarConfigFields]
 }
 
-union CtaFieldsListSidecarConfig_component_config = TextFormField
+union CtaFieldsListSidecarConfigFields = TextFormField
 
 type ActionsFieldConfig {
   name: String
@@ -93,8 +89,6 @@ type ActionsTemplates {
 type ActionVideoFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionVideoFieldConfig_component_config]
 }
 
@@ -103,8 +97,6 @@ union ActionVideoFieldConfig_component_config = TextFormField
 type ActionNewsletterFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionNewsletterFieldConfig_component_config]
 }
 
@@ -113,8 +105,6 @@ union ActionNewsletterFieldConfig_component_config = TextFormField
 type ActionPageReferenceFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionPageReferenceFieldConfig_component_config]
 }
 
@@ -133,16 +123,14 @@ type ButtonSettingsFieldsListActionPageReferenceConfig {
   key: String
   name: String
   component: String
-  fields: [ButtonSettingsFieldsListActionPageReferenceConfig_component_config]
+  fields: [ButtonSettingsFieldsListActionPageReferenceConfigFields]
 }
 
-union ButtonSettingsFieldsListActionPageReferenceConfig_component_config = TextFormField
+union ButtonSettingsFieldsListActionPageReferenceConfigFields = TextFormField
 
 type ExcerptPostFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ExcerptPostFieldConfig_component_config]
 }
 
@@ -151,8 +139,6 @@ union ExcerptPostFieldConfig_component_config = SelectFormField | TextFormField
 type PostListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PostListFieldConfig_component_config]
 }
 
@@ -163,16 +149,14 @@ type PostsFieldsListPostListConfig {
   key: String
   name: String
   component: String
-  fields: [PostsFieldsListPostListConfig_component_config]
+  fields: [PostsFieldsListPostListConfigFields]
 }
 
-union PostsFieldsListPostListConfig_component_config = SelectFormField
+union PostsFieldsListPostListConfigFields = SelectFormField
 
 type PriceListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PriceListFieldConfig_component_config]
 }
 
@@ -183,10 +167,10 @@ type PricesFieldsListPriceListConfig {
   key: String
   name: String
   component: String
-  fields: [PricesFieldsListPriceListConfig_component_config]
+  fields: [PricesFieldsListPriceListConfigFields]
 }
 
-union PricesFieldsListPriceListConfig_component_config = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField
+union PricesFieldsListPriceListConfigFields = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField
 
 type BulletPointsListPriceListPricesConfig {
   name: String
@@ -205,8 +189,6 @@ type BulletPointsListPriceListPricesConfigItem {
 type AuthorListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [AuthorListFieldConfig_component_config]
 }
 
@@ -230,8 +212,6 @@ type AuthorsListAuthorListConfigItem {
 type SponsorListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SponsorListFieldConfig_component_config]
 }
 
@@ -242,16 +222,14 @@ type SponsorFieldsListSponsorListConfig {
   key: String
   name: String
   component: String
-  fields: [SponsorFieldsListSponsorListConfig_component_config]
+  fields: [SponsorFieldsListSponsorListConfigFields]
 }
 
-union SponsorFieldsListSponsorListConfig_component_config = TextFormField | ImageFormField
+union SponsorFieldsListSponsorListConfigFields = TextFormField | ImageFormField
 
 type PageReferenceFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PageReferenceFieldConfig_component_config]
 }
 
@@ -260,8 +238,6 @@ union PageReferenceFieldConfig_component_config = TextFormField | SelectFormFiel
 type SectionIndexFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SectionIndexFieldConfig_component_config]
 }
 
@@ -339,8 +315,6 @@ type Post {
 type PostFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PostFieldConfig_component_config]
 }
 
@@ -375,8 +349,6 @@ type Author {
 type AuthorFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [AuthorFieldConfig_component_config]
 }
 
@@ -401,10 +373,10 @@ type AccoladesFieldsListAuthorConfig {
   key: String
   name: String
   component: String
-  fields: [AccoladesFieldsListAuthorConfig_component_config]
+  fields: [AccoladesFieldsListAuthorConfigFields]
 }
 
-union AccoladesFieldsListAuthorConfig_component_config = TextFormField
+union AccoladesFieldsListAuthorConfigFields = TextFormField
 
 type AuthorData {
   _template: String
@@ -557,8 +529,6 @@ type Menu {
 type MenuFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [MenuFieldConfig_component_config]
 }
 
@@ -569,10 +539,10 @@ type MenuItemFieldsListMenuConfig {
   key: String
   name: String
   component: String
-  fields: [MenuItemFieldsListMenuConfig_component_config]
+  fields: [MenuItemFieldsListMenuConfigFields]
 }
 
-union MenuItemFieldsListMenuConfig_component_config = TextFormField | SelectFormField
+union MenuItemFieldsListMenuConfigFields = TextFormField | SelectFormField
 
 type MenuData {
   _template: String

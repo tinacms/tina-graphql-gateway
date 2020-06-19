@@ -39,6 +39,7 @@ export default `query DocumentQuery($path: String!) {
     ... on BlockPage {
       form {
         fields {
+          __typename
           ... on TextFormField {
             name
             label
@@ -67,9 +68,8 @@ export default `query DocumentQuery($path: String!) {
                 }
               }
               SponsorListFieldConfig {
-                name
                 label
-                component
+                key
                 fields {
                   ... on TextFormField {
                     name
@@ -99,7 +99,6 @@ export default `query DocumentQuery($path: String!) {
               PageReferenceFieldConfig {
                 label
                 key
-                name
                 fields {
                   ... on TextFormField {
                     name
@@ -149,8 +148,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionVideoFieldConfig {
                         label
                         key
-                        name
-                        component
                         fields {
                           ... on TextFormField {
                             label
@@ -162,8 +159,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionNewsletterFieldConfig {
                         label
                         key
-                        name
-                        component
                         fields {
                           ... on TextFormField {
                             label
@@ -175,8 +170,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionPageReferenceFieldConfig {
                         label
                         key
-                        component
-                        name
                         fields {
                           ... on SelectFormField {
                             name

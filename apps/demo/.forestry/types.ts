@@ -36,8 +36,6 @@ export type BlockPageFieldConfig = {
   __typename?: 'BlockPageFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<BlockPageFieldConfig_Component_Config>>>;
 };
 
@@ -76,8 +74,6 @@ export type SidecarFieldConfig = {
   __typename?: 'SidecarFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<SidecarFieldConfig_Component_Config>>>;
 };
 
@@ -97,10 +93,10 @@ export type CtaFieldsListSidecarConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<CtaFieldsListSidecarConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<CtaFieldsListSidecarConfigFields>>>;
 };
 
-export type CtaFieldsListSidecarConfig_Component_Config = TextFormField;
+export type CtaFieldsListSidecarConfigFields = TextFormField;
 
 export type ActionsFieldConfig = {
   __typename?: 'ActionsFieldConfig';
@@ -122,8 +118,6 @@ export type ActionVideoFieldConfig = {
   __typename?: 'ActionVideoFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<ActionVideoFieldConfig_Component_Config>>>;
 };
 
@@ -133,8 +127,6 @@ export type ActionNewsletterFieldConfig = {
   __typename?: 'ActionNewsletterFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<ActionNewsletterFieldConfig_Component_Config>>>;
 };
 
@@ -144,8 +136,6 @@ export type ActionPageReferenceFieldConfig = {
   __typename?: 'ActionPageReferenceFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<ActionPageReferenceFieldConfig_Component_Config>>>;
 };
 
@@ -166,17 +156,15 @@ export type ButtonSettingsFieldsListActionPageReferenceConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<ButtonSettingsFieldsListActionPageReferenceConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<ButtonSettingsFieldsListActionPageReferenceConfigFields>>>;
 };
 
-export type ButtonSettingsFieldsListActionPageReferenceConfig_Component_Config = TextFormField;
+export type ButtonSettingsFieldsListActionPageReferenceConfigFields = TextFormField;
 
 export type ExcerptPostFieldConfig = {
   __typename?: 'ExcerptPostFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<ExcerptPostFieldConfig_Component_Config>>>;
 };
 
@@ -186,8 +174,6 @@ export type PostListFieldConfig = {
   __typename?: 'PostListFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<PostListFieldConfig_Component_Config>>>;
 };
 
@@ -199,17 +185,15 @@ export type PostsFieldsListPostListConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<PostsFieldsListPostListConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<PostsFieldsListPostListConfigFields>>>;
 };
 
-export type PostsFieldsListPostListConfig_Component_Config = SelectFormField;
+export type PostsFieldsListPostListConfigFields = SelectFormField;
 
 export type PriceListFieldConfig = {
   __typename?: 'PriceListFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<PriceListFieldConfig_Component_Config>>>;
 };
 
@@ -221,10 +205,10 @@ export type PricesFieldsListPriceListConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<PricesFieldsListPriceListConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<PricesFieldsListPriceListConfigFields>>>;
 };
 
-export type PricesFieldsListPriceListConfig_Component_Config = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField;
+export type PricesFieldsListPriceListConfigFields = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField;
 
 export type BulletPointsListPriceListPricesConfig = {
   __typename?: 'BulletPointsListPriceListPricesConfig';
@@ -246,8 +230,6 @@ export type AuthorListFieldConfig = {
   __typename?: 'AuthorListFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<AuthorListFieldConfig_Component_Config>>>;
 };
 
@@ -274,8 +256,6 @@ export type SponsorListFieldConfig = {
   __typename?: 'SponsorListFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<SponsorListFieldConfig_Component_Config>>>;
 };
 
@@ -287,17 +267,15 @@ export type SponsorFieldsListSponsorListConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<SponsorFieldsListSponsorListConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<SponsorFieldsListSponsorListConfigFields>>>;
 };
 
-export type SponsorFieldsListSponsorListConfig_Component_Config = TextFormField | ImageFormField;
+export type SponsorFieldsListSponsorListConfigFields = TextFormField | ImageFormField;
 
 export type PageReferenceFieldConfig = {
   __typename?: 'PageReferenceFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<PageReferenceFieldConfig_Component_Config>>>;
 };
 
@@ -307,8 +285,6 @@ export type SectionIndexFieldConfig = {
   __typename?: 'SectionIndexFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<SectionIndexFieldConfig_Component_Config>>>;
 };
 
@@ -397,8 +373,6 @@ export type PostFieldConfig = {
   __typename?: 'PostFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<PostFieldConfig_Component_Config>>>;
 };
 
@@ -437,8 +411,6 @@ export type AuthorFieldConfig = {
   __typename?: 'AuthorFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<AuthorFieldConfig_Component_Config>>>;
 };
 
@@ -466,10 +438,10 @@ export type AccoladesFieldsListAuthorConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<AccoladesFieldsListAuthorConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<AccoladesFieldsListAuthorConfigFields>>>;
 };
 
-export type AccoladesFieldsListAuthorConfig_Component_Config = TextFormField;
+export type AccoladesFieldsListAuthorConfigFields = TextFormField;
 
 export type AuthorData = {
   __typename?: 'AuthorData';
@@ -644,8 +616,6 @@ export type MenuFieldConfig = {
   __typename?: 'MenuFieldConfig';
   label?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
   fields?: Maybe<Array<Maybe<MenuFieldConfig_Component_Config>>>;
 };
 
@@ -657,10 +627,10 @@ export type MenuItemFieldsListMenuConfig = {
   key?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<MenuItemFieldsListMenuConfig_Component_Config>>>;
+  fields?: Maybe<Array<Maybe<MenuItemFieldsListMenuConfigFields>>>;
 };
 
-export type MenuItemFieldsListMenuConfig_Component_Config = TextFormField | SelectFormField;
+export type MenuItemFieldsListMenuConfigFields = TextFormField | SelectFormField;
 
 export type MenuData = {
   __typename?: 'MenuData';
@@ -944,10 +914,10 @@ export type DocumentQueryQuery = (
     & { form?: Maybe<(
       { __typename?: 'BlockPageFieldConfig' }
       & { fields?: Maybe<Array<Maybe<(
-        { __typename?: 'TextFormField' }
+        { __typename: 'TextFormField' }
         & Pick<TextFormField, 'name' | 'label' | 'component'>
       ) | (
-        { __typename?: 'BlocksFieldConfig' }
+        { __typename: 'BlocksFieldConfig' }
         & Pick<BlocksFieldConfig, 'name' | 'label' | 'component'>
         & { templates?: Maybe<(
           { __typename?: 'BlocksTemplates' }
@@ -964,7 +934,7 @@ export type DocumentQueryQuery = (
             )>>> }
           )>, SponsorListFieldConfig?: Maybe<(
             { __typename?: 'SponsorListFieldConfig' }
-            & Pick<SponsorListFieldConfig, 'name' | 'label' | 'component'>
+            & Pick<SponsorListFieldConfig, 'label' | 'key'>
             & { fields?: Maybe<Array<Maybe<(
               { __typename?: 'TextFormField' }
               & Pick<TextFormField, 'name' | 'label' | 'component'>
@@ -981,7 +951,7 @@ export type DocumentQueryQuery = (
             )>>> }
           )>, PageReferenceFieldConfig?: Maybe<(
             { __typename?: 'PageReferenceFieldConfig' }
-            & Pick<PageReferenceFieldConfig, 'label' | 'key' | 'name'>
+            & Pick<PageReferenceFieldConfig, 'label' | 'key'>
             & { fields?: Maybe<Array<Maybe<(
               { __typename?: 'TextFormField' }
               & Pick<TextFormField, 'name' | 'label' | 'component'>
@@ -1012,21 +982,21 @@ export type DocumentQueryQuery = (
                 { __typename?: 'ActionsTemplates' }
                 & { ActionVideoFieldConfig?: Maybe<(
                   { __typename?: 'ActionVideoFieldConfig' }
-                  & Pick<ActionVideoFieldConfig, 'label' | 'key' | 'name' | 'component'>
+                  & Pick<ActionVideoFieldConfig, 'label' | 'key'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'TextFormField' }
                     & Pick<TextFormField, 'label' | 'name' | 'component'>
                   )>>> }
                 )>, ActionNewsletterFieldConfig?: Maybe<(
                   { __typename?: 'ActionNewsletterFieldConfig' }
-                  & Pick<ActionNewsletterFieldConfig, 'label' | 'key' | 'name' | 'component'>
+                  & Pick<ActionNewsletterFieldConfig, 'label' | 'key'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'TextFormField' }
                     & Pick<TextFormField, 'label' | 'name' | 'component'>
                   )>>> }
                 )>, ActionPageReferenceFieldConfig?: Maybe<(
                   { __typename?: 'ActionPageReferenceFieldConfig' }
-                  & Pick<ActionPageReferenceFieldConfig, 'label' | 'key' | 'component' | 'name'>
+                  & Pick<ActionPageReferenceFieldConfig, 'label' | 'key'>
                   & { fields?: Maybe<Array<Maybe<(
                     { __typename?: 'SelectFormField' }
                     & Pick<SelectFormField, 'name' | 'label' | 'component' | 'options'>

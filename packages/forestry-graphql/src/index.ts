@@ -252,10 +252,11 @@ type BaseDocumentType = {
   excerpt: string;
 };
 
+type DocumentData = { [key: string]: any };
 type DocumentType = BaseDocumentType & {
   path: string;
   template: string;
-  data: object;
+  data: DocumentData;
 };
 type WithFields = {
   label: string;
@@ -460,6 +461,7 @@ export type PluginFieldArgs = {
   }[];
 };
 
+// TODO: want to use something more helpful here
 type ListValue = { [key: string]: FieldType[] };
 type FieldSourceType = FieldType | ListValue;
 type FieldContextType = {};
@@ -469,85 +471,6 @@ export type Plugin = {
     string: FieldType["type"],
     stuff: PluginFieldArgs
   ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
-};
-
-/**
- * this function is used to help recursively set the `setter` for groups.
- * it currently treats groups and group-lists similarly which should be fixed
- */
-const buildGroupSetter = ({
-  name,
-  setters,
-  field,
-}: {
-  name: string;
-  setters: {
-    [key: string]: GraphQLFieldConfig<
-      FieldSourceType,
-      FieldContextType,
-      {
-        [argName: string]: GraphQLType;
-      }
-    >;
-  };
-  field: WithFields;
-}) => {
-  return new GraphQLObjectType({
-    name: name,
-    fields: {
-      label: {
-        type: GraphQLString,
-        resolve: () => {
-          return field.label;
-        },
-      },
-      key: {
-        type: GraphQLString,
-        resolve: () => {
-          return camelCase(field.label);
-        },
-      },
-      name: { type: GraphQLString, resolve: () => field.name },
-      component: {
-        type: GraphQLString,
-        resolve: () => {
-          return field.type === "field_group_list" ? "group-list" : "group";
-        },
-      },
-      fields: {
-        type: GraphQLList(
-          new GraphQLUnionType({
-            name: name + "_component_config",
-            types: () => {
-              const array = Object.values(setters);
-              const meh = Array.from(
-                new Set(array.map((item: any) => item.type))
-              );
-              return meh;
-            },
-            // @ts-ignore
-            resolveType: (val) => {
-              return setters[val.name]?.type;
-            },
-          })
-        ),
-        resolve: async (source, args, context, info) => {
-          return Promise.all(
-            field.fields.map(async (field) => {
-              // FIXME: calling resolve manually here, probably a sign that this is in the wrong place
-              const res = setters[field.name];
-
-              if (!res.resolve) {
-                throw new GraphQLError("No");
-              }
-
-              return res.resolve(field, args, context, info);
-            })
-          );
-        },
-      },
-    },
-  });
 };
 
 type configType = {
@@ -1130,14 +1053,57 @@ const buildSchema = async (config: configType) => {
         }),
       },
       setter: {
-        type: buildGroupSetter({
+        type: new GraphQLObjectType<FieldGroupField>({
           name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
-          setters: setters,
-          field,
+          fields: {
+            label: {
+              type: GraphQLString,
+            },
+            key: {
+              type: GraphQLString,
+            },
+            name: { type: GraphQLString },
+            component: {
+              type: GraphQLString,
+              resolve: () => "group",
+            },
+            fields: {
+              type: GraphQLList(
+                new GraphQLUnionType({
+                  name: friendlyName(
+                    field.name + "_fields_list_" + fmt + "_config" + "_fields"
+                  ),
+                  types: () => {
+                    const array = Object.values(setters);
+                    return Array.from(
+                      new Set(array.map((item: any) => item.type))
+                    );
+                  },
+                  // @ts-ignore
+                  resolveType: (val) => {
+                    return setters[val.name]?.type;
+                  },
+                })
+              ),
+              resolve: async (field, args, context, info) => {
+                return Promise.all(
+                  field.fields.map(async (field) => {
+                    const setter = setters[field.name];
+
+                    if (!setter.resolve) {
+                      throw new GraphQLError(
+                        `No resolve function provided for ${field.name}`
+                      );
+                    }
+
+                    return setter.resolve(field, args, context, info);
+                  })
+                );
+              },
+            },
+          },
         }),
-        resolve: (value: FieldSourceType) => {
-          return value;
-        },
+        resolve: () => field,
       },
       mutator: {
         type: new GraphQLInputObjectType({
@@ -1168,14 +1134,57 @@ const buildSchema = async (config: configType) => {
         ),
       },
       setter: {
-        type: buildGroupSetter({
+        type: new GraphQLObjectType<FieldGroupListField>({
           name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
-          setters,
-          field,
+          fields: {
+            label: {
+              type: GraphQLString,
+            },
+            key: {
+              type: GraphQLString,
+            },
+            name: { type: GraphQLString },
+            component: {
+              type: GraphQLString,
+              resolve: () => "group",
+            },
+            fields: {
+              type: GraphQLList(
+                new GraphQLUnionType({
+                  name: friendlyName(
+                    field.name + "_fields_list_" + fmt + "_config" + "_fields"
+                  ),
+                  types: () => {
+                    const array = Object.values(setters);
+                    return Array.from(
+                      new Set(array.map((item: any) => item.type))
+                    );
+                  },
+                  // @ts-ignore
+                  resolveType: (val) => {
+                    return setters[val.name]?.type;
+                  },
+                })
+              ),
+              resolve: async (field, args, context, info) => {
+                return Promise.all(
+                  field.fields.map(async (field) => {
+                    const setter = setters[field.name];
+
+                    if (!setter.resolve) {
+                      throw new GraphQLError(
+                        `No resolve function provided for ${field.name}`
+                      );
+                    }
+
+                    return setter.resolve(field, args, context, info);
+                  })
+                );
+              },
+            },
+          },
         }),
-        resolve: (value: FieldSourceType) => {
-          return value;
-        },
+        resolve: () => field,
       },
       mutator: {
         type: GraphQLList(
@@ -1214,19 +1223,15 @@ const buildSchema = async (config: configType) => {
               type: new GraphQLObjectType({
                 name: friendlyName(field.name + "_templates"),
                 fields: () => {
-                  return arrayToObject(
-                    field.template_types.map(
-                      (template) => templateFormObjectTypes[template]
-                    ),
-                    (obj, item) => {
-                      obj[item.name] = {
-                        type: item,
-                        resolve: (val: FieldSourceType) => {
-                          return val;
-                        },
-                      };
-                    }
+                  const blockObjectTypes = field.template_types.map(
+                    (template) => templateFormObjectTypes[template]
                   );
+                  return arrayToObject(blockObjectTypes, (obj, item) => {
+                    obj[item.name] = {
+                      type: item,
+                      resolve: (val: any) => val,
+                    };
+                  });
                 },
               }),
             },
@@ -1236,9 +1241,13 @@ const buildSchema = async (config: configType) => {
           return {
             ...field,
             component: field.type,
-            templates: arrayToObject(field.template_types, (obj, item) => {
-              obj[item] = { name: item };
-            }),
+            templates: Promise.all(
+              field.template_types.map(async (templateName) => {
+                return getData<FMT>(
+                  PATH_TO_TEMPLATES + "/" + templateName + ".yml"
+                );
+              })
+            ),
           };
         },
       },
@@ -1332,7 +1341,7 @@ const buildSchema = async (config: configType) => {
         FieldSourceType,
         FieldContextType,
         {
-          [argName: string]: GraphQLType;
+          [argName: string]: GraphQLObjectType;
         }
       >;
     };
@@ -1390,11 +1399,69 @@ const buildSchema = async (config: configType) => {
         },
       });
 
-      const templateFormObjectType = buildGroupSetter({
-        name: friendlyFMTName(path, { suffix: "field_config" }),
-        setters,
-        field: fmt.data,
-      });
+      const name = friendlyFMTName(path, { suffix: "field_config" });
+      const field = fmt.data;
+      const templateFormObjectType = {
+        type: new GraphQLObjectType<WithFields>({
+          name: name,
+          fields: {
+            label: {
+              type: GraphQLString,
+              resolve: () => {
+                return field.label;
+              },
+            },
+            key: {
+              type: GraphQLString,
+              resolve: () => {
+                return camelCase(field.label);
+              },
+            },
+            fields: {
+              type: GraphQLList(
+                new GraphQLUnionType({
+                  name: name + "_component_config",
+                  // @ts-ignore
+                  types: () => {
+                    const setterValues = Object.values(setters);
+                    // FIXME:confusing - this is just making sure we only return unique items
+                    return Array.from(
+                      new Set(setterValues.map((item) => item.type))
+                    );
+                  },
+                  // @ts-ignore
+                  resolveType: (val: FieldType) => {
+                    const setter = setters[val.name];
+                    if (!setter) {
+                      throw new GraphQLError(
+                        `No setter defined for ${val.name}`
+                      );
+                    }
+
+                    return setter.type;
+                  },
+                })
+              ),
+              resolve: async (fmtData, args, context, info) => {
+                return Promise.all(
+                  fmt.data.fields.map(async (field) => {
+                    const setter = setters[field.name];
+
+                    if (!setter.resolve) {
+                      throw new GraphQLError(
+                        `No resolver defined for ${fmtData.label}`
+                      );
+                    }
+
+                    return setter.resolve(field, args, context, info);
+                  })
+                );
+              },
+            },
+          },
+        }),
+        resolve: () => fmt.data,
+      };
 
       const templateDataObjectType = new GraphQLObjectType({
         name: friendlyFMTName(path, { suffix: "data" }),
@@ -1410,12 +1477,7 @@ const buildSchema = async (config: configType) => {
       const templateObjectType = new GraphQLObjectType({
         name: friendlyFMTName(path),
         fields: {
-          form: {
-            type: templateFormObjectType,
-            resolve: (value: DocumentType): DocumentType["data"] => {
-              return value.data;
-            },
-          },
+          form: templateFormObjectType,
           absolutePath: { type: GraphQLNonNull(GraphQLString) },
           path: { type: GraphQLNonNull(GraphQLString) },
           content: {
@@ -1430,7 +1492,7 @@ const buildSchema = async (config: configType) => {
         shortFMTName(path)
       ] = templateDataInputObjectType;
       templateInputObjectTypes[shortFMTName(path)] = templateInputObjectType;
-      templateFormObjectTypes[shortFMTName(path)] = templateFormObjectType;
+      templateFormObjectTypes[shortFMTName(path)] = templateFormObjectType.type;
       templateDataObjectTypes[shortFMTName(path)] = templateDataObjectType;
       templateObjectTypes[shortFMTName(path)] = templateObjectType;
     })
@@ -1461,7 +1523,7 @@ const buildSchema = async (config: configType) => {
     }),
   };
 
-  const rootQuery = new GraphQLObjectType({
+  const rootQuery = new GraphQLObjectType<any, any>({
     name: "Query",
     fields: {
       document: {
