@@ -1074,14 +1074,21 @@ const buildSchema = async (config: configType) => {
                     field.name + "_fields_list_" + fmt + "_config" + "_fields"
                   ),
                   types: () => {
-                    const array = Object.values(setters);
+                    const setterValues = Object.values(setters);
+                    // FIXME:confusing - this is just making sure we only return unique items
                     return Array.from(
-                      new Set(array.map((item: any) => item.type))
+                      new Set(setterValues.map((item) => item.type))
                     );
                   },
-                  // @ts-ignore
-                  resolveType: (val) => {
-                    return setters[val.name]?.type;
+                  resolveType: (val: FieldType) => {
+                    const setter = setters[val.name];
+                    if (!setter) {
+                      throw new GraphQLError(
+                        `No setter defined for ${val.name}`
+                      );
+                    }
+
+                    return setter.type;
                   },
                 })
               ),
@@ -1155,14 +1162,21 @@ const buildSchema = async (config: configType) => {
                     field.name + "_fields_list_" + fmt + "_config" + "_fields"
                   ),
                   types: () => {
-                    const array = Object.values(setters);
+                    const setterValues = Object.values(setters);
+                    // FIXME:confusing - this is just making sure we only return unique items
                     return Array.from(
-                      new Set(array.map((item: any) => item.type))
+                      new Set(setterValues.map((item) => item.type))
                     );
                   },
-                  // @ts-ignore
-                  resolveType: (val) => {
-                    return setters[val.name]?.type;
+                  resolveType: (val: FieldType) => {
+                    const setter = setters[val.name];
+                    if (!setter) {
+                      throw new GraphQLError(
+                        `No setter defined for ${val.name}`
+                      );
+                    }
+
+                    return setter.type;
                   },
                 })
               ),
@@ -1268,21 +1282,27 @@ const buildSchema = async (config: configType) => {
     };
   };
 
+  type fieldGetter = GraphQLFieldConfig<
+    FieldSourceType,
+    FieldContextType,
+    {
+      [argName: string]: GraphQLType;
+    }
+  >;
+  type fieldSetter = {
+    type: GraphQLObjectType<any, any>;
+    resolve: (
+      val: FieldSourceType,
+      args: {
+        [argName: string]: any;
+      },
+      context: any,
+      info: any
+    ) => any;
+  };
   type fieldTypeType = {
-    getter: GraphQLFieldConfig<
-      FieldSourceType,
-      FieldContextType,
-      {
-        [argName: string]: GraphQLType;
-      }
-    >;
-    setter: GraphQLFieldConfig<
-      FieldSourceType,
-      FieldContextType,
-      {
-        [argName: string]: GraphQLType;
-      }
-    >;
+    getter: fieldGetter;
+    setter: fieldSetter;
     mutator: { type: GraphQLInputType };
   };
 
@@ -1328,22 +1348,10 @@ const buildSchema = async (config: configType) => {
 
   type generatedFieldsType = {
     getters: {
-      [key: string]: GraphQLFieldConfig<
-        FieldSourceType,
-        FieldContextType,
-        {
-          [argName: string]: GraphQLType;
-        }
-      >;
+      [key: string]: fieldGetter;
     };
     setters: {
-      [key: string]: GraphQLFieldConfig<
-        FieldSourceType,
-        FieldContextType,
-        {
-          [argName: string]: GraphQLObjectType;
-        }
-      >;
+      [key: string]: fieldSetter;
     };
     mutators: {
       [key: string]: { type: GraphQLInputType };
@@ -1421,7 +1429,6 @@ const buildSchema = async (config: configType) => {
               type: GraphQLList(
                 new GraphQLUnionType({
                   name: name + "_component_config",
-                  // @ts-ignore
                   types: () => {
                     const setterValues = Object.values(setters);
                     // FIXME:confusing - this is just making sure we only return unique items
@@ -1429,7 +1436,6 @@ const buildSchema = async (config: configType) => {
                       new Set(setterValues.map((item) => item.type))
                     );
                   },
-                  // @ts-ignore
                   resolveType: (val: FieldType) => {
                     const setter = setters[val.name];
                     if (!setter) {
