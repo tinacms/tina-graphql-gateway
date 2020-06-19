@@ -88,10 +88,7 @@ const prepare = (obj: any) => {
 
   const meh = {};
   Object.keys(rest).forEach((key) => {
-    // FIXME
-    if (key === "section") {
-      meh[key] = "posts";
-    } else if (Array.isArray(rest[key])) {
+    if (Array.isArray(rest[key])) {
       meh[key] = rest[key].map((item) => {
         return prepare(item);
       });
@@ -120,10 +117,7 @@ const rehydrate = (obj: any, document: any) => {
 
   const meh = {};
   Object.keys(rest).forEach((key) => {
-    if (key === "section") {
-      // FIXME
-      meh[key] = document.data.blocks[2].section;
-    } else if (Array.isArray(rest[key])) {
+    if (Array.isArray(rest[key])) {
       meh[key] = rest[key].map((item) => {
         return rehydrate(item, document);
       });

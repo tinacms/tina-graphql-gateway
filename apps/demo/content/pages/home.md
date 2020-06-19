@@ -13,18 +13,9 @@ blocks:
     header: ''
   actions: []
   style: Column
-- template: section-index
-  body: |-
-    ## From the Blog
-
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
-
-    [Show more](http://localhost:3000/)
-  limit: 3
-  section: posts
 - template: sidecar
   text: |-
-    Introducting
+    Introducing!
 
     # Golden Coast Track Club
 
@@ -39,6 +30,14 @@ blocks:
   - template: action-video
     url: 'https://youtu.be/347AVU6TccQ'
   style: Sidecar
+- template: section-index
+  body: |-
+    ## From the Blog
+
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
+
+    [Show more](http://localhost:3000/)
+  limit: 3
 - template: author-list
   authors:
   - content/authors/terrence.md
