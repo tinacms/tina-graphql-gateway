@@ -38,6 +38,7 @@ import { field_group, FieldGroupField } from "./fields/group";
 import { FieldGroupListField, field_group_list } from "./fields/groupList";
 import { BlocksField, blocks } from "./fields/blocks";
 import { friendlyName } from "./formatFmt";
+import camelCase from "lodash.camelcase";
 
 type DirectorySection = {
   type: "directory";
