@@ -553,14 +553,14 @@ const buildSchema = async (config: configType) => {
     component: { type: GraphQLString },
   };
 
-  const textInput = new GraphQLObjectType({
+  const textInput = new GraphQLObjectType<TextField>({
     name: "TextFormField",
     fields: {
       ...baseInputFields,
     },
   });
 
-  const selectInput = new GraphQLObjectType({
+  const selectInput = new GraphQLObjectType<SelectField>({
     name: "SelectFormField",
     fields: {
       ...baseInputFields,
@@ -568,14 +568,14 @@ const buildSchema = async (config: configType) => {
     },
   });
 
-  const imageInput = new GraphQLObjectType({
+  const imageInput = new GraphQLObjectType<FileField>({
     name: "ImageFormField",
     fields: {
       ...baseInputFields,
     },
   });
 
-  const tagInput = new GraphQLObjectType({
+  const tagInput = new GraphQLObjectType<TagListField>({
     name: "TagsFormField",
     fields: {
       ...baseInputFields,
@@ -1290,6 +1290,7 @@ const buildSchema = async (config: configType) => {
     }
   >;
   type fieldSetter = {
+    // FIXME: this is the spot to tell us what kind of type the resolver should expect
     type: GraphQLObjectType<any, any>;
     resolve: (
       val: FieldSourceType,
