@@ -104,7 +104,7 @@ const prepare = (obj: any) => {
 };
 export const prepareValues = (values: any) => {
   const preparedValues = prepare(values);
-  // console.log(JSON.stringify(preparedValues, null, 2));
+  console.log(JSON.stringify(preparedValues, null, 2));
 
   return preparedValues;
 };

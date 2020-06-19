@@ -400,40 +400,6 @@ export default `query DocumentQuery($path: String!) {
             _template
             body
             limit
-            section {
-              __typename
-              ... on Post {
-                path
-                excerpt
-                data {
-                  hashtags
-                  title
-                  image {
-                    path
-                    absolutePath
-                  }
-                  author {
-                    __typename
-                    ... on Author {
-                      path
-                      content
-                      excerpt
-                      data {
-                        name
-                        image {
-                          path
-                          absolutePath
-                        }
-                        gallery {
-                          path
-                          absolutePath
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }

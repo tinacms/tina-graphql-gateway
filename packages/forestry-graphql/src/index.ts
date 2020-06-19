@@ -731,14 +731,7 @@ const buildSchema = async (config: configType) => {
 
     return {
       getter: {
-        // type: new GraphQLEnumType({
-        //   name: friendlyName(field.name + "_select_" + fmt),
-        //   values: options,
-        // }),
         type: GraphQLString,
-        resolve: (value: any) => {
-          return value[field.name] || field.default;
-        },
       },
       setter: {
         type: selectInput,
@@ -1125,7 +1118,7 @@ const buildSchema = async (config: configType) => {
             name: { type: GraphQLString },
             component: {
               type: GraphQLString,
-              resolve: () => "group",
+              resolve: () => "group-list",
             },
             fields: {
               type: GraphQLList(
@@ -1170,7 +1163,7 @@ const buildSchema = async (config: configType) => {
             },
           },
         }),
-        resolve: () => field,
+        resolve: (val: any) => val,
       },
       mutator: {
         type: GraphQLList(

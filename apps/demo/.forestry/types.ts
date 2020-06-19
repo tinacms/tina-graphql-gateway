@@ -547,59 +547,7 @@ export type SectionIndexData = {
   _template?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   limit?: Maybe<Scalars['Int']>;
-  section?: Maybe<Array<Maybe<SectionSelectSectionIndex>>>;
-};
-
-export type SectionSelectSectionIndex = ActionNewsletter | ActionPageReference | ActionVideo | AuthorList | Author | BlockPage | ExcerptPost | Menu | PageReference | PostList | Post | PriceList | SectionIndex | Sidecar | SponsorList;
-
-export type ActionNewsletter = {
-  __typename?: 'ActionNewsletter';
-  form?: Maybe<ActionNewsletterFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: ActionNewsletterData;
-};
-
-export type ActionPageReference = {
-  __typename?: 'ActionPageReference';
-  form?: Maybe<ActionPageReferenceFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: ActionPageReferenceData;
-};
-
-export type ActionVideo = {
-  __typename?: 'ActionVideo';
-  form?: Maybe<ActionVideoFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: ActionVideoData;
-};
-
-export type AuthorList = {
-  __typename?: 'AuthorList';
-  form?: Maybe<AuthorListFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: AuthorListData;
-};
-
-export type ExcerptPost = {
-  __typename?: 'ExcerptPost';
-  form?: Maybe<ExcerptPostFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: ExcerptPostData;
+  section?: Maybe<Scalars['String']>;
 };
 
 export type Menu = {
@@ -652,66 +600,6 @@ export type MenuItemFieldsListMenu = {
 };
 
 export type PageSelectMenuMenuItem = BlockPage;
-
-export type PageReference = {
-  __typename?: 'PageReference';
-  form?: Maybe<PageReferenceFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: PageReferenceData;
-};
-
-export type PostList = {
-  __typename?: 'PostList';
-  form?: Maybe<PostListFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: PostListData;
-};
-
-export type PriceList = {
-  __typename?: 'PriceList';
-  form?: Maybe<PriceListFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: PriceListData;
-};
-
-export type SectionIndex = {
-  __typename?: 'SectionIndex';
-  form?: Maybe<SectionIndexFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: SectionIndexData;
-};
-
-export type Sidecar = {
-  __typename?: 'Sidecar';
-  form?: Maybe<SidecarFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: SidecarData;
-};
-
-export type SponsorList = {
-  __typename?: 'SponsorList';
-  form?: Maybe<SponsorListFieldConfig>;
-  absolutePath: Scalars['String'];
-  path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
-  data: SponsorListData;
-};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -854,8 +742,14 @@ export type PageReferenceDataInput = {
 export type SectionIndexDataInput = {
   body?: Maybe<Scalars['String']>;
   limit?: Maybe<Scalars['Int']>;
-  section?: Maybe<Scalars['String']>;
+  section?: Maybe<SectionSelectSectionIndex>;
 };
+
+export enum SectionSelectSectionIndex {
+  Posts = 'posts',
+  Pages = 'pages',
+  Authors = 'authors'
+}
 
 export type PostInput = {
   data?: Maybe<PostDataInput>;
@@ -1154,32 +1048,6 @@ export type DocumentQueryQuery = (
       ) | (
         { __typename: 'SectionIndexData' }
         & Pick<SectionIndexData, '_template' | 'body' | 'limit'>
-        & { section?: Maybe<Array<Maybe<{ __typename: 'ActionNewsletter' } | { __typename: 'ActionPageReference' } | { __typename: 'ActionVideo' } | { __typename: 'AuthorList' } | { __typename: 'Author' } | { __typename: 'BlockPage' } | { __typename: 'ExcerptPost' } | { __typename: 'Menu' } | { __typename: 'PageReference' } | { __typename: 'PostList' } | (
-          { __typename: 'Post' }
-          & Pick<Post, 'path' | 'excerpt'>
-          & { data: (
-            { __typename?: 'PostData' }
-            & Pick<PostData, 'hashtags' | 'title'>
-            & { image?: Maybe<(
-              { __typename?: 'ImageGalleryPost' }
-              & Pick<ImageGalleryPost, 'path' | 'absolutePath'>
-            )>, author?: Maybe<(
-              { __typename: 'Author' }
-              & Pick<Author, 'path' | 'content' | 'excerpt'>
-              & { data: (
-                { __typename?: 'AuthorData' }
-                & Pick<AuthorData, 'name'>
-                & { image?: Maybe<(
-                  { __typename?: 'ImageGalleryAuthor' }
-                  & Pick<ImageGalleryAuthor, 'path' | 'absolutePath'>
-                )>, gallery?: Maybe<Array<Maybe<(
-                  { __typename?: 'GalleryGalleryAuthor' }
-                  & Pick<GalleryGalleryAuthor, 'path' | 'absolutePath'>
-                )>>> }
-              ) }
-            )> }
-          ) }
-        ) | { __typename: 'PriceList' } | { __typename: 'SectionIndex' } | { __typename: 'Sidecar' } | { __typename: 'SponsorList' }>>> }
       )>>> }
     ) }
   ) | (
