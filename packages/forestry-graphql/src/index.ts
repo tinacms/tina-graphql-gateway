@@ -659,133 +659,105 @@ const buildSchema = async (config: configType) => {
     },
   });
   const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
-    if (pluginsList.matches("select", field)) {
-      return {
-        getter: pluginsList.run("select", {
-          fmt,
-          rootPath: config.rootPath,
-          field,
-          templates: templateObjectTypes,
-          sectionFmts,
-          templatePages,
-        }),
-        setter: {
-          type: selectInput,
-          resolve: (value: FieldSourceType) => {
-            return {
-              name: field.name,
-              label: field.label,
-              component: "select",
-              // @ts-ignore
-              options: value?.config?.options || [],
-            };
-          },
-        },
-        mutator: {
-          type: GraphQLString,
-        },
-      };
-    } else {
-      if (isSectionSelectField(field)) {
-        return {
-          getter: {
-            type: new GraphQLUnionType({
-              name: friendlyName(field.name + "_select_" + fmt),
-              types: () => {
-                return getSectionFmtTypes2(
-                  field.config.source.section,
-                  sectionFmts,
-                  templateObjectTypes
-                );
-              },
-              resolveType: async (val) => {
-                return templateObjectTypes[val.template];
-              },
-            }),
-            resolve: async (val: { [key: string]: unknown }) => {
-              const path = val[field.name];
-              if (isString(path)) {
-                const res = await getData<DocumentType>(
-                  config.rootPath + "/" + path
-                );
-                const activeTemplate = getFmtForDocument(path, templatePages);
-                return {
-                  ...res,
-                  path: val[field.name],
-                  template: activeTemplate?.name,
-                };
-              }
-
-              throw new GraphQLError(
-                `Expected index lookup to return a string for ${field.name}`
-              );
-            },
-          },
-          setter: {
-            type: selectInput,
-            resolve: () => {
-              if (field?.config?.source?.type === "pages") {
-                const options = getPagesForSection(
-                  field.config.source.section,
-                  sectionFmts,
-                  templatePages
-                );
-                return {
-                  ...field,
-                  component: "select",
-                  options,
-                };
-              }
-
-              return {
-                name: field.name,
-                label: field.label,
-                component: "select",
-                options: ["this shouldn", "be seen"],
-              };
-            },
-          },
-          mutator: {
-            type: GraphQLString,
-          },
-        };
-      }
-
-      const options: { [key: string]: { value: string } } = {};
-      field.config?.options.forEach(
-        (option) => (options[option] = { value: option })
-      );
-
+    if (isSectionSelectField(field)) {
       return {
         getter: {
-          // type: new GraphQLEnumType({
-          //   name: friendlyName(field.name + "_select_" + fmt),
-          //   values: options,
-          // }),
-          type: GraphQLString,
-          resolve: (value: any) => {
-            return value[field.name] || field.default;
+          type: new GraphQLUnionType({
+            name: friendlyName(field.name + "_select_" + fmt),
+            types: () => {
+              return getSectionFmtTypes2(
+                field.config.source.section,
+                sectionFmts,
+                templateObjectTypes
+              );
+            },
+            resolveType: async (val) => {
+              return templateObjectTypes[val.template];
+            },
+          }),
+          resolve: async (val: { [key: string]: unknown }) => {
+            const path = val[field.name];
+            if (isString(path)) {
+              const res = await getData<DocumentType>(
+                config.rootPath + "/" + path
+              );
+              const activeTemplate = getFmtForDocument(path, templatePages);
+              return {
+                ...res,
+                path: val[field.name],
+                template: activeTemplate?.name,
+              };
+            }
+
+            throw new GraphQLError(
+              `Expected index lookup to return a string for ${field.name}`
+            );
           },
         },
         setter: {
           type: selectInput,
           resolve: () => {
+            if (field?.config?.source?.type === "pages") {
+              const options = getPagesForSection(
+                field.config.source.section,
+                sectionFmts,
+                templatePages
+              );
+              return {
+                ...field,
+                component: "select",
+                options,
+              };
+            }
+
             return {
               name: field.name,
               label: field.label,
               component: "select",
-              options: field.config.options,
+              options: ["this shouldn", "be seen"],
             };
           },
         },
         mutator: {
-          type: new GraphQLEnumType({
-            name: friendlyName(field.name + "_select_" + fmt),
-            values: options,
-          }),
+          type: GraphQLString,
         },
       };
     }
+
+    const options: { [key: string]: { value: string } } = {};
+    field.config?.options.forEach(
+      (option) => (options[option] = { value: option })
+    );
+
+    return {
+      getter: {
+        // type: new GraphQLEnumType({
+        //   name: friendlyName(field.name + "_select_" + fmt),
+        //   values: options,
+        // }),
+        type: GraphQLString,
+        resolve: (value: any) => {
+          return value[field.name] || field.default;
+        },
+      },
+      setter: {
+        type: selectInput,
+        resolve: () => {
+          return {
+            name: field.name,
+            label: field.label,
+            component: "select",
+            options: field.config.options,
+          };
+        },
+      },
+      mutator: {
+        type: new GraphQLEnumType({
+          name: friendlyName(field.name + "_select_" + fmt),
+          values: options,
+        }),
+      },
+    };
   };
   const datetime = ({ fmt, field }: { fmt: string; field: DateField }) => ({
     getter: {
@@ -1623,32 +1595,36 @@ app.use(
       .readFileSync(__dirname + "/../src/query.gql")
       .toString();
 
-    const res = await codegen({
-      filename: __dirname + "/../src/schema.ts",
-      schema: parse(printSchema(schema)),
-      documents: [
-        {
-          location: "operation.graphql",
-          document: parse(querySchema),
+    try {
+      const res = await codegen({
+        filename: __dirname + "/../src/schema.ts",
+        schema: parse(printSchema(schema)),
+        documents: [
+          {
+            location: "operation.graphql",
+            document: parse(querySchema),
+          },
+        ],
+        config: {},
+        plugins: [{ typescript: {} }, { typescriptOperations: {} }],
+        pluginMap: {
+          typescript: {
+            plugin: typescriptPlugin,
+          },
+          typescriptOperations: {
+            plugin: typescriptOperationsPlugin,
+          },
         },
-      ],
-      config: {},
-      plugins: [{ typescript: {} }, { typescriptOperations: {} }],
-      pluginMap: {
-        typescript: {
-          plugin: typescriptPlugin,
-        },
-        typescriptOperations: {
-          plugin: typescriptOperationsPlugin,
-        },
-      },
-    });
-    await fs.writeFileSync(
-      process.cwd() + "/.forestry/types.ts",
-      `// DO NOT MODIFY THIS FILE. This file is automatically generated by Forestry
+      });
+      await fs.writeFileSync(
+        process.cwd() + "/.forestry/types.ts",
+        `// DO NOT MODIFY THIS FILE. This file is automatically generated by Forestry
     ${res}
         `
-    );
+      );
+    } catch (e) {
+      console.error(e);
+    }
 
     const query = await fs.readFileSync(__dirname + "/../src/query.gql");
     await fs.writeFileSync(

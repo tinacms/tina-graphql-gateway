@@ -467,54 +467,7 @@ type SectionIndexData {
   _template: String
   body: String
   limit: Int
-  section: [SectionSelectSectionIndex]
-}
-
-union SectionSelectSectionIndex = ActionNewsletter | ActionPageReference | ActionVideo | AuthorList | Author | BlockPage | ExcerptPost | Menu | PageReference | PostList | Post | PriceList | SectionIndex | Sidecar | SponsorList
-
-type ActionNewsletter {
-  form: ActionNewsletterFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionNewsletterData!
-}
-
-type ActionPageReference {
-  form: ActionPageReferenceFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionPageReferenceData!
-}
-
-type ActionVideo {
-  form: ActionVideoFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionVideoData!
-}
-
-type AuthorList {
-  form: AuthorListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: AuthorListData!
-}
-
-type ExcerptPost {
-  form: ExcerptPostFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ExcerptPostData!
+  section: String
 }
 
 type Menu {
@@ -561,60 +514,6 @@ type MenuItemFieldsListMenu {
 }
 
 union PageSelectMenuMenuItem = BlockPage
-
-type PageReference {
-  form: PageReferenceFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PageReferenceData!
-}
-
-type PostList {
-  form: PostListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PostListData!
-}
-
-type PriceList {
-  form: PriceListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PriceListData!
-}
-
-type SectionIndex {
-  form: SectionIndexFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SectionIndexData!
-}
-
-type Sidecar {
-  form: SidecarFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SidecarData!
-}
-
-type SponsorList {
-  form: SponsorListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SponsorListData!
-}
 
 type Mutation {
   document(path: String!, params: DocumentInput): DocumentUnion
@@ -750,7 +649,13 @@ input PageReferenceDataInput {
 input SectionIndexDataInput {
   body: String
   limit: Int
-  section: String
+  section: SectionSelectSectionIndex
+}
+
+enum SectionSelectSectionIndex {
+  posts
+  pages
+  authors
 }
 
 input PostInput {
