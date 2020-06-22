@@ -16,8 +16,6 @@ type BlockPage {
 type BlockPageFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [BlockPageFieldConfig_component_config]
 }
 
@@ -26,7 +24,6 @@ union BlockPageFieldConfig_component_config = TextFormField | BlocksFieldConfig
 type TextFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
 }
@@ -34,7 +31,6 @@ type TextFormField {
 type BlocksFieldConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   templates: BlocksTemplates
@@ -54,8 +50,6 @@ type BlocksTemplates {
 type SidecarFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SidecarFieldConfig_component_config]
 }
 
@@ -64,7 +58,6 @@ union SidecarFieldConfig_component_config = TextFormField | ImageFormField | Cta
 type ImageFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
 }
@@ -74,15 +67,14 @@ type CtaFieldsListSidecarConfig {
   key: String
   name: String
   component: String
-  fields: [CtaFieldsListSidecarConfig_component_config]
+  fields: [CtaFieldsListSidecarConfigFields]
 }
 
-union CtaFieldsListSidecarConfig_component_config = TextFormField
+union CtaFieldsListSidecarConfigFields = TextFormField
 
 type ActionsFieldConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   templates: ActionsTemplates
@@ -97,8 +89,6 @@ type ActionsTemplates {
 type ActionVideoFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionVideoFieldConfig_component_config]
 }
 
@@ -107,8 +97,6 @@ union ActionVideoFieldConfig_component_config = TextFormField
 type ActionNewsletterFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionNewsletterFieldConfig_component_config]
 }
 
@@ -117,8 +105,6 @@ union ActionNewsletterFieldConfig_component_config = TextFormField
 type ActionPageReferenceFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ActionPageReferenceFieldConfig_component_config]
 }
 
@@ -127,7 +113,6 @@ union ActionPageReferenceFieldConfig_component_config = SelectFormField | Button
 type SelectFormField {
   name: String
   label: String
-  value: String
   description: String
   component: String
   options: [String]
@@ -138,16 +123,14 @@ type ButtonSettingsFieldsListActionPageReferenceConfig {
   key: String
   name: String
   component: String
-  fields: [ButtonSettingsFieldsListActionPageReferenceConfig_component_config]
+  fields: [ButtonSettingsFieldsListActionPageReferenceConfigFields]
 }
 
-union ButtonSettingsFieldsListActionPageReferenceConfig_component_config = TextFormField
+union ButtonSettingsFieldsListActionPageReferenceConfigFields = TextFormField
 
 type ExcerptPostFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [ExcerptPostFieldConfig_component_config]
 }
 
@@ -156,8 +139,6 @@ union ExcerptPostFieldConfig_component_config = SelectFormField | TextFormField
 type PostListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PostListFieldConfig_component_config]
 }
 
@@ -168,16 +149,14 @@ type PostsFieldsListPostListConfig {
   key: String
   name: String
   component: String
-  fields: [PostsFieldsListPostListConfig_component_config]
+  fields: [PostsFieldsListPostListConfigFields]
 }
 
-union PostsFieldsListPostListConfig_component_config = SelectFormField
+union PostsFieldsListPostListConfigFields = SelectFormField
 
 type PriceListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PriceListFieldConfig_component_config]
 }
 
@@ -188,15 +167,14 @@ type PricesFieldsListPriceListConfig {
   key: String
   name: String
   component: String
-  fields: [PricesFieldsListPriceListConfig_component_config]
+  fields: [PricesFieldsListPriceListConfigFields]
 }
 
-union PricesFieldsListPriceListConfig_component_config = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField
+union PricesFieldsListPriceListConfigFields = TextFormField | BulletPointsListPriceListPricesConfig | SelectFormField
 
 type BulletPointsListPriceListPricesConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: BulletPointsListPriceListPricesConfigItem
@@ -211,8 +189,6 @@ type BulletPointsListPriceListPricesConfigItem {
 type AuthorListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [AuthorListFieldConfig_component_config]
 }
 
@@ -221,7 +197,6 @@ union AuthorListFieldConfig_component_config = AuthorsListAuthorListConfig
 type AuthorsListAuthorListConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: AuthorsListAuthorListConfigItem
@@ -237,8 +212,6 @@ type AuthorsListAuthorListConfigItem {
 type SponsorListFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SponsorListFieldConfig_component_config]
 }
 
@@ -249,16 +222,14 @@ type SponsorFieldsListSponsorListConfig {
   key: String
   name: String
   component: String
-  fields: [SponsorFieldsListSponsorListConfig_component_config]
+  fields: [SponsorFieldsListSponsorListConfigFields]
 }
 
-union SponsorFieldsListSponsorListConfig_component_config = TextFormField | ImageFormField
+union SponsorFieldsListSponsorListConfigFields = TextFormField | ImageFormField
 
 type PageReferenceFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PageReferenceFieldConfig_component_config]
 }
 
@@ -267,8 +238,6 @@ union PageReferenceFieldConfig_component_config = TextFormField | SelectFormFiel
 type SectionIndexFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [SectionIndexFieldConfig_component_config]
 }
 
@@ -346,8 +315,6 @@ type Post {
 type PostFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [PostFieldConfig_component_config]
 }
 
@@ -356,7 +323,6 @@ union PostFieldConfig_component_config = TextFormField | SelectFormField | Image
 type TagsFormField {
   name: String
   label: String
-  value: [String]
   description: String
   component: String
 }
@@ -383,8 +349,6 @@ type Author {
 type AuthorFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [AuthorFieldConfig_component_config]
 }
 
@@ -393,7 +357,6 @@ union AuthorFieldConfig_component_config = TextFormField | ImageFormField | Anec
 type AnecdotesListAuthorConfig {
   name: String
   label: String
-  value: String
   description: String
   component: String
   itemField: AnecdotesListAuthorConfigItem
@@ -410,10 +373,10 @@ type AccoladesFieldsListAuthorConfig {
   key: String
   name: String
   component: String
-  fields: [AccoladesFieldsListAuthorConfig_component_config]
+  fields: [AccoladesFieldsListAuthorConfigFields]
 }
 
-union AccoladesFieldsListAuthorConfig_component_config = TextFormField
+union AccoladesFieldsListAuthorConfigFields = TextFormField
 
 type AuthorData {
   _template: String
@@ -504,54 +467,7 @@ type SectionIndexData {
   _template: String
   body: String
   limit: Int
-  section: [SectionSelectSectionIndex]
-}
-
-union SectionSelectSectionIndex = ActionNewsletter | ActionPageReference | ActionVideo | AuthorList | Author | BlockPage | ExcerptPost | Menu | PageReference | PostList | Post | PriceList | SectionIndex | Sidecar | SponsorList
-
-type ActionNewsletter {
-  form: ActionNewsletterFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionNewsletterData!
-}
-
-type ActionPageReference {
-  form: ActionPageReferenceFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionPageReferenceData!
-}
-
-type ActionVideo {
-  form: ActionVideoFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ActionVideoData!
-}
-
-type AuthorList {
-  form: AuthorListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: AuthorListData!
-}
-
-type ExcerptPost {
-  form: ExcerptPostFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: ExcerptPostData!
+  section: String
 }
 
 type Menu {
@@ -566,8 +482,6 @@ type Menu {
 type MenuFieldConfig {
   label: String
   key: String
-  name: String
-  component: String
   fields: [MenuFieldConfig_component_config]
 }
 
@@ -578,10 +492,10 @@ type MenuItemFieldsListMenuConfig {
   key: String
   name: String
   component: String
-  fields: [MenuItemFieldsListMenuConfig_component_config]
+  fields: [MenuItemFieldsListMenuConfigFields]
 }
 
-union MenuItemFieldsListMenuConfig_component_config = TextFormField | SelectFormField
+union MenuItemFieldsListMenuConfigFields = TextFormField | SelectFormField
 
 type MenuData {
   _template: String
@@ -601,88 +515,39 @@ type MenuItemFieldsListMenu {
 
 union PageSelectMenuMenuItem = BlockPage
 
-type PageReference {
-  form: PageReferenceFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PageReferenceData!
-}
-
-type PostList {
-  form: PostListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PostListData!
-}
-
-type PriceList {
-  form: PriceListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: PriceListData!
-}
-
-type SectionIndex {
-  form: SectionIndexFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SectionIndexData!
-}
-
-type Sidecar {
-  form: SidecarFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SidecarData!
-}
-
-type SponsorList {
-  form: SponsorListFieldConfig
-  absolutePath: String!
-  path: String!
-  content: String!
-  excerpt: String
-  data: SponsorListData!
-}
-
 type Mutation {
   document(path: String!, params: DocumentInput): DocumentUnion
 }
 
 input DocumentInput {
-  BlockPage_input: BlockPage_input
-  Post_input: Post_input
-  Author_input: Author_input
-  Menu_input: Menu_input
+  BlockPageInput: BlockPageInput
+  PostInput: PostInput
+  AuthorInput: AuthorInput
+  MenuInput: MenuInput
 }
 
-input BlockPage_input {
+input BlockPageInput {
+  data: BlockPageDataInput
+  content: String
+}
+
+input BlockPageDataInput {
   title: String
   blocks: [BlocksInput]
 }
 
 input BlocksInput {
-  Sidecar_input: Sidecar_input
-  ExcerptPost_input: ExcerptPost_input
-  PostList_input: PostList_input
-  PriceList_input: PriceList_input
-  AuthorList_input: AuthorList_input
-  SponsorList_input: SponsorList_input
-  PageReference_input: PageReference_input
-  SectionIndex_input: SectionIndex_input
+  SidecarInput: SidecarDataInput
+  ExcerptPostInput: ExcerptPostDataInput
+  PostListInput: PostListDataInput
+  PriceListInput: PriceListDataInput
+  AuthorListInput: AuthorListDataInput
+  SponsorListInput: SponsorListDataInput
+  PageReferenceInput: PageReferenceDataInput
+  SectionIndexInput: SectionIndexDataInput
 }
 
-input Sidecar_input {
+input SidecarDataInput {
   text: String
   image: String
   cta: CtaFieldsSidecarInput
@@ -695,21 +560,21 @@ input CtaFieldsSidecarInput {
 }
 
 input ActionsInput {
-  ActionVideo_input: ActionVideo_input
-  ActionNewsletter_input: ActionNewsletter_input
-  ActionPageReference_input: ActionPageReference_input
+  ActionVideoInput: ActionVideoDataInput
+  ActionNewsletterInput: ActionNewsletterDataInput
+  ActionPageReferenceInput: ActionPageReferenceDataInput
 }
 
-input ActionVideo_input {
+input ActionVideoDataInput {
   url: String
 }
 
-input ActionNewsletter_input {
+input ActionNewsletterDataInput {
   body: String
   footer: String
 }
 
-input ActionPageReference_input {
+input ActionPageReferenceDataInput {
   page: String
   button_settings: ButtonSettingsFieldsActionPageReferenceInput
 }
@@ -724,7 +589,7 @@ enum StyleSelectSidecar {
   Slant
 }
 
-input ExcerptPost_input {
+input ExcerptPostDataInput {
   post: String
   description: String
   style: StyleSelectExcerptPost
@@ -735,7 +600,7 @@ enum StyleSelectExcerptPost {
   Full
 }
 
-input PostList_input {
+input PostListDataInput {
   posts: [PostsFieldsListPostListInput]
 }
 
@@ -743,7 +608,7 @@ input PostsFieldsListPostListInput {
   post: String
 }
 
-input PriceList_input {
+input PriceListDataInput {
   heading: String
   prices: [PricesFieldsListPriceListInput]
 }
@@ -761,11 +626,11 @@ enum CategorySelectPriceListPrices {
   Pro
 }
 
-input AuthorList_input {
+input AuthorListDataInput {
   authors: [String]
 }
 
-input SponsorList_input {
+input SponsorListDataInput {
   description: String
   sponsor: [SponsorFieldsListSponsorListInput]
 }
@@ -776,25 +641,41 @@ input SponsorFieldsListSponsorListInput {
   image: String
 }
 
-input PageReference_input {
+input PageReferenceDataInput {
   description: String
   page: String
 }
 
-input SectionIndex_input {
+input SectionIndexDataInput {
   body: String
   limit: Int
-  section: String
+  section: SectionSelectSectionIndex
 }
 
-input Post_input {
+enum SectionSelectSectionIndex {
+  posts
+  pages
+  authors
+}
+
+input PostInput {
+  data: PostDataInput
+  content: String
+}
+
+input PostDataInput {
   title: String
   author: String
   image: String
   hashtags: [String]
 }
 
-input Author_input {
+input AuthorInput {
+  data: AuthorDataInput
+  content: String
+}
+
+input AuthorDataInput {
   name: String
   image: String
   gallery: [String]
@@ -807,7 +688,12 @@ input AccoladesFieldsListAuthorInput {
   description: String
 }
 
-input Menu_input {
+input MenuInput {
+  data: MenuDataInput
+  content: String
+}
+
+input MenuDataInput {
   logo: String
   menu_item: [MenuItemFieldsListMenuInput]
 }
