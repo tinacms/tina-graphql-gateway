@@ -1,4 +1,3 @@
-import { getData, writeData, getDirectoryList } from "./util";
 import fs from "fs";
 import path from "path";
 import flatten from "lodash.flatten";
@@ -31,6 +30,8 @@ import camelCase from "lodash.camelcase";
 import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
+import { FileSystemManager } from "./datasources/fileSystemManager";
+import { DataSource } from "./datasources/datasource";
 
 type DirectorySection = {
   type: "directory";
@@ -183,7 +184,8 @@ const getDocument = async (
   args: {
     path?: string;
   },
-  config: configType
+  config: configType,
+  dataSource: DataSource
 ): Promise<DocumentType> => {
   const path = args.path;
   if (isNullOrUndefined(path)) {
@@ -194,7 +196,7 @@ const getDocument = async (
     return pages?.includes(path);
   });
 
-  const document = await getData<DocumentType>(
+  const document = await dataSource.getData<DocumentType>(
     config.rootPath + "/" + args.path
   );
 
@@ -464,7 +466,9 @@ export type PluginFieldArgs = {
 // TODO: want to use something more helpful here
 type ListValue = { [key: string]: FieldType[] };
 type FieldSourceType = FieldType | ListValue;
-type FieldContextType = {};
+type FieldContextType = {
+  dataSource: DataSource;
+};
 export type Plugin = {
   matches: (string: FieldType["type"], field: FieldType) => boolean;
   run: (
@@ -481,7 +485,7 @@ type configType = {
 /**
  * This is the main function in this script, it returns all the types
  */
-const buildSchema = async (config: configType) => {
+const buildSchema = async (config: configType, dataSource: DataSource) => {
   const FMT_BASE = ".forestry/front_matter/templates";
   const SETTINGS_PATH = "/.forestry/settings.yml";
   const PATH_TO_TEMPLATES = config.rootPath + "/" + FMT_BASE;
@@ -512,9 +516,11 @@ const buildSchema = async (config: configType) => {
     // FIXME: we reference the slug in "select" fields
     return path.replace(config.sectionPrefix, "");
   };
-  const settings = await getData<Settings>(config.rootPath + SETTINGS_PATH);
+  const settings = await dataSource.getData<Settings>(
+    config.rootPath + SETTINGS_PATH
+  );
 
-  const fmtList = await getDirectoryList(PATH_TO_TEMPLATES);
+  const fmtList = await dataSource.getDirectoryList(PATH_TO_TEMPLATES);
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -534,7 +540,7 @@ const buildSchema = async (config: configType) => {
     fmtList.map(async (fmt) => {
       return {
         name: shortFMTName(fmt),
-        pages: (await getData<FMT>(fmt)).data.pages,
+        pages: (await dataSource.getData<FMT>(fmt)).data.pages,
       };
     })
   );
@@ -675,10 +681,14 @@ const buildSchema = async (config: configType) => {
               return templateObjectTypes[val.template];
             },
           }),
-          resolve: async (val: { [key: string]: unknown }) => {
+          resolve: async (
+            val: { [key: string]: unknown },
+            _args: { [argName: string]: any },
+            ctx: FieldContextType
+          ) => {
             const path = val[field.name];
             if (isString(path)) {
-              const res = await getData<DocumentType>(
+              const res = await ctx.dataSource.getData<DocumentType>(
                 config.rootPath + "/" + path
               );
               const activeTemplate = getFmtForDocument(path, templatePages);
@@ -803,7 +813,11 @@ const buildSchema = async (config: configType) => {
               },
             })
           ),
-          resolve: async (val: FieldSourceType) => {
+          resolve: async (
+            val: FieldSourceType,
+            _args: { [argName: string]: any },
+            ctx: FieldContextType
+          ) => {
             if (!isListValue(val)) {
               throw new GraphQLError("is not");
             }
@@ -818,7 +832,7 @@ const buildSchema = async (config: configType) => {
                     `Expected string for list resolver but got ${typeof itemPath}`
                   );
                 }
-                const res = await getData<DocumentType>(
+                const res = await ctx.dataSource.getData<DocumentType>(
                   config.rootPath + "/" + itemPath
                 );
                 const activeTemplate = getFmtForDocument(
@@ -1216,13 +1230,13 @@ const buildSchema = async (config: configType) => {
             },
           },
         }),
-        resolve: async () => {
+        resolve: async (val: any, _args: any, ctx: FieldContextType) => {
           return {
             ...field,
             component: field.type,
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
-                return getData<FMT>(
+                return ctx.dataSource.getData<FMT>(
                   PATH_TO_TEMPLATES + "/" + templateName + ".yml"
                 );
               })
@@ -1262,7 +1276,7 @@ const buildSchema = async (config: configType) => {
       args: {
         [argName: string]: unknown;
       },
-      context: unknown,
+      context: FieldContextType,
       info: unknown
     ) => unknown;
   };
@@ -1354,7 +1368,7 @@ const buildSchema = async (config: configType) => {
 
   await Promise.all(
     fmtList.map(async (path) => {
-      const fmt = await getData<FMT>(path);
+      const fmt = await dataSource.getData<FMT>(path);
 
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyFMTName(path),
@@ -1504,8 +1518,8 @@ const buildSchema = async (config: configType) => {
         args: {
           path: { type: GraphQLNonNull(GraphQLString) },
         },
-        resolve: async (_, args) => {
-          return getDocument(templatePages, args, config);
+        resolve: async (_, args, context) => {
+          return getDocument(templatePages, args, config, context.dataSource);
         },
       },
     },
@@ -1566,11 +1580,13 @@ const buildSchema = async (config: configType) => {
       Object.keys(payload.params)[0]
     ];
 
-    await writeData(payload.path, content, transform(data));
+    await dataSource.writeData(payload.path, content, transform(data));
   };
 
   return { schema, documentMutation };
 };
+
+const dataSource = new FileSystemManager();
 
 const app = express();
 app.use(cors());
@@ -1583,7 +1599,7 @@ app.use(
       rootPath: process.cwd(),
       ...userConfig,
     };
-    const { schema, documentMutation } = await buildSchema(config);
+    const { schema, documentMutation } = await buildSchema(config, dataSource);
     await fs.writeFileSync(
       __dirname + "/../src/schema.gql",
       printSchema(schema)
@@ -1636,6 +1652,7 @@ export default \`${query}\`
       rootValue: {
         document: documentMutation,
       },
+      context: { dataSource },
       graphiql: true,
       customFormatErrorFn(err: GraphQLError) {
         console.log(err);
