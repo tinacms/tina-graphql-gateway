@@ -39,6 +39,7 @@ export default `query DocumentQuery($path: String!) {
     ... on BlockPage {
       form {
         fields {
+          __typename
           ... on TextFormField {
             name
             label
@@ -67,28 +68,26 @@ export default `query DocumentQuery($path: String!) {
                 }
               }
               SponsorListFieldConfig {
-                name
                 label
-                component
+                key
                 fields {
-                  ...on TextFormField {
+                  ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
-                  ...on SponsorFieldsListSponsorListConfig {
+                  ... on SponsorFieldsListSponsorListConfig {
                     label
                     key
                     name
                     component
                     fields {
-                      ...on TextFormField {
+                      ... on TextFormField {
                         name
                         label
                         component
                       }
-                      ...on ImageFormField {
+                      ... on ImageFormField {
                         name
                         label
                         component
@@ -100,18 +99,15 @@ export default `query DocumentQuery($path: String!) {
               PageReferenceFieldConfig {
                 label
                 key
-                name
                 fields {
-                  ...on TextFormField {
+                  ... on TextFormField {
                     name
                     label
-                    value
                     component
                   }
-                  ...on SelectFormField {
+                  ... on SelectFormField {
                     name
                     label
-                    value
                     component
                     options
                   }
@@ -135,6 +131,7 @@ export default `query DocumentQuery($path: String!) {
                     label
                     key
                     component
+                    name
                     fields {
                       ... on TextFormField {
                         name
@@ -151,7 +148,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionVideoFieldConfig {
                         label
                         key
-                        component
                         fields {
                           ... on TextFormField {
                             label
@@ -163,7 +159,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionNewsletterFieldConfig {
                         label
                         key
-                        component
                         fields {
                           ... on TextFormField {
                             label
@@ -175,7 +170,6 @@ export default `query DocumentQuery($path: String!) {
                       ActionPageReferenceFieldConfig {
                         label
                         key
-                        component
                         fields {
                           ... on SelectFormField {
                             name
@@ -186,6 +180,7 @@ export default `query DocumentQuery($path: String!) {
                           ... on ButtonSettingsFieldsListActionPageReferenceConfig {
                             label
                             key
+                            name
                             component
                             fields {
                               ... on TextFormField {
@@ -273,7 +268,7 @@ export default `query DocumentQuery($path: String!) {
         _template
         title
         blocks {
-        	__typename
+          __typename
           ... on ExcerptPostData {
             __typename
             _template
@@ -329,6 +324,7 @@ export default `query DocumentQuery($path: String!) {
             actions {
               ... on ActionPageReferenceData {
                 _template
+                __typename
                 page {
                   ... on BlockPage {
                     path
@@ -340,10 +336,12 @@ export default `query DocumentQuery($path: String!) {
               }
               ... on ActionVideoData {
                 _template
+                __typename
                 url
               }
               ... on ActionNewsletterData {
                 _template
+                __typename
                 body
                 footer
               }
@@ -402,40 +400,6 @@ export default `query DocumentQuery($path: String!) {
             _template
             body
             limit
-            section {
-              __typename
-              ... on Post {
-                path
-                excerpt
-                data {
-                  hashtags
-                  title
-                  image {
-                    path
-                    absolutePath
-                  }
-                  author {
-                    __typename
-                    ... on Author {
-                      path
-                      content
-                      excerpt
-                      data {
-                        name
-                        image {
-                          path
-                          absolutePath
-                        }
-                        gallery {
-                          path
-                          absolutePath
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }

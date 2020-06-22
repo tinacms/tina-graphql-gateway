@@ -1,5 +1,5 @@
 ---
-title: About
+title: Aboutt
 blocks:
 - template: sidecar
   text: |-
@@ -10,35 +10,38 @@ blocks:
     We believe the path to success is found through a holistic approach to training and a strong sense of community. This culture is what fuels GCTC, and helps our runners to stay committed to their athletic endeavors. By joining our team you are taking the first step in breaking down barriers and achieving your goals.
 
     [Read full press release here](/ "Press Release")
-  image: "/uploads/curbside.jpg"
+  image: /uploads/curbside.jpg
   cta:
     header: ''
-  actions: []
+  actions:
+  - template: action-newsletter
+    body: Let's get started
+    footer: Ok
   style: Column
 - template: author-list
   authors:
   - content/authors/terrence.md
   - content/authors/jen.md
 - template: sponsor-list
+  description: '### Sponsors'
   sponsor:
   - name: Normatec
     url: normatec.org
-    image: "/uploads/normatec.png"
+    image: /uploads/normatec.png
   - name: HyperIce
     url: hyperice.com
-    image: "/uploads/hyperice.png"
+    image: /uploads/hyperice.png
   - name: Kinetik
     url: kineticperformancesd.com
-    image: "/uploads/kinetic.png"
+    image: /uploads/kinetic.png
   - name: BBTM
     url: bbtm.org
-    image: "/uploads/bbtm.png"
+    image: /uploads/bbtm.png
   - name: Adidas
     url: adidas.com
-    image: "/uploads/adidas.png"
-  description: "### Sponsors"
+    image: /uploads/adidas.png
 - template: page-reference
+  description: '## Meet our pros'
   page: content/pages/our-pros.md
-  description: "## Meet our pros"
-
 ---
+
