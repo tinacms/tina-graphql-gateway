@@ -30,7 +30,8 @@ import camelCase from "lodash.camelcase";
 import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
-import { DataSource, FileSystemManager } from "./datasources/fileSystemManager";
+import { FileSystemManager } from "./datasources/fileSystemManager";
+import { DataSource } from "./datasources/datasource";
 
 type DirectorySection = {
   type: "directory";

@@ -1,11 +1,6 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-
-export interface DataSource {
-  getData<T>(filepath: string): Promise<T>;
-  writeData<T>(path: string, content: any, data: any): Promise<T>;
-  getDirectoryList(path: string): Promise<string[]>;
-}
+import { DataSource } from "./datasource";
 
 export class FileSystemManager implements DataSource {
   getData = async <T>(filepath: string): Promise<T> => {
