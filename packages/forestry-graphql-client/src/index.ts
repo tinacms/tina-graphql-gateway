@@ -35,30 +35,6 @@ export const onSubmit = async ({
   path: string;
   payload: any;
 }) => {
-  const API_URL = "http://localhost:4001/graphql";
-
-  async function fetchAPI(
-    mutation,
-    { variables }: { variables: { path: string; params: any } }
-  ) {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: mutation,
-        variables,
-      }),
-    });
-
-    const json = await res.json();
-    if (json.errors) {
-      console.error(json.errors);
-      throw new Error("Failed to fetch API");
-    }
-    return json.data;
-  }
   const mutation = `mutation DocumentMutation($path: String!, $params: DocumentInput) {
     document(path: $path, params: $params) {
       __typename
@@ -77,61 +53,62 @@ export const onSubmit = async ({
   });
 };
 
-const prepare = (obj: any) => {
-  if (!obj) {
-    return "";
-  }
-  if (typeof obj == "string" || typeof obj === "number") {
-    return obj;
-  }
-  const { ...rest } = obj;
+export const forestryFetch = async ({ query, path }) => {
+  const data = await fetchAPI(query, { variables: { path } });
 
-  const meh = {};
-  Object.keys(rest).forEach((key) => {
-    if (Array.isArray(rest[key])) {
-      meh[key] = rest[key].map((item) => {
-        return prepare(item);
-      });
-    } else {
-      meh[key] = prepare(rest[key]);
-    }
-  });
+  const formConfig = {
+    id: path,
+    label: path,
+    initialValues: data.document.data,
+    fields: data.document.form.fields,
+  };
 
-  return meh;
-};
-export const prepareValues = (values: any) => {
-  const preparedValues = prepare(values);
-  // console.log(JSON.stringify(preparedValues, null, 2));
-
-  return preparedValues;
-};
-
-const rehydrate = (obj: any, document: any) => {
-  if (!obj) {
-    return "";
-  }
-  if (typeof obj == "string" || typeof obj === "number") {
-    return obj;
-  }
-  const { ...rest } = obj;
-
-  const meh = {};
-  Object.keys(rest).forEach((key) => {
-    if (Array.isArray(rest[key])) {
-      meh[key] = rest[key].map((item) => {
-        return rehydrate(item, document);
-      });
-    } else {
-      meh[key] = rehydrate(rest[key], document);
-    }
-  });
-
-  return meh;
-};
-
-export const rehydrateValues = (formData, document) => {
   return {
-    ...document,
-    data: rehydrate(formData, document),
+    data,
+    formConfig,
   };
 };
+
+export const useForestryForm = ({ data, formConfig }, useForm) => {
+  const [formData, form] = useForm({
+    ...formConfig,
+    onSubmit: (values) => {
+      onSubmit({ path: formConfig.id, payload: values });
+    },
+  });
+
+  const { __typename } = data.document;
+
+  return [
+    {
+      __typename,
+      data: formData,
+    },
+    form,
+  ];
+};
+
+const API_URL = "http://localhost:4001/graphql";
+
+async function fetchAPI(
+  query: string,
+  { variables }: { variables: { path: string; params?: any } }
+) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  });
+
+  const json = await res.json();
+  if (json.errors) {
+    console.error(json.errors);
+    throw new Error("Failed to fetch API");
+  }
+  return json.data;
+}
