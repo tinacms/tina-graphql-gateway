@@ -31,6 +31,7 @@ import camelCase from "lodash.camelcase";
 import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
+import { DataSource, FileSystemManager } from "./datasources/fileSystemManager";
 
 type DirectorySection = {
   type: "directory";
@@ -183,7 +184,8 @@ const getDocument = async (
   args: {
     path?: string;
   },
-  config: configType
+  config: configType,
+  dataSource: DataSource
 ): Promise<DocumentType> => {
   const path = args.path;
   if (isNullOrUndefined(path)) {
@@ -194,7 +196,7 @@ const getDocument = async (
     return pages?.includes(path);
   });
 
-  const document = await getData<DocumentType>(
+  const document = await dataSource.getData<DocumentType>(
     config.rootPath + "/" + args.path
   );
 
@@ -1504,8 +1506,8 @@ const buildSchema = async (config: configType) => {
         args: {
           path: { type: GraphQLNonNull(GraphQLString) },
         },
-        resolve: async (_, args) => {
-          return getDocument(templatePages, args, config);
+        resolve: async (_, args, context) => {
+          return getDocument(templatePages, args, config, context.dataSource);
         },
       },
     },
@@ -1636,6 +1638,7 @@ export default \`${query}\`
       rootValue: {
         document: documentMutation,
       },
+      context: { dataSource: new FileSystemManager() },
       graphiql: true,
       customFormatErrorFn(err: GraphQLError) {
         console.log(err);
