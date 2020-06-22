@@ -1,4 +1,3 @@
-import { writeData, getDirectoryList } from "./util";
 import fs from "fs";
 import path from "path";
 import flatten from "lodash.flatten";
@@ -520,7 +519,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     config.rootPath + SETTINGS_PATH
   );
 
-  const fmtList = await getDirectoryList(PATH_TO_TEMPLATES);
+  const fmtList = await dataSource.getDirectoryList(PATH_TO_TEMPLATES);
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -1580,7 +1579,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
       Object.keys(payload.params)[0]
     ];
 
-    await writeData(payload.path, content, transform(data));
+    await dataSource.writeData(payload.path, content, transform(data));
   };
 
   return { schema, documentMutation };
