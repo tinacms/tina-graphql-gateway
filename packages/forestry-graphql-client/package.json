@@ -8,6 +8,7 @@
     "watch": "forestry-watch"
   },
   "dependencies": {
-    "@forestry/build": "workspace:packages/build"
+    "@forestry/build": "workspace:packages/build",
+    "@forestry/graphql": "workspace:packages/forestry-graphql"
   }
 }
