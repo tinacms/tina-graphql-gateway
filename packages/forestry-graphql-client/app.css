@@ -13,9 +13,11 @@ code {
     monospace;
 }
 
-.graphiql-container {
-  height: 100vh !important;
-  width: 100vw;
+div.graphiql-explorer-root > div:last-child {
+  display: none;
 }
 
-/* .graphiql-container .codemirrorWrap  */
+.graphiql-container {
+  height: 100vh !important;
+  width: 100vw !important;
+}

@@ -1,82 +1,191 @@
-import React, { Component } from "react";
+import React from "react";
+
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
-import { buildClientSchema, getIntrospectionQuery, parse } from "graphql";
+import { getIntrospectionQuery, buildClientSchema, parse } from "graphql";
+import CodeExporter from "graphiql-code-exporter";
+import snippets from "./snippets";
 
-import type { GraphQLSchema } from "graphql";
-
-function fetcher(params: any): any {
-  return fetch("http://localhost:3000/api/graphql", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(params),
-  })
-    .then(function (response) {
-      return response.text();
-    })
-    .then(function (responseBody) {
-      try {
-        return JSON.parse(responseBody);
-      } catch (e) {
-        return responseBody;
-      }
-    });
+const parameters = {};
+function locationQuery(params) {
+  return (
+    `?` +
+    Object.keys(params)
+      .map(function (key) {
+        return encodeURIComponent(key) + `=` + encodeURIComponent(params[key]);
+      })
+      .join(`&`)
+  );
 }
 
-const DEFAULT_QUERY = ``;
-
-type State = {
-  schema: GraphQLSchema;
-  query: string;
-  explorerIsOpen: boolean;
+// Derive a fetch URL from the current URL, sans the GraphQL parameters.
+const graphqlParamNames = {
+  query: true,
+  variables: true,
+  operationName: true,
+  explorerIsOpen: true,
 };
+const otherParams = {};
+for (var k in parameters) {
+  if (parameters.hasOwnProperty(k) && graphqlParamNames[k] !== true) {
+    otherParams[k] = parameters[k];
+  }
+}
+// const fetchURL = locationQuery(otherParams);
+const fetchURL = "http://localhost:3000/api/graphql";
 
-class App extends Component<{}, State> {
-  _graphiql: GraphiQL;
-  state = { schema: null, query: DEFAULT_QUERY, explorerIsOpen: true };
+function graphQLFetcher(graphQLParams) {
+  return fetch(fetchURL, {
+    method: `post`,
+    headers: {
+      Accept: `application/json`,
+      "Content-Type": `application/json`,
+    },
+    body: JSON.stringify(graphQLParams),
+    credentials: `include`,
+  }).then(function (response) {
+    return response.json();
+  });
+}
+
+// When the query and variables string is edited, update the URL bar so
+// that it can be easily shared.
+function onEditVariables(newVariables) {
+  parameters.variables = newVariables;
+  updateURL();
+}
+function onEditOperationName(newOperationName) {
+  parameters.operationName = newOperationName;
+  updateURL();
+}
+function updateURL() {
+  history.replaceState(null, null, locationQuery(parameters));
+}
+
+let window = {};
+
+// We control query, so we need to recreate initial query text that show up
+// on visiting graphiql - in order it will be
+//  - query from query string (if set)
+//  - query stored in localStorage (which graphiql set when closing window)
+//  - default empty query
+const DEFAULT_QUERY =
+  parameters.query ||
+  (window.localStorage && window.localStorage.getItem(`graphiql:query`)) ||
+  undefined;
+
+const DEFAULT_VARIABLES =
+  parameters.variables ||
+  (window.localStorage && window.localStorage.getItem(`graphiql:variables`)) ||
+  undefined;
+
+const QUERY_EXAMPLE_FALLBACK = `#     {
+#       document(path: $path) {
+#         __typename
+#       }
+#     }`;
+
+function generateDefaultFallbackQuery(queryExample) {
+  return `# Welcome to GraphiQL
+#
+# GraphiQL is an in-browser tool for writing, validating, and
+# testing GraphQL queries.
+#
+# Type queries into this side of the screen, and you will see intelligent
+# typeaheads aware of the current GraphQL type schema and live syntax and
+# validation errors highlighted within the text.
+#
+# GraphQL queries typically start with a "{" character. Lines that starts
+# with a # are ignored.
+#
+# An example GraphQL query might look like:
+#
+${queryExample}
+#
+# Keyboard shortcuts:
+#
+#  Prettify Query:  Shift-Ctrl-P (or press the prettify button above)
+#
+#     Merge Query:  Shift-Ctrl-M (or press the merge button above)
+#
+#       Run Query:  Ctrl-Enter (or press the play button above)
+#
+#   Auto Complete:  Ctrl-Space (or just start typing)
+#
+`;
+}
+
+const storedExplorerPaneState =
+  typeof parameters.explorerIsOpen !== `undefined`
+    ? parameters.explorerIsOpen === `false`
+      ? false
+      : true
+    : window.localStorage
+    ? window.localStorage.getItem(`graphiql:graphiqlExplorerOpen`) !== `false`
+    : true;
+
+const storedCodeExporterPaneState =
+  typeof parameters.codeExporterIsOpen !== `undefined`
+    ? parameters.codeExporterIsOpen === `false`
+      ? false
+      : true
+    : window.localStorage
+    ? window.localStorage.getItem(`graphiql:graphiqlCodeExporterOpen`) ===
+      `true`
+    : false;
+
+class App extends React.Component {
+  state = {
+    schema: null,
+    query: DEFAULT_QUERY,
+    variables: DEFAULT_VARIABLES,
+    explorerIsOpen: storedExplorerPaneState,
+    codeExporterIsOpen: storedCodeExporterPaneState,
+  };
 
   componentDidMount() {
-    fetcher({
+    graphQLFetcher({
       query: getIntrospectionQuery(),
     }).then((result) => {
-      const editor = this._graphiql.getQueryEditor();
-      editor.setOption("extraKeys", {
-        ...(editor.options.extraKeys || {}),
-        "Shift-Alt-LeftClick": this._handleInspectOperation,
-      });
+      const newState = { schema: buildClientSchema(result.data) };
 
-      // @ts-ignore
-      this.setState({ schema: buildClientSchema(result.data) });
+      if (this.state.query === null) {
+        if (!newState.query) {
+          newState.query = generateDefaultFallbackQuery(QUERY_EXAMPLE_FALLBACK);
+        }
+      }
+
+      this.setState(newState);
+    });
+
+    const editor = this._graphiql.getQueryEditor();
+    editor.setOption(`extraKeys`, {
+      ...(editor.options.extraKeys || {}),
+      "Shift-Alt-LeftClick": this._handleInspectOperation,
     });
   }
 
-  _handleInspectOperation = (
-    cm: any,
-    mousePos: { line: Number; ch: Number }
-  ) => {
-    const parsedQuery = parse(this.state.query || "");
+  _handleInspectOperation = (cm, mousePos) => {
+    const parsedQuery = parse(this.state.query || ``);
 
     if (!parsedQuery) {
-      console.error("Couldn't parse query document");
+      console.error(`Couldn't parse query document`);
       return null;
     }
 
-    var token = cm.getTokenAt(mousePos);
-    var start = { line: mousePos.line, ch: token.start };
-    var end = { line: mousePos.line, ch: token.end };
-    var relevantMousePos = {
+    const token = cm.getTokenAt(mousePos);
+    const start = { line: mousePos.line, ch: token.start };
+    const end = { line: mousePos.line, ch: token.end };
+    const relevantMousePos = {
       start: cm.indexFromPos(start),
       end: cm.indexFromPos(end),
     };
 
-    var position = relevantMousePos;
+    const position = relevantMousePos;
 
-    var def = parsedQuery.definitions.find((definition) => {
+    const def = parsedQuery.definitions.find((definition) => {
       if (!definition.loc) {
-        console.log("Missing location information for definition");
+        console.log(`Missing location information for definition`);
         return false;
       }
 
@@ -86,79 +195,127 @@ class App extends Component<{}, State> {
 
     if (!def) {
       console.error(
-        "Unable to find definition corresponding to mouse position"
+        `Unable to find definition corresponding to mouse position`
       );
       return null;
     }
 
-    var operationKind =
-      def.kind === "OperationDefinition"
+    const operationKind =
+      def.kind === `OperationDefinition`
         ? def.operation
-        : def.kind === "FragmentDefinition"
-        ? "fragment"
-        : "unknown";
+        : def.kind === `FragmentDefinition`
+        ? `fragment`
+        : `unknown`;
 
-    var operationName =
-      def.kind === "OperationDefinition" && !!def.name
+    const operationName =
+      def.kind === `OperationDefinition` && !!def.name
         ? def.name.value
-        : def.kind === "FragmentDefinition" && !!def.name
+        : def.kind === `FragmentDefinition` && !!def.name
         ? def.name.value
-        : "unknown";
+        : `unknown`;
 
-    var selector = `.graphiql-explorer-root #${operationKind}-${operationName}`;
+    const selector = `.graphiql-explorer-root #${operationKind}-${operationName}`;
 
-    var el = document.querySelector(selector);
-    el && el.scrollIntoView();
+    const el = document.querySelector(selector);
+    if (el) {
+      el.scrollIntoView();
+      return true;
+    }
+
+    return false;
   };
 
-  // @ts-ignore
-  _handleEditQuery = (query: string): void => this.setState({ query });
+  _handleEditQuery = (query) => {
+    parameters.query = query;
+    updateURL();
+    this.setState({ query });
+  };
 
   _handleToggleExplorer = () => {
-    // @ts-ignore
-    this.setState({ explorerIsOpen: !this.state.explorerIsOpen });
+    const newExplorerIsOpen = !this.state.explorerIsOpen;
+    if (window.localStorage) {
+      window.localStorage.setItem(
+        `graphiql:graphiqlExplorerOpen`,
+        newExplorerIsOpen
+      );
+    }
+    parameters.explorerIsOpen = newExplorerIsOpen;
+    updateURL();
+    this.setState({ explorerIsOpen: newExplorerIsOpen });
+  };
+
+  _handleToggleExporter = () => {
+    const newCodeExporterIsOpen = !this.state.codeExporterIsOpen;
+    if (window.localStorage) {
+      window.localStorage.setItem(
+        `graphiql:graphiqlCodeExporterOpen`,
+        newCodeExporterIsOpen
+      );
+    }
+    parameters.codeExporterIsOpen = newCodeExporterIsOpen;
+    updateURL();
+    this.setState({ codeExporterIsOpen: newCodeExporterIsOpen });
   };
 
   render() {
-    const { query, schema } = this.state;
+    const { query, variables, schema, codeExporterIsOpen } = this.state;
+    const codeExporter = codeExporterIsOpen ? (
+      <CodeExporter
+        hideCodeExporter={this._handleToggleExporter}
+        snippets={snippets}
+        query={query}
+        codeMirrorTheme="default"
+      />
+    ) : null;
+
     return (
-      <div className="graphiql-container">
-        <GraphiQLExplorer
-          schema={schema}
-          query={query}
-          onEdit={this._handleEditQuery}
-          onRunOperation={(operationName) =>
-            this._graphiql.handleRunQuery(operationName)
-          }
-          explorerIsOpen={this.state.explorerIsOpen}
-          onToggleExplorer={this._handleToggleExplorer}
-        />
-        <GraphiQL
-          // @ts-ignore
-          ref={(ref) => (this._graphiql = ref)}
-          fetcher={fetcher}
-          schema={schema}
-          query={query}
-          onEditQuery={this._handleEditQuery}
-        >
-          <GraphiQL.Toolbar>
-            <GraphiQL.Button
-              onClick={() => this._graphiql.handlePrettifyQuery()}
-              label="Prettify"
-              title="Prettify Query (Shift-Ctrl-P)"
-            />
-            {/* <GraphiQL.Button
-              onClick={() => this._graphiql.handleToggleHistory()}
-              label="History"
-              title="Show History"
-            /> */}
-            <GraphiQL.Button
-              onClick={this._handleToggleExplorer}
-              label="Explorer"
-              title="Toggle Explorer"
-            />
-          </GraphiQL.Toolbar>
-        </GraphiQL>
+      <div id="root" className="graphiql-container">
+        <React.Fragment>
+          <GraphiQLExplorer
+            schema={schema}
+            query={query}
+            onEdit={this._handleEditQuery}
+            explorerIsOpen={this.state.explorerIsOpen}
+            onToggleExplorer={this._handleToggleExplorer}
+            onRunOperation={(operationName) =>
+              this._graphiql.handleRunQuery(operationName)
+            }
+          />
+          <GraphiQL
+            ref={(ref) => (this._graphiql = ref)}
+            fetcher={graphQLFetcher}
+            schema={schema}
+            query={query}
+            variables={variables}
+            onEditQuery={this._handleEditQuery}
+            onEditVariables={onEditVariables}
+            onEditOperationName={onEditOperationName}
+          >
+            <GraphiQL.Toolbar>
+              <GraphiQL.Button
+                onClick={() => this._graphiql.handlePrettifyQuery()}
+                label="Prettify"
+                title="Prettify Query (Shift-Ctrl-P)"
+              />
+              <GraphiQL.Button
+                onClick={() => this._graphiql.handleToggleHistory()}
+                label="History"
+                title="Show History"
+              />
+              <GraphiQL.Button
+                onClick={this._handleToggleExplorer}
+                label="Explorer"
+                title="Toggle Explorer"
+              />
+              <GraphiQL.Button
+                onClick={this._handleToggleExporter}
+                label="Code Exporter"
+                title="Toggle Code Exporter"
+              />
+            </GraphiQL.Toolbar>
+          </GraphiQL>
+          {codeExporter}
+        </React.Fragment>
       </div>
     );
   }
