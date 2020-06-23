@@ -196,9 +196,7 @@ const getDocument = async (
     return pages?.includes(path);
   });
 
-  const document = await dataSource.getData<DocumentType>(
-    config.rootPath + "/" + args.path
-  );
+  const document = await dataSource.getData<DocumentType>(args.path || "");
 
   return {
     ...document,
@@ -487,11 +485,9 @@ type configType = {
  */
 const buildSchema = async (config: configType, dataSource: DataSource) => {
   const FMT_BASE = ".forestry/front_matter/templates";
-  const SETTINGS_PATH = "/.forestry/settings.yml";
-  const PATH_TO_TEMPLATES = config.rootPath + "/" + FMT_BASE;
-
+  const SETTINGS_PATH = ".forestry/settings.yml";
   const shortFMTName = (path: string) => {
-    return path.replace(`${PATH_TO_TEMPLATES}/`, "").replace(".yml", "");
+    return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
   };
   const friendlyName = (name: string, options = { suffix: "" }) => {
     const delimiter = "_";
@@ -516,11 +512,9 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     // FIXME: we reference the slug in "select" fields
     return path.replace(config.sectionPrefix, "");
   };
-  const settings = await dataSource.getData<Settings>(
-    config.rootPath + SETTINGS_PATH
-  );
+  const settings = await dataSource.getData<Settings>(SETTINGS_PATH);
 
-  const fmtList = await dataSource.getDirectoryList(PATH_TO_TEMPLATES);
+  const fmtList = await dataSource.getDirectoryList(FMT_BASE);
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -688,9 +682,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
           ) => {
             const path = val[field.name];
             if (isString(path)) {
-              const res = await ctx.dataSource.getData<DocumentType>(
-                config.rootPath + "/" + path
-              );
+              const res = await ctx.dataSource.getData<DocumentType>(path);
               const activeTemplate = getFmtForDocument(path, templatePages);
               return {
                 ...res,
@@ -833,7 +825,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
                   );
                 }
                 const res = await ctx.dataSource.getData<DocumentType>(
-                  config.rootPath + "/" + itemPath
+                  itemPath
                 );
                 const activeTemplate = getFmtForDocument(
                   itemPath,
@@ -1237,7 +1229,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
                 return ctx.dataSource.getData<FMT>(
-                  PATH_TO_TEMPLATES + "/" + templateName + ".yml"
+                  FMT_BASE + "/" + templateName + ".yml"
                 );
               })
             ),
@@ -1586,7 +1578,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   return { schema, documentMutation };
 };
 
-const dataSource = new FileSystemManager();
+const dataSource = new FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());
