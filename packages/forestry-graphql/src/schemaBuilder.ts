@@ -860,18 +860,20 @@ export const buildSchema = async (
             fields: {
               ...baseInputFields,
               component: { type: GraphQLString },
-              itemField: {
-                type: new GraphQLObjectType({
-                  name: friendlyName(
-                    field.name + "_list_" + fmt + "_config_item"
-                  ),
-                  fields: {
-                    name: { type: GraphQLString },
-                    label: { type: GraphQLString },
-                    component: { type: GraphQLString },
-                    options: { type: GraphQLList(GraphQLString) },
-                  },
-                }),
+              fields: {
+                type: GraphQLList(
+                  new GraphQLObjectType({
+                    name: friendlyName(
+                      field.name + "_list_" + fmt + "_config_item"
+                    ),
+                    fields: {
+                      name: { type: GraphQLString },
+                      label: { type: GraphQLString },
+                      component: { type: GraphQLString },
+                      options: { type: GraphQLList(GraphQLString) },
+                    },
+                  })
+                ),
               },
             },
           }),
@@ -885,13 +887,15 @@ export const buildSchema = async (
             return {
               name: field.name,
               label: field.label,
-              component: "list",
-              itemField: {
-                label: field.label + " Item",
-                name: "path",
-                component: "select",
-                options: possiblePages,
-              },
+              component: "group-list",
+              fields: [
+                {
+                  label: field.label + " Item",
+                  name: "path",
+                  component: "select",
+                  options: possiblePages,
+                },
+              ],
             };
           },
         },

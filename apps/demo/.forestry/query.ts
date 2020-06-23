@@ -58,11 +58,11 @@ export default `query DocumentQuery($path: String!) {
                     name
                     label
                     component
-                    itemField {
+                    fields {
                       name
-                      label
-                      component
                       options
+                      component
+                      label
                     }
                   }
                 }
