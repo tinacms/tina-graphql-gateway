@@ -60,6 +60,7 @@ const getSectionFmtTypes = (
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
   );
+
   return sectionTemplates
     .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
     .filter(isNotNull);
@@ -472,6 +473,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   const shortFMTName = (path: string) => {
     return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
   };
+
   const friendlyName = (name: string, options = { suffix: "" }) => {
     const delimiter = "_";
 
@@ -495,8 +497,8 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     // FIXME: we reference the slug in "select" fields
     return path.replace(config.sectionPrefix, "");
   };
-  const settings = await dataSource.getSettings();
 
+  const settings = await dataSource.getSettings();
   const fmtList = await dataSource.getTemplateList();
 
   const templateDataInputObjectTypes: {
@@ -1559,7 +1561,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   return { schema, documentMutation };
 };
 
-const dataSource = new FileSystemManager(process.cwd());
+const dataSource = new DatabaseManager(); //FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());
