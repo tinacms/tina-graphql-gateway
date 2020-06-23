@@ -3,7 +3,6 @@ export interface DataSource {
   getSettings(): Promise<Settings>;
   getTemplate<T>(name: string): Promise<T>;
   writeData<T>(path: string, content: any, data: any): Promise<T>;
-  getDirectoryList(path: string): Promise<string[]>;
   getTemplateList(): Promise<string[]>;
 }
 

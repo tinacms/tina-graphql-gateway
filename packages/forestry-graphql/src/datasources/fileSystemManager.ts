@@ -30,11 +30,6 @@ export class FileSystemManager implements DataSource {
 
     return await this.getData<T>(fullPath);
   };
-  getDirectoryList = async (filepath: any) => {
-    const list = await fs.readdirSync(this.getFullPath(filepath));
-
-    return list.map((item) => `${filepath}/${item}`);
-  };
   getTemplateList = async () => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
