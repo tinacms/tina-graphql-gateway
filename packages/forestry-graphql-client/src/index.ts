@@ -88,7 +88,7 @@ export const useForestryForm = ({ data, formConfig }, useForm) => {
   ];
 };
 
-const API_URL = "http://localhost:4001/graphql";
+const API_URL = "http://localhost:3000/api/graphql";
 
 async function fetchAPI(
   query: string,

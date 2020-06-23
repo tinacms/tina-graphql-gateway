@@ -30,7 +30,7 @@
     "glob": "^7.1.6",
     "graphiql": "^0.17.5",
     "graphiql-explorer": "^0.5.1",
-    "graphql": "^15.0.0",
+    "graphql": "^15.1.0",
     "graphql-toolkit": "^0.7.5",
     "gray-matter": "^4.0.2",
     "lodash.camelcase": "^4.3.0",
