@@ -1,6 +1,6 @@
 {
   "name": "@forestry/graphql",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "typings": "dist/types.d.ts",
   "bin": {
@@ -48,5 +48,13 @@
     "typescript": "^3.8.3",
     "unified": "^9.0.0",
     "yaml": "^1.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:forestryio/graphql-demo.git",
+    "directory": "packages/forestry-graphql"
   }
 }

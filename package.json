@@ -5,6 +5,13 @@
     "packages/*",
     "apps/*"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:forestryio/graphql-demo.git"
+  },
   "dependencies": {
     "@yarnpkg/pnpify": "^2.0.0-rc.20",
     "eslint": "^6.8.0",

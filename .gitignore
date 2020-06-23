@@ -8,3 +8,4 @@ node_modules
 !.yarn/releases
 !.yarn/plugins
 .pnp.*
+package.tgz

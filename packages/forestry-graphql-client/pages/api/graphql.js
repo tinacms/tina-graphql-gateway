@@ -1,10 +1,10 @@
-import { graphql } from "graphql";
+import { graphql, printSchema } from "graphql";
+import fs from "fs";
 import Cors from "cors";
 import {
   buildSchema as buildForestrySchema,
   FileSystemManager,
 } from "@forestry/graphql";
-import { generate } from "../../graphql/codegen";
 
 const dataSource = new FileSystemManager();
 
@@ -18,10 +18,11 @@ export default async (req, res) => {
     forestryConfig,
     dataSource
   );
+  // Useful for debugging
+  // console.log(printSchema(schema));
+  // await fs.writeFileSync("./meh.gql", printSchema(schema));
 
   const { query, operationName, variables } = req.body;
-
-  // generate("some/path", schema);
 
   const response = await graphql(
     schema,

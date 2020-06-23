@@ -62,12 +62,17 @@ const getSectionFmtTypes = (
   settings: Settings,
   templateObjectTypes: Templates
 ) => {
+  // TODO: Warn when a section has no template defined
   const sectionTemplates = flatten(
     settings.data.sections
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
+  ).filter(Boolean);
+
+  const uniqueTemplates = Array.from(
+    new Set(sectionTemplates.map((item) => item))
   );
-  return sectionTemplates
+  return uniqueTemplates
     .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
     .filter(isNotNull);
 };
@@ -155,7 +160,8 @@ const getSectionFmtInputTypes = (
     settings.data.sections
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
-  );
+  ).filter(Boolean);
+  console.log(sectionTemplates);
 
   return arrayToObject<GraphQLInputObjectType>(
     sectionTemplates
@@ -191,10 +197,16 @@ const getDocument = async (
     config.rootPath + "/" + args.path
   );
 
+  if (!activeTemplate) {
+    throw new GraphQLError(
+      `No template matches the path for the requested document ${args.path}`
+    );
+  }
+
   return {
     ...document,
     path,
-    template: activeTemplate?.name || "",
+    template: activeTemplate?.name,
   };
 };
 
@@ -1512,9 +1524,13 @@ export const buildSchema = async (
 
   const documentType = new GraphQLUnionType({
     name: friendlyName("document_union"),
-    types: () => getSectionFmtTypes(settings, templateObjectTypes),
+    types: () => {
+      return getSectionFmtTypes(settings, templateObjectTypes);
+    },
     resolveType: (val: { template: string }): GraphQLObjectType => {
       const type = templateObjectTypes[val.template];
+      console.log(templateObjectTypes);
+      console.log(val);
 
       if (!type) {
         throw new GraphQLError(
@@ -1534,7 +1550,6 @@ export const buildSchema = async (
       fields: () => getSectionFmtInputTypes(settings, templateInputObjectTypes),
     }),
   };
-
   const rootQuery = new GraphQLObjectType({
     name: "Query",
     fields: {
