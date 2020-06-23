@@ -68,6 +68,7 @@ export class DatabaseManager implements DataSource {
     return {
       data: {
         ...template,
+        label: template.name,
         fields: mapFields(template.fields),
         pages: pagesRes.rows.map((p) => p.path),
       },
@@ -113,11 +114,6 @@ export class DatabaseManager implements DataSource {
     await fs.writeFileSync(path, string);
 
     return await this.getData<T>(path);
-  };
-  getDirectoryList = async (path: any) => {
-    const list = await fs.readdirSync(path);
-
-    return list.map((item) => `${path}/${item}`);
   };
   getTemplateList = async (): Promise<string[]> => {
     const res = await this.query(
