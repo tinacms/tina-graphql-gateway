@@ -69,7 +69,47 @@ export const forestryFetch = async ({ query, path }) => {
   };
 };
 
-export const useForestryForm = ({ data, formConfig }, useForm) => {
+const traverse = (fields, customizations) => {
+  const customizeComponentNames = Object.keys(customizations);
+  return fields.map((field) => {
+    // If is group or group-list
+    if (field.hasOwnProperty("fields")) {
+      return {
+        ...field,
+        fields: traverse(field.fields, customizations),
+      };
+    }
+    // If is blocks
+    if (field.hasOwnProperty("templates")) {
+      const templates2: { [key: string]: any } = {};
+      Object.keys(field.templates).forEach((templateKey) => {
+        templates2[templateKey] = {
+          ...field.templates[templateKey],
+          fields: traverse(field.templates[templateKey].fields, customizations),
+        };
+      });
+      return {
+        ...field,
+        templates: templates2,
+      };
+    }
+
+    if (customizeComponentNames.includes(field.component)) {
+      return {
+        ...customizations[field.component](field),
+      };
+    }
+
+    return field;
+  });
+};
+
+export const useForestryForm = (
+  { data, formConfig },
+  useForm,
+  customizations
+) => {
+  formConfig.fields = traverse(formConfig.fields, customizations);
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {

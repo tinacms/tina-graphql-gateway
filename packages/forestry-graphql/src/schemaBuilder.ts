@@ -572,6 +572,18 @@ export const buildSchema = async (
     name: "ImageFormField",
     fields: {
       ...baseInputFields,
+      fields: {
+        type: GraphQLList(
+          new GraphQLObjectType({
+            name: "ImageWrapInner",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+            },
+          })
+        ),
+      },
     },
   });
 
@@ -955,7 +967,14 @@ export const buildSchema = async (
           return {
             name: field.name,
             label: field.label,
-            component: "file",
+            component: "group",
+            fields: [
+              {
+                name: "path",
+                label: "Path",
+                component: "image",
+              },
+            ],
           };
         },
       },
@@ -998,7 +1017,15 @@ export const buildSchema = async (
         resolve: () => {
           return {
             name: field.name,
-            component: "image",
+            label: field.label,
+            component: "group",
+            fields: [
+              {
+                name: "path",
+                label: "Path",
+                component: "image",
+              },
+            ],
           };
         },
       },

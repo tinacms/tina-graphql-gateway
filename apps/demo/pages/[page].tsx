@@ -29,7 +29,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 const Home = (props) => {
   // FIXME: running into issues with multiple instances so passing
   // useForm by reference rather than importing it
-  const [formData, form] = useForestryForm(props.response, useForm);
+  const [formData, form] = useForestryForm(props.response, useForm, {
+    image: (field) => {
+      return {
+        ...field,
+        previewSrc: (_, { input }) => {
+          return input.value;
+        },
+        uploadDir: () => "/not/yet/implemented/",
+      };
+    },
+  });
   usePlugin(form);
 
   return <PageSwitch document={formData} />;
