@@ -104,8 +104,11 @@ export class DatabaseManager implements DataSource {
     const res = await this.query(
       `SELECT * from Pages WHERE site_id = ${dummySiteId} AND path = '${filepath}'`
     );
+
+    const data = res.rows[0];
     return {
-      data: res.rows[0],
+      data: data.params,
+      content: data.body,
     } as any;
   };
 
