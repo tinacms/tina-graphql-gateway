@@ -1898,8 +1898,10 @@ __metadata:
     "@graphql-codegen/typescript-operations": ^1.15.4
     "@types/node": ^14.0.13
     "@types/react": ^16.9.38
+    codemirror: ^5.55.0
     cors: ^2.8.5
     graphiql: ^1.0.2
+    graphiql-code-exporter: ^2.0.8
     graphiql-explorer: ^0.6.2
     graphql: ^15.1.0
     next: 9.4.2
@@ -5217,7 +5219,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror@npm:^5.52.2":
+"codemirror@npm:^5.52.2, codemirror@npm:^5.55.0":
   version: 5.55.0
   resolution: "codemirror@npm:5.55.0"
   checksum: 1d9e59d0d61c4884511cf2966afa0c1ff143a432caed0ad2aa47ebb4eb36722de4cd0bbca16536aa142dbd0cc23e8034f7936d7e8d54803715d3de2dc45f395d
@@ -5490,7 +5492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-to-clipboard@npm:^3.2.0":
+"copy-to-clipboard@npm:^3.0.8, copy-to-clipboard@npm:^3.2.0":
   version: 3.3.1
   resolution: "copy-to-clipboard@npm:3.3.1"
   dependencies:
@@ -7566,6 +7568,20 @@ fsevents@~2.1.2:
   version: 4.2.3
   resolution: "graceful-fs@npm:4.2.3"
   checksum: 67b7e3f6a687c91287f17a2adfcce462406e2aa16ea4440618e1daaecd579ae6362c0b13303f86c77c165ed8074fa8b0868bb0a73173fa3407c2b747e89353f9
+  languageName: node
+  linkType: hard
+
+"graphiql-code-exporter@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "graphiql-code-exporter@npm:2.0.8"
+  dependencies:
+    copy-to-clipboard: ^3.0.8
+  peerDependencies:
+    codemirror: ^5.26.0
+    graphql: ^14.1.1
+    react: ^15.6.0 || ^16.0.0
+    react-dom: ^16.2.0
+  checksum: 2ef850664a88daa0d28ceadee940106dcb94eb4a826393163ba55c55ba558175e6e8679ffce90a4a68c8d1a29448b3ff7700777435366498f77cade0195ce8b3
   languageName: node
   linkType: hard
 
