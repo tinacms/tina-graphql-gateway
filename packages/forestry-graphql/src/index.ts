@@ -31,32 +31,14 @@ import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
 import { FileSystemManager } from "./datasources/fileSystemManager";
-import { DataSource } from "./datasources/datasource";
+import {
+  DataSource,
+  Settings,
+  Section,
+  DirectorySection,
+} from "./datasources/datasource";
 import { DatabaseManager } from "./datasources/databaseManager";
 require("dotenv").config();
-
-type DirectorySection = {
-  type: "directory";
-  label: string;
-  path: string;
-  create: "documents" | "all";
-  match: string;
-  new_doc_ext: string;
-  templates: string[];
-};
-type HeadingSection = {
-  type: "heading";
-  label: string;
-};
-type DocumentSection = {
-  type: "document";
-  label: string;
-  path: string;
-};
-type Section = DirectorySection | HeadingSection | DocumentSection;
-type Settings = {
-  data: { sections: Section[] };
-};
 
 const arrayToObject = <T>(
   array: T[],
@@ -487,7 +469,6 @@ type configType = {
  */
 const buildSchema = async (config: configType, dataSource: DataSource) => {
   const FMT_BASE = ".forestry/front_matter/templates";
-  const SETTINGS_PATH = ".forestry/settings.yml";
   const shortFMTName = (path: string) => {
     return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
   };
@@ -514,9 +495,9 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     // FIXME: we reference the slug in "select" fields
     return path.replace(config.sectionPrefix, "");
   };
-  const settings = await dataSource.getData<Settings>(SETTINGS_PATH);
+  const settings = await dataSource.getSettings();
 
-  const fmtList = await dataSource.getDirectoryList(FMT_BASE);
+  const fmtList = await dataSource.getTemplateList();
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -536,7 +517,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     fmtList.map(async (fmt) => {
       return {
         name: shortFMTName(fmt),
-        pages: (await dataSource.getData<FMT>(fmt)).data.pages,
+        pages: (await dataSource.getTemplate<FMT>(fmt)).data.pages,
       };
     })
   );
@@ -1230,9 +1211,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             component: field.type,
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
-                return ctx.dataSource.getData<FMT>(
-                  FMT_BASE + "/" + templateName + ".yml"
-                );
+                return ctx.dataSource.getTemplate<FMT>(templateName + ".yml");
               })
             ),
           };
@@ -1362,7 +1341,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
 
   await Promise.all(
     fmtList.map(async (path) => {
-      const fmt = await dataSource.getData<FMT>(path);
+      const fmt = await dataSource.getTemplate<FMT>(path);
 
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyFMTName(path),
@@ -1580,7 +1559,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   return { schema, documentMutation };
 };
 
-const dataSource = new DatabaseManager(); //FileSystemManager(process.cwd());
+const dataSource = new FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());

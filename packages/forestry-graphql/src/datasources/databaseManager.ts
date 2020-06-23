@@ -15,6 +15,20 @@ export class DatabaseManager implements DataSource {
     });
     this.client.connect();
   }
+  getTemplate = async <T>(name: string): Promise<T> => {
+    const result = matter(await fs.readFileSync(name));
+
+    // @ts-ignore
+    return result;
+  };
+  getSettings = async (): Promise<any> => {
+    const SETTINGS_PATH = ".forestry/settings.yml";
+    const result = await this.getData(SETTINGS_PATH);
+
+    // @ts-ignore
+    return result;
+  };
+
   getData = async <T>(filepath: string): Promise<T> => {
     this.client.query(
       `SELECT * from Pages WHERE path = '${filepath}'`,
