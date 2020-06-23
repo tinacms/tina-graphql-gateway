@@ -32,6 +32,8 @@ import upperFist from "lodash.upperfirst";
 import { pluginsList } from "./plugins";
 import { FileSystemManager } from "./datasources/fileSystemManager";
 import { DataSource } from "./datasources/datasource";
+import { DatabaseManager } from "./datasources/databaseManager";
+require("dotenv").config();
 
 type DirectorySection = {
   type: "directory";
@@ -1578,7 +1580,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   return { schema, documentMutation };
 };
 
-const dataSource = new FileSystemManager(process.cwd());
+const dataSource = new DatabaseManager(); //FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());
