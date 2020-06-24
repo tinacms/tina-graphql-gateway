@@ -1,5 +1,6 @@
 import flatten from "lodash.flatten";
 import {
+  parse,
   getNamedType,
   GraphQLBoolean,
   GraphQLError,
@@ -12,6 +13,7 @@ import {
   GraphQLString,
   GraphQLUnionType,
   GraphQLNonNull,
+  printSchema,
   GraphQLType,
   GraphQLFieldConfig,
   GraphQLInputObjectType,
@@ -19,33 +21,31 @@ import {
 import camelCase from "lodash.camelcase";
 import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
-import { FileSystemManager } from "./datasources/fileSystemManager";
-import { DataSource } from "./datasources/datasource";
-
-export { FileSystemManager };
-
-type DirectorySection = {
-  type: "directory";
-  label: string;
-  path: string;
-  create: "documents" | "all";
-  match: string;
-  new_doc_ext: string;
-  templates: string[];
-};
-type HeadingSection = {
-  type: "heading";
-  label: string;
-};
-type DocumentSection = {
-  type: "document";
-  label: string;
-  path: string;
-};
-type Section = DirectorySection | HeadingSection | DocumentSection;
-type Settings = {
-  data: { sections: Section[] };
-};
+import {
+  DataSource,
+  Settings,
+  Section,
+  DirectorySection,
+  FieldType,
+  SectionList,
+  TextField,
+  SelectField,
+  FileField,
+  TagListField,
+  TextareaField,
+  NumberField,
+  BooleanField,
+  GalleryField,
+  FieldGroupField,
+  FieldGroupListField,
+  BlocksField,
+  FMT,
+  WithFields,
+  SectionSelect,
+  DateField,
+  ListField,
+} from "./datasources/datasource";
+require("dotenv").config();
 
 const arrayToObject = <T>(
   array: T[],
@@ -62,17 +62,13 @@ const getSectionFmtTypes = (
   settings: Settings,
   templateObjectTypes: Templates
 ) => {
-  // TODO: Warn when a section has no template defined
   const sectionTemplates = flatten(
     settings.data.sections
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
-  ).filter(Boolean);
-
-  const uniqueTemplates = Array.from(
-    new Set(sectionTemplates.map((item) => item))
   );
-  return uniqueTemplates
+
+  return sectionTemplates
     .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
     .filter(isNotNull);
 };
@@ -160,7 +156,7 @@ const getSectionFmtInputTypes = (
     settings.data.sections
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
-  ).filter(Boolean);
+  );
 
   return arrayToObject<GraphQLInputObjectType>(
     sectionTemplates
@@ -192,20 +188,12 @@ const getDocument = async (
     return pages?.includes(path);
   });
 
-  const document = await dataSource.getData<DocumentType>(
-    config.rootPath + "/" + args.path
-  );
-
-  if (!activeTemplate) {
-    throw new GraphQLError(
-      `No template matches the path for the requested document ${args.path}`
-    );
-  }
+  const document = await dataSource.getData<DocumentType>(args.path || "");
 
   return {
     ...document,
     path,
-    template: activeTemplate?.name,
+    template: activeTemplate?.name || "",
   };
 };
 
@@ -262,189 +250,6 @@ type DocumentType = BaseDocumentType & {
   template: string;
   data: DocumentData;
 };
-type WithFields = {
-  label: string;
-  name: string;
-  type: string;
-  fields: FieldType[];
-};
-type FMT = BaseDocumentType & {
-  data: WithFields & {
-    label: string;
-    hide_body: boolean;
-    display_field: string;
-    pages: string[];
-  };
-};
-
-type TextField = {
-  label: string;
-  name: string;
-  type: "text";
-  default: string;
-  config?: {
-    required?: boolean;
-  };
-};
-type TextareaField = {
-  label: string;
-  name: string;
-  type: "textarea";
-  config: {
-    required: boolean;
-    wysiwyg: boolean;
-    schema: { format: "markdown" };
-  };
-};
-type TagListField = {
-  label: string;
-  name: string;
-  type: "tag_list";
-  default: string[];
-  config?: {
-    required?: boolean;
-  };
-};
-type BooleanField = {
-  label: string;
-  name: string;
-  type: "boolean";
-  config?: {
-    required?: boolean;
-  };
-};
-type NumberField = {
-  label: string;
-  name: string;
-  type: "number";
-  config?: {
-    required?: boolean;
-  };
-};
-type DateField = {
-  label: string;
-  name: string;
-  type: "datetime";
-  hidden: boolean;
-  default: "now";
-  config: {
-    date_format: string;
-    export_format: string;
-    required: boolean;
-  };
-};
-type BlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  template_types: string[];
-  config?: {
-    min: string;
-    max: string;
-  };
-};
-type FieldGroupField = WithFields & {
-  label: string;
-  name: string;
-  type: "field_group";
-  config?: {
-    required?: boolean;
-  };
-};
-type FieldGroupListField = WithFields & {
-  label: string;
-  name: string;
-  type: "field_group_list";
-  config?: {
-    required?: boolean;
-  };
-};
-type FileField = {
-  label: string;
-  name: string;
-  type: "file";
-  config?: {
-    required?: boolean;
-    maxSize: null | number;
-  };
-};
-type GalleryField = {
-  label: string;
-  name: string;
-  type: "image_gallery";
-  config: {
-    required?: boolean;
-    maxSize: null | number;
-  };
-};
-type BaseListField = {
-  label: string;
-  name: string;
-  type: "list";
-};
-type SimpleList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: null | number;
-    max: null | number;
-  };
-};
-type SectionList = BaseListField & {
-  config?: {
-    required?: boolean;
-    use_select: boolean;
-    min: null | number;
-    max: null | number;
-    source: {
-      type: "pages";
-      section: string;
-    };
-  };
-};
-type ListField = SectionList | SimpleList;
-
-type BaseSelectField = {
-  label: string;
-  name: string;
-  type: "select";
-};
-type SectionSelect = BaseSelectField & {
-  config: {
-    required: boolean;
-    source: {
-      type: "pages";
-      section: string;
-      file: string;
-      path: string;
-    };
-  };
-};
-type SimpleSelect = BaseSelectField & {
-  default: string;
-  config: {
-    options: string[];
-    required: boolean;
-    source: {
-      type: "simple";
-    };
-  };
-};
-type SelectField = SectionSelect | SimpleSelect;
-type FieldType =
-  | TextField
-  | TextareaField
-  | BlocksField
-  | DateField
-  | NumberField
-  | BooleanField
-  | TagListField
-  | SelectField
-  | ListField
-  | GalleryField
-  | FileField
-  | FieldGroupField
-  | FieldGroupListField;
 
 type TemplatePage = { name: string; pages: string[] };
 
@@ -492,12 +297,10 @@ export const buildSchema = async (
   dataSource: DataSource
 ) => {
   const FMT_BASE = ".forestry/front_matter/templates";
-  const SETTINGS_PATH = "/.forestry/settings.yml";
-  const PATH_TO_TEMPLATES = config.rootPath + "/" + FMT_BASE;
-
   const shortFMTName = (path: string) => {
-    return path.replace(`${PATH_TO_TEMPLATES}/`, "").replace(".yml", "");
+    return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
   };
+
   const friendlyName = (name: string, options = { suffix: "" }) => {
     const delimiter = "_";
 
@@ -521,11 +324,9 @@ export const buildSchema = async (
     // FIXME: we reference the slug in "select" fields
     return path.replace(config.sectionPrefix, "");
   };
-  const settings = await dataSource.getData<Settings>(
-    config.rootPath + SETTINGS_PATH
-  );
 
-  const fmtList = await dataSource.getDirectoryList(PATH_TO_TEMPLATES);
+  const settings = await dataSource.getSettings();
+  const fmtList = await dataSource.getTemplateList();
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -545,7 +346,7 @@ export const buildSchema = async (
     fmtList.map(async (fmt) => {
       return {
         name: shortFMTName(fmt),
-        pages: (await dataSource.getData<FMT>(fmt)).data.pages,
+        pages: (await dataSource.getTemplate(fmt)).data.pages,
       };
     })
   );
@@ -705,9 +506,7 @@ export const buildSchema = async (
           ) => {
             const path = val[field.name];
             if (isString(path)) {
-              const res = await ctx.dataSource.getData<DocumentType>(
-                config.rootPath + "/" + path
-              );
+              const res = await ctx.dataSource.getData<DocumentType>(path);
               const activeTemplate = getFmtForDocument(path, templatePages);
               return {
                 ...res,
@@ -850,7 +649,7 @@ export const buildSchema = async (
                   );
                 }
                 const res = await ctx.dataSource.getData<DocumentType>(
-                  config.rootPath + "/" + itemPath
+                  itemPath
                 );
                 const activeTemplate = getFmtForDocument(
                   itemPath,
@@ -1032,7 +831,6 @@ export const buildSchema = async (
         resolve: () => {
           return {
             name: field.name,
-            label: field.label,
             component: "group",
             fields: [
               {
@@ -1272,9 +1070,7 @@ export const buildSchema = async (
             component: field.type,
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
-                return ctx.dataSource.getData<FMT>(
-                  PATH_TO_TEMPLATES + "/" + templateName + ".yml"
-                );
+                return ctx.dataSource.getTemplate(templateName + ".yml");
               })
             ),
           };
@@ -1404,7 +1200,7 @@ export const buildSchema = async (
 
   await Promise.all(
     fmtList.map(async (path) => {
-      const fmt = await dataSource.getData<FMT>(path);
+      const fmt = await dataSource.getTemplate(path);
 
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyFMTName(path),
@@ -1523,9 +1319,7 @@ export const buildSchema = async (
 
   const documentType = new GraphQLUnionType({
     name: friendlyName("document_union"),
-    types: () => {
-      return getSectionFmtTypes(settings, templateObjectTypes);
-    },
+    types: () => getSectionFmtTypes(settings, templateObjectTypes),
     resolveType: (val: { template: string }): GraphQLObjectType => {
       const type = templateObjectTypes[val.template];
 
@@ -1547,6 +1341,7 @@ export const buildSchema = async (
       fields: () => getSectionFmtInputTypes(settings, templateInputObjectTypes),
     }),
   };
+
   const rootQuery = new GraphQLObjectType({
     name: "Query",
     fields: {
