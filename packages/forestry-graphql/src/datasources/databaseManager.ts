@@ -1,6 +1,6 @@
 import fs from "fs";
-import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import { DataSource } from "./datasource";
+import matterOrig from "gray-matter";
+import { DataSource, Settings, Field, FMT } from "./datasource";
 import { Client, QueryResult } from "pg";
 
 const dummySiteId = 7;
@@ -23,12 +23,13 @@ const templateMapping: { [key: string]: string } = {
   "14": "", //color
 };
 
-interface Field {
-  type: string;
-  fields: Field[];
+interface DB_SECTION {
+  type: "DocumentSection" | "DirectorySection" | "HeadingSection";
+  directory: string;
+  templates: string[];
 }
 
-const mapFields = (fields: any[]): Field[] => {
+const mapFields = (fields: Field[]): Field[] => {
   if (!fields.length) {
     return [];
   }
@@ -54,7 +55,7 @@ export class DatabaseManager implements DataSource {
     });
     this.client.connect();
   }
-  getTemplate = async <T>(name: string): Promise<T> => {
+  getTemplate = async (name: string): Promise<FMT> => {
     const templatesRes = await this.query(
       `SELECT * from Page_Types WHERE site_id = ${dummySiteId} AND filename = '${name}'`
     );
@@ -75,7 +76,7 @@ export class DatabaseManager implements DataSource {
     } as any;
   };
 
-  getSettings = async (): Promise<any> => {
+  getSettings = async (): Promise<Settings> => {
     const siteRes = await this.query(
       `SELECT * from Sites WHERE id = ${dummySiteId}`
     );
@@ -88,14 +89,18 @@ export class DatabaseManager implements DataSource {
     return {
       data: {
         ...site,
-        sections: sectionsRes.rows.map(({ directory, ...section }: any) => {
-          return {
-            ...section,
-            path: directory,
-            type:
-              section.type === "DirectorySection" ? "directory" : section.type,
-          };
-        }),
+        sections: sectionsRes.rows.map(
+          ({ directory, ...section }: DB_SECTION) => {
+            return {
+              ...section,
+              path: directory,
+              type:
+                section.type === "DirectorySection"
+                  ? "directory"
+                  : section.type,
+            };
+          }
+        ),
       },
     };
   };
