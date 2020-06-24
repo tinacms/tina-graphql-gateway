@@ -1,6 +1,6 @@
 import fs from "fs";
 import matterOrig from "gray-matter";
-import { DataSource, Settings, Field, FMT } from "./datasource";
+import { DataSource, Settings, FMT, FieldType, Content } from "./datasource";
 import { Client, QueryResult } from "pg";
 
 const dummySiteId = 7;
@@ -27,9 +27,32 @@ interface DB_SECTION {
   type: "DocumentSection" | "DirectorySection" | "HeadingSection";
   directory: string;
   templates: string[];
+  params: any;
 }
 
-const mapFields = (fields: Field[]): Field[] => {
+interface DB_FMT {
+  id: string;
+  name: string;
+  slug: string;
+  fields: any[];
+  hide_body: boolean;
+  is_partial: boolean;
+  filename: string;
+  display_field: boolean;
+}
+
+interface DB_Site {
+  id: string;
+}
+
+interface DB_Page {
+  params: any;
+  body: string;
+  slug: string;
+  path: string;
+}
+
+const mapFields = (fields: FieldType[]): FieldType[] => {
   if (!fields.length) {
     return [];
   }
@@ -56,13 +79,13 @@ export class DatabaseManager implements DataSource {
     this.client.connect();
   }
   getTemplate = async (name: string): Promise<FMT> => {
-    const templatesRes = await this.query(
+    const templatesRes = await this.query<DB_FMT>(
       `SELECT * from Page_Types WHERE site_id = ${dummySiteId} AND filename = '${name}'`
     );
 
     const template = templatesRes.rows[0];
 
-    const pagesRes = await this.query(
+    const pagesRes = await this.query<DB_Page>(
       `SELECT path from Pages WHERE page_type_id = ${template.id}`
     );
 
@@ -77,36 +100,33 @@ export class DatabaseManager implements DataSource {
   };
 
   getSettings = async (): Promise<Settings> => {
-    const siteRes = await this.query(
+    const siteRes = await this.query<DB_Site>(
       `SELECT * from Sites WHERE id = ${dummySiteId}`
     );
 
     const site = siteRes.rows[0];
-    const sectionsRes = await this.query(
+    const sectionsRes = await this.query<DB_SECTION>(
       `SELECT * from Sections WHERE site_id = ${site.id}`
     );
 
     return {
       data: {
         ...site,
-        sections: sectionsRes.rows.map(
-          ({ directory, ...section }: DB_SECTION) => {
-            return {
-              ...section,
-              path: directory,
-              type:
-                section.type === "DirectorySection"
-                  ? "directory"
-                  : section.type,
-            };
-          }
-        ),
+        sections: sectionsRes.rows.map(({ directory, ...section }) => {
+          return {
+            ...section,
+            ...section.params,
+            path: directory,
+            type:
+              section.type === "DirectorySection" ? "directory" : section.type,
+          };
+        }),
       },
     };
   };
 
-  getData = async <T>(filepath: string): Promise<T> => {
-    const res = await this.query(
+  getData = async <T extends Content>(filepath: string): Promise<T> => {
+    const res = await this.query<DB_Page>(
       `SELECT * from Pages WHERE site_id = ${dummySiteId} AND path = '${filepath}'`
     );
 
@@ -114,17 +134,21 @@ export class DatabaseManager implements DataSource {
     return {
       data: data.params,
       content: data.body,
-    } as any;
+    } as T;
   };
 
-  writeData = async <T>(path: string, content: any, data: any) => {
+  writeData = async <T extends Content>(
+    path: string,
+    content: any,
+    data: any
+  ) => {
     const string = stringify(content, data);
     await fs.writeFileSync(path, string);
 
     return await this.getData<T>(path);
   };
   getTemplateList = async (): Promise<string[]> => {
-    const res = await this.query(
+    const res = await this.query<DB_FMT>(
       `SELECT * from Page_types WHERE site_id = ${dummySiteId}`
     );
     return res.rows.filter((row) => row.filename).map((row) => row.filename);
@@ -132,7 +156,7 @@ export class DatabaseManager implements DataSource {
 
   private query = <T = any>(query: string): Promise<QueryResult<T>> => {
     return new Promise((resolve, reject) => {
-      this.client.query(query, (err: Error, res: QueryResult<T>) => {
+      this.client.query<T>(query, (err: Error, res: QueryResult<T>) => {
         if (err) {
           reject(err);
         } else {

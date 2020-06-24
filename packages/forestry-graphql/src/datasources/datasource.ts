@@ -1,10 +1,19 @@
 export interface DataSource {
-  getData<T>(filepath: string): Promise<T>;
+  getData<T extends Content>(filepath: string): Promise<T>;
   getSettings(): Promise<Settings>;
   getTemplate(name: string): Promise<FMT>;
-  writeData<T>(path: string, content: any, data: any): Promise<T>;
+  writeData<T extends Content>(
+    path: string,
+    content: any,
+    data: any
+  ): Promise<T>;
   getTemplateList(): Promise<string[]>;
 }
+
+export type Content = {
+  data: any;
+  content: any;
+};
 
 export type DirectorySection = {
   type: "directory";
@@ -29,11 +38,6 @@ export type Section = DirectorySection | HeadingSection | DocumentSection;
 export type Settings = {
   data: { sections: Section[] };
 };
-
-export interface Field {
-  type: string;
-  fields: Field[];
-}
 
 export type WithFields = {
   label: string;
