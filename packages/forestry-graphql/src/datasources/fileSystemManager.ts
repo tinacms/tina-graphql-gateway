@@ -1,6 +1,6 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import { DataSource, Settings } from "./datasource";
+import { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
 
 const FMT_BASE = ".forestry/front_matter/templates";
@@ -11,8 +11,8 @@ export class FileSystemManager implements DataSource {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
   }
-  getTemplate = async <T>(templateName: string): Promise<T> => {
-    return this.getData<T>(FMT_BASE + "/" + templateName);
+  getTemplate = async (templateName: string): Promise<FMT> => {
+    return this.getData<FMT>(FMT_BASE + "/" + templateName);
   };
   getSettings = async (): Promise<Settings> => {
     return this.getData<Settings>(SETTINGS_PATH);

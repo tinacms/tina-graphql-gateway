@@ -36,6 +36,24 @@ import {
   Settings,
   Section,
   DirectorySection,
+  FieldType,
+  SectionList,
+  TextField,
+  SelectField,
+  FileField,
+  TagListField,
+  TextareaField,
+  NumberField,
+  BooleanField,
+  GalleryField,
+  FieldGroupField,
+  FieldGroupListField,
+  BlocksField,
+  FMT,
+  WithFields,
+  SectionSelect,
+  DateField,
+  ListField,
 } from "./datasources/datasource";
 import { DatabaseManager } from "./datasources/databaseManager";
 require("dotenv").config();
@@ -243,189 +261,6 @@ type DocumentType = BaseDocumentType & {
   template: string;
   data: DocumentData;
 };
-type WithFields = {
-  label: string;
-  name: string;
-  type: string;
-  fields: FieldType[];
-};
-type FMT = BaseDocumentType & {
-  data: WithFields & {
-    label: string;
-    hide_body: boolean;
-    display_field: string;
-    pages: string[];
-  };
-};
-
-type TextField = {
-  label: string;
-  name: string;
-  type: "text";
-  default: string;
-  config?: {
-    required?: boolean;
-  };
-};
-type TextareaField = {
-  label: string;
-  name: string;
-  type: "textarea";
-  config: {
-    required: boolean;
-    wysiwyg: boolean;
-    schema: { format: "markdown" };
-  };
-};
-type TagListField = {
-  label: string;
-  name: string;
-  type: "tag_list";
-  default: string[];
-  config?: {
-    required?: boolean;
-  };
-};
-type BooleanField = {
-  label: string;
-  name: string;
-  type: "boolean";
-  config?: {
-    required?: boolean;
-  };
-};
-type NumberField = {
-  label: string;
-  name: string;
-  type: "number";
-  config?: {
-    required?: boolean;
-  };
-};
-type DateField = {
-  label: string;
-  name: string;
-  type: "datetime";
-  hidden: boolean;
-  default: "now";
-  config: {
-    date_format: string;
-    export_format: string;
-    required: boolean;
-  };
-};
-type BlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  template_types: string[];
-  config?: {
-    min: string;
-    max: string;
-  };
-};
-type FieldGroupField = WithFields & {
-  label: string;
-  name: string;
-  type: "field_group";
-  config?: {
-    required?: boolean;
-  };
-};
-type FieldGroupListField = WithFields & {
-  label: string;
-  name: string;
-  type: "field_group_list";
-  config?: {
-    required?: boolean;
-  };
-};
-type FileField = {
-  label: string;
-  name: string;
-  type: "file";
-  config?: {
-    required?: boolean;
-    maxSize: null | number;
-  };
-};
-type GalleryField = {
-  label: string;
-  name: string;
-  type: "image_gallery";
-  config: {
-    required?: boolean;
-    maxSize: null | number;
-  };
-};
-type BaseListField = {
-  label: string;
-  name: string;
-  type: "list";
-};
-type SimpleList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: null | number;
-    max: null | number;
-  };
-};
-type SectionList = BaseListField & {
-  config?: {
-    required?: boolean;
-    use_select: boolean;
-    min: null | number;
-    max: null | number;
-    source: {
-      type: "pages";
-      section: string;
-    };
-  };
-};
-type ListField = SectionList | SimpleList;
-
-type BaseSelectField = {
-  label: string;
-  name: string;
-  type: "select";
-};
-type SectionSelect = BaseSelectField & {
-  config: {
-    required: boolean;
-    source: {
-      type: "pages";
-      section: string;
-      file: string;
-      path: string;
-    };
-  };
-};
-type SimpleSelect = BaseSelectField & {
-  default: string;
-  config: {
-    options: string[];
-    required: boolean;
-    source: {
-      type: "simple";
-    };
-  };
-};
-type SelectField = SectionSelect | SimpleSelect;
-type FieldType =
-  | TextField
-  | TextareaField
-  | BlocksField
-  | DateField
-  | NumberField
-  | BooleanField
-  | TagListField
-  | SelectField
-  | ListField
-  | GalleryField
-  | FileField
-  | FieldGroupField
-  | FieldGroupListField;
 
 type TemplatePage = { name: string; pages: string[] };
 
@@ -519,7 +354,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     fmtList.map(async (fmt) => {
       return {
         name: shortFMTName(fmt),
-        pages: (await dataSource.getTemplate<FMT>(fmt)).data.pages,
+        pages: (await dataSource.getTemplate(fmt)).data.pages,
       };
     })
   );
@@ -1213,7 +1048,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             component: field.type,
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
-                return ctx.dataSource.getTemplate<FMT>(templateName + ".yml");
+                return ctx.dataSource.getTemplate(templateName + ".yml");
               })
             ),
           };
@@ -1343,7 +1178,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
 
   await Promise.all(
     fmtList.map(async (path) => {
-      const fmt = await dataSource.getTemplate<FMT>(path);
+      const fmt = await dataSource.getTemplate(path);
 
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyFMTName(path),
