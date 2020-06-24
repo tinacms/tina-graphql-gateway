@@ -1,25 +1,44 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import { DataSource } from "./datasource";
+import { DataSource, Settings, FMT } from "./datasource";
+import path from "path";
+
+const FMT_BASE = ".forestry/front_matter/templates";
+const SETTINGS_PATH = ".forestry/settings.yml";
 
 export class FileSystemManager implements DataSource {
-  getData = async <T>(filepath: string): Promise<T> => {
-    const result = matter(await fs.readFileSync(filepath));
-
+  rootPath: string;
+  constructor(rootPath: string) {
+    this.rootPath = rootPath;
+  }
+  getTemplate = async (templateName: string): Promise<FMT> => {
+    return this.getData<FMT>(FMT_BASE + "/" + templateName);
+  };
+  getSettings = async (): Promise<Settings> => {
+    return this.getData<Settings>(SETTINGS_PATH);
+  };
+  getData = async <T>(relPath: string): Promise<T> => {
+    const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
     // @ts-ignore
     return result;
   };
-  writeData = async <T>(path: string, content: any, data: any) => {
+  writeData = async <T>(filepath: string, content: any, data: any) => {
     const string = stringify(content, data);
-    await fs.writeFileSync(path, string);
 
-    return await this.getData<T>(path);
-  };
-  getDirectoryList = async (path: any) => {
-    const list = await fs.readdirSync(path);
+    const fullPath = this.getFullPath(filepath);
+    await fs.writeFileSync(fullPath, string);
 
-    return list.map((item) => `${path}/${item}`);
+    return await this.getData<T>(fullPath);
   };
+  getTemplateList = async () => {
+    const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
+
+    return list;
+  };
+
+  private getFullPath(relPath: string) {
+    return path.join(this.rootPath, relPath);
+  }
 }
 
 const stringify = (content: string, data: object) => {
