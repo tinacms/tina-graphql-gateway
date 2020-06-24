@@ -1,8 +1,6 @@
 import { DataSource, Settings, FMT, FieldType, Content } from "./datasource";
 import { Client, QueryResult } from "pg";
 
-const dummySiteId = 7;
-
 const templateMapping: { [key: string]: string } = {
   "0": "boolean",
   "1": "field_group_list",
@@ -76,9 +74,9 @@ export class DatabaseManager implements DataSource {
     });
     this.client.connect();
   }
-  getTemplate = async (name: string): Promise<FMT> => {
+  getTemplate = async (siteId: string, name: string): Promise<FMT> => {
     const templatesRes = await this.query<DB_FMT>(
-      `SELECT * from Page_Types WHERE site_id = ${dummySiteId} AND filename = '${name}'`
+      `SELECT * from Page_Types WHERE site_id = ${siteId} AND filename = '${name}'`
     );
 
     const template = templatesRes.rows[0];
@@ -97,9 +95,9 @@ export class DatabaseManager implements DataSource {
     } as any;
   };
 
-  getSettings = async (): Promise<Settings> => {
+  getSettings = async (siteId: string): Promise<Settings> => {
     const siteRes = await this.query<DB_Site>(
-      `SELECT * from Sites WHERE id = ${dummySiteId}`
+      `SELECT * from Sites WHERE id = ${siteId}`
     );
 
     const site = siteRes.rows[0];
@@ -123,9 +121,12 @@ export class DatabaseManager implements DataSource {
     };
   };
 
-  getData = async <T extends Content>(filepath: string): Promise<T> => {
+  getData = async <T extends Content>(
+    siteId: string,
+    filepath: string
+  ): Promise<T> => {
     const res = await this.query<DB_Page>(
-      `SELECT * from Pages WHERE site_id = ${dummySiteId} AND path = '${filepath}'`
+      `SELECT * from Pages WHERE site_id = ${siteId} AND path = '${filepath}'`
     );
 
     const data = res.rows[0];
@@ -136,6 +137,7 @@ export class DatabaseManager implements DataSource {
   };
 
   writeData = async <T extends Content>(
+    siteId: string,
     path: string,
     content: any,
     data: any
@@ -143,14 +145,14 @@ export class DatabaseManager implements DataSource {
     await this.query(
       `UPDATE Pages SET params = '${JSON.stringify(data)}', body = '${
         content || ""
-      }' WHERE site_id = ${dummySiteId} AND path = '${path}'`
+      }' WHERE site_id = ${siteId} AND path = '${path}'`
     );
 
-    return this.getData<T>(path);
+    return this.getData<T>(siteId, path);
   };
-  getTemplateList = async (): Promise<string[]> => {
+  getTemplateList = async (siteId: string): Promise<string[]> => {
     const res = await this.query<DB_FMT>(
-      `SELECT * from Page_types WHERE site_id = ${dummySiteId}`
+      `SELECT * from Page_types WHERE site_id = ${siteId}`
     );
     return res.rows.filter((row) => row.filename).map((row) => row.filename);
   };

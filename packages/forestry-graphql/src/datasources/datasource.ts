@@ -1,13 +1,14 @@
 export interface DataSource {
-  getData<T extends Content>(filepath: string): Promise<T>;
-  getSettings(): Promise<Settings>;
-  getTemplate(name: string): Promise<FMT>;
+  getData<T extends Content>(siteId: string, filepath: string): Promise<T>;
+  getSettings(siteId: string): Promise<Settings>;
+  getTemplate(siteId: string, name: string): Promise<FMT>;
   writeData<T extends Content>(
+    siteId: string,
     path: string,
     content: any,
     data: any
   ): Promise<T>;
-  getTemplateList(): Promise<string[]>;
+  getTemplateList(siteId: string): Promise<string[]>;
 }
 
 export type Content = {

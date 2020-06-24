@@ -199,7 +199,10 @@ const getDocument = async (
     return pages?.includes(path);
   });
 
-  const document = await dataSource.getData<DocumentType>(args.path || "");
+  const document = await dataSource.getData<DocumentType>(
+    config.siteId,
+    args.path || ""
+  );
 
   return {
     ...document,
@@ -298,6 +301,7 @@ export type Plugin = {
 type configType = {
   rootPath: string;
   sectionPrefix: string;
+  siteId: string;
 };
 
 /**
@@ -333,8 +337,8 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     return path.replace(config.sectionPrefix, "");
   };
 
-  const settings = await dataSource.getSettings();
-  const fmtList = await dataSource.getTemplateList();
+  const settings = await dataSource.getSettings(config.siteId);
+  const fmtList = await dataSource.getTemplateList(config.siteId);
 
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -354,7 +358,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     fmtList.map(async (fmt) => {
       return {
         name: shortFMTName(fmt),
-        pages: (await dataSource.getTemplate(fmt)).data.pages,
+        pages: (await dataSource.getTemplate(config.siteId, fmt)).data.pages,
       };
     })
   );
@@ -502,7 +506,10 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
           ) => {
             const path = val[field.name];
             if (isString(path)) {
-              const res = await ctx.dataSource.getData<DocumentType>(path);
+              const res = await ctx.dataSource.getData<DocumentType>(
+                config.siteId,
+                path
+              );
               const activeTemplate = getFmtForDocument(path, templatePages);
               return {
                 ...res,
@@ -645,6 +652,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
                   );
                 }
                 const res = await ctx.dataSource.getData<DocumentType>(
+                  config.siteId,
                   itemPath
                 );
                 const activeTemplate = getFmtForDocument(
@@ -1048,7 +1056,10 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             component: field.type,
             templates: Promise.all(
               field.template_types.map(async (templateName) => {
-                return ctx.dataSource.getTemplate(templateName + ".yml");
+                return ctx.dataSource.getTemplate(
+                  config.siteId,
+                  templateName + ".yml"
+                );
               })
             ),
           };
@@ -1178,7 +1189,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
 
   await Promise.all(
     fmtList.map(async (path) => {
-      const fmt = await dataSource.getTemplate(path);
+      const fmt = await dataSource.getTemplate(config.siteId, path);
 
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyFMTName(path),
@@ -1390,13 +1401,18 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
       Object.keys(payload.params)[0]
     ];
 
-    await dataSource.writeData(payload.path, content, transform(data));
+    await dataSource.writeData(
+      config.siteId,
+      payload.path,
+      content,
+      transform(data)
+    );
   };
 
   return { schema, documentMutation };
 };
 
-const dataSource = new FileSystemManager(process.cwd());
+const dataSource = new DatabaseManager(); //FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());
