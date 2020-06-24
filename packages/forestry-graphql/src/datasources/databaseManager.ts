@@ -1,5 +1,3 @@
-import fs from "fs";
-import matterOrig from "gray-matter";
 import { DataSource, Settings, FMT, FieldType, Content } from "./datasource";
 import { Client, QueryResult } from "pg";
 
@@ -142,10 +140,13 @@ export class DatabaseManager implements DataSource {
     content: any,
     data: any
   ) => {
-    const string = stringify(content, data);
-    await fs.writeFileSync(path, string);
+    await this.query(
+      `UPDATE Pages SET params = '${JSON.stringify(data)}', body = '${
+        content || ""
+      }' WHERE site_id = ${dummySiteId} AND path = '${path}'`
+    );
 
-    return await this.getData<T>(path);
+    return this.getData<T>(path);
   };
   getTemplateList = async (): Promise<string[]> => {
     const res = await this.query<DB_FMT>(
@@ -166,11 +167,3 @@ export class DatabaseManager implements DataSource {
     });
   };
 }
-
-const stringify = (content: string, data: object) => {
-  return matterOrig.stringify(content, data, {
-    // @ts-ignore
-    lineWidth: -1,
-    noArrayIndent: true,
-  });
-};
