@@ -5,13 +5,13 @@ import {
   FileSystemManager,
 } from "@forestryio/graphql";
 
-const dataSource = new FileSystemManager();
-
 export default async (req, res) => {
   // Forestry-Config header is supplied by bin.js
   // packages/forestry-graphql-client/bin.js
   const { headers } = req;
   const forestryConfig = JSON.parse(headers["Forestry-Config"]);
+
+  const dataSource = new FileSystemManager(forestryConfig.rootPath);
 
   const { schema, documentMutation } = await buildForestrySchema(
     forestryConfig,
