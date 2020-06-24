@@ -1815,9 +1815,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@forestry/build@workspace:packages/build":
+"@forestry/gql-demo@workspace:apps/demo":
   version: 0.0.0-use.local
-  resolution: "@forestry/build@workspace:packages/build"
+  resolution: "@forestry/gql-demo@workspace:apps/demo"
+  dependencies:
+    "@forestryio/graphql": "workspace:packages/forestry-graphql"
+    "@forestryio/graphql-client": "workspace:packages/forestry-graphql-client"
+    "@tailwindcss/ui": ^0.3.0
+    "@types/node": ^13.13.1
+    "@types/react": ^16.9.34
+    "@urql/core": ^1.11.7
+    "@xstate/react": ^0.8.1
+    autoprefixer: ^9.7.6
+    formik: ^2.1.4
+    graphql: ^15.0.0
+    next: 9.4.2
+    postcss-import: ^12.0.1
+    react: 16.13.1
+    react-dom: 16.13.1
+    react-markdown: ^4.3.1
+    styled-components: ^5.1.1
+    styled-jsx: ^3.2.5
+    tailwindcss: ^1.4.6
+    tinacms: ^0.21.2
+    typescript: ^3.8.3
+    urql: ^1.9.7
+    xstate: ^4.9.1
+    yup: ^0.28.4
+  languageName: unknown
+  linkType: soft
+
+"@forestryio/build@workspace:packages/build":
+  version: 0.0.0-use.local
+  resolution: "@forestryio/build@workspace:packages/build"
   dependencies:
     "@babel/core": ^7.9.0
     "@babel/plugin-proposal-class-properties": ^7.8.3
@@ -1857,41 +1887,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@forestry/gql-demo@workspace:apps/demo":
+"@forestryio/graphql-client@workspace:packages/forestry-graphql-client":
   version: 0.0.0-use.local
-  resolution: "@forestry/gql-demo@workspace:apps/demo"
+  resolution: "@forestryio/graphql-client@workspace:packages/forestry-graphql-client"
   dependencies:
-    "@forestry/graphql-client": "workspace:packages/forestry-graphql-client"
-    "@tailwindcss/ui": ^0.3.0
-    "@types/node": ^13.13.1
-    "@types/react": ^16.9.34
-    "@urql/core": ^1.11.7
-    "@xstate/react": ^0.8.1
-    autoprefixer: ^9.7.6
-    formik: ^2.1.4
-    graphql: ^15.0.0
-    next: 9.4.2
-    postcss-import: ^12.0.1
-    react: 16.13.1
-    react-dom: 16.13.1
-    react-markdown: ^4.3.1
-    styled-components: ^5.1.1
-    styled-jsx: ^3.2.5
-    tailwindcss: ^1.4.6
-    tinacms: ^0.21.2
-    typescript: ^3.8.3
-    urql: ^1.9.7
-    xstate: ^4.9.1
-    yup: ^0.28.4
-  languageName: unknown
-  linkType: soft
-
-"@forestry/graphql-client@workspace:packages/forestry-graphql-client":
-  version: 0.0.0-use.local
-  resolution: "@forestry/graphql-client@workspace:packages/forestry-graphql-client"
-  dependencies:
-    "@forestry/build": "workspace:packages/build"
-    "@forestry/graphql": "workspace:packages/forestry-graphql"
+    "@forestryio/build": "workspace:packages/build"
+    "@forestryio/graphql": "workspace:packages/forestry-graphql"
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
@@ -1912,11 +1913,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@forestry/graphql@workspace:packages/forestry-graphql":
+"@forestryio/graphql@workspace:packages/forestry-graphql":
   version: 0.0.0-use.local
-  resolution: "@forestry/graphql@workspace:packages/forestry-graphql"
+  resolution: "@forestryio/graphql@workspace:packages/forestry-graphql"
   dependencies:
-    "@forestry/build": "workspace:packages/build"
+    "@forestryio/build": "workspace:packages/build"
     "@graphql-codegen/core": ^1.15.3
     "@graphql-codegen/typescript": ^1.15.3
     "@graphql-codegen/typescript-operations": ^1.15.3

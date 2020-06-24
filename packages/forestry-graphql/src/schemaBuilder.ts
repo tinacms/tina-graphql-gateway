@@ -161,7 +161,6 @@ const getSectionFmtInputTypes = (
       .filter(isDirectorySection)
       .map(({ templates }) => templates)
   ).filter(Boolean);
-  console.log(sectionTemplates);
 
   return arrayToObject<GraphQLInputObjectType>(
     sectionTemplates
@@ -1529,8 +1528,6 @@ export const buildSchema = async (
     },
     resolveType: (val: { template: string }): GraphQLObjectType => {
       const type = templateObjectTypes[val.template];
-      console.log(templateObjectTypes);
-      console.log(val);
 
       if (!type) {
         throw new GraphQLError(
