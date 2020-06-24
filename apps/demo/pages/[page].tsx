@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
-import { forestryFetch, useForestryForm } from "@forestry/graphql-client";
+import { forestryFetch, useForestryForm } from "@forestryio/graphql-client";
 import { DocumentUnion, BlocksUnion } from "../.forestry/types";
 import query from "../.forestry/query";
 

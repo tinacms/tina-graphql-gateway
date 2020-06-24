@@ -1,8 +1,11 @@
 {
-  "name": "@forestry/build",
-  "version": "0.1.0",
+  "name": "@forestryio/build",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "typings": "dist/types.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "bin": {
     "forestry-build": "./dist/index.js",
     "forestry-watch": "./dist/index-watch.js"
@@ -43,5 +46,12 @@
     "tiny-glob": "^0.2.6",
     "tslib": "^1.11.1",
     "typescript": "^3.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/build"
   }
 }

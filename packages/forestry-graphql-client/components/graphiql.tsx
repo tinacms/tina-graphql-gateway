@@ -32,7 +32,7 @@ for (var k in parameters) {
   }
 }
 // const fetchURL = locationQuery(otherParams);
-const fetchURL = "http://localhost:3000/api/graphql";
+const fetchURL = "http://localhost:4001/api/graphql";
 
 function graphQLFetcher(graphQLParams) {
   return fetch(fetchURL, {

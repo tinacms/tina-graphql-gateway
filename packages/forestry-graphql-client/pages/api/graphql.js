@@ -1,10 +1,9 @@
 import { graphql, printSchema } from "graphql";
-import fs from "fs";
 import Cors from "cors";
 import {
   buildSchema as buildForestrySchema,
   FileSystemManager,
-} from "@forestry/graphql";
+} from "@forestryio/graphql";
 
 const dataSource = new FileSystemManager();
 
