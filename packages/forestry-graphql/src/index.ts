@@ -1396,7 +1396,7 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
   return { schema, documentMutation };
 };
 
-const dataSource = new DatabaseManager(); //FileSystemManager(process.cwd());
+const dataSource = new FileSystemManager(process.cwd());
 
 const app = express();
 app.use(cors());
