@@ -1,8 +1,6 @@
 import { DataSource, Settings, FMT, FieldType, Content } from "./datasource";
 import { Client, QueryResult } from "pg";
 
-const dummySiteId = 7;
-
 const templateMapping: { [key: string]: string } = {
   "0": "boolean",
   "1": "field_group_list",
@@ -76,9 +74,11 @@ export class DatabaseManager implements DataSource {
     });
     this.client.connect();
   }
-  getTemplate = async (name: string): Promise<FMT> => {
+  getTemplate = async (siteLookup: string, name: string): Promise<FMT> => {
     const templatesRes = await this.query<DB_FMT>(
-      `SELECT * from Page_Types WHERE site_id = ${dummySiteId} AND filename = '${name}'`
+      `SELECT Page_Types.*, Sites.lookup from Page_Types ` +
+        `INNER JOIN Sites ON (Sites.id = Page_Types.site_id) ` +
+        `WHERE Sites.lookup = '${siteLookup}' AND filename = '${name}'`
     );
 
     const template = templatesRes.rows[0];
@@ -97,14 +97,16 @@ export class DatabaseManager implements DataSource {
     } as any;
   };
 
-  getSettings = async (): Promise<Settings> => {
+  getSettings = async (siteLookup: string): Promise<Settings> => {
     const siteRes = await this.query<DB_Site>(
-      `SELECT * from Sites WHERE id = ${dummySiteId}`
+      `SELECT * from Sites WHERE lookup = '${siteLookup}'`
     );
 
     const site = siteRes.rows[0];
     const sectionsRes = await this.query<DB_SECTION>(
-      `SELECT * from Sections WHERE site_id = ${site.id}`
+      `SELECT Sections.*, Sites.lookup from Sections ` +
+        `INNER JOIN Sites ON (Sites.id = Sections.site_id) ` +
+        `WHERE Sites.lookup = '${siteLookup}'`
     );
 
     return {
@@ -123,9 +125,14 @@ export class DatabaseManager implements DataSource {
     };
   };
 
-  getData = async <T extends Content>(filepath: string): Promise<T> => {
+  getData = async <T extends Content>(
+    siteLookup: string,
+    filepath: string
+  ): Promise<T> => {
     const res = await this.query<DB_Page>(
-      `SELECT * from Pages WHERE site_id = ${dummySiteId} AND path = '${filepath}'`
+      `SELECT Pages.*, Sites.lookup from Pages ` +
+        `INNER JOIN Sites ON (Sites.id = Pages.site_id) ` +
+        `WHERE Sites.lookup = '${siteLookup}' AND path = '${filepath}'`
     );
 
     const data = res.rows[0];
@@ -136,21 +143,25 @@ export class DatabaseManager implements DataSource {
   };
 
   writeData = async <T extends Content>(
+    siteLookup: string,
     path: string,
     content: any,
     data: any
   ) => {
     await this.query(
-      `UPDATE Pages SET params = '${JSON.stringify(data)}', body = '${
-        content || ""
-      }' WHERE site_id = ${dummySiteId} AND path = '${path}'`
+      `UPDATE Pages ` +
+        `SET params = '${JSON.stringify(data)}', body = '${content || ""}' ` +
+        `FROM Sites ` +
+        `WHERE Sites.lookup = '${siteLookup}' AND path = '${path}'`
     );
 
-    return this.getData<T>(path);
+    return this.getData<T>(siteLookup, path);
   };
-  getTemplateList = async (): Promise<string[]> => {
+  getTemplateList = async (siteLookup: string): Promise<string[]> => {
     const res = await this.query<DB_FMT>(
-      `SELECT * from Page_types WHERE site_id = ${dummySiteId}`
+      `SELECT Page_types.*, Sites.lookup from Page_types ` +
+        `INNER JOIN Sites ON (Sites.id = Page_types.site_id) ` +
+        `WHERE Sites.lookup = '${siteLookup}'`
     );
     return res.rows.filter((row) => row.filename).map((row) => row.filename);
   };
