@@ -1,4 +1,4 @@
 module.exports = {
   sectionPrefix: "content/",
-  siteId: 7,
+  siteLookup: "qms5qlc0jk1o9g",
 };
