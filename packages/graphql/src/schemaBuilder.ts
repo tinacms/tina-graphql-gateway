@@ -1,12 +1,4 @@
-import fs from "fs";
-import path from "path";
 import flatten from "lodash.flatten";
-import express from "express";
-import graphqlHTTP from "express-graphql";
-import cors from "cors";
-import { codegen } from "@graphql-codegen/core";
-import { plugin as typescriptPlugin } from "@graphql-codegen/typescript";
-import { plugin as typescriptOperationsPlugin } from "@graphql-codegen/typescript-operations";
 import {
   parse,
   getNamedType,
@@ -29,8 +21,6 @@ import {
 import camelCase from "lodash.camelcase";
 import kebabcase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
-import { pluginsList } from "./plugins";
-import { FileSystemManager } from "./datasources/fileSystemManager";
 import {
   DataSource,
   Settings,
@@ -55,7 +45,6 @@ import {
   DateField,
   ListField,
 } from "./datasources/datasource";
-import { DatabaseManager } from "./datasources/databaseManager";
 require("dotenv").config();
 
 const arrayToObject = <T>(
@@ -307,7 +296,10 @@ type configType = {
 /**
  * This is the main function in this script, it returns all the types
  */
-const buildSchema = async (config: configType, dataSource: DataSource) => {
+export const buildSchema = async (
+  config: configType,
+  dataSource: DataSource
+) => {
   const FMT_BASE = ".forestry/front_matter/templates";
   const shortFMTName = (path: string) => {
     return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
@@ -397,6 +389,18 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
     name: "ImageFormField",
     fields: {
       ...baseInputFields,
+      fields: {
+        type: GraphQLList(
+          new GraphQLObjectType({
+            name: "ImageWrapInner",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+            },
+          })
+        ),
+      },
     },
   });
 
@@ -675,18 +679,20 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             fields: {
               ...baseInputFields,
               component: { type: GraphQLString },
-              itemField: {
-                type: new GraphQLObjectType({
-                  name: friendlyName(
-                    field.name + "_list_" + fmt + "_config_item"
-                  ),
-                  fields: {
-                    name: { type: GraphQLString },
-                    label: { type: GraphQLString },
-                    component: { type: GraphQLString },
-                    options: { type: GraphQLList(GraphQLString) },
-                  },
-                }),
+              fields: {
+                type: GraphQLList(
+                  new GraphQLObjectType({
+                    name: friendlyName(
+                      field.name + "_list_" + fmt + "_config_item"
+                    ),
+                    fields: {
+                      name: { type: GraphQLString },
+                      label: { type: GraphQLString },
+                      component: { type: GraphQLString },
+                      options: { type: GraphQLList(GraphQLString) },
+                    },
+                  })
+                ),
               },
             },
           }),
@@ -700,13 +706,15 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
             return {
               name: field.name,
               label: field.label,
-              component: "list",
-              itemField: {
-                label: field.label + " Item",
-                name: "path",
-                component: "select",
-                options: possiblePages,
-              },
+              component: "group-list",
+              fields: [
+                {
+                  label: field.label + " Item",
+                  name: "path",
+                  component: "select",
+                  options: possiblePages,
+                },
+              ],
             };
           },
         },
@@ -782,7 +790,14 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
           return {
             name: field.name,
             label: field.label,
-            component: "file",
+            component: "group",
+            fields: [
+              {
+                name: "path",
+                label: "Path",
+                component: "image",
+              },
+            ],
           };
         },
       },
@@ -825,7 +840,14 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
         resolve: () => {
           return {
             name: field.name,
-            component: "image",
+            component: "group",
+            fields: [
+              {
+                name: "path",
+                label: "Path",
+                component: "image",
+              },
+            ],
           };
         },
       },
@@ -1412,84 +1434,3 @@ const buildSchema = async (config: configType, dataSource: DataSource) => {
 
   return { schema, documentMutation };
 };
-
-const dataSource = new FileSystemManager(process.cwd());
-
-const app = express();
-app.use(cors());
-app.use(
-  "/graphql",
-  graphqlHTTP(async () => {
-    const configPath = path.resolve(process.cwd() + "/.forestry/config.js");
-    const userConfig = require(configPath);
-    const config = {
-      rootPath: process.cwd(),
-      ...userConfig,
-    };
-    const { schema, documentMutation } = await buildSchema(config, dataSource);
-    await fs.writeFileSync(
-      __dirname + "/../src/schema.gql",
-      printSchema(schema)
-    );
-    const querySchema = await fs
-      .readFileSync(__dirname + "/../src/query.gql")
-      .toString();
-
-    try {
-      const res = await codegen({
-        filename: __dirname + "/../src/schema.ts",
-        schema: parse(printSchema(schema)),
-        documents: [
-          {
-            location: "operation.graphql",
-            document: parse(querySchema),
-          },
-        ],
-        config: {},
-        plugins: [{ typescript: {} }, { typescriptOperations: {} }],
-        pluginMap: {
-          typescript: {
-            plugin: typescriptPlugin,
-          },
-          typescriptOperations: {
-            plugin: typescriptOperationsPlugin,
-          },
-        },
-      });
-      await fs.writeFileSync(
-        process.cwd() + "/.forestry/types.ts",
-        `// DO NOT MODIFY THIS FILE. This file is automatically generated by Forestry
-    ${res}
-        `
-      );
-    } catch (e) {
-      console.error(e);
-    }
-
-    const query = await fs.readFileSync(__dirname + "/../src/query.gql");
-    await fs.writeFileSync(
-      process.cwd() + "/.forestry/query.ts",
-      `// DO NOT MODIFY THIS FILE. This file is automatically generated by Forestry
-export default \`${query}\`
-`
-    );
-
-    return {
-      schema,
-      rootValue: {
-        document: documentMutation,
-      },
-      context: { dataSource },
-      graphiql: true,
-      customFormatErrorFn(err: GraphQLError) {
-        console.log(err);
-        return {
-          message: err.message,
-          locations: err.locations,
-          path: err.path,
-        };
-      },
-    };
-  })
-);
-app.listen(4001);

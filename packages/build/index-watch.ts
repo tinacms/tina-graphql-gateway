@@ -55,7 +55,7 @@ async function watchAction() {
     (buildConfigs as RollupWatchOptions[]).map((inputOptions) => ({
       watch: {
         silent: true,
-        include: ["src/**", "components/**", "blocks/**"],
+        include: ["src/**", "lib/**", "components/**", "blocks/**"],
         exclude: ["node_modules/**"],
       } as WatcherOptions,
       ...inputOptions,
