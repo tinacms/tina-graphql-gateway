@@ -1,8 +1,11 @@
 {
-  "name": "@forestry/graphql",
-  "version": "0.1.0",
+  "name": "@forestryio/graphql",
+  "version": "0.1.4",
   "main": "dist/index.js",
-  "typings": "dist/types.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "typings": "dist/index.d.ts",
   "bin": {
     "forestry:serve": "./dist/index.js"
   },
@@ -12,7 +15,7 @@
     "serve": "yarn nodemon dist/index.js"
   },
   "dependencies": {
-    "@forestry/build": "workspace:packages/build",
+    "@forestryio/build": "workspace:packages/build",
     "@graphql-codegen/core": "^1.15.3",
     "@graphql-codegen/typescript": "^1.15.3",
     "@graphql-codegen/typescript-operations": "^1.15.3",
@@ -32,7 +35,7 @@
     "glob": "^7.1.6",
     "graphiql": "^0.17.5",
     "graphiql-explorer": "^0.5.1",
-    "graphql": "^15.0.0",
+    "graphql": "^15.1.0",
     "graphql-toolkit": "^0.7.5",
     "gray-matter": "^4.0.2",
     "lodash.camelcase": "^4.3.0",
@@ -51,5 +54,12 @@
     "typescript": "^3.8.3",
     "unified": "^9.0.0",
     "yaml": "^1.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/graphql"
   }
 }

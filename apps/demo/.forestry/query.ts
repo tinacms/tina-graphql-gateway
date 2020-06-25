@@ -58,11 +58,11 @@ export default `query DocumentQuery($path: String!) {
                     name
                     label
                     component
-                    itemField {
+                    fields {
                       name
-                      label
-                      component
                       options
+                      component
+                      label
                     }
                   }
                 }
@@ -89,8 +89,12 @@ export default `query DocumentQuery($path: String!) {
                       }
                       ... on ImageFormField {
                         name
-                        label
                         component
+                        fields {
+                          name
+                          label
+                          component
+                        }
                       }
                     }
                   }
@@ -124,8 +128,12 @@ export default `query DocumentQuery($path: String!) {
                   }
                   ... on ImageFormField {
                     name
-                    label
                     component
+                    fields {
+                      name
+                      label
+                      component
+                    }
                   }
                   ... on CtaFieldsListSidecarConfig {
                     label
@@ -406,4 +414,4 @@ export default `query DocumentQuery($path: String!) {
     }
   }
 }
-`
+`;

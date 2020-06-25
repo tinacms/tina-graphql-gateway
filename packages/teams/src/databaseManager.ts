@@ -1,4 +1,10 @@
-import { DataSource, Settings, FMT, FieldType, Content } from "./datasource";
+import type {
+  DataSource,
+  Settings,
+  FMT,
+  FieldType,
+  Content,
+} from "@forestryio/graphql";
 import { Client, QueryResult } from "pg";
 
 const templateMapping: { [key: string]: string } = {
@@ -136,6 +142,7 @@ export class DatabaseManager implements DataSource {
     );
 
     const data = res.rows[0];
+    // @ts-ignore
     return {
       data: data.params,
       content: data.body,
