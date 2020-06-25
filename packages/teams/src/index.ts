@@ -25,6 +25,7 @@ app.use(
       rootValue: {
         document: documentMutation,
       },
+      graphiql: true,
       context: { dataSource },
     };
   })

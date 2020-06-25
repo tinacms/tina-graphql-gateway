@@ -28,33 +28,8 @@ const transform = (obj: any) => {
   return meh;
 };
 
-export const onSubmit = async ({
-  path,
-  payload,
-}: {
-  path: string;
-  payload: any;
-}) => {
-  const mutation = `mutation DocumentMutation($path: String!, $params: DocumentInput) {
-    document(path: $path, params: $params) {
-      __typename
-    }
-  }`;
-  const { _template, __typename, ...rest } = payload;
-  const transformedPayload = transform({
-    _template,
-    __typename,
-    data: rest,
-  });
-  // console.log(JSON.stringify(payload, null, 2));
-  // console.log(JSON.stringify(transformedPayload, null, 2));
-  await fetchAPI(mutation, {
-    variables: { path: path, params: transformedPayload },
-  });
-};
-
-export const forestryFetch = async ({ query, path }) => {
-  const data = await fetchAPI(query, { variables: { path } });
+export const forestryFetch = async (url: string, { query, path }) => {
+  const data = await fetchAPI(url, query, { variables: { path } });
 
   const formConfig = {
     id: path,
@@ -104,16 +79,44 @@ const traverse = (fields, customizations) => {
   });
 };
 
+export const onSubmit = async ({
+  url,
+  path,
+  payload,
+}: {
+  url: string;
+  path: string;
+  payload: any;
+}) => {
+  const mutation = `mutation DocumentMutation($path: String!, $params: DocumentInput) {
+    document(path: $path, params: $params) {
+      __typename
+    }
+  }`;
+  const { _template, __typename, ...rest } = payload;
+  const transformedPayload = transform({
+    _template,
+    __typename,
+    data: rest,
+  });
+  // console.log(JSON.stringify(payload, null, 2));
+  // console.log(JSON.stringify(transformedPayload, null, 2));
+  await fetchAPI(url, mutation, {
+    variables: { path: path, params: transformedPayload },
+  });
+};
+
 export const useForestryForm = (
   { data, formConfig },
   useForm,
+  url,
   customizations
 ) => {
   formConfig.fields = traverse(formConfig.fields, customizations);
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {
-      onSubmit({ path: formConfig.id, payload: values });
+      onSubmit({ url, path: formConfig.id, payload: values });
     },
   });
 
@@ -128,13 +131,12 @@ export const useForestryForm = (
   ];
 };
 
-const API_URL = "http://localhost:4001/api/graphql";
-
 async function fetchAPI(
+  url: string,
   query: string,
   { variables }: { variables: { path: string; params?: any } }
 ) {
-  const res = await fetch(API_URL, {
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
