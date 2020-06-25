@@ -1,12 +1,16 @@
 import React from "react";
-
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { getIntrospectionQuery, buildClientSchema, parse } from "graphql";
 import CodeExporter from "graphiql-code-exporter";
 import snippets from "./snippets";
 
-const parameters = {};
+type ParameterType = {
+  variables?: any;
+  operationName?: any;
+  query?: any;
+};
+const parameters: ParameterType = {};
 function locationQuery(params) {
   return (
     `?` +
@@ -18,38 +22,6 @@ function locationQuery(params) {
   );
 }
 
-// Derive a fetch URL from the current URL, sans the GraphQL parameters.
-const graphqlParamNames = {
-  query: true,
-  variables: true,
-  operationName: true,
-  explorerIsOpen: true,
-};
-const otherParams = {};
-for (var k in parameters) {
-  if (parameters.hasOwnProperty(k) && graphqlParamNames[k] !== true) {
-    otherParams[k] = parameters[k];
-  }
-}
-// const fetchURL = locationQuery(otherParams);
-const fetchURL = "http://localhost:4001/api/graphql";
-
-function graphQLFetcher(graphQLParams) {
-  return fetch(fetchURL, {
-    method: `post`,
-    headers: {
-      Accept: `application/json`,
-      "Content-Type": `application/json`,
-    },
-    body: JSON.stringify(graphQLParams),
-    credentials: `include`,
-  }).then(function (response) {
-    return response.json();
-  });
-}
-
-// When the query and variables string is edited, update the URL bar so
-// that it can be easily shared.
 function onEditVariables(newVariables) {
   parameters.variables = newVariables;
   updateURL();
@@ -62,22 +34,9 @@ function updateURL() {
   history.replaceState(null, null, locationQuery(parameters));
 }
 
-let window = {};
+const DEFAULT_QUERY = parameters.query || undefined;
 
-// We control query, so we need to recreate initial query text that show up
-// on visiting graphiql - in order it will be
-//  - query from query string (if set)
-//  - query stored in localStorage (which graphiql set when closing window)
-//  - default empty query
-const DEFAULT_QUERY =
-  parameters.query ||
-  (window.localStorage && window.localStorage.getItem(`graphiql:query`)) ||
-  undefined;
-
-const DEFAULT_VARIABLES =
-  parameters.variables ||
-  (window.localStorage && window.localStorage.getItem(`graphiql:variables`)) ||
-  undefined;
+const DEFAULT_VARIABLES = parameters.variables || undefined;
 
 const QUERY_EXAMPLE_FALLBACK = `#     {
 #       document(path: $path) {
@@ -115,36 +74,31 @@ ${queryExample}
 `;
 }
 
-const storedExplorerPaneState =
-  typeof parameters.explorerIsOpen !== `undefined`
-    ? parameters.explorerIsOpen === `false`
-      ? false
-      : true
-    : window.localStorage
-    ? window.localStorage.getItem(`graphiql:graphiqlExplorerOpen`) !== `false`
-    : true;
-
-const storedCodeExporterPaneState =
-  typeof parameters.codeExporterIsOpen !== `undefined`
-    ? parameters.codeExporterIsOpen === `false`
-      ? false
-      : true
-    : window.localStorage
-    ? window.localStorage.getItem(`graphiql:graphiqlCodeExporterOpen`) ===
-      `true`
-    : false;
-
 class App extends React.Component {
   state = {
     schema: null,
     query: DEFAULT_QUERY,
     variables: DEFAULT_VARIABLES,
-    explorerIsOpen: storedExplorerPaneState,
-    codeExporterIsOpen: storedCodeExporterPaneState,
+    explorerIsOpen: true,
+    codeExporterIsOpen: false,
+  };
+
+  graphQLFetcher = (graphQLParams) => {
+    return fetch(this.props.url, {
+      method: `post`,
+      headers: {
+        Accept: `application/json`,
+        "Content-Type": `application/json`,
+      },
+      body: JSON.stringify(graphQLParams),
+      credentials: `include`,
+    }).then(function (response) {
+      return response.json();
+    });
   };
 
   componentDidMount() {
-    graphQLFetcher({
+    this.graphQLFetcher({
       query: getIntrospectionQuery(),
     }).then((result) => {
       const newState = { schema: buildClientSchema(result.data) };
@@ -233,12 +187,6 @@ class App extends React.Component {
 
   _handleToggleExplorer = () => {
     const newExplorerIsOpen = !this.state.explorerIsOpen;
-    if (window.localStorage) {
-      window.localStorage.setItem(
-        `graphiql:graphiqlExplorerOpen`,
-        newExplorerIsOpen
-      );
-    }
     parameters.explorerIsOpen = newExplorerIsOpen;
     updateURL();
     this.setState({ explorerIsOpen: newExplorerIsOpen });
@@ -246,12 +194,6 @@ class App extends React.Component {
 
   _handleToggleExporter = () => {
     const newCodeExporterIsOpen = !this.state.codeExporterIsOpen;
-    if (window.localStorage) {
-      window.localStorage.setItem(
-        `graphiql:graphiqlCodeExporterOpen`,
-        newCodeExporterIsOpen
-      );
-    }
     parameters.codeExporterIsOpen = newCodeExporterIsOpen;
     updateURL();
     this.setState({ codeExporterIsOpen: newCodeExporterIsOpen });
@@ -283,7 +225,7 @@ class App extends React.Component {
           />
           <GraphiQL
             ref={(ref) => (this._graphiql = ref)}
-            fetcher={graphQLFetcher}
+            fetcher={this.graphQLFetcher}
             schema={schema}
             query={query}
             variables={variables}
@@ -322,3 +264,78 @@ class App extends React.Component {
 }
 
 export default App;
+
+// const App2 = ({ url }: { url: string }) => {
+//   const [codeExporterIsOpen, setCodeExporterIsOpen] = React.useState(false);
+//   const [explorerIsOpen, setExplorerIsOpen] = React.useState(false);
+//   const [query, setQuery] = React.useState()
+//   const graphiqlRef = React.useRef()
+
+//   const _handleToggleExporter = () => {
+//     setCodeExporterIsOpen(!codeExporterIsOpen);
+//   };
+//   const _handleToggleExplorer = () => {
+//     setExplorerIsOpen(!explorerIsOpen);
+//   };
+
+//   const { variables, schema } = this.state;
+//   const codeExporter = codeExporterIsOpen ? (
+//     <CodeExporter
+//       hideCodeExporter={_handleToggleExporter}
+//       snippets={snippets}
+//       query={query}
+//       codeMirrorTheme="default"
+//     />
+//   ) : null;
+
+//   return (
+//     <div id="root" className="graphiql-container">
+//       <React.Fragment>
+//         <GraphiQLExplorer
+//           schema={schema}
+//           query={query}
+//           onEdit={this._handleEditQuery}
+//           explorerIsOpen={explorerIsOpen}
+//           onToggleExplorer={_handleToggleExplorer}
+//           onRunOperation={(operationName) =>
+//             this._graphiql.handleRunQuery(operationName)
+//           }
+//         />
+//         <GraphiQL
+//           ref={(ref) => (graphiqlRef = ref)}
+//           fetcher={this.graphQLFetcher}
+//           schema={schema}
+//           query={query}
+//           variables={variables}
+//           onEditQuery={this._handleEditQuery}
+//           onEditVariables={onEditVariables}
+//           onEditOperationName={onEditOperationName}
+//         >
+//           <GraphiQL.Toolbar>
+//             <GraphiQL.Button
+//               onClick={() => this._graphiql.handlePrettifyQuery()}
+//               label="Prettify"
+//               title="Prettify Query (Shift-Ctrl-P)"
+//             />
+//             <GraphiQL.Button
+//               onClick={() => this._graphiql.handleToggleHistory()}
+//               label="History"
+//               title="Show History"
+//             />
+//             <GraphiQL.Button
+//               onClick={this._handleToggleExplorer}
+//               label="Explorer"
+//               title="Toggle Explorer"
+//             />
+//             <GraphiQL.Button
+//               onClick={this._handleToggleExporter}
+//               label="Code Exporter"
+//               title="Toggle Code Exporter"
+//             />
+//           </GraphiQL.Toolbar>
+//         </GraphiQL>
+//         {codeExporter}
+//       </React.Fragment>
+//     </div>
+//   );
+// };
