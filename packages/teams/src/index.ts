@@ -8,12 +8,18 @@ require("dotenv").config();
 const dataSource = new DatabaseManager();
 
 const app = express();
-app.use(cors());
 app.use(
-  "/graphql",
+  cors({
+    origin: "http://localhost:4001", // FIXME: for some reason had to be extra specific
+    methods: ["GET", "POST", "OPTIONS"],
+    credentials: true,
+  })
+);
+app.use(
+  "/api/graphql",
   graphqlHTTP(async () => {
     // FIXME: this should probably come from the request, or
-    // maybe in the case of the DatabaseManager it's not necessary
+    // maybe in the case of the DatabaseManager it's not necessary?
     const config = {
       rootPath: "",
       sectionPrefix: "content/",
@@ -25,7 +31,6 @@ app.use(
       rootValue: {
         document: documentMutation,
       },
-      graphiql: true,
       context: { dataSource },
     };
   })
