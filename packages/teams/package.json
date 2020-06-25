@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
-    "@forestryio/graphql": "workspace:packages/forestry-graphql",
+    "@forestryio/graphql": "workspace:packages/graphql",
     "@graphql-codegen/core": "^1.15.3",
     "@graphql-codegen/typescript": "^1.15.3",
     "@graphql-codegen/typescript-operations": "^1.15.3",

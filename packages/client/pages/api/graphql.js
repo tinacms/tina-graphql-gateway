@@ -7,7 +7,7 @@ import {
 
 export default async (req, res) => {
   // Forestry-Config header is supplied by bin.js
-  // packages/forestry-graphql-client/bin.js
+  // packages/client/bin.js
   const { headers } = req;
   const forestryConfig = JSON.parse(headers["Forestry-Config"]);
 

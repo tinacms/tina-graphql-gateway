@@ -15,7 +15,7 @@ const documentQuery = {
   options: [],
   generate: (
     arg
-  ) => `import { forestryFetch, useForestryForm } from "@forestry/graphql-client";
+  ) => `import { forestryFetch, useForestryForm } from "@forestry/client";
 
 const path = <Path-to-content-file>
 const response = await forestryFetch<DocumentUnion>({
