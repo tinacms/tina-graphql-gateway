@@ -60,6 +60,6 @@
   },
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
-    "directory": "packages/forestry-graphql"
+    "directory": "packages/graphql"
   }
 }
