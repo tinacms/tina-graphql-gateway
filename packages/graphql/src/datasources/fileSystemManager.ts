@@ -11,26 +11,34 @@ export class FileSystemManager implements DataSource {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
   }
-  getTemplate = async (templateName: string): Promise<FMT> => {
-    return this.getData<FMT>(FMT_BASE + "/" + templateName);
+  getTemplate = async (
+    _siteLookup: string,
+    templateName: string
+  ): Promise<FMT> => {
+    return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
-  getSettings = async (): Promise<Settings> => {
-    return this.getData<Settings>(SETTINGS_PATH);
+  getSettings = async (_siteLookup: string): Promise<Settings> => {
+    return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
   };
-  getData = async <T>(relPath: string): Promise<T> => {
+  getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
     const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
     // @ts-ignore
     return result;
   };
-  writeData = async <T>(filepath: string, content: any, data: any) => {
+  writeData = async <T>(
+    _siteLookup: string,
+    filepath: string,
+    content: any,
+    data: any
+  ) => {
     const string = stringify(content, data);
 
     const fullPath = this.getFullPath(filepath);
     await fs.writeFileSync(fullPath, string);
 
-    return await this.getData<T>(fullPath);
+    return await this.getData<T>(_siteLookup, fullPath);
   };
-  getTemplateList = async () => {
+  getTemplateList = async (_siteLookup: string) => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
     return list;
