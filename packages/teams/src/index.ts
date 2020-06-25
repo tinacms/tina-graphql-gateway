@@ -10,7 +10,7 @@ const dataSource = new DatabaseManager();
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:4001", // FIXME: for some reason had to be extra specific
+    origin: ["http://localhost:4001", "http://localhost:3000"], // FIXME: for some reason had to be extra specific
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
   })
@@ -23,6 +23,7 @@ app.use(
     const config = {
       rootPath: "",
       sectionPrefix: "content/",
+      siteLookup: "qms5qlc0jk1o9g",
     };
     const { schema, documentMutation } = await buildSchema(config, dataSource);
 

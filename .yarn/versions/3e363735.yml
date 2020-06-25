@@ -1,2 +1,8 @@
 releases:
 
+
+undecided:
+  - "@forestryio/client"
+  - "@forestryio/graphql"
+  - "@forestryio/teams"
+  - "@forestry/gql-demo"
