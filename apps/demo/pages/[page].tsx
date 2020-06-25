@@ -3,7 +3,10 @@ import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
 import { forestryFetch, useForestryForm } from "@forestryio/client";
 import { DocumentUnion, BlocksUnion } from "../.forestry/types";
+import config from "../.forestry/config";
 import query from "../.forestry/query";
+
+const URL = config.serverURL;
 
 export async function getStaticPaths() {
   return {
@@ -18,7 +21,7 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
-  const response = await forestryFetch<DocumentUnion>({
+  const response = await forestryFetch<DocumentUnion>(URL, {
     query,
     path,
   });
@@ -29,7 +32,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 const Home = (props) => {
   // FIXME: running into issues with multiple instances so passing
   // useForm by reference rather than importing it
-  const [formData, form] = useForestryForm(props.response, useForm, {
+  const [formData, form] = useForestryForm(props.response, useForm, URL, {
     image: (field) => {
       return {
         ...field,
