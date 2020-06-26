@@ -776,7 +776,7 @@ export const buildSchema = async (
               },
             },
             absolutePath: {
-              type: GraphQLNonNull(GraphQLString),
+              type: GraphQLString,
               resolve: async (val) => {
                 return config.rootPath + val;
               },
@@ -826,7 +826,7 @@ export const buildSchema = async (
                 },
               },
               absolutePath: {
-                type: GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 resolve: async (val) => {
                   return config.rootPath + val;
                 },
@@ -1309,7 +1309,7 @@ export const buildSchema = async (
         name: friendlyFMTName(path),
         fields: {
           form: templateFormObjectType,
-          absolutePath: { type: GraphQLNonNull(GraphQLString) },
+          absolutePath: { type: GraphQLString },
           path: { type: GraphQLNonNull(GraphQLString) },
           content: {
             type: GraphQLNonNull(GraphQLString),

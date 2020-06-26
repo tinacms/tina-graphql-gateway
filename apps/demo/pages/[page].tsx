@@ -1,7 +1,10 @@
-import Head from "next/head";
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
-import { forestryFetch, useForestryForm } from "@forestryio/client";
+import {
+  forestryFetch,
+  forestryQuery,
+  useForestryForm,
+} from "@forestryio/client";
 import { DocumentUnion, BlocksUnion } from "../.forestry/types";
 import config from "../.forestry/config";
 import query from "../.forestry/query";
@@ -21,6 +24,11 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
+  const queryData = await forestryQuery<DocumentUnion>(URL, {
+    query,
+    path,
+  });
+  console.log(queryData);
   const response = await forestryFetch<DocumentUnion>(URL, {
     query,
     path,
