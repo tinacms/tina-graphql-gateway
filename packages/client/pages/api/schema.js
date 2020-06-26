@@ -1,10 +1,9 @@
-import { graphql, printSchema } from "graphql";
+import { graphql, getIntrospectionQuery, printSchema } from "graphql";
 import Cors from "cors";
 import {
   buildSchema as buildForestrySchema,
   FileSystemManager,
 } from "@forestryio/graphql";
-import { generateTypes } from "../../src/codegen";
 
 export default async (req, res) => {
   // Forestry-Config header is supplied by bin.js
@@ -18,17 +17,15 @@ export default async (req, res) => {
     forestryConfig,
     dataSource
   );
-
   // Useful for debugging
   // console.log(printSchema(schema));
   // await fs.writeFileSync("./meh.gql", printSchema(schema));
 
   const { query, operationName, variables } = req.body;
-  generateTypes({ schema, query });
 
   const response = await graphql(
     schema,
-    query,
+    getIntrospectionQuery(),
     { document: documentMutation },
     { dataSource },
     variables,
