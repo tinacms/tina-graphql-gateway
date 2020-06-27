@@ -1881,6 +1881,7 @@ __metadata:
     typescript: ^3.9.5
   bin:
     "forestry:doit": bin.js
+    "forestry:g": generate.js
   languageName: unknown
   linkType: soft
 

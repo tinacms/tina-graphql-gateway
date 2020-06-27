@@ -28,14 +28,6 @@ const transform = (obj: any) => {
   return meh;
 };
 
-export const forestryQuery = async (url: string) => {
-  const data = await fetchAPI("http://localhost:4001/api/schema", "", {
-    variables: { path: "" },
-  });
-  console.log(data);
-  return "hi";
-};
-
 export const forestryFetch = async (url: string, { query, path }) => {
   const data = await fetchAPI(url, query, { variables: { path } });
 
