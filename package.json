@@ -5,6 +5,10 @@
     "packages/*",
     "apps/*"
   ],
+  "scripts": {
+    "build": "yarn workspaces foreach -pt --exclude demo run build",
+    "watch": "yarn workspaces foreach run watch"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
