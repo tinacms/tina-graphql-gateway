@@ -54,11 +54,7 @@ Change the values in `apps/demo/.forestry/config.js` so that `serverURL` points 
 
 Ensure that you've populated your own `.env` file in `packages/teams/.env`.
 
-Form the `teams` directory: `yarn forestry:serve` will start up the GraphQL server, you'll be able to inspect it in more detail at `http://localhost:4001/graphql`.
-
-## NextJS App
-
-`yarn dev` runs the NextJS app and doesn't do much right now, just wraps the app in Tina and fetchs the Forestry query from GraphQL, and applies the provided Typescript type to the result. Note that the `query.ts` and `types.ts` files are generated from the `@forestry/graphql` package automatically (even though the `query.ts` is manually maintained).
+From the `packages/teams` directory: `yarn forestry:serve` will start up the GraphQL server, you'll be able to inspect it in more detail at `http://localhost:4001/graphql`.
 
 ### The `.forestry` folder
 
