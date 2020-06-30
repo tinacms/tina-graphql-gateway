@@ -11,3 +11,5 @@ node_modules
 !.yarn/versions
 .pnp.*
 package.tgz
+
+.env

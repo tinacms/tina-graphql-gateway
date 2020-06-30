@@ -1,8 +1,8 @@
 releases:
-  "@forestryio/build": patch
-  "@forestryio/client": patch
-  "@forestryio/graphql": patch
-  "@forestryio/teams": patch
 
-declined:
+
+undecided:
+  - "@forestryio/build"
+  - "@forestryio/graphql"
+  - "@forestryio/teams"
   - demo
