@@ -77,3 +77,12 @@ To use this with your local Tina repo look in the `demo/next.config.js` file, en
 ### Using this repo with the Forestry.io app
 
 For demonstation purposes I've put the demos in the `apps` folder. But the Forestry app needs the `.forestry` files to be in the repo root so you can't hook this repo up to the app as it stands. We have another repo [here](https://github.com/forestryio/demo-tina-blocks-graphql) which utilizes the same `.forestry` config
+
+## Using these packages externally
+
+These packages are currently published to Github Packages, with plans to open-source at some point. Until then, ensure you're `.npmrc` is setup for fetching packages with the `@forestryio` scope from Github:
+
+```
+//npm.pkg.github.com/:_authToken=<My-Github-Personal-Access-Token-Here>
+@forestryio:registry=https://npm.pkg.github.com/
+```
