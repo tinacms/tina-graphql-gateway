@@ -9,8 +9,8 @@
   ],
   "typings": "dist/types.d.ts",
   "bin": {
-    "forestry:doit": "bin.js",
-    "forestry:g": "generate.js"
+    "forestry:g": "generate.js",
+    "forestry:start": "bin.js"
   },
   "scripts": {
     "build": "forestry-build",

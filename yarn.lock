@@ -1880,8 +1880,8 @@ __metadata:
     react-dom: 16.13.1
     typescript: ^3.9.5
   bin:
-    "forestry:doit": bin.js
     "forestry:g": generate.js
+    "forestry:start": bin.js
   languageName: unknown
   linkType: soft
 
@@ -1899,6 +1899,7 @@ __metadata:
     "@types/lodash.flatten": ^4.4.6
     "@types/lodash.kebabcase": ^4.1.6
     "@types/lodash.snakecase": ^4.1.6
+    "@types/lodash.tolower": ^4.1.6
     "@types/lodash.upperfirst": ^4.3.6
     "@types/node": ^13.13.2
     "@types/pg": ^7.14.3
@@ -1916,6 +1917,7 @@ __metadata:
     lodash.flatten: ^4.4.0
     lodash.kebabcase: ^4.1.1
     lodash.snakecase: ^4.1.1
+    lodash.tolower: ^4.1.2
     lodash.upperfirst: ^4.3.1
     nodemon: ^2.0.2
     pg: ^8.2.1
@@ -3250,6 +3252,15 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 2623670ea7500e438b7400f04269f77ccb9b8e6c1e9c5dea733b21b046379ee82ed738b6506cfeeb1f25a4c5fdd5cd79cccfa321212303e5710cd4af6b18a5a4
+  languageName: node
+  linkType: hard
+
+"@types/lodash.tolower@npm:^4.1.6":
+  version: 4.1.6
+  resolution: "@types/lodash.tolower@npm:4.1.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: dc98e04e7f5dd55bebca11524d8e40dedd58d2128e6c3041b52e0dd14b0527050e14661c66d46a5faa9e15a7b311219120e68f6bb77d1b53e201e36a38081b95
   languageName: node
   linkType: hard
 
@@ -9358,6 +9369,13 @@ fsevents@~2.1.2:
   version: 4.4.0
   resolution: "lodash.toarray@npm:4.4.0"
   checksum: f2b8de1812789321335dd5f4cb60625c4b8874cb3b300367d8a22990072459b76eb893feacd243686493393cccd035115cc149563f7aa5123d06d9a3b2825bf1
+  languageName: node
+  linkType: hard
+
+"lodash.tolower@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "lodash.tolower@npm:4.1.2"
+  checksum: 25cf121fb21350f228f6ba2ffc5b81f2376609febc2596af8dd8c1a23ea3982fa8107457eae4adbf5a828ba3b05138ceecfd0a2f14df213b5d9ad9f6232b1a32
   languageName: node
   linkType: hard
 
