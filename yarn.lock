@@ -1880,7 +1880,6 @@ __metadata:
     react-dom: 16.13.1
     typescript: ^3.9.5
   bin:
-    "forestry:g": generate.js
     "forestry:start": bin.js
   languageName: unknown
   linkType: soft

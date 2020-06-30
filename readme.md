@@ -1,6 +1,6 @@
 # Structure
 
-There is an `apps/demo` which is a nextjs app and then everything else is in `/packages`:
+There is an `apps/demo` folder which is a nextjs app and then everything else is in `packages`:
 
 ### @forestry/graphql
 
@@ -18,7 +18,7 @@ Provides React hooks for fetching and building the Tina form. It also exposes a 
 
 Environment: `node`
 
-This package should eventually be moved out of this repo. Utilitizes `buildSchema` by passing a database `DataSource` in for Forestry.io compatibility.
+This package should eventually be moved out of this repo. Utilitizes `buildSchema` by passing a **database** `DataSource` in for Forestry.io compatibility.
 
 ### @forestry/build
 
@@ -26,24 +26,35 @@ Just a package builder, uses Rollup.
 
 ### Getting started
 
-Currently this is a monorepo built with Yarn V2, it might just be easier to break this out due to issues with monorepo DX but for now I've kept it in place.
+Currently this is a monorepo built with Yarn V2 and Plug-n-Play. This is a more strict package manager so if it's too much friction we can always go back to Lerna.
 
-To use, make sure you've got yarn V2 installed [by following these instructions](https://yarnpkg.com/getting-started/install). Then:
+You should :fingers_crossed: be able to just run these commands. (Please make a note of any hang-ups you ran into during this process)
 
 ```sh
+# check yarn version, this repo ships with yarn so it should be 2.0.0-rc.36
+yarn -v
+# if that doesn't show 2.0.0-rc.36 it needs to be fixed. You can install the version manually https://yarnpkg.com/getting-started/install but you'll definitely need +2.0
 yarn install
 # build all the packages
 yarn run build
-# watch all packages, (including the NextJS demo app)
-yarn run watch
+# watch all packages, (including the NextJS demo app?)
+yarn run watch # NOTE: this isn't running the apps/demo for me so I've been running it from the `apps/demo` repo directly in a separate tab
 # cd to apps/demo
-# start the local GraphQL server
+# start the local filesystem GraphQL server
 yarn forestry:start
 ```
 
-## GraphQL Server
+That should allow you to see 2 things: The GraphiQL playground at `http:localhost:4001/graphql` and the NextJS demo app at `http:localhost:3000/home`. Tina form changes should result in `content/pages/home.md` being changed.
 
-`yarn forestry:serve` will start up the GraphQL server, you'll be able to inspect it in more detail at `http://localhost:4001/graphql`.
+## Using the **database** GraphQL Server Locally
+
+To use the Database version, ensure you have a database site that matches your `.forestry` folder config. Your site `lookup` attribute should be `qms5qlc0jk1o9g` for now.
+
+Change the values in `apps/demo/.forestry/config.js` so that `serverURL` points to the Express process ("http://localhost:4002/api/graphql").
+
+Ensure that you've populated your own `.env` file in `packages/teams/.env`.
+
+Form the `teams` directory: `yarn forestry:serve` will start up the GraphQL server, you'll be able to inspect it in more detail at `http://localhost:4001/graphql`.
 
 ## NextJS App
 
@@ -54,8 +65,8 @@ yarn forestry:start
 This demo uses a couple of extra things from the `.forestry` folder:
 
 - **config.js** - This is where we can put site-specific configurations.
-- **types.ts** - This is auto-generated from the Forestry GraphQL package, you can see it being used in the `[page].tsx` file.
-- **query.ts** - This is manually maintained for now with the goal for it to be generated automatically in the future. It's the actual GraphQL query that gets run to generate all the data for the page. See the Gotchas section for troubleshooting.
+- **types.ts** - This is auto-generated from the `@forestry/client` package, you can see it being used in the `[page].tsx` file.
+- **query.ts** - This is also auto-generated from the `@forestry/client` package
 
 ---
 
@@ -65,4 +76,4 @@ To use this with your local Tina repo look in the `demo/next.config.js` file, en
 
 ### Using this repo with the Forestry.io app
 
-For demonstation purposes I've put the demos in the `apps` folder. But the Forestry app needs the `.forestry` files to be in the repo root so you can't hook this repo up to the app as it stands.
+For demonstation purposes I've put the demos in the `apps` folder. But the Forestry app needs the `.forestry` files to be in the repo root so you can't hook this repo up to the app as it stands. We have another repo [here](https://github.com/forestryio/demo-tina-blocks-graphql) which utilizes the same `.forestry` config
