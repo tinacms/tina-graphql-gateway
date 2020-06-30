@@ -19,8 +19,9 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import camelCase from "lodash.camelcase";
-import kebabcase from "lodash.kebabcase";
+import kebabCase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
+import toLower from "lodash.tolower";
 import {
   DataSource,
   Settings,
@@ -46,6 +47,10 @@ import {
   ListField,
 } from "./datasources/datasource";
 require("dotenv").config();
+
+const slugify = (string: string) => {
+  return toLower(kebabCase(string));
+};
 
 const arrayToObject = <T>(
   array: T[],
@@ -289,7 +294,6 @@ export type Plugin = {
 
 type configType = {
   rootPath: string;
-  sectionPrefix: string;
   siteLookup: string;
 };
 
@@ -324,11 +328,6 @@ export const buildSchema = async (
     );
   };
 
-  const replaceFMTPathWithSlug = (path: string) => {
-    // FIXME: we reference the slug in "select" fields
-    return path.replace(config.sectionPrefix, "");
-  };
-
   const settings = await dataSource.getSettings(config.siteLookup);
   const fmtList = await dataSource.getTemplateList(config.siteLookup);
 
@@ -358,10 +357,12 @@ export const buildSchema = async (
 
   const sectionFmts = settings.data.sections
     .filter(isDirectorySection)
-    .map(({ path, templates }) => ({
-      name: replaceFMTPathWithSlug(path),
-      templates,
-    }));
+    .map(({ label, templates }) => {
+      return {
+        name: slugify(label),
+        templates,
+      };
+    });
 
   const baseInputFields = {
     name: { type: GraphQLString },
@@ -1401,7 +1402,7 @@ export const buildSchema = async (
           if (templateBigName.endsWith("Input")) {
             const values = item[templateBigName];
             const accumulator = {
-              template: kebabcase(templateBigName.replace("Input", "")),
+              template: kebabCase(templateBigName.replace("Input", "")),
               ...values,
             };
             return transform(accumulator);
