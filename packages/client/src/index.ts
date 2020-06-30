@@ -5,6 +5,7 @@ const transform = (obj: any) => {
   if (typeof obj == "string" || typeof obj === "number") {
     return obj;
   }
+
   // FIXME unreliable
   if (obj.hasOwnProperty("path")) {
     return obj.path;
