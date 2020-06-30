@@ -80,7 +80,7 @@ For demonstation purposes I've put the demos in the `apps` folder. But the Fores
 
 ## Using these packages externally
 
-These packages are currently published to Github Packages, with plans to open-source at some point. Until then, ensure you're `.npmrc` is setup for fetching packages with the `@forestryio` scope from Github:
+These packages are currently published to Github Packages, with plans to open-source at some point. Until then, ensure your `.npmrc` is setup for fetching packages with the `@forestryio` scope from Github:
 
 ```
 //npm.pkg.github.com/:_authToken=<My-Github-Personal-Access-Token-Here>
