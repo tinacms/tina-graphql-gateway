@@ -9,6 +9,7 @@
     "build": "yarn workspaces foreach -pt --exclude demo run build",
     "watch": "yarn workspaces foreach run watch",
     "apply": "yarn version apply --all --json",
+    "publish": "yarn workspaces foreach -ptv --exclude demo npm publish --tolerate-republish",
     "check:auth": "yarn npm whoami --scope forestryio"
   },
   "publishConfig": {

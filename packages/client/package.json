@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.5-3",
+  "version": "0.1.5-rc.1",
   "main": "dist/index.js",
   "files": [
     "dist/*"
