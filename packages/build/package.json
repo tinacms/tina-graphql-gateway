@@ -11,7 +11,8 @@
     "forestry-watch": "./dist/index-watch.js"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json"
+    "build": "tsc --project tsconfig.build.json",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz"
   },
   "dependencies": {
     "@babel/core": "^7.9.0",

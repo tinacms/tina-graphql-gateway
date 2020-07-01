@@ -12,6 +12,7 @@
   "scripts": {
     "build": "forestry-build",
     "watch": "forestry-watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },
   "dependencies": {
