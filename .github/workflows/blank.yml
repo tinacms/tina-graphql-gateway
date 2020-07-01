@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: "builds"
-          path: "builds/@forestryio-build-0.1.4.tgz"
+          path: "builds/@forestryio-client-0.1.5-3.tgz"
