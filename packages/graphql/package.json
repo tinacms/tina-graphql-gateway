@@ -12,6 +12,7 @@
   "scripts": {
     "build": "forestry-build",
     "watch": "forestry-watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js"
   },
   "dependencies": {
