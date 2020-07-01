@@ -27,6 +27,8 @@ jobs:
         run: yarn --version
       # - name: Check for undefined releases
       #   run: yarn version check
+      - name: Install
+        run: yarn install
       - name: Update deferred package versions
         run: yarn workspaces foreach run tar
       - name: Upload a Build Artifact
