@@ -1,4 +1,7 @@
 const transform = (obj: any) => {
+  if (typeof obj === "boolean") {
+    return obj;
+  }
   if (!obj) {
     return "";
   }
@@ -67,6 +70,20 @@ const traverse = (fields, customizations) => {
       return {
         ...field,
         templates: templates2,
+      };
+    }
+
+    if (field.component === "toggle") {
+      return {
+        ...field,
+        // parse: (value: any, name: string, field: any) => {
+        //   console.log("parse", name, value);
+        //   return value;
+        // },
+        // format: (value: any, name: string, field: any) => {
+        //   console.log("format", name, value);
+        //   return value;
+        // },
       };
     }
 

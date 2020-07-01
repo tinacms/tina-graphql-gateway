@@ -399,6 +399,13 @@ export const buildSchema = async (
     },
   });
 
+  const booleanInput = new GraphQLObjectType<BooleanField>({
+    name: "BooleanFormField",
+    fields: {
+      ...baseInputFields,
+    },
+  });
+
   const selectInput = new GraphQLObjectType<SelectField>({
     name: "SelectFormField",
     fields: {
@@ -500,9 +507,13 @@ export const buildSchema = async (
         : GraphQLBoolean,
     },
     setter: {
-      type: textInput,
+      type: booleanInput,
       resolve: () => {
-        return "hi";
+        return {
+          name: field.name,
+          label: field.label,
+          component: "toggle",
+        };
       },
     },
     mutator: {
@@ -1419,6 +1430,7 @@ export const buildSchema = async (
                   resolveType: (val: FieldType) => {
                     const setter = setters[val.name];
                     if (!setter) {
+                      console.log(val);
                       throw new GraphQLError(
                         `No setter defined for template FMT ${path}`
                       );
