@@ -1,6 +1,6 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import { DataSource, Settings, FMT } from "./datasource";
+import type { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
 
 const FMT_BASE = ".forestry/front_matter/templates";
