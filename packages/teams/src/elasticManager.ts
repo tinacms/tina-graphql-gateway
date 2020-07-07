@@ -139,22 +139,16 @@ export class ElasticManager implements DataSource {
     filepath: string
   ): Promise<T> => {
     //TODO - we should be storing paths as relative and not absolute
-    const file = path.join(process.env.REPO_ROOT || "", filepath);
+    const file = path
+      .join(process.env.REPO_ROOT || "", filepath)
+      .split("/")
+      .join("$");
 
-    const result = await this.elasticClient.search({
+    const result = await this.elasticClient.get({
       index: "project",
-      body: {
-        query: {
-          match: {
-            path: {
-              query: file,
-              fuzziness: 0,
-            },
-          },
-        },
-      },
+      id: file,
     });
-    const { data, content } = result.body.hits.hits[0]._source;
+    const { data, content } = result.body._source;
 
     // @ts-ignore
     return {
