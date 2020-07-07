@@ -2,10 +2,10 @@ import express from "express";
 import graphqlHTTP from "express-graphql";
 import cors from "cors";
 import { buildSchema } from "@forestryio/graphql";
-import { DatabaseManager } from "./databaseManager";
+import { ElasticManager } from "./elasticManager";
 require("dotenv").config();
 
-const dataSource = new DatabaseManager();
+const dataSource = new ElasticManager();
 
 const app = express();
 app.use(
@@ -19,7 +19,7 @@ app.use(
   "/api/graphql",
   graphqlHTTP(async () => {
     // FIXME: this should probably come from the request, or
-    // maybe in the case of the DatabaseManager it's not necessary?
+    // maybe in the case of the ElasticManager it's not necessary?
     const config = {
       rootPath: "",
       sectionPrefix: "content/",
