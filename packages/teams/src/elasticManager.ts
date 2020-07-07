@@ -7,6 +7,7 @@ import type {
 } from "@forestryio/graphql";
 import { Client, QueryResult } from "pg";
 import { Client as ElasticClient } from "@elastic/elasticsearch";
+import path from "path";
 const templateMapping: { [key: string]: string } = {
   "0": "boolean",
   "1": "field_group_list",
@@ -137,17 +138,28 @@ export class ElasticManager implements DataSource {
     siteLookup: string,
     filepath: string
   ): Promise<T> => {
-    const res = await this.query<DB_Page>(
-      `SELECT Pages.*, Sites.lookup from Pages ` +
-        `INNER JOIN Sites ON (Sites.id = Pages.site_id) ` +
-        `WHERE Sites.lookup = '${siteLookup}' AND path = '${filepath}'`
-    );
+    //TODO - we should be storing paths as relative and not absolute
+    const file = path.join(process.env.REPO_ROOT || "", filepath);
 
-    const data = res.rows[0];
+    const result = await this.elasticClient.search({
+      index: "project",
+      body: {
+        query: {
+          match: {
+            path: {
+              query: file,
+              fuzziness: 0,
+            },
+          },
+        },
+      },
+    });
+    const { data, content } = result.body.hits.hits[0]._source;
+
     // @ts-ignore
     return {
-      data: data.params,
-      content: data.body,
+      data,
+      content,
     } as T;
   };
 
