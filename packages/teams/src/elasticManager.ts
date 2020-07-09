@@ -107,30 +107,15 @@ export class ElasticManager implements DataSource {
   };
 
   getSettings = async (siteLookup: string): Promise<Settings> => {
-    const siteRes = await this.query<DB_Site>(
-      `SELECT * from Sites WHERE lookup = '${siteLookup}'`
-    );
+    const result = await this.elasticClient.get({
+      index: "project-settings",
+      id: "settings.yml",
+    });
+    const siteSettings = result.body._source;
 
-    const site = siteRes.rows[0];
-    const sectionsRes = await this.query<DB_SECTION>(
-      `SELECT Sections.*, Sites.lookup from Sections ` +
-        `INNER JOIN Sites ON (Sites.id = Sections.site_id) ` +
-        `WHERE Sites.lookup = '${siteLookup}'`
-    );
-
+    // @ts-ignore
     return {
-      data: {
-        ...site,
-        sections: sectionsRes.rows.map(({ directory, ...section }) => {
-          return {
-            ...section,
-            ...section.params,
-            path: directory,
-            type:
-              section.type === "DirectorySection" ? "directory" : section.type,
-          };
-        }),
-      },
+      data: siteSettings,
     };
   };
 
