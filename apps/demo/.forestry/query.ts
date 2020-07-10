@@ -2,54 +2,210 @@
 export default `query DocumentQuery($path: String!) {
   document(path: $path) {
     __typename
-    ... on Post {
-      __typename
-      form {
-        fields {
-          ... on SelectFormField {
-            name
-            options
-          }
-        }
-      }
-      path
-      content
-      excerpt
-      data {
-        title
-        image {
-          path
-          absolutePath
-        }
-        hashtags
-        author {
-          ... on Author {
-            path
-            data {
-              name
-              image {
-                path
-                absolutePath
-              }
-            }
-          }
-        }
-      }
-    }
     ... on BlockPage {
       form {
+        label
+        key
         fields {
-          __typename
           ... on TextFormField {
             name
             label
+            description
             component
           }
           ... on BlocksFieldConfig {
             name
             label
+            description
             component
             templates {
+              SidecarFieldConfig {
+                label
+                key
+                fields {
+                  ... on TextFormField {
+                    name
+                    label
+                    description
+                    component
+                  }
+                  ... on ImageFormField {
+                    name
+                    label
+                    description
+                    component
+                    fields {
+                      name
+                      label
+                      component
+                    }
+                  }
+                  ... on CtaFieldsListSidecarConfig {
+                    label
+                    key
+                    name
+                    component
+                    fields {
+                      ... on TextFormField {
+                        name
+                        label
+                        description
+                        component
+                      }
+                    }
+                  }
+                  ... on ActionsFieldConfig {
+                    name
+                    label
+                    description
+                    component
+                    templates {
+                      ActionVideoFieldConfig {
+                        label
+                        key
+                        fields {
+                          ... on TextFormField {
+                            name
+                            label
+                            description
+                            component
+                          }
+                        }
+                      }
+                      ActionNewsletterFieldConfig {
+                        label
+                        key
+                        fields {
+                          ... on TextFormField {
+                            name
+                            label
+                            description
+                            component
+                          }
+                        }
+                      }
+                      ActionPageReferenceFieldConfig {
+                        label
+                        key
+                        fields {
+                          ... on SelectFormField {
+                            name
+                            label
+                            description
+                            component
+                            options
+                          }
+                          ... on ButtonSettingsFieldsListActionPageReferenceConfig {
+                            label
+                            key
+                            name
+                            component
+                            fields {
+                              ... on TextFormField {
+                                name
+                                label
+                                description
+                                component
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  ... on SelectFormField {
+                    name
+                    label
+                    description
+                    component
+                    options
+                  }
+                }
+              }
+              ExcerptPostFieldConfig {
+                label
+                key
+                fields {
+                  ... on SelectFormField {
+                    name
+                    label
+                    description
+                    component
+                    options
+                  }
+                  ... on TextFormField {
+                    name
+                    label
+                    description
+                    component
+                  }
+                }
+              }
+              PostListFieldConfig {
+                label
+                key
+                fields {
+                  ... on PostsFieldsListPostListConfig {
+                    label
+                    key
+                    name
+                    component
+                    fields {
+                      ... on SelectFormField {
+                        name
+                        label
+                        description
+                        component
+                        options
+                      }
+                    }
+                  }
+                }
+              }
+              PriceListFieldConfig {
+                label
+                key
+                fields {
+                  ... on TextFormField {
+                    name
+                    label
+                    description
+                    component
+                  }
+                  ... on PricesFieldsListPriceListConfig {
+                    label
+                    key
+                    name
+                    component
+                    fields {
+                      ... on TextFormField {
+                        name
+                        label
+                        description
+                        component
+                      }
+                      ... on BulletPointsListPriceListPricesConfig {
+                        name
+                        label
+                        description
+                        component
+                        itemField {
+                          name
+                          label
+                          component
+                        }
+                      }
+                      ... on SelectFormField {
+                        name
+                        label
+                        description
+                        component
+                        options
+                      }
+                    }
+                  }
+                }
+              }
               AuthorListFieldConfig {
                 label
                 key
@@ -57,12 +213,13 @@ export default `query DocumentQuery($path: String!) {
                   ... on AuthorsListAuthorListConfig {
                     name
                     label
+                    description
                     component
                     fields {
                       name
-                      options
-                      component
                       label
+                      component
+                      options
                     }
                   }
                 }
@@ -74,6 +231,7 @@ export default `query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
+                    description
                     component
                   }
                   ... on SponsorFieldsListSponsorListConfig {
@@ -85,10 +243,13 @@ export default `query DocumentQuery($path: String!) {
                       ... on TextFormField {
                         name
                         label
+                        description
                         component
                       }
                       ... on ImageFormField {
                         name
+                        label
+                        description
                         component
                         fields {
                           name
@@ -107,104 +268,13 @@ export default `query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
+                    description
                     component
                   }
                   ... on SelectFormField {
                     name
                     label
-                    component
-                    options
-                  }
-                }
-              }
-              SidecarFieldConfig {
-                label
-                key
-                fields {
-                  ... on TextFormField {
-                    name
-                    label
-                    component
-                  }
-                  ... on ImageFormField {
-                    name
-                    component
-                    fields {
-                      name
-                      label
-                      component
-                    }
-                  }
-                  ... on CtaFieldsListSidecarConfig {
-                    label
-                    key
-                    component
-                    name
-                    fields {
-                      ... on TextFormField {
-                        name
-                        label
-                        component
-                      }
-                    }
-                  }
-                  ... on ActionsFieldConfig {
-                    name
-                    label
-                    component
-                    templates {
-                      ActionVideoFieldConfig {
-                        label
-                        key
-                        fields {
-                          ... on TextFormField {
-                            label
-                            name
-                            component
-                          }
-                        }
-                      }
-                      ActionNewsletterFieldConfig {
-                        label
-                        key
-                        fields {
-                          ... on TextFormField {
-                            label
-                            name
-                            component
-                          }
-                        }
-                      }
-                      ActionPageReferenceFieldConfig {
-                        label
-                        key
-                        fields {
-                          ... on SelectFormField {
-                            name
-                            label
-                            component
-                            options
-                          }
-                          ... on ButtonSettingsFieldsListActionPageReferenceConfig {
-                            label
-                            key
-                            name
-                            component
-                            fields {
-                              ... on TextFormField {
-                                name
-                                label
-                                component
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                  ... on SelectFormField {
-                    name
-                    label
+                    description
                     component
                     options
                   }
@@ -217,53 +287,15 @@ export default `query DocumentQuery($path: String!) {
                   ... on TextFormField {
                     name
                     label
+                    description
                     component
                   }
                   ... on SelectFormField {
                     name
                     label
+                    description
                     component
                     options
-                  }
-                }
-              }
-              PriceListFieldConfig {
-                label
-                key
-                fields {
-                  ... on TextFormField {
-                    name
-                    label
-                    component
-                  }
-                  ... on PricesFieldsListPriceListConfig {
-                    label
-                    key
-                    component
-                    name
-                    fields {
-                      ... on TextFormField {
-                        name
-                        label
-                        component
-                      }
-                      ... on BulletPointsListPriceListPricesConfig {
-                        name
-                        label
-                        component
-                        itemField {
-                          name
-                          label
-                          component
-                        }
-                      }
-                      ... on SelectFormField {
-                        name
-                        label
-                        options
-                        component
-                      }
-                    }
                   }
                 }
               }
@@ -271,56 +303,16 @@ export default `query DocumentQuery($path: String!) {
           }
         }
       }
+      absolutePath
+      path
+      content
+      excerpt
       data {
-        __typename
         _template
         title
         blocks {
-          __typename
-          ... on ExcerptPostData {
-            __typename
-            _template
-            style
-            post {
-              __typename
-              ... on Post {
-                path
-                excerpt
-                data {
-                  image {
-                    path
-                    absolutePath
-                  }
-                  title
-                  author {
-                    ... on Author {
-                      data {
-                        name
-                        image {
-                          path
-                          absolutePath
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            description
-          }
-          ... on PageReferenceData {
-            _template
-            description
-            page {
-              __typename
-              ... on BlockPage {
-                path
-              }
-            }
-          }
           ... on SidecarData {
             _template
-            style
             text
             image {
               path
@@ -330,9 +322,17 @@ export default `query DocumentQuery($path: String!) {
               header
             }
             actions {
+              ... on ActionVideoData {
+                _template
+                url
+              }
+              ... on ActionNewsletterData {
+                _template
+                body
+                footer
+              }
               ... on ActionPageReferenceData {
                 _template
-                __typename
                 page {
                   ... on BlockPage {
                     path
@@ -342,16 +342,44 @@ export default `query DocumentQuery($path: String!) {
                   label
                 }
               }
-              ... on ActionVideoData {
-                _template
-                __typename
-                url
+            }
+            style
+          }
+          ... on ExcerptPostData {
+            _template
+            post {
+              ... on Post {
+                path
               }
-              ... on ActionNewsletterData {
-                _template
-                __typename
-                body
-                footer
+            }
+            description
+            style
+          }
+          ... on PostListData {
+            _template
+            posts {
+              post {
+                ... on Post {
+                  path
+                }
+              }
+            }
+          }
+          ... on PriceListData {
+            _template
+            heading
+            prices {
+              title
+              description
+              bullet_points
+              category
+            }
+          }
+          ... on AuthorListData {
+            _template
+            authors {
+              ... on Author {
+                path
               }
             }
           }
@@ -367,51 +395,210 @@ export default `query DocumentQuery($path: String!) {
               }
             }
           }
-          ... on AuthorListData {
+          ... on PageReferenceData {
             _template
-            authors {
-              __typename
-              ... on Author {
+            description
+            page {
+              ... on BlockPage {
                 path
-                content
-                excerpt
-                data {
-                  name
-                  image {
-                    path
-                    absolutePath
-                  }
-                  gallery {
-                    path
-                    absolutePath
-                  }
-                  anecdotes
-                  accolades {
-                    figure
-                    description
-                  }
-                }
               }
-            }
-          }
-          ... on PriceListData {
-            _template
-            heading
-            prices {
-              title
-              description
-              bullet_points
-              category
             }
           }
           ... on SectionIndexData {
             _template
             body
             limit
+            section
+          }
+        }
+      }
+    }
+    ... on Post {
+      form {
+        label
+        key
+        fields {
+          ... on TextFormField {
+            name
+            label
+            description
+            component
+          }
+          ... on SelectFormField {
+            name
+            label
+            description
+            component
+            options
+          }
+          ... on ImageFormField {
+            name
+            label
+            description
+            component
+            fields {
+              name
+              label
+              component
+            }
+          }
+          ... on TagsFormField {
+            name
+            label
+            description
+            component
+          }
+        }
+      }
+      absolutePath
+      path
+      content
+      excerpt
+      data {
+        _template
+        title
+        author {
+          ... on Author {
+            path
+          }
+        }
+        image {
+          path
+          absolutePath
+        }
+        hashtags
+      }
+    }
+    ... on Author {
+      form {
+        label
+        key
+        fields {
+          ... on TextFormField {
+            name
+            label
+            description
+            component
+          }
+          ... on ImageFormField {
+            name
+            label
+            description
+            component
+            fields {
+              name
+              label
+              component
+            }
+          }
+          ... on AnecdotesListAuthorConfig {
+            name
+            label
+            description
+            component
+            itemField {
+              name
+              label
+              component
+            }
+          }
+          ... on AccoladesFieldsListAuthorConfig {
+            label
+            key
+            name
+            component
+            fields {
+              ... on TextFormField {
+                name
+                label
+                description
+                component
+              }
+            }
+          }
+        }
+      }
+      absolutePath
+      path
+      content
+      excerpt
+      data {
+        _template
+        name
+        image {
+          path
+          absolutePath
+        }
+        gallery {
+          path
+          absolutePath
+        }
+        anecdotes
+        accolades {
+          figure
+          description
+        }
+      }
+    }
+    ... on Menu {
+      form {
+        label
+        key
+        fields {
+          ... on ImageFormField {
+            name
+            label
+            description
+            component
+            fields {
+              name
+              label
+              component
+            }
+          }
+          ... on MenuItemFieldsListMenuConfig {
+            label
+            key
+            name
+            component
+            fields {
+              ... on TextFormField {
+                name
+                label
+                description
+                component
+              }
+              ... on SelectFormField {
+                name
+                label
+                description
+                component
+                options
+              }
+            }
+          }
+        }
+      }
+      absolutePath
+      path
+      content
+      excerpt
+      data {
+        _template
+        logo {
+          path
+          absolutePath
+        }
+        menu_item {
+          label
+          page {
+            ... on BlockPage {
+              path
+            }
           }
         }
       }
     }
   }
 }
-`;
+`

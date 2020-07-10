@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/graphql",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -12,6 +12,7 @@
   "scripts": {
     "build": "forestry-build",
     "watch": "forestry-watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.kebabcase": "^4.1.6",
     "@types/lodash.snakecase": "^4.1.6",
+    "@types/lodash.tolower": "^4.1.6",
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^13.13.2",
     "@types/pg": "^7.14.3",
@@ -42,6 +44,7 @@
     "lodash.flatten": "^4.4.0",
     "lodash.kebabcase": "^4.1.1",
     "lodash.snakecase": "^4.1.1",
+    "lodash.tolower": "^4.1.2",
     "lodash.upperfirst": "^4.3.1",
     "nodemon": "^2.0.2",
     "pg": "^8.2.1",

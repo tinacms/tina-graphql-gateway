@@ -22,7 +22,6 @@ app.use(
     // maybe in the case of the DatabaseManager it's not necessary?
     const config = {
       rootPath: "",
-      sectionPrefix: "content/",
       siteLookup: "qms5qlc0jk1o9g",
     };
     const { schema, documentMutation } = await buildSchema(config, dataSource);

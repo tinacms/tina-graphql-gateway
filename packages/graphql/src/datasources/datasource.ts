@@ -68,6 +68,7 @@ export type TextareaField = {
   label: string;
   name: string;
   type: "textarea";
+  default: string;
   config: {
     required: boolean;
     wysiwyg: boolean;
@@ -166,6 +167,21 @@ export type SimpleList = BaseListField & {
     use_select: boolean;
     min: null | number;
     max: null | number;
+    source: undefined;
+  };
+};
+export type DocumentList = BaseListField & {
+  config?: {
+    required?: boolean;
+    use_select: boolean;
+    min: null | number;
+    max: null | number;
+    source: {
+      type: "documents";
+      section: string;
+      file: string;
+      path: string;
+    };
   };
 };
 export type SectionList = BaseListField & {
@@ -180,12 +196,23 @@ export type SectionList = BaseListField & {
     };
   };
 };
-export type ListField = SectionList | SimpleList;
+export type ListField = SectionList | SimpleList | DocumentList;
 
 export type BaseSelectField = {
   label: string;
   name: string;
   type: "select";
+};
+export type DocumentSelect = BaseSelectField & {
+  config: {
+    required: boolean;
+    source: {
+      type: "documents";
+      section: string;
+      file: string;
+      path: string;
+    };
+  };
 };
 export type SectionSelect = BaseSelectField & {
   config: {
@@ -208,7 +235,7 @@ export type SimpleSelect = BaseSelectField & {
     };
   };
 };
-export type SelectField = SectionSelect | SimpleSelect;
+export type SelectField = SectionSelect | DocumentSelect | SimpleSelect;
 export type FieldType =
   | TextField
   | TextareaField
