@@ -84,6 +84,19 @@ export class ElasticManager implements DataSource {
     this.client.connect();
   }
   getTemplate = async (siteLookup: string, name: string): Promise<FMT> => {
+    // const result = await this.elasticClient.get({
+    //   index: "project-templates",
+    //   id: name,
+    // });
+    // const fmt = result.body._source;
+
+    // console.log("!!fmt ", fmt);
+
+    // // @ts-ignore
+    // return {
+    //   data: { ...fmt, pages: [] },
+    // };
+
     const templatesRes = await this.query<DB_FMT>(
       `SELECT Page_Types.*, Sites.lookup from Page_Types ` +
         `INNER JOIN Sites ON (Sites.id = Page_Types.site_id) ` +
@@ -158,12 +171,19 @@ export class ElasticManager implements DataSource {
     return this.getData<T>(siteLookup, path);
   };
   getTemplateList = async (siteLookup: string): Promise<string[]> => {
-    const res = await this.query<DB_FMT>(
-      `SELECT Page_types.*, Sites.lookup from Page_types ` +
-        `INNER JOIN Sites ON (Sites.id = Page_types.site_id) ` +
-        `WHERE Sites.lookup = '${siteLookup}'`
-    );
-    return res.rows.filter((row) => row.filename).map((row) => row.filename);
+    const result = await this.elasticClient.search({
+      index: "project-templates",
+      size: 100,
+      body: {
+        query: {
+          match_all: {},
+        },
+      },
+    });
+
+    return result.body.hits.hits.map((template: any) => {
+      return template._id;
+    });
   };
 
   private query = <T = any>(query: string): Promise<QueryResult<T>> => {
