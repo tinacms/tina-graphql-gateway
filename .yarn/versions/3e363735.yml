@@ -2,7 +2,7 @@ releases:
 
 
 undecided:
-  - "@forestryio/client"
+  - "@forestryio/build"
   - "@forestryio/graphql"
   - "@forestryio/teams"
-  - "@forestry/gql-demo"
+  - demo

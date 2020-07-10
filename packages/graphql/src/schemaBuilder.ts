@@ -19,8 +19,9 @@ import {
   GraphQLInputObjectType,
 } from "graphql";
 import camelCase from "lodash.camelcase";
-import kebabcase from "lodash.kebabcase";
+import kebabCase from "lodash.kebabcase";
 import upperFist from "lodash.upperfirst";
+import toLower from "lodash.tolower";
 import {
   DataSource,
   Settings,
@@ -33,6 +34,7 @@ import {
   FileField,
   TagListField,
   TextareaField,
+  DocumentList,
   NumberField,
   BooleanField,
   GalleryField,
@@ -44,8 +46,15 @@ import {
   SectionSelect,
   DateField,
   ListField,
+  SimpleList,
+  DocumentSelect,
 } from "./datasources/datasource";
+import { getHeapCodeStatistics } from "v8";
 require("dotenv").config();
+
+const slugify = (string: string) => {
+  return toLower(kebabCase(string));
+};
 
 const arrayToObject = <T>(
   array: T[],
@@ -193,35 +202,17 @@ const getDocument = async (
     args.path || ""
   );
 
+  if (!activeTemplate) {
+    throw new GraphQLError(`Unable to find active template for ${path}`);
+  }
+
   return {
     ...document,
     path,
-    template: activeTemplate?.name || "",
+    template: activeTemplate.name,
   };
 };
 
-function isListValue(val: FieldSourceType): val is ListValue {
-  // FIXME: not sure if this is strong enough
-  return val.hasOwnProperty("template");
-}
-
-function isDirectorySection(section: Section): section is DirectorySection {
-  return section.type === "directory";
-}
-
-function isSelectField(field: FieldType): field is SelectField {
-  return field.type === "select";
-}
-function isSectionSelectField(field: FieldType): field is SectionSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
-
-function isListField(field: FieldType): field is SelectField {
-  return field.type === "list";
-}
 function isNotNull<T>(arg: T): arg is Exclude<T, null> {
   return arg !== null;
 }
@@ -233,7 +224,42 @@ function isNullOrUndefined<T>(
 function isString(arg: unknown | unknown[]): arg is string {
   return typeof arg === "string";
 }
+function isDirectorySection(section: Section): section is DirectorySection {
+  return section.type === "directory";
+}
+function isSelectField(field: FieldType): field is SelectField {
+  return field.type === "select";
+}
+function isDocumentSelectField(field: FieldType): field is DocumentSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "documents";
+}
+function isSectionSelectField(field: FieldType): field is SectionSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
+function isListValue(val: FieldSourceType): val is ListValue {
+  // FIXME: not sure if this is strong enough
+  return val.hasOwnProperty("template");
+}
+function isListField(field: FieldType): field is ListField {
+  return field.type === "list";
+}
+function isDocumentListField(field: FieldType): field is DocumentList {
+  if (!isListField(field)) {
+    return false;
+  }
 
+  if (field && field.config && field?.config?.source?.type === "documents") {
+    return true;
+  } else {
+    return false;
+  }
+}
 function isSectionListField(field: FieldType): field is SectionList {
   if (!isListField(field)) {
     return false;
@@ -289,7 +315,6 @@ export type Plugin = {
 
 type configType = {
   rootPath: string;
-  sectionPrefix: string;
   siteLookup: string;
 };
 
@@ -324,11 +349,6 @@ export const buildSchema = async (
     );
   };
 
-  const replaceFMTPathWithSlug = (path: string) => {
-    // FIXME: we reference the slug in "select" fields
-    return path.replace(config.sectionPrefix, "");
-  };
-
   const settings = await dataSource.getSettings(config.siteLookup);
   const fmtList = await dataSource.getTemplateList(config.siteLookup);
 
@@ -358,10 +378,12 @@ export const buildSchema = async (
 
   const sectionFmts = settings.data.sections
     .filter(isDirectorySection)
-    .map(({ path, templates }) => ({
-      name: replaceFMTPathWithSlug(path),
-      templates,
-    }));
+    .map(({ label, templates }) => {
+      return {
+        name: slugify(label),
+        templates,
+      };
+    });
 
   const baseInputFields = {
     name: { type: GraphQLString },
@@ -372,6 +394,13 @@ export const buildSchema = async (
 
   const textInput = new GraphQLObjectType<TextField>({
     name: "TextFormField",
+    fields: {
+      ...baseInputFields,
+    },
+  });
+
+  const booleanInput = new GraphQLObjectType<BooleanField>({
+    name: "BooleanFormField",
     fields: {
       ...baseInputFields,
     },
@@ -478,9 +507,13 @@ export const buildSchema = async (
         : GraphQLBoolean,
     },
     setter: {
-      type: textInput,
+      type: booleanInput,
       resolve: () => {
-        return "hi";
+        return {
+          name: field.name,
+          label: field.label,
+          component: "toggle",
+        };
       },
     },
     mutator: {
@@ -488,6 +521,46 @@ export const buildSchema = async (
     },
   });
   const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
+    if (isDocumentSelectField(field)) {
+      return {
+        getter: {
+          type: GraphQLString,
+        },
+        setter: {
+          type: selectInput,
+          resolve: async (
+            val: FieldSourceType,
+            _args: { [argName: string]: any },
+            ctx: FieldContextType
+          ) => {
+            const filepath = field.config?.source.file;
+            if (!filepath) {
+              throw new GraphQLError(
+                `No path specificied for list field ${field.name}
+                `
+              );
+            }
+            const keyPath = field.config?.source.path;
+            if (!keyPath) {
+              throw new GraphQLError(
+                `No path specificied key for list field document ${field.name}
+                `
+              );
+            }
+            const res = await ctx.dataSource.getData<any>("", filepath);
+            return {
+              name: field.name,
+              label: field.label,
+              component: "select",
+              options: Object.keys(res.data[keyPath]),
+            };
+          },
+        },
+        mutator: {
+          type: GraphQLString,
+        },
+      };
+    }
     if (isSectionSelectField(field)) {
       return {
         getter: {
@@ -591,9 +664,22 @@ export const buildSchema = async (
       type: GraphQLString,
     },
     setter: {
-      type: textInput,
+      type: new GraphQLObjectType<TextField>({
+        name: "DateFormField",
+        fields: {
+          ...baseInputFields,
+          dateFormat: { type: GraphQLString },
+          timeFormat: { type: GraphQLBoolean }, // FIXME: Forestry outputs boolean | "some time"
+        },
+      }),
       resolve: () => {
-        return "hi";
+        return {
+          name: field.name,
+          label: field.label,
+          component: "date",
+          dateFormat: "MMMM DD YYYY",
+          timeFormat: false,
+        };
       },
     },
     mutator: {
@@ -619,6 +705,86 @@ export const buildSchema = async (
     },
   });
   const list = ({ fmt, field }: { fmt: string; field: ListField }) => {
+    if (isDocumentListField(field)) {
+      return {
+        getter: {
+          type: GraphQLList(
+            new GraphQLObjectType({
+              name: friendlyName(field.name + "_list_" + fmt + "_item"),
+              fields: {
+                path: { type: GraphQLString },
+              },
+            })
+          ),
+          resolve: async (val: any) => {
+            return val[field.name].map((item: any) => {
+              return { path: item };
+            });
+          },
+        },
+        setter: {
+          type: new GraphQLObjectType({
+            name: friendlyName(field.name + "_list_" + fmt + "_config"),
+            fields: {
+              ...baseInputFields,
+              component: { type: GraphQLString },
+              fields: {
+                type: GraphQLList(
+                  new GraphQLObjectType({
+                    name: friendlyName(
+                      field.name + "_list_" + fmt + "_config_item"
+                    ),
+                    fields: {
+                      name: { type: GraphQLString },
+                      label: { type: GraphQLString },
+                      component: { type: GraphQLString },
+                      options: { type: GraphQLList(GraphQLString) },
+                    },
+                  })
+                ),
+              },
+            },
+          }),
+          resolve: async (
+            val: FieldSourceType,
+            _args: { [argName: string]: any },
+            ctx: FieldContextType
+          ) => {
+            const filepath = field.config?.source.file;
+            if (!filepath) {
+              throw new GraphQLError(
+                `No path specificied for list field ${field.name}
+                `
+              );
+            }
+            const keyPath = field.config?.source.path;
+            if (!keyPath) {
+              throw new GraphQLError(
+                `No path specificied key for list field document ${field.name}
+                `
+              );
+            }
+            const res = await ctx.dataSource.getData<any>("", filepath);
+            return {
+              name: field.name,
+              label: field.label,
+              component: "group-list",
+              fields: [
+                {
+                  label: field.label + " Item",
+                  name: "path",
+                  component: "select",
+                  options: Object.keys(res.data[keyPath]),
+                },
+              ],
+            };
+          },
+        },
+        mutator: {
+          type: GraphQLList(GraphQLString),
+        },
+      };
+    }
     if (isSectionListField(field)) {
       return {
         getter: {
@@ -776,7 +942,7 @@ export const buildSchema = async (
               },
             },
             absolutePath: {
-              type: GraphQLNonNull(GraphQLString),
+              type: GraphQLString,
               resolve: async (val) => {
                 return config.rootPath + val;
               },
@@ -826,7 +992,7 @@ export const buildSchema = async (
                 },
               },
               absolutePath: {
-                type: GraphQLNonNull(GraphQLString),
+                type: GraphQLString,
                 resolve: async (val) => {
                   return config.rootPath + val;
                 },
@@ -906,7 +1072,7 @@ export const buildSchema = async (
                     const setter = setters[val.name];
                     if (!setter) {
                       throw new GraphQLError(
-                        `No setter defined for ${val.name}`
+                        `No setter defined for field_group value`
                       );
                     }
 
@@ -994,7 +1160,7 @@ export const buildSchema = async (
                     const setter = setters[val.name];
                     if (!setter) {
                       throw new GraphQLError(
-                        `No setter defined for ${val.name}`
+                        `No setter defined for field_group_list value`
                       );
                     }
 
@@ -1264,8 +1430,9 @@ export const buildSchema = async (
                   resolveType: (val: FieldType) => {
                     const setter = setters[val.name];
                     if (!setter) {
+                      console.log(val);
                       throw new GraphQLError(
-                        `No setter defined for ${val.name}`
+                        `No setter defined for template FMT ${path}`
                       );
                     }
 
@@ -1309,7 +1476,7 @@ export const buildSchema = async (
         name: friendlyFMTName(path),
         fields: {
           form: templateFormObjectType,
-          absolutePath: { type: GraphQLNonNull(GraphQLString) },
+          absolutePath: { type: GraphQLString },
           path: { type: GraphQLNonNull(GraphQLString) },
           content: {
             type: GraphQLNonNull(GraphQLString),
@@ -1401,7 +1568,7 @@ export const buildSchema = async (
           if (templateBigName.endsWith("Input")) {
             const values = item[templateBigName];
             const accumulator = {
-              template: kebabcase(templateBigName.replace("Input", "")),
+              template: kebabCase(templateBigName.replace("Input", "")),
               ...values,
             };
             return transform(accumulator);

@@ -1,18 +1,18 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.3",
+  "version": "0.1.5-rc.1",
   "main": "dist/index.js",
   "files": [
-    "dist/*",
-    "bin.js"
+    "dist/*"
   ],
   "typings": "dist/types.d.ts",
   "bin": {
-    "forestry:doit": "bin.js"
+    "forestry:start": "bin.js"
   },
   "scripts": {
     "build": "forestry-build",
     "watch": "forestry-watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },
   "dependencies": {

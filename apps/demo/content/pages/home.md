@@ -1,5 +1,5 @@
 ---
-title: Home!
+title: Home
 blocks:
 - template: sidecar
   text: |-
@@ -38,6 +38,7 @@ blocks:
 
     [Show more](http://localhost:3000/)
   limit: 3
+  section: pages
 - template: author-list
   authors:
   - content/authors/terrence.md

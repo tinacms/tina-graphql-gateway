@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
 import { forestryFetch, useForestryForm } from "@forestryio/client";
