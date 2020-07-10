@@ -84,39 +84,15 @@ export class ElasticManager implements DataSource {
     this.client.connect();
   }
   getTemplate = async (siteLookup: string, name: string): Promise<FMT> => {
-    // const result = await this.elasticClient.get({
-    //   index: "project-templates",
-    //   id: name,
-    // });
-    // const fmt = result.body._source;
-
-    // console.log("!!fmt ", fmt);
-
-    // // @ts-ignore
-    // return {
-    //   data: { ...fmt, pages: [] },
-    // };
-
-    const templatesRes = await this.query<DB_FMT>(
-      `SELECT Page_Types.*, Sites.lookup from Page_Types ` +
-        `INNER JOIN Sites ON (Sites.id = Page_Types.site_id) ` +
-        `WHERE Sites.lookup = '${siteLookup}' AND filename = '${name}'`
-    );
-
-    const template = templatesRes.rows[0];
-
-    const pagesRes = await this.query<DB_Page>(
-      `SELECT path from Pages WHERE page_type_id = ${template.id}`
-    );
+    const result = await this.elasticClient.get({
+      index: "project-templates",
+      id: name,
+    });
+    const fmt = result.body._source;
 
     return {
-      data: {
-        ...template,
-        label: template.name,
-        fields: mapFields(template.fields),
-        pages: pagesRes.rows.map((p) => p.path),
-      },
-    } as any;
+      data: { ...fmt, filename: name, pages: fmt.pages || [] },
+    };
   };
 
   getSettings = async (siteLookup: string): Promise<Settings> => {
