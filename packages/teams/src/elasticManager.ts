@@ -5,7 +5,7 @@ import type {
   FieldType,
   Content,
 } from "@forestryio/graphql";
-import { Client, QueryResult } from "pg";
+import { Client } from "pg";
 import { Client as ElasticClient } from "@elastic/elasticsearch";
 import path from "path";
 const templateMapping: { [key: string]: string } = {
@@ -25,35 +25,6 @@ const templateMapping: { [key: string]: string } = {
   "13": "blocks",
   "14": "", //color
 };
-
-interface DB_SECTION {
-  type: "DocumentSection" | "DirectorySection" | "HeadingSection";
-  directory: string;
-  templates: string[];
-  params: any;
-}
-
-interface DB_FMT {
-  id: string;
-  name: string;
-  slug: string;
-  fields: any[];
-  hide_body: boolean;
-  is_partial: boolean;
-  filename: string;
-  display_field: boolean;
-}
-
-interface DB_Site {
-  id: string;
-}
-
-interface DB_Page {
-  params: any;
-  body: string;
-  slug: string;
-  path: string;
-}
 
 const mapFields = (fields: FieldType[]): FieldType[] => {
   if (!fields.length) {
@@ -133,18 +104,28 @@ export class ElasticManager implements DataSource {
 
   writeData = async <T extends Content>(
     siteLookup: string,
-    path: string,
+    filepath: string,
     content: any,
     data: any
   ) => {
-    await this.query(
-      `UPDATE Pages ` +
-        `SET params = '${JSON.stringify(data)}', body = '${content || ""}' ` +
-        `FROM Sites ` +
-        `WHERE Sites.lookup = '${siteLookup}' AND path = '${path}'`
-    );
+    const file = path
+      .join(process.env.REPO_ROOT || "", filepath)
+      .split("/")
+      .join("$");
 
-    return this.getData<T>(siteLookup, path);
+    console.log("will update", content, data, file);
+    const result = await this.elasticClient.update({
+      index: "project",
+      id: file,
+      body: {
+        doc: {
+          data,
+          content,
+        },
+      },
+    });
+
+    return this.getData<T>(siteLookup, filepath);
   };
   getTemplateList = async (siteLookup: string): Promise<string[]> => {
     const result = await this.elasticClient.search({
@@ -159,18 +140,6 @@ export class ElasticManager implements DataSource {
 
     return result.body.hits.hits.map((template: any) => {
       return template._id;
-    });
-  };
-
-  private query = <T = any>(query: string): Promise<QueryResult<T>> => {
-    return new Promise((resolve, reject) => {
-      this.client.query<T>(query, (err: Error, res: QueryResult<T>) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      });
     });
   };
 }
