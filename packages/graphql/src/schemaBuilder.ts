@@ -1,4 +1,5 @@
-import flatten from "lodash.flatten";
+import * as util from "./util";
+
 import {
   parse,
   getNamedType,
@@ -321,30 +322,17 @@ type configType = {
 /**
  * This is the main function in this script, it returns all the types
  */
+export const FMT_BASE = ".forestry/front_matter/templates";
 export const buildSchema = async (
   config: configType,
   dataSource: DataSource
 ) => {
-  const FMT_BASE = ".forestry/front_matter/templates";
-  const shortFMTName = (path: string) => {
-    return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
-  };
-
-  const friendlyName = (name: string, options = { suffix: "" }) => {
-    const delimiter = "_";
-
-    return upperFist(
-      camelCase(
-        shortFMTName(name) + (options.suffix && delimiter + options.suffix)
-      )
-    );
-  };
   const friendlyFMTName = (path: string, options = { suffix: "" }) => {
     const delimiter = "_";
 
     return upperFist(
       camelCase(
-        shortFMTName(path) + (options.suffix && delimiter + options.suffix)
+        util.shortFMTName(path) + (options.suffix && delimiter + options.suffix)
       )
     );
   };
@@ -363,13 +351,13 @@ export const buildSchema = async (
   const templateObjectTypes: Templates = {};
 
   fmtList.forEach((path) => {
-    templateObjectTypes[shortFMTName(path)] = null;
+    templateObjectTypes[util.shortFMTName(path)] = null;
   });
 
   const templatePages = await Promise.all(
     fmtList.map(async (fmt) => {
       return {
-        name: shortFMTName(fmt),
+        name: util.shortFMTName(fmt),
         pages: (await dataSource.getTemplate(config.siteLookup, fmt)).data
           .pages,
       };
@@ -565,7 +553,7 @@ export const buildSchema = async (
       return {
         getter: {
           type: new GraphQLUnionType({
-            name: friendlyName(field.name + "_select_" + fmt),
+            name: util.friendlyName(field.name + "_select_" + fmt),
             types: () => {
               return getSectionFmtTypes2(
                 field.config.source.section,
@@ -653,7 +641,7 @@ export const buildSchema = async (
       },
       mutator: {
         type: new GraphQLEnumType({
-          name: friendlyName(field.name + "_select_" + fmt),
+          name: util.friendlyName(field.name + "_select_" + fmt),
           values: options,
         }),
       },
@@ -710,7 +698,7 @@ export const buildSchema = async (
         getter: {
           type: GraphQLList(
             new GraphQLObjectType({
-              name: friendlyName(field.name + "_list_" + fmt + "_item"),
+              name: util.friendlyName(field.name + "_list_" + fmt + "_item"),
               fields: {
                 path: { type: GraphQLString },
               },
@@ -724,14 +712,14 @@ export const buildSchema = async (
         },
         setter: {
           type: new GraphQLObjectType({
-            name: friendlyName(field.name + "_list_" + fmt + "_config"),
+            name: util.friendlyName(field.name + "_list_" + fmt + "_config"),
             fields: {
               ...baseInputFields,
               component: { type: GraphQLString },
               fields: {
                 type: GraphQLList(
                   new GraphQLObjectType({
-                    name: friendlyName(
+                    name: util.friendlyName(
                       field.name + "_list_" + fmt + "_config_item"
                     ),
                     fields: {
@@ -790,7 +778,7 @@ export const buildSchema = async (
         getter: {
           type: GraphQLList(
             new GraphQLUnionType({
-              name: friendlyName(field.name + "_list_" + fmt),
+              name: util.friendlyName(field.name + "_list_" + fmt),
               types: () => {
                 return getSectionFmtTypes2(
                   field.config?.source.section || "",
@@ -841,14 +829,14 @@ export const buildSchema = async (
         },
         setter: {
           type: new GraphQLObjectType({
-            name: friendlyName(field.name + "_list_" + fmt + "_config"),
+            name: util.friendlyName(field.name + "_list_" + fmt + "_config"),
             fields: {
               ...baseInputFields,
               component: { type: GraphQLString },
               fields: {
                 type: GraphQLList(
                   new GraphQLObjectType({
-                    name: friendlyName(
+                    name: util.friendlyName(
                       field.name + "_list_" + fmt + "_config_item"
                     ),
                     fields: {
@@ -894,13 +882,13 @@ export const buildSchema = async (
       getter: { type: GraphQLList(GraphQLString) },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_list_" + fmt + "_config"),
+          name: util.friendlyName(field.name + "_list_" + fmt + "_config"),
           fields: {
             ...baseInputFields,
             component: { type: GraphQLString },
             itemField: {
               type: new GraphQLObjectType({
-                name: friendlyName(
+                name: util.friendlyName(
                   field.name + "_list_" + fmt + "_config_item"
                 ),
                 fields: {
@@ -933,7 +921,7 @@ export const buildSchema = async (
     return {
       getter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_gallery_" + fmt),
+          name: util.friendlyName(field.name + "_gallery_" + fmt),
           fields: {
             path: {
               type: GraphQLNonNull(GraphQLString),
@@ -983,7 +971,7 @@ export const buildSchema = async (
       getter: {
         type: GraphQLList(
           new GraphQLObjectType({
-            name: friendlyName(field.name + "_gallery_" + fmt),
+            name: util.friendlyName(field.name + "_gallery_" + fmt),
             fields: {
               path: {
                 type: GraphQLNonNull(GraphQLString),
@@ -1036,13 +1024,15 @@ export const buildSchema = async (
     return {
       getter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_fields_" + fmt),
+          name: util.friendlyName(field.name + "_fields_" + fmt),
           fields: getters,
         }),
       },
       setter: {
         type: new GraphQLObjectType<FieldGroupField>({
-          name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
+          name: util.friendlyName(
+            field.name + "_fields_list_" + fmt + "_config"
+          ),
           fields: {
             label: {
               type: GraphQLString,
@@ -1058,7 +1048,7 @@ export const buildSchema = async (
             fields: {
               type: GraphQLList(
                 new GraphQLUnionType({
-                  name: friendlyName(
+                  name: util.friendlyName(
                     field.name + "_fields_list_" + fmt + "_config" + "_fields"
                   ),
                   types: () => {
@@ -1102,7 +1092,7 @@ export const buildSchema = async (
       },
       mutator: {
         type: new GraphQLInputObjectType({
-          name: friendlyName(field.name + "_fields_" + fmt + "_input"),
+          name: util.friendlyName(field.name + "_fields_" + fmt + "_input"),
           fields: mutators,
         }),
       },
@@ -1123,14 +1113,16 @@ export const buildSchema = async (
       getter: {
         type: GraphQLList(
           new GraphQLObjectType({
-            name: friendlyName(field.name + "_fields_list_" + fmt),
+            name: util.friendlyName(field.name + "_fields_list_" + fmt),
             fields: getters,
           })
         ),
       },
       setter: {
         type: new GraphQLObjectType<FieldGroupListField>({
-          name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
+          name: util.friendlyName(
+            field.name + "_fields_list_" + fmt + "_config"
+          ),
           fields: {
             label: {
               type: GraphQLString,
@@ -1146,7 +1138,7 @@ export const buildSchema = async (
             fields: {
               type: GraphQLList(
                 new GraphQLUnionType({
-                  name: friendlyName(
+                  name: util.friendlyName(
                     field.name + "_fields_list_" + fmt + "_config" + "_fields"
                   ),
                   types: () => {
@@ -1191,7 +1183,9 @@ export const buildSchema = async (
       mutator: {
         type: GraphQLList(
           new GraphQLInputObjectType({
-            name: friendlyName(field.name + "_fields_list_" + fmt + "_input"),
+            name: util.friendlyName(
+              field.name + "_fields_list_" + fmt + "_input"
+            ),
             fields: mutators,
           })
         ),
@@ -1203,7 +1197,7 @@ export const buildSchema = async (
       getter: {
         type: GraphQLList(
           new GraphQLUnionType({
-            name: friendlyName(field.name + "_union"),
+            name: util.friendlyName(field.name + "_union"),
             types: () => {
               return getBlockFmtTypes(
                 field.template_types,
@@ -1218,12 +1212,12 @@ export const buildSchema = async (
       },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_fieldConfig"),
+          name: util.friendlyName(field.name + "_fieldConfig"),
           fields: {
             ...baseInputFields,
             templates: {
               type: new GraphQLObjectType({
-                name: friendlyName(field.name + "_templates"),
+                name: util.friendlyName(field.name + "_templates"),
                 fields: () => {
                   const blockObjectTypes = field.template_types.map(
                     (template) => templateFormObjectTypes[template]
@@ -1257,11 +1251,11 @@ export const buildSchema = async (
       mutator: {
         type: GraphQLList(
           new GraphQLInputObjectType({
-            name: friendlyName(field.name + "_input"),
+            name: util.friendlyName(field.name + "_input"),
             fields: () => {
               return arrayToObject(field.template_types, (obj, item) => {
-                obj[friendlyName(item + "_input")] = {
-                  type: templateDataInputObjectTypes[shortFMTName(item)],
+                obj[util.friendlyName(item + "_input")] = {
+                  type: templateDataInputObjectTypes[util.shortFMTName(item)],
                 };
               });
             },
@@ -1487,17 +1481,20 @@ export const buildSchema = async (
       });
 
       templateDataInputObjectTypes[
-        shortFMTName(path)
+        util.shortFMTName(path)
       ] = templateDataInputObjectType;
-      templateInputObjectTypes[shortFMTName(path)] = templateInputObjectType;
-      templateFormObjectTypes[shortFMTName(path)] = templateFormObjectType.type;
-      templateDataObjectTypes[shortFMTName(path)] = templateDataObjectType;
-      templateObjectTypes[shortFMTName(path)] = templateObjectType;
+      templateInputObjectTypes[
+        util.shortFMTName(path)
+      ] = templateInputObjectType;
+      templateFormObjectTypes[util.shortFMTName(path)] =
+        templateFormObjectType.type;
+      templateDataObjectTypes[util.shortFMTName(path)] = templateDataObjectType;
+      templateObjectTypes[util.shortFMTName(path)] = templateObjectType;
     })
   );
 
   const documentType = new GraphQLUnionType({
-    name: friendlyName("document_union"),
+    name: util.friendlyName("document_union"),
     types: () => getSectionFmtTypes(settings, templateObjectTypes),
     resolveType: (val: { template: string }): GraphQLObjectType => {
       const type = templateObjectTypes[val.template];
