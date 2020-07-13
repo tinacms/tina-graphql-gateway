@@ -2009,6 +2009,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": ^1.15.3
     "@types/cors": ^2.8.6
     "@types/express": ^4.17.6
+    "@types/jest": ^26.0.4
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.flatten": ^4.4.6
     "@types/lodash.kebabcase": ^4.1.6
@@ -2027,6 +2028,7 @@ __metadata:
     graphql: ^15.1.0
     graphql-toolkit: ^0.7.5
     gray-matter: ^4.0.2
+    jest: ^26.1.0
     lodash.camelcase: ^4.3.0
     lodash.flatten: ^4.4.0
     lodash.kebabcase: ^4.1.1
@@ -3827,7 +3829,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:26.0.4":
+"@types/jest@npm:26.0.4, @types/jest@npm:^26.0.4":
   version: 26.0.4
   resolution: "@types/jest@npm:26.0.4"
   dependencies:
@@ -10818,7 +10820,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest@npm:26.1.0":
+"jest@npm:26.1.0, jest@npm:^26.1.0":
   version: 26.1.0
   resolution: "jest@npm:26.1.0"
   dependencies:
