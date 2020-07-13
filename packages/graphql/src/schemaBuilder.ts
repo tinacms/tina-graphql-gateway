@@ -327,16 +327,6 @@ export const buildSchema = async (
   config: configType,
   dataSource: DataSource
 ) => {
-  const friendlyFMTName = (path: string, options = { suffix: "" }) => {
-    const delimiter = "_";
-
-    return upperFist(
-      camelCase(
-        util.shortFMTName(path) + (options.suffix && delimiter + options.suffix)
-      )
-    );
-  };
-
   const settings = await dataSource.getSettings(config.siteLookup);
   const fmtList = await dataSource.getTemplateList(config.siteLookup);
 
@@ -1375,24 +1365,24 @@ export const buildSchema = async (
       const fmt = await dataSource.getTemplate(config.siteLookup, path);
 
       const { getters, setters, mutators } = generateFields({
-        fmt: friendlyFMTName(path),
+        fmt: util.friendlyName(path),
         fields: fmt.data.fields,
       });
 
       const templateDataInputObjectType = new GraphQLInputObjectType({
-        name: friendlyFMTName(path + "_data_input"),
+        name: util.friendlyName(path + "_data_input"),
         fields: mutators,
       });
 
       const templateInputObjectType = new GraphQLInputObjectType({
-        name: friendlyFMTName(path + "_input"),
+        name: util.friendlyName(path + "_input"),
         fields: {
           data: { type: templateDataInputObjectType },
           content: { type: GraphQLString },
         },
       });
 
-      const name = friendlyFMTName(path, { suffix: "field_config" });
+      const name = util.friendlyName(path, { suffix: "field_config" });
       const field = fmt.data;
       const templateFormObjectType = {
         type: new GraphQLObjectType<WithFields>({
@@ -1456,18 +1446,18 @@ export const buildSchema = async (
       };
 
       const templateDataObjectType = new GraphQLObjectType({
-        name: friendlyFMTName(path, { suffix: "data" }),
+        name: util.friendlyName(path, { suffix: "data" }),
         fields: {
           _template: {
             type: GraphQLString,
-            resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
+            resolve: () => util.friendlyName(path, { suffix: "field_config" }),
           },
           ...getters,
         },
       });
 
       const templateObjectType = new GraphQLObjectType({
-        name: friendlyFMTName(path),
+        name: util.friendlyName(path),
         fields: {
           form: templateFormObjectType,
           absolutePath: { type: GraphQLString },
