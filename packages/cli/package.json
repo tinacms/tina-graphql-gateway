@@ -32,6 +32,10 @@
     "./.env"
   ],
   "dependencies": {
+    "@forestryio/graphql": "workspace:packages/graphql",
+    "@graphql-codegen/core": "^1.17.0",
+    "@graphql-codegen/typescript": "^1.17.0",
+    "@graphql-codegen/typescript-operations": "^1.17.0",
     "axios": "0.19.0",
     "bcrypt": "^3.0.6",
     "chalk": "^2.4.2",
@@ -44,6 +48,7 @@
     "esm": "3.2.25",
     "express": "^4.17.1",
     "figlet": "^1.2.3",
+    "graphql": "^15.1.0",
     "http-proxy": "^1.18.0",
     "inquirer": "^6.5.1",
     "jsonwebtoken": "^8.5.1",

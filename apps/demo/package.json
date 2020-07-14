@@ -8,6 +8,9 @@
     "start": "next start",
     "watch": "next dev"
   },
+  "devDependencies": {
+    "@forestryio/cli": "workspace:packages/cli"
+  },
   "dependencies": {
     "@forestryio/client": "workspace:packages/client",
     "@forestryio/graphql": "workspace:packages/graphql",
