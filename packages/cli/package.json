@@ -18,7 +18,7 @@
   "main": "dist/index.js",
   "typings": "dist/types.d.ts",
   "bin": {
-    "forestry:cli": "bin.js"
+    "forestry": "bin/forestry"
   },
   "scripts": {
     "build": "forestry-build",
