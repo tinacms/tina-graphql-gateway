@@ -5,7 +5,6 @@ import type {
   FieldType,
   Content,
 } from "@forestryio/graphql";
-import { Client } from "pg";
 import { Client as ElasticClient } from "@elastic/elasticsearch";
 import path from "path";
 const templateMapping: { [key: string]: string } = {
@@ -41,18 +40,9 @@ const mapFields = (fields: FieldType[]): FieldType[] => {
 };
 
 export class ElasticManager implements DataSource {
-  client: Client;
   elasticClient: ElasticClient;
   constructor() {
-    this.client = new Client({
-      user: process.env.DB_USER,
-      host: process.env.DB_HOST,
-      database: process.env.DATABASE,
-      password: process.env.DB_PASSWORD,
-      port: parseInt(process.env.DB_PORT || "5432"),
-    });
     this.elasticClient = new ElasticClient({ node: "http://localhost:9200" });
-    this.client.connect();
   }
   getTemplate = async (siteLookup: string, name: string): Promise<FMT> => {
     const result = await this.elasticClient.get({
