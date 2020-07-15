@@ -10,16 +10,13 @@ import path from "path";
 import fs from "fs";
 
 export async function genTypes() {
-  const configPath = path.resolve(process.cwd() + "/.forestry/config.js");
-  const userConfig = require(configPath);
+  const rootPath = process.cwd();
+  const dataSource = new FileSystemManager(rootPath);
 
-  const config = {
-    rootPath: process.cwd(),
-    ...userConfig,
-  };
-  const dataSource = new FileSystemManager(config.rootPath);
-
-  const { schema } = await buildForestrySchema(config, dataSource);
+  const { schema } = await buildForestrySchema(
+    { rootPath, siteLookup: "" },
+    dataSource
+  );
 
   const { typescriptTypes, query: gQuery } = await generateTypes({ schema });
 
