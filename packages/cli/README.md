@@ -6,11 +6,11 @@ The CLI can be used to setup your local site with Forestry.io configuration.
 
 Npm:
 
-`npm install -g @forestryio/cli`
+`npm install @forestryio/cli`
 
 Yarn:
 
-`yarn global add @forestryio/cli`
+`yarn add @forestryio/cli`
 
 ## Usage
 
@@ -21,7 +21,7 @@ E.g:
 
 You can get help on any command with `-h` or `--help`.
 
-e.g: `forestry types:gen --help`
+e.g: `yarn forestry types:gen --help`
 
 This will describe how to use the types:gen command.
 
