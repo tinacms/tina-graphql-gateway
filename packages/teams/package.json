@@ -16,6 +16,7 @@
     "serve": "yarn nodemon dist/index.js"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^7.8.0",
     "@forestryio/build": "workspace:packages/build",
     "@forestryio/graphql": "workspace:packages/graphql",
     "@graphql-codegen/core": "^1.15.3",
@@ -63,5 +64,8 @@
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
     "directory": "packages/teams"
+  },
+  "devDependencies": {
+    "@types/elasticsearch": "^5.0.36"
   }
 }
