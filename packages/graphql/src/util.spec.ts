@@ -27,3 +27,11 @@ describe("friendlyName", () => {
     expect(utils.friendlyName(input, { suffix: "suffix" })).toEqual(output);
   });
 });
+
+describe("slugify", () => {
+  test("should be able to slugify", () => {
+    const input = "Slugify Test";
+    const output = "slugify-test";
+    expect(utils.slugify(input)).toEqual(output);
+  });
+});
