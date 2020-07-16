@@ -7,8 +7,7 @@ import { queryBuilder } from "./queryBuilder";
 export const generateTypes = async ({ schema }: { schema: GraphQLSchema }) => {
   try {
     const res = await codegen({
-      filename:
-        "/Users/jeffsee/code/scratch/graphql-demo/apps/demo/.forestry/autoschema.gql",
+      filename: process.cwd() + "/.forestry/autoschema.gql",
       schema: parse(printSchema(schema)),
       documents: [],
       config: {},

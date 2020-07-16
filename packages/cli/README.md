@@ -6,11 +6,11 @@ The CLI can be used to setup your local site with Forestry.io configuration.
 
 Npm:
 
-`npm install -g @forestryio/cli`
+`npm install @forestryio/cli`
 
 Yarn:
 
-`yarn global add @forestryio/cli`
+`yarn add @forestryio/cli`
 
 ## Usage
 
@@ -21,9 +21,9 @@ E.g:
 
 You can get help on any command with `-h` or `--help`.
 
-e.g: `forestry sites --help`
+e.g: `yarn forestry types:gen --help`
 
-This will describe how to use all the commands in the `sites` context
+This will describe how to use the types:gen command.
 
 ## Commands
 
@@ -41,10 +41,12 @@ Then Forestry can be run in another directory by running:
 forestry <commands>
 ```
 
+_Alternatively, the CLI can be added to a project instead of being used globally._
+
 To run the command locally in this project directory, you can run:
 
 ```
-./bin/forestry <commands>
+yarn forestry <commands>
 ```
 
 ### .env
