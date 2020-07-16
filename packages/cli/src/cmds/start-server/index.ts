@@ -6,15 +6,18 @@ import {
 } from "@forestryio/graphql";
 import { successText } from "../../utils/theme";
 
-const PORT = 4001;
 const GRAPHQL_ENDPOINT = "/api/graphql";
 
-export async function startServer() {
+interface Options {
+  port?: number;
+}
+
+export async function startServer(_ctx, _next, { port = 4001 }: Options) {
   const app = express();
 
   const rootPath = process.cwd();
   const forestryConfig = {
-    serverURL: `http://localhost:${PORT}/api/graphql`,
+    serverURL: `http://localhost:${port}/api/graphql`,
     rootPath,
     siteLookup: "",
   };
@@ -45,9 +48,9 @@ export async function startServer() {
     })
   );
 
-  app.listen(PORT);
+  app.listen(port);
 
-  const baseURL = `http://localhost:${PORT}`;
+  const baseURL = `http://localhost:${port}`;
 
   console.log(
     `Graphql server ready at: ${successText(baseURL + GRAPHQL_ENDPOINT)}`
