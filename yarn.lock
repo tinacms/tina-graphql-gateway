@@ -1934,7 +1934,6 @@ __metadata:
     "@graphql-codegen/core": ^1.17.0
     "@graphql-codegen/typescript": ^1.17.0
     "@graphql-codegen/typescript-operations": ^1.17.0
-    "@types/body-parser": ^1.19.0
     "@types/clear": 0.1.0
     "@types/cors": 2.8.5
     "@types/express": ^4.17.7
@@ -1945,7 +1944,6 @@ __metadata:
     "@types/listr": 0.14.2
     axios: 0.19.0
     bcrypt: ^3.0.6
-    body-parser: ^1.19.0
     chalk: ^2.4.2
     clear: ^0.1.0
     commander: 5.1.0
@@ -3635,7 +3633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/body-parser@npm:*, @types/body-parser@npm:^1.19.0":
+"@types/body-parser@npm:*":
   version: 1.19.0
   resolution: "@types/body-parser@npm:1.19.0"
   dependencies:
@@ -5324,7 +5322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.19.0, body-parser@npm:^1.19.0":
+"body-parser@npm:1.19.0":
   version: 1.19.0
   resolution: "body-parser@npm:1.19.0"
   dependencies:

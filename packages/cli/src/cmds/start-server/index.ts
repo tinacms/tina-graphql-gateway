@@ -1,19 +1,16 @@
 import express from "express";
-import { graphql } from "graphql";
-import Cors from "cors";
-import bodyParser from "body-parser";
 import { graphqlHTTP } from "express-graphql";
 import {
   FileSystemManager,
   buildSchema as buildForestrySchema,
 } from "@forestryio/graphql";
+import { successText } from "../../utils/theme";
 
 const PORT = 4001;
+const GRAPHQL_ENDPOINT = "/api/graphql";
 
 export async function startServer() {
   const app = express();
-
-  app.use(bodyParser.json());
 
   const rootPath = process.cwd();
   const forestryConfig = {
@@ -24,7 +21,7 @@ export async function startServer() {
   const dataSource = new FileSystemManager(forestryConfig.rootPath);
 
   app.use(
-    "/api/graphql",
+    GRAPHQL_ENDPOINT,
     graphqlHTTP(async () => {
       // FIXME: this should probably come from the request, or
       // maybe in the case of the ElasticManager it's not necessary?
@@ -50,5 +47,9 @@ export async function startServer() {
 
   app.listen(PORT);
 
-  console.log(`Server ready on http://localhost:${PORT}`);
+  const baseURL = `http://localhost:${PORT}`;
+
+  console.log(
+    `Graphql server ready at: ${successText(baseURL + GRAPHQL_ENDPOINT)}`
+  );
 }
