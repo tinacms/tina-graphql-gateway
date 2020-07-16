@@ -81,4 +81,6 @@ These packages are currently published to Github Packages, with plans to open-so
 ```
 //npm.pkg.github.com/:_authToken=<My-Github-Personal-Access-Token-Here>
 @forestryio:registry=https://npm.pkg.github.com/
+always-auth=true
+registry=http://registry.npmjs.org/ # All other packages
 ```
