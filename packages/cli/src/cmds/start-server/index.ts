@@ -2,7 +2,7 @@ import express from "express";
 import { graphql } from "graphql";
 import Cors from "cors";
 import bodyParser from "body-parser";
-
+import { graphqlHTTP } from "express-graphql";
 import {
   FileSystemManager,
   buildSchema as buildForestrySchema,
@@ -15,52 +15,40 @@ export async function startServer() {
 
   app.use(bodyParser.json());
 
-  app.use("/api/graphql", async function (req, res, next) {
-    const rootPath = process.cwd();
-    const forestryConfig = {
-      serverURL: `http://localhost:${PORT}/api/graphql`,
-      rootPath,
-      siteLookup: "",
-    };
+  const rootPath = process.cwd();
+  const forestryConfig = {
+    serverURL: `http://localhost:${PORT}/api/graphql`,
+    rootPath,
+    siteLookup: "",
+  };
+  const dataSource = new FileSystemManager(forestryConfig.rootPath);
 
-    const dataSource = new FileSystemManager(forestryConfig.rootPath);
+  app.use(
+    "/api/graphql",
+    graphqlHTTP(async () => {
+      // FIXME: this should probably come from the request, or
+      // maybe in the case of the ElasticManager it's not necessary?
+      const config = {
+        rootPath: "",
+        siteLookup: "qms5qlc0jk1o9g",
+      };
+      const { schema, documentMutation } = await buildForestrySchema(
+        config,
+        dataSource
+      );
 
-    const { schema, documentMutation } = await buildForestrySchema(
-      forestryConfig,
-      dataSource
-    );
-
-    const { query, operationName, variables } = req.body;
-
-    const response = await graphql(
-      schema,
-      query,
-      { document: documentMutation },
-      { dataSource },
-      variables,
-      operationName
-    );
-
-    await cors(req, res);
-
-    return res.end(JSON.stringify(response));
-  });
+      return {
+        schema,
+        rootValue: {
+          document: documentMutation,
+        },
+        context: { dataSource },
+        graphiql: true,
+      };
+    })
+  );
 
   app.listen(PORT);
 
   console.log(`Server ready on http://localhost:${PORT}`);
 }
-
-const cors = (req, res) => {
-  new Promise((resolve, reject) => {
-    Cors({
-      origin: "*",
-      methods: ["GET", "POST", "OPTIONS"],
-    })(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-};
