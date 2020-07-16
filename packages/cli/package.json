@@ -1,7 +1,15 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.4",
-  "license": "MIT",
+  "version": "0.2.6",
+  "main": "dist/index.js",
+  "files": [
+    "./dist",
+    "./bin",
+    "./.env"
+  ],
+  "bin": {
+    "forestry": "bin/forestry"
+  },
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
     "@types/clear": "0.1.0",
@@ -15,22 +23,12 @@
     "ts-jest": "26.1.2",
     "typescript": "^3.6.3"
   },
-  "main": "dist/index.js",
-  "typings": "dist/types.d.ts",
-  "bin": {
-    "forestry": "bin/forestry"
-  },
   "scripts": {
     "build": "forestry-build",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
     "watch": "forestry-watch"
   },
-  "files": [
-    "./dist",
-    "./bin",
-    "./.env"
-  ],
   "dependencies": {
     "@forestryio/graphql": "workspace:packages/graphql",
     "@graphql-codegen/core": "^1.17.0",
@@ -61,5 +59,12 @@
     "path": "^0.12.7",
     "simple-git": "1.124.0",
     "yaml": "^1.10.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/cli"
   }
 }
