@@ -79,7 +79,7 @@ export async function init(args: any) {
     console.log(
       logText(`
 You can get help on any command with "-h" or "--help".
-e.g: "tina sites --help"
+e.g: "forestry types:gen --help"
     `)
     );
   });
