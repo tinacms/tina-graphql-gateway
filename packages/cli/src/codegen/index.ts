@@ -1,4 +1,4 @@
-import { parse, printSchema, GraphQLSchema, BREAK } from "graphql";
+import { parse, printSchema, GraphQLSchema } from "graphql";
 import { codegen } from "@graphql-codegen/core";
 import { plugin as typescriptPlugin } from "@graphql-codegen/typescript";
 import { plugin as typescriptOperationsPlugin } from "@graphql-codegen/typescript-operations";
@@ -7,8 +7,7 @@ import { queryBuilder } from "./queryBuilder";
 export const generateTypes = async ({ schema }: { schema: GraphQLSchema }) => {
   try {
     const res = await codegen({
-      filename:
-        "/Users/jeffsee/code/scratch/graphql-demo/apps/demo/.forestry/autoschema.gql",
+      filename: process.cwd() + "/.forestry/autoschema.gql",
       schema: parse(printSchema(schema)),
       documents: [],
       config: {},
