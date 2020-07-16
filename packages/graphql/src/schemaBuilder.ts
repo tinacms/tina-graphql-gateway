@@ -46,6 +46,7 @@ import {
   parse,
   printSchema,
 } from "graphql";
+import { text, textarea } from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -78,6 +79,7 @@ const getSectionFmtTypes = (
     .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
     .filter(isNotNull);
 };
+
 const getSectionFmtTypes2 = (
   section: string,
   sectionFmts: {
@@ -354,7 +356,7 @@ export const buildSchema = async (
     .filter(isDirectorySection)
     .map(({ label, templates }) => {
       return {
-        name: slugify(label),
+        name: util.slugify(label),
         templates,
       };
     });
@@ -414,26 +416,6 @@ export const buildSchema = async (
     },
   });
 
-  const textarea = ({ field }: { fmt: string; field: TextareaField }) => ({
-    getter: {
-      type: field?.config?.required
-        ? GraphQLNonNull(GraphQLString)
-        : GraphQLString,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: field.type,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLString,
-    },
-  });
   const number = ({ field }: { fmt: string; field: NumberField }) => ({
     getter: {
       // TODO: can be either Int or Float
