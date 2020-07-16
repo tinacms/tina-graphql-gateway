@@ -1934,15 +1934,17 @@ __metadata:
     "@graphql-codegen/core": ^1.17.0
     "@graphql-codegen/typescript": ^1.17.0
     "@graphql-codegen/typescript-operations": ^1.17.0
+    "@types/body-parser": ^1.19.0
     "@types/clear": 0.1.0
     "@types/cors": 2.8.5
-    "@types/express": 4.17.0
+    "@types/express": ^4.17.7
     "@types/figlet": 1.2.0
     "@types/inquirer": ^6.5.0
     "@types/jest": 26.0.4
     "@types/listr": 0.14.2
     axios: 0.19.0
     bcrypt: ^3.0.6
+    body-parser: ^1.19.0
     chalk: ^2.4.2
     clear: ^0.1.0
     commander: 5.1.0
@@ -3631,7 +3633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/body-parser@npm:*":
+"@types/body-parser@npm:*, @types/body-parser@npm:^1.19.0":
   version: 1.19.0
   resolution: "@types/body-parser@npm:1.19.0"
   dependencies:
@@ -3745,14 +3747,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:4.17.0":
-  version: 4.17.0
-  resolution: "@types/express@npm:4.17.0"
+"@types/express@npm:^4.17.7":
+  version: 4.17.7
+  resolution: "@types/express@npm:4.17.7"
   dependencies:
     "@types/body-parser": "*"
     "@types/express-serve-static-core": "*"
+    "@types/qs": "*"
     "@types/serve-static": "*"
-  checksum: 76f63dad5f97034f5b7cc469dfb4bdabea71a2e4bac05d009e643522ec3d98f5d68de0c90c1cc33a6fb04379b1d55e13d08275279b20529f0e488f13de887e2c
+  checksum: 99b795c60e7368b575794574c35d0ffd0d119c52bc681af6beda2fee70aada78e8aef07fc0db3b88f594d5d935847de4187561d2456760eeb4fde5d10dbb3780
   languageName: node
   linkType: hard
 
@@ -5310,7 +5313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.19.0":
+"body-parser@npm:1.19.0, body-parser@npm:^1.19.0":
   version: 1.19.0
   resolution: "body-parser@npm:1.19.0"
   dependencies:
