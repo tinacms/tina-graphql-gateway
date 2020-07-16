@@ -49,16 +49,9 @@ import {
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
-import { getHeapCodeStatistics } from "v8";
 import kebabCase from "lodash.kebabcase";
-import toLower from "lodash.tolower";
-import upperFist from "lodash.upperfirst";
 
 require("dotenv").config();
-
-const slugify = (string: string) => {
-  return toLower(kebabCase(string));
-};
 
 const arrayToObject = <T>(
   array: T[],
