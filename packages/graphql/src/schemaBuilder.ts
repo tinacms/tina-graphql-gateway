@@ -1,56 +1,59 @@
 import * as util from "./util";
 
 import {
-  parse,
-  getNamedType,
+  BlocksField,
+  BooleanField,
+  DataSource,
+  DateField,
+  DirectorySection,
+  DocumentList,
+  DocumentSelect,
+  FMT,
+  FieldGroupField,
+  FieldGroupListField,
+  FieldType,
+  FileField,
+  GalleryField,
+  ListField,
+  NumberField,
+  Section,
+  SectionList,
+  SectionSelect,
+  SelectField,
+  Settings,
+  SimpleList,
+  TagListField,
+  TextField,
+  TextareaField,
+  WithFields,
+} from "./datasources/datasource";
+import {
   GraphQLBoolean,
-  GraphQLError,
-  GraphQLInputType,
   GraphQLEnumType,
+  GraphQLError,
+  GraphQLFieldConfig,
+  GraphQLInputObjectType,
+  GraphQLInputType,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
-  GraphQLUnionType,
-  GraphQLNonNull,
-  printSchema,
   GraphQLType,
-  GraphQLFieldConfig,
-  GraphQLInputObjectType,
+  GraphQLUnionType,
+  getNamedType,
+  parse,
+  printSchema,
 } from "graphql";
+
 import camelCase from "lodash.camelcase";
-import kebabCase from "lodash.kebabcase";
-import upperFist from "lodash.upperfirst";
-import toLower from "lodash.tolower";
-import {
-  DataSource,
-  Settings,
-  Section,
-  DirectorySection,
-  FieldType,
-  SectionList,
-  TextField,
-  SelectField,
-  FileField,
-  TagListField,
-  TextareaField,
-  DocumentList,
-  NumberField,
-  BooleanField,
-  GalleryField,
-  FieldGroupField,
-  FieldGroupListField,
-  BlocksField,
-  FMT,
-  WithFields,
-  SectionSelect,
-  DateField,
-  ListField,
-  SimpleList,
-  DocumentSelect,
-} from "./datasources/datasource";
+import flatten from "lodash.flatten";
 import { getHeapCodeStatistics } from "v8";
+import kebabCase from "lodash.kebabcase";
+import toLower from "lodash.tolower";
+import upperFist from "lodash.upperfirst";
+
 require("dotenv").config();
 
 const slugify = (string: string) => {
