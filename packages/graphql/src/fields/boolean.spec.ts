@@ -10,12 +10,12 @@ const mockFMT = "MockFmt";
 
 describe("Text Field", () => {
   describe("Getter", () => {
-    test("should get GraphQL 'String' when not required", () => {
+    test("should get GraphQL 'Boolean' when not required", () => {
       const field = boolean({ fmt: mockFMT, field: mockField });
       expect(field.getter.type.toString()).toBe("Boolean");
     });
 
-    test("should get GraphQL 'String!' when required", () => {
+    test("should get GraphQL 'Boolean!' when required", () => {
       const field = boolean({
         fmt: mockFMT,
         field: { ...mockField, config: { required: true } },

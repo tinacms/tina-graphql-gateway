@@ -10,12 +10,12 @@ const mockFMT = "MockFmt";
 
 describe("Text Field", () => {
   describe("Getter", () => {
-    test("should get GraphQL 'String' when not required", () => {
+    test("should get GraphQL 'Int' when not required", () => {
       const field = number({ fmt: mockFMT, field: mockField });
       expect(field.getter.type.toString()).toBe("Int");
     });
 
-    test("should get GraphQL 'String!' when required", () => {
+    test("should get GraphQL 'Int!' when required", () => {
       const field = number({
         fmt: mockFMT,
         field: { ...mockField, config: { required: true } },
