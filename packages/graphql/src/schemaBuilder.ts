@@ -8,23 +8,19 @@ import {
   DirectorySection,
   DocumentList,
   DocumentSelect,
-  FMT,
   FieldGroupField,
   FieldGroupListField,
   FieldType,
   FileField,
   GalleryField,
   ListField,
-  NumberField,
   Section,
   SectionList,
   SectionSelect,
   SelectField,
   Settings,
-  SimpleList,
   TagListField,
   TextField,
-  TextareaField,
   WithFields,
 } from "./datasources/datasource";
 import {
@@ -34,7 +30,6 @@ import {
   GraphQLFieldConfig,
   GraphQLInputObjectType,
   GraphQLInputType,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -43,8 +38,6 @@ import {
   GraphQLType,
   GraphQLUnionType,
   getNamedType,
-  parse,
-  printSchema,
 } from "graphql";
 import { number, text, textarea } from "./fields";
 
@@ -415,7 +408,6 @@ export const buildSchema = async (
       ...baseInputFields,
     },
   });
-
 
   const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
     getter: {
