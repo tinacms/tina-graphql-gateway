@@ -39,7 +39,7 @@ import {
   GraphQLUnionType,
   getNamedType,
 } from "graphql";
-import { number, text, textarea } from "./fields";
+import { boolean, number, text, textarea } from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -361,20 +361,6 @@ export const buildSchema = async (
     component: { type: GraphQLString },
   };
 
-  const textInput = new GraphQLObjectType<TextField>({
-    name: "TextFormField",
-    fields: {
-      ...baseInputFields,
-    },
-  });
-
-  const booleanInput = new GraphQLObjectType<BooleanField>({
-    name: "BooleanFormField",
-    fields: {
-      ...baseInputFields,
-    },
-  });
-
   const selectInput = new GraphQLObjectType<SelectField>({
     name: "SelectFormField",
     fields: {
@@ -409,26 +395,6 @@ export const buildSchema = async (
     },
   });
 
-  const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
-    getter: {
-      type: field?.config?.required
-        ? GraphQLNonNull(GraphQLBoolean)
-        : GraphQLBoolean,
-    },
-    setter: {
-      type: booleanInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: "toggle",
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLBoolean,
-    },
-  });
   const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
     if (isDocumentSelectField(field)) {
       return {
