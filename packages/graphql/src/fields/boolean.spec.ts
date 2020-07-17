@@ -8,7 +8,7 @@ const mockField: BooleanField = {
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("Boolean Field", () => {
   describe("Getter", () => {
     test("should get GraphQL 'Boolean' when not required", () => {
       const field = boolean({ fmt: mockFMT, field: mockField });
