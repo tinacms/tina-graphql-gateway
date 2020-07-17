@@ -106,8 +106,8 @@ export const onSubmit = async ({
   path: string;
   payload: any;
 }) => {
-  const mutation = `mutation DocumentMutation($path: String!, $params: DocumentInput) {
-    document(path: $path, params: $params) {
+  const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
+    updateDocument(path: $path, params: $params) {
       __typename
     }
   }`;
