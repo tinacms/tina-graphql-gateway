@@ -1,7 +1,2 @@
 releases:
 
-
-undecided:
-  - "@forestryio/client"
-  - "@forestryio/graphql"
-  - demo

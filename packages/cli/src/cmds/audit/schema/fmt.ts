@@ -84,12 +84,16 @@ export const NumberField = {
     default: {
       type: "number",
     },
+    // FIXME: sometimes this is present here instead of in the config
     required: {
       type: "boolean",
     },
     config: {
       type: "object",
       properties: {
+        required: {
+          type: "boolean",
+        },
         min: { type: ["number", "null"] },
         max: { type: ["number", "null"] },
         step: { type: ["number", "null"] },
@@ -153,12 +157,16 @@ export const DateField = {
       const: "datetime",
     },
     ...base,
+    default: {
+      type: "string",
+    },
     config: {
       type: "object",
       properties: {
         required: { type: "boolean" },
         date_format: { type: ["string", "null"] },
         time_format: { type: ["string", "null"] },
+        export_format: { type: ["string", "null"] },
         display_utc: { type: "boolean" },
       },
       additionalProperties: false,
@@ -219,15 +227,7 @@ export const SelectField = {
     },
     ...base,
     default: {
-      oneOf: [
-        {
-          type: "string",
-        },
-        {
-          type: "array", // FIXME: for some reason this is an empty [] when no default is defined
-          maxItems: 0,
-        },
-      ],
+      type: "string",
     },
     config: {
       type: "object",
@@ -240,12 +240,68 @@ export const SelectField = {
         source: {
           type: "object",
           properties: {
-            type: { type: "string", enum: ["simple", "pages", "documents"] },
-            section: { type: ["string", "null"] },
-            file: { type: ["string", "null"] },
-            path: { type: ["string", "null"] },
+            type: {
+              type: "string",
+              enum: ["simple", "pages", "documents"],
+            },
           },
-          required: ["type", "section", "file", "path"],
+          allOf: [
+            {
+              if: {
+                properties: {
+                  type: { const: "simple" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "simple" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type"],
+                additionalProperties: true, // FIXME: ideally when "simple" no other properties
+              },
+            },
+            {
+              if: {
+                properties: {
+                  type: { const: "pages" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "pages" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type", "section", "file", "path"],
+                additionalProperties: false,
+              },
+            },
+            {
+              if: {
+                properties: {
+                  type: { const: "documents" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "documents" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type", "section", "file", "path"],
+                additionalProperties: false,
+              },
+            },
+          ],
+          required: ["type"],
         },
       },
     },
@@ -336,20 +392,101 @@ export const ListField = {
       const: "list",
     },
     ...base,
+    default: {
+      type: "array", // FIXME: for some reason this is an empty [] when no default is defined
+    },
     config: {
       type: "object",
       properties: {
         use_select: { type: "boolean" },
         min: { type: ["number", "null"] },
         max: { type: ["number", "null"] },
+        options: {
+          // FIXME: this should only be present when source.type === 'simple'
+          type: "array",
+          items: { type: "string" },
+        },
         source: {
           type: "object",
           properties: {
-            type: { type: "string", enum: ["pages", "documents"] },
-            section: { type: "string" },
-            file: { type: ["string", "null"] },
-            path: { type: ["string", "null"] },
+            type: {
+              type: "string",
+              enum: ["simple", "pages", "documents", "datafiles"],
+            },
           },
+          allOf: [
+            {
+              if: {
+                properties: {
+                  type: { const: "simple" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "simple" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type"],
+                additionalProperties: true, // FIXME: ideally when "simple" no other properties
+              },
+            },
+            {
+              if: {
+                properties: {
+                  type: { const: "pages" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "pages" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type", "section"],
+                additionalProperties: false,
+              },
+            },
+            {
+              if: {
+                properties: {
+                  type: { const: "documents" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "documents" },
+                  section: { type: ["string", "null"] },
+                  file: { type: ["string", "null"] },
+                  path: { type: ["string", "null"] },
+                },
+                required: ["type", "section", "file", "path"],
+                additionalProperties: false,
+              },
+            },
+            {
+              // FIXME: I have no idea what this does
+              if: {
+                properties: {
+                  type: { const: "datafiles" },
+                },
+              },
+              then: {
+                type: "object",
+                properties: {
+                  type: { const: "datafiles" },
+                },
+                required: ["type"],
+                additionalProperties: false,
+              },
+            },
+          ],
+          required: ["type"],
         },
       },
       additionalProperties: false,
@@ -369,6 +506,12 @@ export const GalleryField = {
       const: "image_gallery",
     },
     ...base,
+    default: {
+      type: "array",
+      items: {
+        type: "string",
+      },
+    },
     config: {
       type: "object",
       properties: {
