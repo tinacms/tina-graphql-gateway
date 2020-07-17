@@ -10,7 +10,6 @@ import {
   FieldGroupListField,
   FieldType,
   FileField,
-  GalleryField,
   ListField,
   Section,
   SectionList,
@@ -34,7 +33,15 @@ import {
   GraphQLUnionType,
   getNamedType,
 } from "graphql";
-import { boolean, datetime, number, tag_list, text, textarea } from "./fields";
+import {
+  boolean,
+  datetime,
+  image_gallery,
+  number,
+  tag_list,
+  text,
+  textarea,
+} from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -791,56 +798,7 @@ export const buildSchema = async (
       },
     };
   };
-  const image_gallery = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: GalleryField;
-  }) => {
-    return {
-      getter: {
-        type: GraphQLList(
-          new GraphQLObjectType({
-            name: util.friendlyName(field.name + "_gallery_" + fmt),
-            fields: {
-              path: {
-                type: GraphQLNonNull(GraphQLString),
-                resolve: async (val) => {
-                  return val;
-                },
-              },
-              absolutePath: {
-                type: GraphQLString,
-                resolve: async (val) => {
-                  return config.rootPath + val;
-                },
-              },
-            },
-          })
-        ),
-      },
-      setter: {
-        type: imageInput,
-        resolve: () => {
-          return {
-            name: field.name,
-            component: "group",
-            fields: [
-              {
-                name: "path",
-                label: "Path",
-                component: "image",
-              },
-            ],
-          };
-        },
-      },
-      mutator: {
-        type: GraphQLList(GraphQLString),
-      },
-    };
-  };
+
   const field_group = ({
     fmt,
     field,
@@ -1148,7 +1106,7 @@ export const buildSchema = async (
       case "file":
         return file({ fmt, field });
       case "image_gallery":
-        return image_gallery({ fmt, field });
+        return image_gallery({ fmt, field, config });
       case "field_group":
         return field_group({ fmt, field });
       case "field_group_list":

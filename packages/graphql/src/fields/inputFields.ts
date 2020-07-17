@@ -1,9 +1,10 @@
 import {
   BooleanField,
+  FileField,
   TagListField,
   TextField,
 } from "../datasources/datasource";
-import { GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 
 export const baseInputFields = {
   name: { type: GraphQLString },
@@ -30,5 +31,24 @@ export const tagInput = new GraphQLObjectType<TagListField>({
   name: "TagsFormField",
   fields: {
     ...baseInputFields,
+  },
+});
+
+export const imageInput = new GraphQLObjectType<FileField>({
+  name: "ImageFormField",
+  fields: {
+    ...baseInputFields,
+    fields: {
+      type: GraphQLList(
+        new GraphQLObjectType({
+          name: "ImageWrapInner",
+          fields: {
+            name: { type: GraphQLString },
+            label: { type: GraphQLString },
+            component: { type: GraphQLString },
+          },
+        })
+      ),
+    },
   },
 });
