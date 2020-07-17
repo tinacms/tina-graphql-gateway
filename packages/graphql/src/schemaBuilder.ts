@@ -1545,6 +1545,13 @@ export const buildSchema = async (
           params: documentInputType,
         },
       },
+      addDocument: {
+        type: documentType,
+        args: {
+          path: { type: GraphQLNonNull(GraphQLString) },
+          params: documentInputType,
+        },
+      },
     },
   });
 
@@ -1602,5 +1609,24 @@ export const buildSchema = async (
     );
   };
 
-  return { schema, updateDocumentMutation };
+  const addDocumentMutation = async (payload: {
+    path: string;
+    params: any;
+  }) => {
+    console.log("add document mutation");
+
+    const { content = "", data } = payload.params[
+      // Just grabbing the first item since we're following the Tagged Union pattern
+      Object.keys(payload.params)[0]
+    ];
+
+    await dataSource.writeData(
+      config.siteLookup,
+      payload.path,
+      content,
+      transform(data)
+    );
+  };
+
+  return { schema, updateDocumentMutation, addDocumentMutation };
 };

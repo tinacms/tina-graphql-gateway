@@ -23,7 +23,10 @@ export default async (req, res) => {
   const response = await graphql(
     schema,
     query,
-    { updateDocument: updateDocumentMutation },
+    {
+      updateDocument: updateDocumentMutation,
+      addDocument: updateDocumentMutation,
+    },
     { dataSource },
     variables,
     operationName
