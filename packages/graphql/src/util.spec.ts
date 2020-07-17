@@ -1,7 +1,5 @@
 import * as utils from "./util";
 
-import { FMT_BASE } from "./schemaBuilder";
-
 describe("shortFMTName", () => {
   test("it should remove the extension", () => {
     const input = "action-newsletter.yml";
@@ -9,7 +7,7 @@ describe("shortFMTName", () => {
     expect(utils.shortFMTName(input)).toEqual(output);
   });
   test("it should remove the FMT base path", () => {
-    const input = `${FMT_BASE}/action-newsletter.yml`;
+    const input = `${utils.FMT_BASE}/action-newsletter.yml`;
     const output = "action-newsletter";
     expect(utils.shortFMTName(input)).toEqual(output);
   });
