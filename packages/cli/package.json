@@ -1,7 +1,15 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.4",
-  "license": "MIT",
+  "version": "0.2.9",
+  "main": "dist/index.js",
+  "files": [
+    "./dist",
+    "./bin",
+    "./.env"
+  ],
+  "bin": {
+    "forestry": "bin/forestry"
+  },
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
     "@types/clear": "0.1.0",
@@ -16,27 +24,19 @@
     "ts-jest": "26.1.2",
     "typescript": "^3.6.3"
   },
-  "main": "dist/index.js",
-  "typings": "dist/types.d.ts",
-  "bin": {
-    "forestry": "bin/forestry"
-  },
   "scripts": {
     "build": "forestry-build",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
-    "watch": "tsc -w"
+    "watch": "forestry-watch"
   },
-  "files": [
-    "./dist",
-    "./bin",
-    "./.env"
-  ],
   "dependencies": {
     "@forestryio/graphql": "workspace:packages/graphql",
     "@graphql-codegen/core": "^1.17.0",
     "@graphql-codegen/typescript": "^1.17.0",
     "@graphql-codegen/typescript-operations": "^1.17.0",
+    "@types/lodash.get": "^4.4.6",
+    "ajv": "^6.12.3",
     "axios": "0.19.0",
     "bcrypt": "^3.0.6",
     "chalk": "^2.4.2",
@@ -56,10 +56,19 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.0",
     "listr": "0.14.3",
+    "lodash.get": "^4.4.2",
     "ms": "^2.1.2",
     "open": "^6.4.0",
     "ora": "^4.0.2",
     "path": "^0.12.7",
-    "simple-git": "1.124.0"
+    "simple-git": "1.124.0",
+    "yaml": "^1.10.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/cli"
   }
 }

@@ -1,8 +1,2 @@
 releases:
 
-
-undecided:
-  - "@forestryio/build"
-  - "@forestryio/graphql"
-  - "@forestryio/teams"
-  - demo
