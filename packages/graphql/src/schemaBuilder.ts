@@ -46,7 +46,7 @@ import {
   parse,
   printSchema,
 } from "graphql";
-import { text, textarea } from "./fields";
+import { number, text, textarea } from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -416,25 +416,7 @@ export const buildSchema = async (
     },
   });
 
-  const number = ({ field }: { fmt: string; field: NumberField }) => ({
-    getter: {
-      // TODO: can be either Int or Float
-      type: field?.config?.required ? GraphQLNonNull(GraphQLInt) : GraphQLInt,
-    },
-    setter: {
-      type: textInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: field.type,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLInt,
-    },
-  });
+
   const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
     getter: {
       type: field?.config?.required
@@ -1246,6 +1228,10 @@ export const buildSchema = async (
   }): fieldTypeType => {
     switch (field.type) {
       case "text":
+        console.log("FMT");
+        console.log(JSON.stringify(fmt));
+        console.log("FIELD");
+        console.log(JSON.stringify(field));
         return text({ fmt, field });
       case "textarea":
         return textarea({ fmt, field });

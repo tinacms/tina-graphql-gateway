@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLNonNull, GraphQLString } from "graphql";
 
 import { TextField } from "../datasources/datasource";
 import { textInput } from "./";
