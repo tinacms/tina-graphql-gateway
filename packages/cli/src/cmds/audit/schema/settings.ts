@@ -26,6 +26,10 @@ export const ForestrySettingsSchema = {
         "Forestry can send events to a webhook (ie. post_import, post_publish)",
       type: ["string", "null"],
     },
+    version: {
+      title: "Schema version",
+      type: ["string", "null"],
+    },
     upload_dir: {
       type: "string",
       title: "Upload Directory",
@@ -42,7 +46,7 @@ export const ForestrySettingsSchema = {
       description: "",
     },
     use_front_matter_path: {
-      type: "boolean",
+      type: ["null", "boolean"],
       title: "Use Front Matter Path",
       description: "Override the public path for front matter fields.",
     },

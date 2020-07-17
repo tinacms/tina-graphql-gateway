@@ -12,6 +12,10 @@ const startServerPortOption = {
   name: "--port <port>",
   description: "Specify a port to run the server on. (default 4001)",
 };
+const auditPathOption = {
+  name: "--path <forestryPath>",
+  description: "Specify a relative path to the .forestry folder (eg. my-site)",
+};
 
 export const baseCmds: Command[] = [
   {
@@ -22,6 +26,7 @@ export const baseCmds: Command[] = [
   {
     command: CMD_AUDIT,
     description: "Audit Forestry schema",
+    options: [auditPathOption],
     action: (options) => chain([audit], options),
   },
   {

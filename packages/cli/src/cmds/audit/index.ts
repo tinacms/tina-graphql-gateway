@@ -5,29 +5,49 @@ import path from "path";
 import { neutralText, successText, dangerText } from "../../utils/theme";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
+import get from "lodash.get";
 
-export async function audit() {
+const stripSlashes = (value) => {
+  return value.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "");
+};
+
+export async function audit(
+  _ctx,
+  _next,
+  {
+    workingDir = "",
+  }: {
+    workingDir: string;
+  }
+) {
+  const workingDirReal = workingDir.startsWith("/")
+    ? workingDir
+    : process.cwd() + "/" + stripSlashes(workingDir);
   var ajv = new Ajv({ allErrors: true, verbose: true });
   const fmtDirPath = path.resolve(
-    process.cwd() + "/.forestry/front_matter/templates"
+    workingDirReal + "/.forestry/front_matter/templates"
   );
 
   validateFile(
-    process.cwd(),
+    workingDirReal,
     ".forestry/settings.yml",
     ForestrySettingsSchema,
     ajv
   );
 
   // Store these schemas for now, VSCode uses them locally
-  await fs.writeFileSync(
-    __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json",
-    JSON.stringify(ForestrySettingsSchema, null, 2)
-  );
-  await fs.writeFileSync(
-    __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json",
-    JSON.stringify(ForestryFMTSchema, null, 2)
-  );
+  // await fs.writeFileSync(
+  //   path.resolve(
+  //     __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
+  //   ),
+  //   JSON.stringify(ForestrySettingsSchema, null, 2)
+  // );
+  // await fs.writeFileSync(
+  //   path.resolve(
+  //     __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
+  //   ),
+  //   JSON.stringify(ForestryFMTSchema, null, 2)
+  // );
 
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(
@@ -48,31 +68,32 @@ const validateFile = async (fmtDirPath, fmtPath, schema, ajv) => {
   var valid = validate(fmt);
   if (!valid) {
     console.log(`${fmtPath} is ${dangerText("invalid")}`);
-    printErrors(validate.errors);
+    printErrors(validate.errors, fmt);
   } else {
     console.log(`${fmtPath} is ${successText("valid")}`);
   }
 };
 
-const printErrors = (errors) => {
+const printErrors = (errors, object) => {
   errors.map((error) => {
     const handler = keywordError[error.keyword];
-    handler(error);
+    handler(error, object);
   });
 };
 
 const keywordError = {
   required: (error) => {
-    console.log(`${error.dataPath} ${error.message}`);
+    console.log(`${propertyName(error)} ${error.message}`);
   },
   const: (error) => {
     console.log(`Unanticipated error - ${error.keyword}`);
     console.log(error);
   },
-  additionalProperties: (error) => {
+  additionalProperties: (error, object) => {
     console.log(
-      `${neutralText(
-        error.dataPath
+      `${propertyName(
+        error,
+        object
       )} contains an additional property ${dangerText(
         error.params.additionalProperty
       )}`
@@ -88,16 +109,16 @@ const keywordError = {
   },
   enum: (error) => {
     console.log(
-      `${neutralText(error.dataPath)} ${error.message} but got ${dangerText(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
         error.data
       )}.
     Allowed values: ${successText(error.schema.join(", "))}
 `
     );
   },
-  type: (error) => {
+  type: (error, object) => {
     console.log(
-      `${neutralText(error.dataPath)} ${error.message.replace(
+      `${propertyName(error, object)} ${error.message.replace(
         "should be",
         "should be of type"
       )} but got ${dangerText(displayType(error))}
@@ -116,6 +137,42 @@ const displayType = (error) => {
   if (error.data === null) {
     return "null";
   } else {
-    return `${typeof error.data} (${error.data})`;
+    let value = error.data;
+    if (typeof error.data === "string" && error.data.length === 0) {
+      value = `""`;
+    }
+    if (Array.isArray(error.data)) {
+      return `an array`;
+    }
+    return `${typeof error.data} (${value})`;
   }
+};
+
+const propertyName = (error, object = null) => {
+  if (object) {
+    const lastFieldIndex = error.dataPath
+      .split(".")
+      .reverse()
+      .findIndex((item) => /fields\[[0-9]+\]/.test(item));
+    const steps = error.dataPath.split(".").length;
+
+    const dataPath = error.dataPath
+      .split(".")
+      .reverse()
+      .slice(lastFieldIndex, steps - 1)
+      .reverse()
+      .join(".");
+
+    const property = error.dataPath.replace("." + dataPath, "");
+
+    const field = get(object, dataPath);
+    // console.log(field);
+    return `
+Field with name ${successText(field.name)} of type ${neutralText(
+      field.type
+    )} has an invalid property ${dangerText(property)}
+     at ${dataPath}
+    `;
+  }
+  return neutralText(error.dataPath);
 };
