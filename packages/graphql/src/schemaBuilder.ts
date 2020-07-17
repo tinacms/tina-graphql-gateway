@@ -3,7 +3,6 @@ import * as util from "./util";
 import {
   BlocksField,
   DataSource,
-  DateField,
   DirectorySection,
   DocumentList,
   DocumentSelect,
@@ -18,12 +17,9 @@ import {
   SectionSelect,
   SelectField,
   Settings,
-  TagListField,
-  TextField,
   WithFields,
 } from "./datasources/datasource";
 import {
-  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLError,
   GraphQLFieldConfig,
@@ -38,7 +34,7 @@ import {
   GraphQLUnionType,
   getNamedType,
 } from "graphql";
-import { boolean, datetime, number, text, textarea } from "./fields";
+import { boolean, datetime, number, tag_list, text, textarea } from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -387,13 +383,6 @@ export const buildSchema = async (
     },
   });
 
-  const tagInput = new GraphQLObjectType<TagListField>({
-    name: "TagsFormField",
-    fields: {
-      ...baseInputFields,
-    },
-  });
-
   const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
     if (isDocumentSelectField(field)) {
       return {
@@ -534,24 +523,6 @@ export const buildSchema = async (
     };
   };
 
-  const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
-    getter: {
-      type: GraphQLList(GraphQLString),
-    },
-    setter: {
-      type: tagInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: "tags",
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLList(GraphQLString),
-    },
-  });
   const list = ({ fmt, field }: { fmt: string; field: ListField }) => {
     if (isDocumentListField(field)) {
       return {

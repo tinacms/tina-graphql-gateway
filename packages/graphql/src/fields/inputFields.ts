@@ -1,4 +1,8 @@
-import { BooleanField, TextField } from "../datasources/datasource";
+import {
+  BooleanField,
+  TagListField,
+  TextField,
+} from "../datasources/datasource";
 import { GraphQLObjectType, GraphQLString } from "graphql";
 
 export const baseInputFields = {
@@ -17,6 +21,13 @@ export const textInput = new GraphQLObjectType<TextField>({
 
 export const booleanInput = new GraphQLObjectType<BooleanField>({
   name: "BooleanFormField",
+  fields: {
+    ...baseInputFields,
+  },
+});
+
+export const tagInput = new GraphQLObjectType<TagListField>({
+  name: "TagsFormField",
   fields: {
     ...baseInputFields,
   },
