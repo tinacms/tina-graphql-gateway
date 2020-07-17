@@ -8,7 +8,7 @@ const mockField: NumberField = {
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("Number Field", () => {
   describe("Getter", () => {
     test("should get GraphQL 'Int' when not required", () => {
       const field = number({ fmt: mockFMT, field: mockField });

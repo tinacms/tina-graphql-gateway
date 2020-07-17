@@ -15,7 +15,7 @@ const mockField: DateField = {
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("DateTime Field", () => {
   describe("Getter", () => {
     test("should get GraphQL 'String' when not required", () => {
       const field = datetime({ fmt: mockFMT, field: mockField });

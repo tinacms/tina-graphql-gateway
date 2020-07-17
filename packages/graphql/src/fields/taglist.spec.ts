@@ -9,7 +9,7 @@ const mockField: TagListField = {
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("TagList Field", () => {
   describe("Getter", () => {
     test("should get GraphQL '[String]' when not required", () => {
       const field = tag_list({ fmt: mockFMT, field: mockField });
