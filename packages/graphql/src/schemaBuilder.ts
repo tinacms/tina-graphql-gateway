@@ -2,7 +2,6 @@ import * as util from "./util";
 
 import {
   BlocksField,
-  BooleanField,
   DataSource,
   DateField,
   DirectorySection,
@@ -39,7 +38,7 @@ import {
   GraphQLUnionType,
   getNamedType,
 } from "graphql";
-import { boolean, number, text, textarea } from "./fields";
+import { boolean, datetime, number, text, textarea } from "./fields";
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
@@ -534,33 +533,7 @@ export const buildSchema = async (
       },
     };
   };
-  const datetime = ({ fmt, field }: { fmt: string; field: DateField }) => ({
-    getter: {
-      type: GraphQLString,
-    },
-    setter: {
-      type: new GraphQLObjectType<TextField>({
-        name: "DateFormField",
-        fields: {
-          ...baseInputFields,
-          dateFormat: { type: GraphQLString },
-          timeFormat: { type: GraphQLBoolean }, // FIXME: Forestry outputs boolean | "some time"
-        },
-      }),
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: "date",
-          dateFormat: "MMMM DD YYYY",
-          timeFormat: false,
-        };
-      },
-    },
-    mutator: {
-      type: GraphQLString,
-    },
-  });
+
   const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
     getter: {
       type: GraphQLList(GraphQLString),
