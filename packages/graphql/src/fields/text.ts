@@ -1,7 +1,7 @@
 import { GraphQLNonNull, GraphQLString } from "graphql";
 
 import { TextField } from "../datasources/datasource";
-import { textInput } from "./";
+import { textInput } from "./inputFields";
 
 export const text = ({ field }: { fmt: string; field: TextField }) => ({
   getter: {

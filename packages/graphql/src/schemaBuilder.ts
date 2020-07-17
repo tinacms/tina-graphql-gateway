@@ -313,7 +313,7 @@ type configType = {
 /**
  * This is the main function in this script, it returns all the types
  */
-export const FMT_BASE = ".forestry/front_matter/templates";
+const FMT_BASE = ".forestry/front_matter/templates";
 export const buildSchema = async (
   config: configType,
   dataSource: DataSource

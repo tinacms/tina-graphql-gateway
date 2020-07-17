@@ -1,7 +1,7 @@
 import { GraphQLBoolean, GraphQLNonNull } from "graphql";
 
 import { BooleanField } from "../datasources/datasource";
-import { booleanInput } from "./";
+import { booleanInput } from "./inputFields";
 
 export const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
   getter: {

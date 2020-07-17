@@ -1,11 +1,12 @@
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
-import { FMT_BASE } from "./schemaBuilder";
 import camelCase from "lodash.camelcase";
 import kebabCase from "lodash.kebabcase";
 import toLower from "lodash.tolower";
 import upperFist from "lodash.upperfirst";
 
+// TODO: find the right spot for this
+const FMT_BASE = ".forestry/front_matter/templates";
 export const matter = <I extends Input, O extends GrayMatterOption<I, O>>(
   data: Buffer
 ) => {
