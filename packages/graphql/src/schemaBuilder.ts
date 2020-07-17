@@ -1159,10 +1159,6 @@ export const buildSchema = async (
   }): fieldTypeType => {
     switch (field.type) {
       case "text":
-        console.log("FMT");
-        console.log(JSON.stringify(fmt));
-        console.log("FIELD");
-        console.log(JSON.stringify(field));
         return text({ fmt, field });
       case "textarea":
         return textarea({ fmt, field });
