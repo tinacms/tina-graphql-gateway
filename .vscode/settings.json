@@ -3,5 +3,9 @@
   "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "git.ignoreLimitWarning": true,
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "yaml.schemas": {
+    "./packages/cli/src/cmds/audit/output/forestrySettingsSchema.json": "/apps/demo/.forestry/settings.yml",
+    "./packages/cli/src/cmds/audit/output/forestryFMTSchema.json": "/apps/demo/.forestry/front_matter/templates/*"
+  }
 }
