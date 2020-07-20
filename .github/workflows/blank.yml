@@ -29,6 +29,8 @@ jobs:
       # #   run: yarn version check
       # - name: Install
       #   run: yarn install
+      # - name: Test
+      #   run: yarn run test
       # - name: Build
       #   run: yarn workspaces foreach run build
       # - name: Update deferred package versions
