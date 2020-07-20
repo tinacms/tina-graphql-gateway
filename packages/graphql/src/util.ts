@@ -1,12 +1,20 @@
 import {
   DirectorySection,
+  DocumentList,
   FieldType,
+  ListField,
   Section,
+  SectionList,
   SectionSelect,
   SelectField,
   Settings,
 } from "./datasources/datasource";
-import { TemplatePage, Templates } from "./fields/types";
+import {
+  FieldSourceType,
+  ListValue,
+  TemplatePage,
+  Templates,
+} from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
 import { GraphQLError } from "graphql";
@@ -114,6 +122,32 @@ export function isDirectorySection(
   return section.type === "directory";
 }
 
+export function isListField(field: FieldType): field is ListField {
+  return field.type === "list";
+}
+export function isDocumentListField(field: FieldType): field is DocumentList {
+  if (!isListField(field)) {
+    return false;
+  }
+
+  if (field && field.config && field?.config?.source?.type === "documents") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function isListValue(val: FieldSourceType): val is ListValue {
+  // FIXME: not sure if this is strong enough
+  return val.hasOwnProperty("template");
+}
+
+export function isSectionListField(field: FieldType): field is SectionList {
+  if (!isListField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
 export function isNotNull<T>(arg: T): arg is Exclude<T, null> {
   return arg !== null;
 }
