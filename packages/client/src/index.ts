@@ -97,7 +97,7 @@ const traverse = (fields, customizations) => {
   });
 };
 
-export const onSubmit = async ({
+export const onUpdateSubmit = async ({
   url,
   path,
   payload,
@@ -112,6 +112,7 @@ export const onSubmit = async ({
     }
   }`;
   const { _template, __typename, ...rest } = payload;
+
   const transformedPayload = transform({
     _template,
     __typename,
@@ -119,6 +120,34 @@ export const onSubmit = async ({
   });
   // console.log(JSON.stringify(payload, null, 2));
   // console.log(JSON.stringify(transformedPayload, null, 2));
+
+  await fetchAPI(url, mutation, {
+    variables: { path: path, params: transformedPayload },
+  });
+};
+
+export const onAddSubmit = async ({
+  url,
+  path,
+  payload,
+}: {
+  url: string;
+  path: string;
+  payload: any;
+}) => {
+  const mutation = `mutation addDocumentMutation($path: String!, $params: DocumentInput) {
+    addDocument(path: $path, params: $params) {
+      __typename
+    }
+  }`;
+  const { _template, __typename, ...rest } = payload;
+
+  const transformedPayload = transform({
+    _template,
+    __typename,
+    data: rest,
+  });
+
   await fetchAPI(url, mutation, {
     variables: { path: path, params: transformedPayload },
   });
@@ -134,7 +163,7 @@ export const useForestryForm = (
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {
-      onSubmit({ url, path: formConfig.id, payload: values });
+      onUpdateSubmit({ url, path: formConfig.id, payload: values });
     },
   });
 
