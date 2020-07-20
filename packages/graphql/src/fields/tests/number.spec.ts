@@ -1,5 +1,5 @@
-import { NumberField } from "../datasources/datasource";
-import { number } from "./number";
+import { NumberField } from "../../datasources/datasource";
+import { number } from "../number";
 
 const mockField: NumberField = {
   label: "Field Label",

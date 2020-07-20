@@ -1,25 +1,32 @@
-import { TextField } from "../datasources/datasource";
-import { text } from "./text";
+import { DateField } from "../../datasources/datasource";
+import { datetime } from "../datetime";
 
-const mockField: TextField = {
+const mockField: DateField = {
   label: "Field Label",
   name: "Field Name",
-  default: "Field Default",
-  type: "text",
+  type: "datetime",
+  hidden: false,
+  default: "now",
+  config: {
+    date_format: "MMMM DD YYYY",
+    export_format: "MMMM DD YYYY",
+    required: false,
+  },
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("DateTime Field", () => {
   describe("Getter", () => {
     test("should get GraphQL 'String' when not required", () => {
-      const field = text({ fmt: mockFMT, field: mockField });
+      const field = datetime({ fmt: mockFMT, field: mockField });
       expect(field.getter.type.toString()).toBe("String");
     });
 
     test("should get GraphQL 'String!' when required", () => {
-      const field = text({
+      mockField.config.required = true;
+      const field = datetime({
         fmt: mockFMT,
-        field: { ...mockField, config: { required: true } },
+        field: mockField,
       });
       expect(field.getter.type.toString()).toEqual("String!");
     });
@@ -27,17 +34,17 @@ describe("Text Field", () => {
 
   describe("Setter", () => {
     test("resolves to the correct object", () => {
-      const field = text({ fmt: mockFMT, field: mockField });
+      const field = datetime({ fmt: mockFMT, field: mockField });
       const resolved = field.setter.resolve();
       expect(resolved.name).toEqual("Field Name");
       expect(resolved.label).toEqual("Field Label");
-      expect(resolved.component).toEqual("text");
+      expect(resolved.component).toEqual("date");
     });
   });
 
   describe("Mutator", () => {
     test("is the right type", () => {
-      const field = text({ fmt: mockFMT, field: mockField });
+      const field = datetime({ fmt: mockFMT, field: mockField });
       expect(field.mutator.type.toString()).toEqual("String");
     });
   });
