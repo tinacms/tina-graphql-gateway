@@ -11,17 +11,23 @@ import {
 import config from "../.forestry/config";
 import query from "../.forestry/query";
 import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
+const fg = require("fast-glob");
 
 const URL = config.serverURL;
 
+function fileToUrl(filepath: string) {
+  filepath = filepath.split(`/pages/`)[1];
+  return filepath.replace(/ /g, "-").slice(0, -3).trim();
+}
+
 export async function getStaticPaths() {
+  const pages = await fg(`./content/pages/**/*.md`);
+
   return {
-    paths: [
-      { params: { page: "home" } },
-      { params: { page: "about" } },
-      { params: { page: "services" } },
-    ],
-    fallback: false,
+    paths: pages.map((file) => {
+      return { params: { page: fileToUrl(file) } };
+    }),
+    fallback: true,
   };
 }
 
