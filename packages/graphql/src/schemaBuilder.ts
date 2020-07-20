@@ -19,6 +19,15 @@ import {
   WithFields,
 } from "./datasources/datasource";
 import {
+  FieldContextType,
+  FieldSourceType,
+  ListValue,
+  TemplatePage,
+  Templates,
+  TemplatesData,
+  configType,
+} from "./fields/types";
+import {
   GraphQLEnumType,
   GraphQLError,
   GraphQLFieldConfig,
@@ -260,57 +269,6 @@ function isSectionListField(field: FieldType): field is SectionList {
   }
   return field?.config?.source?.type === "pages";
 }
-
-type BaseDocumentType = {
-  content: string;
-  isEmpty: boolean;
-  excerpt: string;
-};
-
-type DocumentData = { [key: string]: unknown };
-type DocumentType = BaseDocumentType & {
-  path: string;
-  template: string;
-  data: DocumentData;
-};
-
-type TemplatePage = { name: string; pages: string[] };
-
-type Templates = {
-  [key: string]: null | GraphQLObjectType;
-};
-type TemplatesData = { [key: string]: GraphQLObjectType };
-
-export type PluginFieldArgs = {
-  fmt: string;
-  field: FieldType;
-  templatePages: TemplatePage[];
-  templates: Templates;
-  rootPath: string;
-  sectionFmts: {
-    name: string;
-    templates: string[];
-  }[];
-};
-
-// TODO: want to use something more helpful here
-type ListValue = { [key: string]: FieldType[] };
-type FieldSourceType = FieldType | ListValue;
-type FieldContextType = {
-  dataSource: DataSource;
-};
-export type Plugin = {
-  matches: (string: FieldType["type"], field: FieldType) => boolean;
-  run: (
-    string: FieldType["type"],
-    stuff: PluginFieldArgs
-  ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
-};
-
-type configType = {
-  rootPath: string;
-  siteLookup: string;
-};
 
 /**
  * This is the main function in this script, it returns all the types
