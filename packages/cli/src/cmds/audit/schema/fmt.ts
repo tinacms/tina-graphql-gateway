@@ -132,6 +132,8 @@ export const TagField = {
     ...base,
     default: {
       type: "array",
+      minItems: 1,
+      removeIfFails: true,
       items: {
         type: "string",
       },
@@ -159,6 +161,19 @@ export const DateField = {
     ...base,
     default: {
       type: "string",
+      minLength: 1,
+      // Deleting default values should be considered safe
+      removeIfFails: true,
+      anyOf: [
+        {
+          type: "string",
+          const: "now",
+        },
+        {
+          type: "string",
+          format: "date-time",
+        },
+      ],
     },
     config: {
       type: "object",
@@ -228,6 +243,7 @@ export const SelectField = {
     ...base,
     default: {
       type: "string",
+      removeIfFails: true,
     },
     config: {
       type: "object",
@@ -256,12 +272,9 @@ export const SelectField = {
                 type: "object",
                 properties: {
                   type: { const: "simple" },
-                  section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
                 },
                 required: ["type"],
-                additionalProperties: true, // FIXME: ideally when "simple" no other properties
+                additionalProperties: false,
               },
             },
             {
@@ -275,10 +288,8 @@ export const SelectField = {
                 properties: {
                   type: { const: "pages" },
                   section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
                 },
-                required: ["type", "section", "file", "path"],
+                required: ["type", "section"],
                 additionalProperties: false,
               },
             },
@@ -320,11 +331,16 @@ export const ImageField = {
       const: "file",
     },
     ...base,
+    default: {
+      type: "string",
+      minLength: 1,
+      removeIfFails: true,
+    },
     config: {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        maxSize: { type: ["number", "null"] },
+        maxSize: { type: "number" },
       },
       additionalProperties: false,
     },
@@ -393,7 +409,12 @@ export const ListField = {
     },
     ...base,
     default: {
-      type: "array", // FIXME: for some reason this is an empty [] when no default is defined
+      type: "array",
+      minItems: 1,
+      removeIfFails: true,
+      items: {
+        type: "string",
+      },
     },
     config: {
       type: "object",
@@ -508,6 +529,8 @@ export const GalleryField = {
     ...base,
     default: {
       type: "array",
+      minItems: 1,
+      removeIfFails: true,
       items: {
         type: "string",
       },

@@ -1,38 +1,78 @@
 import Ajv from "ajv";
 import YAML from "yaml";
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 import { neutralText, successText, dangerText } from "../../utils/theme";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
 import get from "lodash.get";
 
-const stripSlashes = (value) => {
-  return value.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "");
-};
-
 export async function audit(
   _ctx,
   _next,
   {
-    workingDir = "",
+    migrate = false,
+    forestry = false,
+    fix = false,
   }: {
-    workingDir: string;
+    migrate: boolean;
+    forestry: boolean;
+    fix: boolean;
   }
 ) {
-  const workingDirReal = workingDir.startsWith("/")
-    ? workingDir
-    : process.cwd() + "/" + stripSlashes(workingDir);
-  var ajv = new Ajv({ allErrors: true, verbose: true });
+  let anyErrors = [];
+
+  const workingDirReal = process.cwd();
+
+  const configFolder = migrate || forestry ? ".forestry" : ".tina";
+
+  const shouldFix = migrate || fix;
+
+  if (shouldFix) {
+    var ajv = new Ajv({
+      allErrors: true,
+      verbose: true,
+      removeAdditional: true,
+      coerceTypes: "array",
+    }).addKeyword("removeIfFails", {
+      // Used for remove empty datetime since that is invalid
+      // https://github.com/ajv-validator/ajv/issues/300#issuecomment-247667922
+      inline(it) {
+        return `if (errors) {
+            vErrors.length = errs_${it.dataLevel || ""};
+            errors = errs_${it.dataLevel || ""};
+            delete data${it.dataLevel - 1 || ""}[${
+          it.dataPathArr[it.dataLevel]
+        }];
+          }`;
+      },
+      statements: true,
+    });
+  } else {
+    var ajv = new Ajv({
+      allErrors: true,
+      verbose: true,
+    });
+  }
+
   const fmtDirPath = path.resolve(
-    workingDirReal + "/.forestry/front_matter/templates"
+    workingDirReal + `/${configFolder}/front_matter/templates`
   );
+
+  if (!(await fs.existsSync(fmtDirPath))) {
+    if (!migrate || !forestry) {
+      throw `No directory found. Have you migrated yet (forestry schema:audit --migrate)?
+      Path: ${fmtDirPath}`;
+    }
+  }
 
   validateFile(
     workingDirReal,
-    ".forestry/settings.yml",
+    `${configFolder}/settings.yml`,
     ForestrySettingsSchema,
-    ajv
+    ajv,
+    migrate,
+    anyErrors
   );
 
   // Store these schemas for now, VSCode uses them locally
@@ -52,12 +92,32 @@ export async function audit(
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(
     fmts.map(async (fmtPath) => {
-      await validateFile(fmtDirPath, fmtPath, ForestryFMTSchema, ajv);
+      await validateFile(
+        fmtDirPath,
+        fmtPath,
+        ForestryFMTSchema,
+        ajv,
+        migrate,
+        anyErrors
+      );
     })
   );
+
+  if (anyErrors.length > 0) {
+    throw `Audit failed with ${anyErrors.length} error(s)`;
+  } else {
+    console.log(`Audit completed with no errors.`);
+  }
 }
 
-const validateFile = async (fmtDirPath, fmtPath, schema, ajv) => {
+const validateFile = async (
+  fmtDirPath,
+  fmtPath,
+  schema,
+  ajv,
+  migrate,
+  anyErrors
+) => {
   const fmtFullPath = fmtDirPath + "/" + fmtPath;
   const fmtString = await fs.readFileSync(fmtFullPath).toString();
   if (typeof fmtString !== "string") {
@@ -66,18 +126,31 @@ const validateFile = async (fmtDirPath, fmtPath, schema, ajv) => {
   const fmt = YAML.parse(fmtString);
   var validate = ajv.compile(schema);
   var valid = validate(fmt);
+
   if (!valid) {
-    console.log(`${fmtPath} is ${dangerText("invalid")}`);
+    anyErrors.push(fmtPath);
+    console.log(`${neutralText(fmtPath)} is ${dangerText("invalid")}`);
     printErrors(validate.errors, fmt);
+    console.log("\n");
   } else {
-    console.log(`${fmtPath} is ${successText("valid")}`);
+    console.log(`${neutralText(fmtPath)} is ${successText("valid")}`);
+  }
+  if (migrate) {
+    await fs.outputFile(
+      fmtFullPath.replace(".forestry", ".tina"),
+      YAML.stringify(fmt)
+    );
   }
 };
 
 const printErrors = (errors, object) => {
   errors.map((error) => {
     const handler = keywordError[error.keyword];
-    handler(error, object);
+    if (!handler) {
+      console.error(`Unable to find handler for ${error.keyword}`);
+    } else {
+      handler(error, object);
+    }
   });
 };
 
@@ -85,9 +158,52 @@ const keywordError = {
   required: (error) => {
     console.log(`${propertyName(error)} ${error.message}`);
   },
+  minItems: (error) => {
+    console.log(`${propertyName(error)} ${error.message}`);
+  },
   const: (error) => {
+    if (error.schema === "now") {
+      // We accept either `now` or a datetime formatted string, the `oneOf` handler
+      // has better info on this so we'll ignore it here and handle it there
+    } else {
+      console.log(`Unanticipated error - ${error.keyword}`);
+      console.log(error);
+    }
+  },
+  format: (error, object) => {
+    if (error.schema === "date-time") {
+      // We accept either `now` or a datetime formatted string, the `oneOf` handler
+      // has better info on this so we'll ignore it here and handle it there
+    } else {
+      console.log(`Unanticipated error - ${error.keyword}`);
+    }
+  },
+  anyOf: (error, object) => {
+    console.log(`${propertyName(error, object)} should be one of:
+    ${oneOfSchemaMessage(error)}
+    But got ${dangerText(displayType(error))}
+`);
+  },
+  oneOf: (error) => {
     console.log(`Unanticipated error - ${error.keyword}`);
     console.log(error);
+  },
+  datetimeFormat: (error, object) => {
+    console.log(
+      `${propertyName(
+        error,
+        object
+      )} should be either "now" or a valid datetime format (${dangerText(
+        error.data
+      )})`
+    );
+  },
+  minLength: (error, object) => {
+    console.log(
+      `${propertyName(error, object)} should not be shorter than ${dangerText(
+        error.params.limit
+      )} character`
+    );
   },
   additionalProperties: (error, object) => {
     console.log(
@@ -99,21 +215,13 @@ const keywordError = {
       )}`
     );
   },
-  anyOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`);
-    console.log(error);
-  },
-  oneOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`);
-    console.log(error);
-  },
-  enum: (error) => {
+  enum: (error, object) => {
     console.log(
       `${propertyName(error)} ${error.message} but got ${dangerText(
-        error.data
-      )}.
-    Allowed values: ${successText(error.schema.join(", "))}
-`
+        displayType(error)
+      )}
+        Allowed values: ${successText(error.schema.join(", "))}
+    `
     );
   },
   type: (error, object) => {
@@ -175,4 +283,26 @@ Field with name ${successText(field.name)} of type ${neutralText(
     `;
   }
   return neutralText(error.dataPath);
+};
+
+const oneOfSchemaMessage = (error) => {
+  return error.schema
+    .map((item) => {
+      if (item.const) {
+        return ` - A value equal to ${successText(item.const)}`;
+      }
+
+      if (item.format) {
+        return `     - A value which adheres to the ${
+          jsonSchemaFormats[item.format]
+        } format`;
+      }
+
+      console.log(`Unrecognized oneOf schema key`, item);
+    })
+    .join("\n");
+};
+
+const jsonSchemaFormats = {
+  "date-time": "datetime",
 };

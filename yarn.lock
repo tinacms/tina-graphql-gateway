@@ -1957,6 +1957,7 @@ __metadata:
     express: ^4.17.1
     express-graphql: ^0.11.0
     figlet: ^1.2.3
+    fs-extra: ^9.0.1
     graphql: ^15.1.0
     http-proxy: ^1.18.0
     inquirer: ^6.5.1
@@ -8623,6 +8624,18 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^1.0.0
   checksum: 518828d6e5c33d71cb075f3c25629f857b4a0d1fca5c3b6c8cdee876fa972e0661003491fc7d49d9e4d1c19aec8af6edf045e849a1110f2f879880975f4f6955
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "fs-extra@npm:9.0.1"
+  dependencies:
+    at-least-node: ^1.0.0
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^1.0.0
+  checksum: b7374cb05819bd95fa15bf74a30fbec3d2b64a0c00d2df67d6e1d6a901a9a7582a1243fe652d27a6cd042b38a2c1cd9ae3b3d100bc98dd041cc2f3e29964884f
   languageName: node
   linkType: hard
 
