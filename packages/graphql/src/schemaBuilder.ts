@@ -1613,8 +1613,6 @@ export const buildSchema = async (
     path: string;
     params: any;
   }) => {
-    console.log("add document mutation");
-
     const { content = "", data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
