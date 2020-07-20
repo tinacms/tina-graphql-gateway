@@ -14,7 +14,7 @@ const mockField: TextareaField = {
 };
 const mockFMT = "MockFmt";
 
-describe("Text Field", () => {
+describe("TextArea Field", () => {
   describe("Getter", () => {
     test("should get GraphQL 'String' when not required", () => {
       const field = textarea({ fmt: mockFMT, field: mockField });

@@ -9,6 +9,29 @@ import { GalleryField } from "../datasources/datasource";
 import { friendlyName } from "../util";
 import { imageInput } from "./inputFields";
 
+export const generateImageGalleryObjectType = (
+  name: string,
+  config: { rootPath: string; siteLookup: string }
+): GraphQLObjectType => {
+  return new GraphQLObjectType({
+    name,
+    fields: {
+      path: {
+        type: GraphQLNonNull(GraphQLString),
+        resolve: async (val) => {
+          return val;
+        },
+      },
+      absolutePath: {
+        type: GraphQLString,
+        resolve: async (val) => {
+          return config.rootPath + val;
+        },
+      },
+    },
+  });
+};
+
 export const image_gallery = ({
   fmt,
   field,
@@ -21,23 +44,10 @@ export const image_gallery = ({
   return {
     getter: {
       type: GraphQLList(
-        new GraphQLObjectType({
-          name: friendlyName(field.name + "_gallery_" + fmt),
-          fields: {
-            path: {
-              type: GraphQLNonNull(GraphQLString),
-              resolve: async (val) => {
-                return val;
-              },
-            },
-            absolutePath: {
-              type: GraphQLString,
-              resolve: async (val) => {
-                return config.rootPath + val;
-              },
-            },
-          },
-        })
+        generateImageGalleryObjectType(
+          friendlyName(field.name + "_gallery_" + fmt),
+          config
+        )
       ),
     },
     setter: {
