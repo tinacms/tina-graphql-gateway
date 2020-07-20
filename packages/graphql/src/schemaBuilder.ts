@@ -50,6 +50,7 @@ import {
 } from "./util";
 
 import camelCase from "lodash.camelcase";
+import { file } from "./fields/file";
 import flatten from "lodash.flatten";
 import kebabCase from "lodash.kebabcase";
 import { list } from "./fields/list";
@@ -217,50 +218,6 @@ export const buildSchema = async (
       },
     },
   });
-
-  const file = ({ fmt, field }: { fmt: string; field: FileField }) => {
-    return {
-      getter: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_gallery_" + fmt),
-          fields: {
-            path: {
-              type: GraphQLNonNull(GraphQLString),
-              resolve: async (val) => {
-                return val;
-              },
-            },
-            absolutePath: {
-              type: GraphQLString,
-              resolve: async (val) => {
-                return config.rootPath + val;
-              },
-            },
-          },
-        }),
-      },
-      setter: {
-        type: imageInput,
-        resolve: () => {
-          return {
-            name: field.name,
-            label: field.label,
-            component: "group",
-            fields: [
-              {
-                name: "path",
-                label: "Path",
-                component: "image",
-              },
-            ],
-          };
-        },
-      },
-      mutator: {
-        type: GraphQLString,
-      },
-    };
-  };
 
   const field_group = ({
     fmt,
@@ -561,7 +518,7 @@ export const buildSchema = async (
       case "list":
         return list({ fmt, field, config, fieldData });
       case "file":
-        return file({ fmt, field });
+        return file({ fmt, field, config });
       case "image_gallery":
         return image_gallery({ fmt, field, config });
       case "field_group":
