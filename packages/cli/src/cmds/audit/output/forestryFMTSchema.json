@@ -136,6 +136,9 @@
         "config": {
           "type": "object",
           "properties": {
+            "required": {
+              "type": "boolean"
+            },
             "min": {
               "type": [
                 "number",
@@ -503,6 +506,21 @@
             "value"
           ]
         },
+        "default": {
+          "type": "string",
+          "minLength": 1,
+          "removeIfFails": true,
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "now"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
         "config": {
           "type": "object",
           "properties": {
@@ -516,6 +534,12 @@
               ]
             },
             "time_format": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "export_format": {
               "type": [
                 "string",
                 "null"
@@ -727,15 +751,7 @@
           ]
         },
         "default": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "maxItems": 0
-            }
-          ]
+          "type": "string"
         },
         "config": {
           "type": "object",
@@ -756,31 +772,135 @@
                     "pages",
                     "documents"
                   ]
-                },
-                "section": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                "file": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                "path": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
                 }
               },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section",
+                      "file",
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section",
+                      "file",
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              ],
               "required": [
-                "type",
-                "section",
-                "file",
-                "path"
+                "type"
               ]
             }
           }
@@ -1001,10 +1121,7 @@
               "type": "boolean"
             },
             "maxSize": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             }
           },
           "additionalProperties": false
@@ -1147,32 +1264,172 @@
                 "null"
               ]
             },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "source": {
               "type": "object",
               "properties": {
                 "type": {
                   "type": "string",
                   "enum": [
+                    "simple",
                     "pages",
-                    "documents"
-                  ]
-                },
-                "section": {
-                  "type": "string"
-                },
-                "file": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                "path": {
-                  "type": [
-                    "string",
-                    "null"
+                    "documents",
+                    "datafiles"
                   ]
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      },
+                      "section": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "file": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "path": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section",
+                      "file",
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "datafiles"
+                      }
+                    }
+                  },
+                  "then": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "const": "datafiles"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              ],
+              "required": [
+                "type"
+              ]
             }
           },
           "additionalProperties": false

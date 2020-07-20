@@ -12,9 +12,18 @@ const startServerPortOption = {
   name: "--port <port>",
   description: "Specify a port to run the server on. (default 4001)",
 };
-const auditPathOption = {
-  name: "--path <forestryPath>",
-  description: "Specify a relative path to the .forestry folder (eg. my-site)",
+const auditMigrateOption = {
+  name: "--migrate",
+  description:
+    "Move .forestry configuration to .tina folder. This will fix any errors",
+};
+const auditFixOption = {
+  name: "--fix",
+  description: "Fix errors in the .tina folder configuration",
+};
+const auditForestryOption = {
+  name: "--forestry",
+  description: "Audit the .forestry configuration without migration",
 };
 
 export const baseCmds: Command[] = [
@@ -26,7 +35,7 @@ export const baseCmds: Command[] = [
   {
     command: CMD_AUDIT,
     description: "Audit Forestry schema",
-    options: [auditPathOption],
+    options: [auditFixOption, auditMigrateOption, auditForestryOption],
     action: (options) => chain([audit], options),
   },
   {
