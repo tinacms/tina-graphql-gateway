@@ -1,5 +1,5 @@
-import { TagListField } from "../datasources/datasource";
-import { tag_list } from "./taglist";
+import { TagListField } from "../../datasources/datasource";
+import { tag_list } from "../taglist";
 
 const mockField: TagListField = {
   label: "Field Label",

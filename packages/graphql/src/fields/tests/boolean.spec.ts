@@ -1,5 +1,5 @@
-import { BooleanField } from "../datasources/datasource";
-import { boolean } from "./boolean";
+import { BooleanField } from "../../datasources/datasource";
+import { boolean } from "../boolean";
 
 const mockField: BooleanField = {
   label: "Field Label",
