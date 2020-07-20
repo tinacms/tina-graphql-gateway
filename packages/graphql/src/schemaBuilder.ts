@@ -1,46 +1,28 @@
 import {
-  BlocksField,
   DataSource,
-  FieldGroupField,
-  FieldGroupListField,
   FieldType,
-  FileField,
-  SelectField,
   Settings,
   WithFields,
 } from "./datasources/datasource";
 import {
   DocumentType,
-  FieldContextType,
-  FieldSourceType,
   Templates,
   TemplatesData,
   configType,
 } from "./fields/types";
 import {
   GraphQLError,
-  GraphQLFieldConfig,
   GraphQLInputObjectType,
-  GraphQLInputType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
-  GraphQLType,
   GraphQLUnionType,
   getNamedType,
 } from "graphql";
 import {
-  boolean,
-  datetime,
-  image_gallery,
-  number,
-  tag_list,
-  text,
-  textarea,
-} from "./fields";
-import {
+  arrayToObject,
   friendlyName,
   getSectionFmtTypes,
   isDirectorySection,
@@ -50,32 +32,11 @@ import {
 } from "./util";
 
 import camelCase from "lodash.camelcase";
-import { file } from "./fields/file";
 import flatten from "lodash.flatten";
+import { generateFields } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
-import { list } from "./fields/list";
-import { select } from "./fields/select";
 
 require("dotenv").config();
-
-const arrayToObject = <T>(
-  array: T[],
-  func: (accumulator: { [key: string]: any }, item: T) => void
-) => {
-  const accumulator = {};
-  array.forEach((item) => {
-    func(accumulator, item);
-  });
-
-  return accumulator;
-};
-
-const getBlockFmtTypes = (
-  templateTypes: string[],
-  templateDataObjectTypes: TemplatesData
-) => {
-  return templateTypes.map((template) => templateDataObjectTypes[template]);
-};
 
 const getSectionFmtInputTypes = (
   settings: Settings,
@@ -184,393 +145,13 @@ export const buildSchema = async (
       };
     });
 
-  const fieldData = { sectionFmts, templateObjectTypes, templatePages };
-  const baseInputFields = {
-    name: { type: GraphQLString },
-    label: { type: GraphQLString },
-    description: { type: GraphQLString },
-    component: { type: GraphQLString },
-  };
-
-  const selectInput = new GraphQLObjectType<SelectField>({
-    name: "SelectFormField",
-    fields: {
-      ...baseInputFields,
-      options: { type: GraphQLList(GraphQLString) },
-    },
-  });
-
-  const imageInput = new GraphQLObjectType<FileField>({
-    name: "ImageFormField",
-    fields: {
-      ...baseInputFields,
-      fields: {
-        type: GraphQLList(
-          new GraphQLObjectType({
-            name: "ImageWrapInner",
-            fields: {
-              name: { type: GraphQLString },
-              label: { type: GraphQLString },
-              component: { type: GraphQLString },
-            },
-          })
-        ),
-      },
-    },
-  });
-
-  const field_group = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: FieldGroupField;
-  }) => {
-    const { getters, setters, mutators } = generateFields({
-      fmt: `${fmt}_${field.name}`,
-      fields: field.fields,
-    });
-    return {
-      getter: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_fields_" + fmt),
-          fields: getters,
-        }),
-      },
-      setter: {
-        type: new GraphQLObjectType<FieldGroupField>({
-          name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
-          fields: {
-            label: {
-              type: GraphQLString,
-            },
-            key: {
-              type: GraphQLString,
-            },
-            name: { type: GraphQLString },
-            component: {
-              type: GraphQLString,
-              resolve: () => "group",
-            },
-            fields: {
-              type: GraphQLList(
-                new GraphQLUnionType({
-                  name: friendlyName(
-                    field.name + "_fields_list_" + fmt + "_config" + "_fields"
-                  ),
-                  types: () => {
-                    const setterValues = Object.values(setters);
-                    // FIXME:confusing - this is just making sure we only return unique items
-                    return Array.from(
-                      new Set(setterValues.map((item) => item.type))
-                    );
-                  },
-                  resolveType: (val: FieldType) => {
-                    const setter = setters[val.name];
-                    if (!setter) {
-                      throw new GraphQLError(
-                        `No setter defined for field_group value`
-                      );
-                    }
-
-                    return setter.type;
-                  },
-                })
-              ),
-              resolve: async (field, args, context, info) => {
-                return Promise.all(
-                  field.fields.map(async (field) => {
-                    const setter = setters[field.name];
-
-                    if (!setter.resolve) {
-                      throw new GraphQLError(
-                        `No resolve function provided for ${field.name}`
-                      );
-                    }
-
-                    return setter.resolve(field, args, context, info);
-                  })
-                );
-              },
-            },
-          },
-        }),
-        resolve: () => field,
-      },
-      mutator: {
-        type: new GraphQLInputObjectType({
-          name: friendlyName(field.name + "_fields_" + fmt + "_input"),
-          fields: mutators,
-        }),
-      },
-    };
-  };
-  const field_group_list = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: FieldGroupListField;
-  }) => {
-    const { getters, setters, mutators } = generateFields({
-      fmt: `${fmt}_${field.name}`,
-      fields: field.fields,
-    });
-    return {
-      getter: {
-        type: GraphQLList(
-          new GraphQLObjectType({
-            name: friendlyName(field.name + "_fields_list_" + fmt),
-            fields: getters,
-          })
-        ),
-      },
-      setter: {
-        type: new GraphQLObjectType<FieldGroupListField>({
-          name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
-          fields: {
-            label: {
-              type: GraphQLString,
-            },
-            key: {
-              type: GraphQLString,
-            },
-            name: { type: GraphQLString },
-            component: {
-              type: GraphQLString,
-              resolve: () => "group-list",
-            },
-            fields: {
-              type: GraphQLList(
-                new GraphQLUnionType({
-                  name: friendlyName(
-                    field.name + "_fields_list_" + fmt + "_config" + "_fields"
-                  ),
-                  types: () => {
-                    const setterValues = Object.values(setters);
-                    // FIXME:confusing - this is just making sure we only return unique items
-                    return Array.from(
-                      new Set(setterValues.map((item) => item.type))
-                    );
-                  },
-                  resolveType: (val: FieldType) => {
-                    const setter = setters[val.name];
-                    if (!setter) {
-                      throw new GraphQLError(
-                        `No setter defined for field_group_list value`
-                      );
-                    }
-
-                    return setter.type;
-                  },
-                })
-              ),
-              resolve: async (field, args, context, info) => {
-                return Promise.all(
-                  field.fields.map(async (field) => {
-                    const setter = setters[field.name];
-
-                    if (!setter.resolve) {
-                      throw new GraphQLError(
-                        `No resolve function provided for ${field.name}`
-                      );
-                    }
-
-                    return setter.resolve(field, args, context, info);
-                  })
-                );
-              },
-            },
-          },
-        }),
-        resolve: (val: any) => val,
-      },
-      mutator: {
-        type: GraphQLList(
-          new GraphQLInputObjectType({
-            name: friendlyName(field.name + "_fields_list_" + fmt + "_input"),
-            fields: mutators,
-          })
-        ),
-      },
-    };
-  };
-  const blocks = ({ field }: { fmt: string; field: BlocksField }) => {
-    return {
-      getter: {
-        type: GraphQLList(
-          new GraphQLUnionType({
-            name: friendlyName(field.name + "_union"),
-            types: () => {
-              return getBlockFmtTypes(
-                field.template_types,
-                templateDataObjectTypes
-              );
-            },
-            resolveType: (val) => {
-              return templateDataObjectTypes[val.template];
-            },
-          })
-        ),
-      },
-      setter: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_fieldConfig"),
-          fields: {
-            ...baseInputFields,
-            templates: {
-              type: new GraphQLObjectType({
-                name: friendlyName(field.name + "_templates"),
-                fields: () => {
-                  const blockObjectTypes = field.template_types.map(
-                    (template) => templateFormObjectTypes[template]
-                  );
-                  return arrayToObject(blockObjectTypes, (obj, item) => {
-                    obj[item.name] = {
-                      type: item,
-                      resolve: (val: unknown) => val,
-                    };
-                  });
-                },
-              }),
-            },
-          },
-        }),
-        resolve: async (val: any, _args: any, ctx: FieldContextType) => {
-          return {
-            ...field,
-            component: field.type,
-            templates: Promise.all(
-              field.template_types.map(async (templateName) => {
-                return ctx.dataSource.getTemplate(
-                  config.siteLookup,
-                  templateName + ".yml"
-                );
-              })
-            ),
-          };
-        },
-      },
-      mutator: {
-        type: GraphQLList(
-          new GraphQLInputObjectType({
-            name: friendlyName(field.name + "_input"),
-            fields: () => {
-              return arrayToObject(field.template_types, (obj, item) => {
-                obj[friendlyName(item + "_input")] = {
-                  type: templateDataInputObjectTypes[shortFMTName(item)],
-                };
-              });
-            },
-          })
-        ),
-      },
-    };
-  };
-
-  type fieldGetter = GraphQLFieldConfig<
-    FieldSourceType,
-    FieldContextType,
-    {
-      [argName: string]: GraphQLType;
-    }
-  >;
-  type fieldSetter = {
-    // FIXME: any should be replaced with the resolver function payload type
-    type: GraphQLObjectType<any>;
-    resolve: (
-      val: FieldSourceType,
-      args: {
-        [argName: string]: unknown;
-      },
-      context: FieldContextType,
-      info: unknown
-    ) => unknown;
-  };
-  type fieldTypeType = {
-    getter: fieldGetter;
-    setter: fieldSetter;
-    mutator: { type: GraphQLInputType };
-  };
-
-  const getFieldType = ({
-    fmt,
-    field,
-  }: {
-    fmt: string;
-    field: FieldType;
-  }): fieldTypeType => {
-    switch (field.type) {
-      case "text":
-        return text({ fmt, field });
-      case "textarea":
-        return textarea({ fmt, field });
-      case "number":
-        return number({ fmt, field });
-      case "boolean":
-        return boolean({ fmt, field });
-      case "select":
-        return select({ fmt, field, config, fieldData });
-      case "datetime":
-        return datetime({ fmt, field });
-      case "tag_list":
-        return tag_list({ fmt, field });
-      case "list":
-        return list({ fmt, field, config, fieldData });
-      case "file":
-        return file({ fmt, field, config });
-      case "image_gallery":
-        return image_gallery({ fmt, field, config });
-      case "field_group":
-        return field_group({ fmt, field });
-      case "field_group_list":
-        return field_group_list({ fmt, field });
-      case "blocks":
-        return blocks({ fmt, field });
-      default:
-        throw new GraphQLError(
-          `No function provided for field type ${JSON.stringify(field)}`
-        );
-    }
-  };
-
-  type generatedFieldsType = {
-    getters: {
-      [key: string]: fieldGetter;
-    };
-    setters: {
-      [key: string]: fieldSetter;
-    };
-    mutators: {
-      [key: string]: { type: GraphQLInputType };
-    };
-  };
-
-  const generateFields = ({
-    fmt,
-    fields,
-  }: {
-    fmt: string;
-    fields: FieldType[];
-  }): generatedFieldsType => {
-    const accumulator: generatedFieldsType = {
-      getters: {},
-      setters: {},
-      mutators: {},
-    };
-
-    fields.forEach((field) => {
-      const { getter, setter, mutator } = getFieldType({ fmt, field });
-      accumulator.getters[field.name] = getter;
-      accumulator.setters[field.name] = setter;
-      accumulator.mutators[field.name] = mutator;
-    });
-
-    return {
-      getters: accumulator.getters,
-      setters: accumulator.setters,
-      mutators: accumulator.mutators,
-    };
+  const fieldData = {
+    sectionFmts,
+    templateObjectTypes,
+    templatePages,
+    templateDataObjectTypes,
+    templateFormObjectTypes,
+    templateDataInputObjectTypes,
   };
 
   await Promise.all(
@@ -580,6 +161,8 @@ export const buildSchema = async (
       const { getters, setters, mutators } = generateFields({
         fmt: friendlyName(path),
         fields: fmt.data.fields,
+        config,
+        fieldData,
       });
 
       const templateDataInputObjectType = new GraphQLInputObjectType({

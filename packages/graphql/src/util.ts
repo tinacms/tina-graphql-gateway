@@ -14,6 +14,8 @@ import {
   ListValue,
   TemplatePage,
   Templates,
+  TemplatesData,
+  generatedFieldsType,
 } from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
@@ -186,4 +188,23 @@ export const getSectionFmtTypes2 = (
   }
 
   return types;
+};
+
+export const getBlockFmtTypes = (
+  templateTypes: string[],
+  templateDataObjectTypes: TemplatesData
+) => {
+  return templateTypes.map((template) => templateDataObjectTypes[template]);
+};
+
+export const arrayToObject = <T>(
+  array: T[],
+  func: (accumulator: { [key: string]: any }, item: T) => void
+) => {
+  const accumulator = {};
+  array.forEach((item) => {
+    func(accumulator, item);
+  });
+
+  return accumulator;
 };

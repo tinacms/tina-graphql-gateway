@@ -40,7 +40,14 @@ export const select = ({
   fmt: string;
   field: SelectField;
   config: { rootPath: string; siteLookup: string };
-  fieldData: { sectionFmts: any; templateObjectTypes: any; templatePages: any };
+  fieldData: {
+    sectionFmts: any;
+    templateObjectTypes: any;
+    templatePages: any;
+    templateDataObjectTypes: any;
+    templateFormObjectTypes: any;
+    templateDataInputObjectTypes: any;
+  };
 }) => {
   if (isDocumentSelectField(field)) {
     return {
