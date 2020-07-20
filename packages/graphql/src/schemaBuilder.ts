@@ -19,6 +19,7 @@ import {
   WithFields,
 } from "./datasources/datasource";
 import {
+  DocumentType,
   FieldContextType,
   FieldSourceType,
   ListValue,
