@@ -1,7 +1,6 @@
 import {
   BlocksField,
   DataSource,
-  DirectorySection,
   DocumentList,
   DocumentSelect,
   FieldGroupField,
@@ -9,9 +8,7 @@ import {
   FieldType,
   FileField,
   ListField,
-  Section,
   SectionList,
-  SectionSelect,
   SelectField,
   Settings,
   WithFields,
@@ -21,13 +18,11 @@ import {
   FieldContextType,
   FieldSourceType,
   ListValue,
-  TemplatePage,
   Templates,
   TemplatesData,
   configType,
 } from "./fields/types";
 import {
-  GraphQLEnumType,
   GraphQLError,
   GraphQLFieldConfig,
   GraphQLInputObjectType,
@@ -68,6 +63,7 @@ import {
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
 import kebabCase from "lodash.kebabcase";
+import { select } from "./fields/select";
 
 require("dotenv").config();
 
@@ -154,13 +150,6 @@ function isNullOrUndefined<T>(
   return typeof obj === "undefined" || obj === null;
 }
 
-function isDocumentSelectField(field: FieldType): field is DocumentSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "documents";
-}
-
 function isListValue(val: FieldSourceType): val is ListValue {
   // FIXME: not sure if this is strong enough
   return val.hasOwnProperty("template");
@@ -189,7 +178,6 @@ function isSectionListField(field: FieldType): field is SectionList {
 /**
  * This is the main function in this script, it returns all the types
  */
-const FMT_BASE = ".forestry/front_matter/templates";
 export const buildSchema = async (
   config: configType,
   dataSource: DataSource
@@ -230,6 +218,7 @@ export const buildSchema = async (
       };
     });
 
+  const fieldData = { sectionFmts, templateObjectTypes, templatePages };
   const baseInputFields = {
     name: { type: GraphQLString },
     label: { type: GraphQLString },
@@ -263,146 +252,6 @@ export const buildSchema = async (
       },
     },
   });
-
-  const select = ({ fmt, field }: { fmt: string; field: SelectField }) => {
-    if (isDocumentSelectField(field)) {
-      return {
-        getter: {
-          type: GraphQLString,
-        },
-        setter: {
-          type: selectInput,
-          resolve: async (
-            val: FieldSourceType,
-            _args: { [argName: string]: any },
-            ctx: FieldContextType
-          ) => {
-            const filepath = field.config?.source.file;
-            if (!filepath) {
-              throw new GraphQLError(
-                `No path specificied for list field ${field.name}
-                `
-              );
-            }
-            const keyPath = field.config?.source.path;
-            if (!keyPath) {
-              throw new GraphQLError(
-                `No path specificied key for list field document ${field.name}
-                `
-              );
-            }
-            const res = await ctx.dataSource.getData<any>("", filepath);
-            return {
-              name: field.name,
-              label: field.label,
-              component: "select",
-              options: Object.keys(res.data[keyPath]),
-            };
-          },
-        },
-        mutator: {
-          type: GraphQLString,
-        },
-      };
-    }
-    if (isSectionSelectField(field)) {
-      return {
-        getter: {
-          type: new GraphQLUnionType({
-            name: friendlyName(field.name + "_select_" + fmt),
-            types: () => {
-              return getSectionFmtTypes2(
-                field.config.source.section,
-                sectionFmts,
-                templateObjectTypes
-              );
-            },
-            resolveType: async (val) => {
-              return templateObjectTypes[val.template];
-            },
-          }),
-          resolve: async (
-            val: { [key: string]: unknown },
-            _args: { [argName: string]: any },
-            ctx: FieldContextType
-          ) => {
-            const path = val[field.name];
-            if (isString(path)) {
-              const res = await ctx.dataSource.getData<DocumentType>(
-                config.siteLookup,
-                path
-              );
-              const activeTemplate = getFmtForDocument(path, templatePages);
-              return {
-                ...res,
-                path: val[field.name],
-                template: activeTemplate?.name,
-              };
-            }
-
-            throw new GraphQLError(
-              `Expected index lookup to return a string for ${field.name}`
-            );
-          },
-        },
-        setter: {
-          type: selectInput,
-          resolve: () => {
-            if (field?.config?.source?.type === "pages") {
-              const options = getPagesForSection(
-                field.config.source.section,
-                sectionFmts,
-                templatePages
-              );
-              return {
-                ...field,
-                component: "select",
-                options,
-              };
-            }
-
-            return {
-              name: field.name,
-              label: field.label,
-              component: "select",
-              options: ["this shouldn", "be seen"],
-            };
-          },
-        },
-        mutator: {
-          type: GraphQLString,
-        },
-      };
-    }
-
-    const options: { [key: string]: { value: string } } = {};
-    field.config?.options.forEach(
-      (option) => (options[option] = { value: option })
-    );
-
-    return {
-      getter: {
-        type: GraphQLString,
-      },
-      setter: {
-        type: selectInput,
-        resolve: () => {
-          return {
-            name: field.name,
-            label: field.label,
-            component: "select",
-            options: field.config.options,
-          };
-        },
-      },
-      mutator: {
-        type: new GraphQLEnumType({
-          name: friendlyName(field.name + "_select_" + fmt),
-          values: options,
-        }),
-      },
-    };
-  };
 
   const list = ({ fmt, field }: { fmt: string; field: ListField }) => {
     if (isDocumentListField(field)) {
@@ -964,7 +813,7 @@ export const buildSchema = async (
       case "boolean":
         return boolean({ fmt, field });
       case "select":
-        return select({ fmt, field });
+        return select({ fmt, field, config, fieldData });
       case "datetime":
         return datetime({ fmt, field });
       case "tag_list":
