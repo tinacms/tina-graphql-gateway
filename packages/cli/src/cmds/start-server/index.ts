@@ -5,6 +5,7 @@ import {
   buildSchema as buildForestrySchema,
 } from "@forestryio/graphql";
 import { successText } from "../../utils/theme";
+import cors from "cors";
 
 const GRAPHQL_ENDPOINT = "/api/graphql";
 
@@ -25,6 +26,7 @@ export async function startServer(_ctx, _next, { port = 4001 }: Options) {
 
   app.use(
     GRAPHQL_ENDPOINT,
+    cors(),
     graphqlHTTP(async () => {
       // FIXME: this should probably come from the request, or
       // maybe in the case of the ElasticManager it's not necessary?
@@ -32,15 +34,17 @@ export async function startServer(_ctx, _next, { port = 4001 }: Options) {
         rootPath: "",
         siteLookup: "qms5qlc0jk1o9g",
       };
-      const { schema, documentMutation } = await buildForestrySchema(
-        config,
-        dataSource
-      );
+      const {
+        schema,
+        updateDocumentMutation,
+        addDocumentMutation,
+      } = await buildForestrySchema(config, dataSource);
 
       return {
         schema,
         rootValue: {
-          document: documentMutation,
+          updateDocument: updateDocumentMutation,
+          addDocument: addDocumentMutation,
         },
         context: { dataSource },
         graphiql: true,
