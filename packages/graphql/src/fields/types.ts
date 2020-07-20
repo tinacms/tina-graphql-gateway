@@ -1,5 +1,10 @@
 import { DataSource, FieldType } from "../datasources/datasource";
-import { GraphQLFieldConfig, GraphQLObjectType } from "graphql";
+import {
+  GraphQLFieldConfig,
+  GraphQLInputType,
+  GraphQLObjectType,
+  GraphQLType,
+} from "graphql";
 
 export type BaseDocumentType = {
   content: string;

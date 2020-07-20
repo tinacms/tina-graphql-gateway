@@ -5,4 +5,8 @@ export * from "./boolean";
 export * from "./datetime";
 export * from "./taglist";
 export * from "./imagegallery";
+export * from "./select";
+export * from "./file";
+export * from "./list";
+export * from "./fieldgroup";
 export * from "./inputFields";
