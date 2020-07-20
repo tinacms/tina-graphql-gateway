@@ -1,6 +1,7 @@
 import {
   BooleanField,
   FileField,
+  SelectField,
   TagListField,
   TextField,
 } from "../datasources/datasource";
@@ -50,5 +51,13 @@ export const imageInput = new GraphQLObjectType<FileField>({
         })
       ),
     },
+  },
+});
+
+export const selectInput = new GraphQLObjectType<SelectField>({
+  name: "SelectFormField",
+  fields: {
+    ...baseInputFields,
+    options: { type: GraphQLList(GraphQLString) },
   },
 });
