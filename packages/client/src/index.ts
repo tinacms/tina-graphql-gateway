@@ -121,7 +121,7 @@ export const onUpdateSubmit = async ({
   // console.log(JSON.stringify(payload, null, 2));
   // console.log(JSON.stringify(transformedPayload, null, 2));
 
-  await fetchAPI(url, mutation, {
+  await fetchAPI<UpdateVariables>(url, mutation, {
     variables: { path: path, params: transformedPayload },
   });
 };
@@ -135,21 +135,30 @@ export const onAddSubmit = async ({
   path: string;
   payload: any;
 }) => {
-  const mutation = `mutation addDocumentMutation($path: String!, $params: DocumentInput) {
-    addDocument(path: $path, params: $params) {
+  const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
+    addDocument(path: $path, template: $template, params: $params) {
       __typename
     }
   }`;
   const { _template, __typename, ...rest } = payload;
 
+  //TODO - use the existing helper once it's been split out
+  const friendlyName = (name: string, options = { suffix: "" }) => {
+    return "BlockPageFieldConfig";
+  };
+
   const transformedPayload = transform({
-    _template,
+    _template: friendlyName(_template),
     __typename,
     data: rest,
   });
 
-  await fetchAPI(url, mutation, {
-    variables: { path: path, params: transformedPayload },
+  await fetchAPI<AddVariables>(url, mutation, {
+    variables: {
+      path: path,
+      template: _template + ".yml",
+      params: transformedPayload,
+    },
   });
 };
 
@@ -178,10 +187,21 @@ export const useForestryForm = (
   ];
 };
 
-async function fetchAPI(
+interface UpdateVariables {
+  path: string;
+  params?: any;
+}
+
+interface AddVariables {
+  path: string;
+  template: string;
+  params?: any;
+}
+
+async function fetchAPI<T>(
   url: string,
   query: string,
-  { variables }: { variables: { path: string; params?: any } }
+  { variables }: { variables: T }
 ) {
   const res = await fetch(url, {
     method: "POST",

@@ -61,7 +61,7 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
       payload: {
         title: this.name,
         blocks: [],
-        _template: "BlockPageFieldConfig",
+        _template: "block-page",
       },
     });
   }

@@ -2,7 +2,7 @@ import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
 import type { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
-
+import * as jsyaml from "js-yaml";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
 
@@ -38,10 +38,40 @@ export class FileSystemManager implements DataSource {
 
     return await this.getData<T>(_siteLookup, filepath);
   };
+
+  createContent = async <T>(
+    _siteLookup: string,
+    filepath: string,
+    content: any,
+    data: any,
+    templateName: string
+  ) => {
+    const newContent = await this.writeData<T>(
+      _siteLookup,
+      filepath,
+      content,
+      data
+    );
+
+    let template = await this.getTemplate(_siteLookup, templateName);
+
+    template.data.pages.push(filepath.replace(/^\/+/, ""));
+    await this.writeTemplate(_siteLookup, templateName, template);
+    return newContent;
+  };
   getTemplateList = async (_siteLookup: string) => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
     return list;
+  };
+
+  private writeTemplate = async (
+    _siteLookup: string,
+    templateName: string,
+    template: FMT
+  ): Promise<void> => {
+    const string = "---\n" + jsyaml.dump(template.data);
+    await fs.writeFileSync(FMT_BASE + "/" + templateName, string);
   };
 
   private getFullPath(relPath: string) {
