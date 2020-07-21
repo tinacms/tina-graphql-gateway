@@ -13,7 +13,8 @@
     "build": "forestry-build",
     "watch": "forestry-watch",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
-    "serve": "yarn nodemon dist/index.js"
+    "serve": "yarn nodemon dist/index.js",
+    "test": "jest"
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
@@ -66,5 +67,10 @@
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
     "directory": "packages/graphql"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.2"
   }
 }
