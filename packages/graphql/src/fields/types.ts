@@ -1,9 +1,8 @@
 import { DataSource, FieldType } from "../datasources/datasource";
 import {
   GraphQLFieldConfig,
-  GraphQLInputType,
+  GraphQLInputObjectType,
   GraphQLObjectType,
-  GraphQLType,
 } from "graphql";
 
 export type BaseDocumentType = {
@@ -55,4 +54,25 @@ export type Plugin = {
 export type configType = {
   rootPath: string;
   siteLookup: string;
+};
+
+type SectionFmts = {
+  name: string;
+  templates: string[];
+};
+
+type TemplatePages = {
+  name: string;
+  pages: string[];
+};
+
+export type FieldData = {
+  sectionFmts: SectionFmts[];
+  templateObjectTypes: Templates;
+  templatePages: TemplatePages[];
+  templateDataObjectTypes: TemplatesData;
+  templateFormObjectTypes: { [key: string]: GraphQLObjectType };
+  templateDataInputObjectTypes: {
+    [key: string]: GraphQLInputObjectType;
+  };
 };

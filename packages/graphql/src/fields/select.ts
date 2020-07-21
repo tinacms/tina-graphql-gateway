@@ -4,7 +4,13 @@ import {
   SectionSelect,
   SelectField,
 } from "../datasources/datasource";
-import { DocumentType, FieldContextType, FieldSourceType } from "./types";
+import {
+  DocumentType,
+  FieldContextType,
+  FieldData,
+  FieldSourceType,
+  configType,
+} from "./types";
 import {
   GraphQLEnumType,
   GraphQLError,
@@ -32,6 +38,85 @@ function isDocumentSelectField(field: FieldType): field is DocumentSelect {
   }
   return field?.config?.source?.type === "documents";
 }
+
+const setDocumentSelectFieldResolver = async (
+  field: DocumentSelect,
+  ctx: FieldContextType
+) => {
+  const filepath = field.config?.source.file;
+  if (!filepath) {
+    throw new GraphQLError(
+      `No path specified for list field ${field.name}
+        `
+    );
+  }
+  const keyPath = field.config?.source.path;
+  if (!keyPath) {
+    throw new GraphQLError(
+      `No path specified key for list field document ${field.name}
+        `
+    );
+  }
+  const res = await ctx.dataSource.getData<any>("", filepath);
+  return {
+    name: field.name,
+    label: field.label,
+    component: "select",
+    options: Object.keys(res.data[keyPath]),
+  };
+};
+
+const getSectionSelectFieldResolver = async (
+  field: SectionSelect,
+  val: { [key: string]: unknown },
+  ctx: FieldContextType,
+  fieldData: FieldData,
+  config: configType
+) => {
+  const path = val[field.name];
+  if (isString(path)) {
+    const res = await ctx.dataSource.getData<DocumentType>(
+      config.siteLookup,
+      path
+    );
+    const activeTemplate = getFmtForDocument(path, fieldData.templatePages);
+    return {
+      ...res,
+      path: val[field.name],
+      template: activeTemplate?.name,
+    };
+  }
+
+  throw new GraphQLError(
+    `Expected index lookup to return a string for ${field.name}`
+  );
+};
+
+const setSectionSelectFieldResolver = async (
+  field: SectionSelect,
+  fieldData: FieldData
+) => {
+  if (field?.config?.source?.type === "pages") {
+    const options = getPagesForSection(
+      field.config.source.section,
+      fieldData.sectionFmts,
+      fieldData.templatePages
+    );
+    return {
+      ...field,
+      component: "select",
+      options,
+    };
+  }
+
+  return {
+    name: field.name,
+    label: field.label,
+    component: "select",
+    options: ["this shouldn", "be seen"],
+  };
+};
+
 export const select = ({
   fmt,
   field,
@@ -40,43 +125,9 @@ export const select = ({
 }: {
   fmt: string;
   field: SelectField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: configType;
+  fieldData: FieldData;
 }) => {
-  const setDocumentSelectFieldResolver = async (
-    field: DocumentSelect,
-    ctx: FieldContextType
-  ) => {
-    const filepath = field.config?.source.file;
-    if (!filepath) {
-      throw new GraphQLError(
-        `No path specified for list field ${field.name}
-          `
-      );
-    }
-    const keyPath = field.config?.source.path;
-    if (!keyPath) {
-      throw new GraphQLError(
-        `No path specified key for list field document ${field.name}
-          `
-      );
-    }
-    const res = await ctx.dataSource.getData<any>("", filepath);
-    return {
-      name: field.name,
-      label: field.label,
-      component: "select",
-      options: Object.keys(res.data[keyPath]),
-    };
-  };
-
   if (isDocumentSelectField(field)) {
     return {
       getter: {
@@ -95,51 +146,6 @@ export const select = ({
       },
     };
   }
-
-  const getSectionSelectFieldResolver = async (
-    val: { [key: string]: unknown },
-    ctx: FieldContextType
-  ) => {
-    const path = val[field.name];
-    if (isString(path)) {
-      const res = await ctx.dataSource.getData<DocumentType>(
-        config.siteLookup,
-        path
-      );
-      const activeTemplate = getFmtForDocument(path, fieldData.templatePages);
-      return {
-        ...res,
-        path: val[field.name],
-        template: activeTemplate?.name,
-      };
-    }
-
-    throw new GraphQLError(
-      `Expected index lookup to return a string for ${field.name}`
-    );
-  };
-
-  const setSectionSelectFieldResolver = async (field: SectionSelect) => {
-    if (field?.config?.source?.type === "pages") {
-      const options = getPagesForSection(
-        field.config.source.section,
-        fieldData.sectionFmts,
-        fieldData.templatePages
-      );
-      return {
-        ...field,
-        component: "select",
-        options,
-      };
-    }
-
-    return {
-      name: field.name,
-      label: field.label,
-      component: "select",
-      options: ["this shouldn", "be seen"],
-    };
-  };
 
   if (isSectionSelectField(field)) {
     return {
@@ -161,11 +167,11 @@ export const select = ({
           val: { [key: string]: unknown },
           _args: { [argName: string]: any },
           ctx: FieldContextType
-        ) => getSectionSelectFieldResolver(val, ctx),
+        ) => getSectionSelectFieldResolver(field, val, ctx, fieldData, config), // TODO: Fix this, maybe combine into ctx
       },
       setter: {
         type: selectInput,
-        resolve: () => setSectionSelectFieldResolver(field),
+        resolve: () => setSectionSelectFieldResolver(field, fieldData),
       },
       mutator: {
         type: GraphQLString,
