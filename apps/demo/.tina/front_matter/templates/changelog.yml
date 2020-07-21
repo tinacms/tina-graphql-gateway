@@ -5,7 +5,6 @@ fields:
     label: Title
     type: text
     hidden: false
-    default: ''
   - name: authors
     label: Authors
     type: tag_list
@@ -23,7 +22,6 @@ fields:
       required: true
   - name: summary
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: false

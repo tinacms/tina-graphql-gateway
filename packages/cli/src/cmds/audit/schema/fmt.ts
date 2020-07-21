@@ -61,8 +61,8 @@ export const TextField = {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
+        min: { type: "number" },
+        max: { type: "number" },
       },
       additionalProperties: false,
     },
@@ -82,7 +82,10 @@ export const NumberField = {
       const: "number",
     },
     default: {
-      type: ["number", "null"],
+      type: "number",
+      multipleOf: { $data: "1/config/step" },
+      minimum: { $data: "1/config/min" },
+      maximum: { $data: "1/config/max" },
     },
     config: {
       type: "object",
@@ -91,31 +94,18 @@ export const NumberField = {
           type: "boolean",
         },
         min: {
-          type: ["number", "null"],
+          type: "number",
+          multipleOf: { $data: "1/step" },
+          maximum: { $data: "1/max" },
         },
         max: {
-          type: ["number", "null"],
+          type: "number",
+          multipleOf: { $data: "1/step" },
+          minimum: { $data: "1/min" },
         },
         step: {
-          type: ["number", "null"],
+          type: "number",
           exclusiveMinimum: 0,
-        },
-      },
-      if: {
-        properties: {
-          step: { not: { type: "null" } },
-        },
-      },
-      then: {
-        properties: {
-          min: {
-            type: ["number", "null"],
-            multipleOf: { $data: "1/step" },
-          },
-          max: {
-            type: ["number", "null"],
-            multipleOf: { $data: "1/step" },
-          },
         },
       },
       additionalProperties: false,
@@ -152,8 +142,6 @@ export const TagField = {
     ...base,
     default: {
       type: "array",
-      minItems: 1,
-      removeIfFails: true,
       items: {
         type: "string",
       },
@@ -197,9 +185,9 @@ export const DateField = {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        date_format: { type: ["string", "null"] },
-        time_format: { type: ["string", "null"] },
-        export_format: { type: ["string", "null"] },
+        date_format: { type: "string" },
+        time_format: { type: "string" },
+        export_format: { type: "string" },
         display_utc: { type: "boolean" },
       },
       additionalProperties: false,
@@ -231,8 +219,8 @@ export const TextAreaField = {
           description:
             "Whether or not the editor should present a rich-text editor",
         },
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
+        min: { type: "number" },
+        max: { type: "number" },
         // FIXME: this should not be present when wysiwyg is false
         schema: {
           type: "object",
@@ -452,8 +440,6 @@ export const ListField = {
     ...base,
     default: {
       type: "array",
-      minItems: 1,
-      removeIfFails: true,
       items: {
         type: "string",
       },
@@ -462,8 +448,8 @@ export const ListField = {
       type: "object",
       properties: {
         use_select: { type: "boolean" },
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
+        min: { type: "number" },
+        max: { type: "number" },
         options: {
           // FIXME: this should only be present when source.type === 'simple'
           type: "array",
@@ -488,9 +474,9 @@ export const ListField = {
                 type: "object",
                 properties: {
                   type: { const: "simple" },
-                  section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
+                  section: { type: "string" },
+                  file: { type: "string" },
+                  path: { type: "string" },
                 },
                 required: ["type"],
                 additionalProperties: true, // FIXME: ideally when "simple" no other properties
@@ -506,9 +492,9 @@ export const ListField = {
                 type: "object",
                 properties: {
                   type: { const: "pages" },
-                  section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
+                  section: { type: "string" },
+                  file: { type: "string" },
+                  path: { type: "string" },
                 },
                 required: ["type", "section"],
                 additionalProperties: false,
@@ -524,9 +510,9 @@ export const ListField = {
                 type: "object",
                 properties: {
                   type: { const: "documents" },
-                  section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
+                  section: { type: "string" },
+                  file: { type: "string" },
+                  path: { type: "string" },
                 },
                 required: ["type", "section", "file", "path"],
                 additionalProperties: false,
@@ -609,9 +595,11 @@ export const BlocksField = {
     config: {
       type: "object",
       properties: {
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
+        min: { type: "number" },
+        max: { type: "number" },
       },
+      minProperties: 1,
+      removeIfFails: true,
       additionalProperties: false,
     },
     fields: {
@@ -662,9 +650,9 @@ export const FieldGroupListField = {
       properties: {
         required: { type: "boolean" },
         use_select: { type: "boolean" },
-        labelField: { type: ["string", "null"] },
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
+        labelField: { type: "string" },
+        min: { type: "number" },
+        max: { type: "number" },
       },
       additionalProperties: false,
     },

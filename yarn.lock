@@ -1942,6 +1942,7 @@ __metadata:
     "@types/inquirer": ^6.5.0
     "@types/jest": 26.0.4
     "@types/listr": 0.14.2
+    "@types/lodash": ^4.14.157
     "@types/lodash.get": ^4.4.6
     ajv: ^6.12.3
     axios: 0.19.0
@@ -1966,6 +1967,7 @@ __metadata:
     jsonwebtoken: ^8.5.1
     jwks-rsa: ^1.6.0
     listr: 0.14.3
+    lodash: ^4.17.19
     lodash.get: ^4.4.2
     ms: ^2.1.2
     open: ^6.4.0
@@ -3941,6 +3943,13 @@ __metadata:
   version: 4.14.150
   resolution: "@types/lodash@npm:4.14.150"
   checksum: 0e9ade0b8ace23845ffb1d17b91142abae183c997a96072339cc1ab34395e2f8bc20ad472b9efd879a8b11ee06ae9dde1b9c4c15ce2f63cbee3a558c30a7852d
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.157":
+  version: 4.14.157
+  resolution: "@types/lodash@npm:4.14.157"
+  checksum: ea8d890a4d78f4690f9d8e5cb03f3581e8ea59047696e2c2114087ec471e891b3ce683e5344c9c15ea7bd9730b79e5fd808b3eff80a01741503ea59922c2bb83
   languageName: node
   linkType: hard
 
@@ -11557,6 +11566,13 @@ fsevents@^1.2.7:
   version: 4.17.15
   resolution: "lodash@npm:4.17.15"
   checksum: aec3fbb7570aa67bda500b8299b1b1821d60646bede87f76a74dfcc7666ab3445267d734ec71424d70809d52ad67a1356fab5ab694a3faa1908d68e9d48f00f5
+  languageName: node
+  linkType: hard
+
+"lodash@npm:^4.17.19":
+  version: 4.17.19
+  resolution: "lodash@npm:4.17.19"
+  checksum: ff2b7a95f0129dba9101e346d44e0eda0f159d76bbbf23721eec1969b87a32bde3de0cfef0733218c64620e9be08040a973278d46a686540233b356115f3527c
   languageName: node
   linkType: hard
 

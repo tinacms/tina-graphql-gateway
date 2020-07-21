@@ -1,7 +1,6 @@
 new_page_extension: md
 auto_deploy: false
 admin_path: /admin
-webhook_url: null
 sections:
   - type: heading
     label: Content
@@ -75,8 +74,6 @@ sections:
     label: Pricing
 upload_dir: hugo/static/uploads
 public_path: 'https://festive-stonebraker-e79687.netlify.app/.netlify/large-media'
-front_matter_path: ''
-use_front_matter_path: null
 file_template: ':filename:'
 build:
   preview_env:

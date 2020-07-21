@@ -22,10 +22,6 @@ fields:
             type: pages
             section: pages
         label: Page
-    config:
-      min: null
-      max: null
-      labelField: null
     label: Menu Item
 pages:
   - content/menus/top.md

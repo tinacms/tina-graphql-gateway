@@ -3,7 +3,6 @@ hide_body: true
 fields:
   - name: description
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: true

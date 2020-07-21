@@ -11,7 +11,6 @@ fields:
     label: Page
   - name: button_settings
     type: field_group
-    config: {}
     fields:
       - name: label
         type: text

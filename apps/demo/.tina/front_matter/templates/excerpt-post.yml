@@ -11,7 +11,6 @@ fields:
     label: Post
   - name: description
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: false
