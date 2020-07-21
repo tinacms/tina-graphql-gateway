@@ -6,6 +6,7 @@ import {
 } from "./datasources/datasource";
 import {
   DocumentType,
+  FieldData,
   Templates,
   TemplatesData,
   configType,
@@ -145,7 +146,7 @@ export const buildSchema = async (
       };
     });
 
-  const fieldData = {
+  const fieldData: FieldData = {
     sectionFmts,
     templateObjectTypes,
     templatePages,
