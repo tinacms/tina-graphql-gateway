@@ -1,3 +1,5 @@
+import { friendlyFMTName } from "@forestryio/graphql";
+
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
     return obj;
@@ -142,13 +144,8 @@ export const onAddSubmit = async ({
   }`;
   const { _template, __typename, ...rest } = payload;
 
-  //TODO - use the existing helper once it's been split out
-  const friendlyName = (name: string, options = { suffix: "" }) => {
-    return "BlockPageFieldConfig";
-  };
-
   const transformedPayload = transform({
-    _template: friendlyName(_template),
+    _template: friendlyFMTName(_template, { suffix: "field_config" }),
     __typename,
     data: rest,
   });
