@@ -58,10 +58,10 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
     await onAddSubmit({
       url: URL,
       path: fileRelativePath,
+      template: "block-page",
       payload: {
         title: this.name,
         blocks: [],
-        _template: "block-page",
       },
     });
 

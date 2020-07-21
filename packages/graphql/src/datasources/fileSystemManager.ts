@@ -25,28 +25,28 @@ export class FileSystemManager implements DataSource {
     // @ts-ignore
     return result;
   };
-  writeData = async <T>(
+  writeData = async <ContentType>(
     _siteLookup: string,
     filepath: string,
-    content: any,
-    data: any
+    content: string,
+    data: Partial<ContentType>
   ) => {
     const string = stringify(content, data);
 
     const fullPath = this.getFullPath(filepath);
     await fs.writeFileSync(fullPath, string);
 
-    return await this.getData<T>(_siteLookup, filepath);
+    return await this.getData<ContentType>(_siteLookup, filepath);
   };
 
-  createContent = async <T>(
+  createContent = async <ContentType>(
     _siteLookup: string,
     filepath: string,
-    content: any,
-    data: any,
+    content: string,
+    data: Partial<ContentType>,
     templateName: string
   ) => {
-    const newContent = await this.writeData<T>(
+    const newContent = await this.writeData<ContentType>(
       _siteLookup,
       filepath,
       content,

@@ -128,32 +128,34 @@ export const onUpdateSubmit = async ({
   });
 };
 
+interface AddProps {
+  url: string;
+  path: string;
+  template: string;
+  payload: any;
+}
+
 export const onAddSubmit = async ({
   url,
   path,
+  template,
   payload,
-}: {
-  url: string;
-  path: string;
-  payload: any;
-}) => {
+}: AddProps) => {
   const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
     addDocument(path: $path, template: $template, params: $params) {
       __typename
     }
   }`;
-  const { _template, __typename, ...rest } = payload;
 
   const transformedPayload = transform({
-    _template: friendlyFMTName(_template, { suffix: "field_config" }),
-    __typename,
-    data: rest,
+    _template: friendlyFMTName(template, { suffix: "field_config" }),
+    data: payload,
   });
 
   await fetchAPI<AddVariables>(url, mutation, {
     variables: {
       path: path,
-      template: _template + ".yml",
+      template: template + ".yml",
       params: transformedPayload,
     },
   });
