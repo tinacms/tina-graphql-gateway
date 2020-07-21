@@ -3,7 +3,6 @@ hide_body: true
 fields:
   - name: body
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: true
@@ -13,14 +12,13 @@ fields:
   - name: limit
     type: number
     label: Limit
-    description: ''
-    default: -2.2
     config:
       required: true
-      min: null
-      max: 2
+      min: 2
+      max: 4
       step: 2
   - name: tester
+    label: Hello
     type: select
     config:
       required: true
@@ -28,6 +26,7 @@ fields:
         type: pages
         section: posts
   - name: tester2
+    label: Again
     type: select
     config:
       required: true

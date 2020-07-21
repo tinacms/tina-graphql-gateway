@@ -48,7 +48,6 @@ fields:
       - type: field_group
         name: video
         label: Visual
-        description: ''
         fields:
           - type: text
             name: fallbackVisual

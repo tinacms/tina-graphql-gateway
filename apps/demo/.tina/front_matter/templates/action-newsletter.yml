@@ -3,7 +3,6 @@ hide_body: true
 fields:
   - name: body
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: true
@@ -12,7 +11,6 @@ fields:
     label: Body
   - name: footer
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: true

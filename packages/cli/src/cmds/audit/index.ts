@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import _ from "lodash";
 import * as jsyaml from "js-yaml";
 import fs from "fs-extra";
 import path from "path";
@@ -127,22 +128,17 @@ const validateFile = async (
   let fmt = jsyaml.safeLoad(fmtString);
   if (migrate) {
     fmt = preprocess(fmt);
+    fmt = pruneEmpty(fmt);
   }
   var validate = ajv.compile(schema);
   var valid = validate(fmt);
 
   if (!valid) {
     anyErrors.push(fmtPath);
-    console.log(`${neutralText(fmtPath)} ${dangerText("invalid")}`);
+    console.log(`${fmtPath} is ${dangerText("invalid")}`);
     printErrors(validate.errors, fmt);
-    if (migrate) {
-      console.log(
-        `Refusing to write file to ${fmtFullPath.replace(".forestry", ".tina")}`
-      );
-    }
     console.log("\n");
   } else {
-    console.log(`${successText(fmtPath)}`);
     if (migrate) {
       await fs.outputFile(
         fmtFullPath.replace(".forestry", ".tina"),
@@ -168,10 +164,28 @@ const keywordError = {
     console.log(`${propertyName(error)} ${error.message}`);
   },
   minItems: (error) => {
-    console.log(`${propertyName(error)} ${error.message}`);
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
   },
-  exclusiveMinimum: (error) => {
-    console.log(`${propertyName(error)} ${error.message}`);
+  exclusiveMinimum: (error, object) => {
+    console.log(`${propertyName(error, object)} ${error.message}`);
+  },
+  minimum: (error, object) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
+  },
+  maximum: (error, object) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
   },
   const: (error) => {
     if (error.schema === "now") {
@@ -227,7 +241,7 @@ const keywordError = {
   },
   multipleOf: (error, object) => {
     console.log(
-      `${propertyName(error)} ${error.message} but got ${dangerText(
+      `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
     );
@@ -354,3 +368,24 @@ const preprocess = (json) => {
     return value;
   });
 };
+
+function pruneEmpty(obj) {
+  return (function prune(current) {
+    _.forOwn(current, function (value, key) {
+      if (
+        _.isUndefined(value) ||
+        _.isNull(value) ||
+        _.isNaN(value) ||
+        (_.isString(value) && _.isEmpty(value)) ||
+        (_.isObject(value) && _.isEmpty(prune(value)))
+      ) {
+        delete current[key];
+      }
+    });
+    // remove any leftover undefined values from the delete
+    // operation on an array
+    if (_.isArray(current)) _.pull(current, undefined);
+
+    return current;
+  })(_.cloneDeep(obj)); // Do not modify the original object, create a clone instead
+}

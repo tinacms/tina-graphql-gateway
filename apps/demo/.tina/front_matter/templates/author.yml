@@ -14,14 +14,11 @@ fields:
     label: Image
   - name: gallery
     type: image_gallery
-    config: {}
     label: Gallery
   - name: anecdotes
     type: list
     config:
       use_select: false
-      min: null
-      max: null
     label: Anecdotes
     description: Something simple about their high-level achievements
   - name: accolades
@@ -39,9 +36,7 @@ fields:
           required: false
         label: Description
     config:
-      min: null
       max: 3
-      labelField: null
     label: Accolades
     description: Key accomplishments which make this person stand out.
 pages:

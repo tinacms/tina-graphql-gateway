@@ -5,8 +5,6 @@ fields:
     type: list
     config:
       use_select: true
-      min: null
-      max: null
       source:
         type: pages
         section: authors

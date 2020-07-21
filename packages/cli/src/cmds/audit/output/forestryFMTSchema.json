@@ -59,16 +59,10 @@
               "type": "boolean"
             },
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             }
           },
           "additionalProperties": false
@@ -128,10 +122,16 @@
           "const": "number"
         },
         "default": {
-          "type": [
-            "number",
-            "null"
-          ]
+          "type": "number",
+          "multipleOf": {
+            "$data": "1/config/step"
+          },
+          "minimum": {
+            "$data": "1/config/min"
+          },
+          "maximum": {
+            "$data": "1/config/max"
+          }
         },
         "config": {
           "type": "object",
@@ -140,54 +140,26 @@
               "type": "boolean"
             },
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number",
+              "multipleOf": {
+                "$data": "1/step"
+              },
+              "maximum": {
+                "$data": "1/max"
+              }
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number",
+              "multipleOf": {
+                "$data": "1/step"
+              },
+              "minimum": {
+                "$data": "1/min"
+              }
             },
             "step": {
-              "type": [
-                "number",
-                "null"
-              ],
+              "type": "number",
               "exclusiveMinimum": 0
-            }
-          },
-          "if": {
-            "properties": {
-              "step": {
-                "not": {
-                  "type": "null"
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "min": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "multipleOf": {
-                  "$data": "1/step"
-                }
-              },
-              "max": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "multipleOf": {
-                  "$data": "1/step"
-                }
-              }
             }
           },
           "additionalProperties": false
@@ -322,8 +294,6 @@
         },
         "default": {
           "type": "array",
-          "minItems": 1,
-          "removeIfFails": true,
           "items": {
             "type": "string"
           }
@@ -459,16 +429,10 @@
               "description": "Whether or not the editor should present a rich-text editor"
             },
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "schema": {
               "type": "object",
@@ -561,22 +525,13 @@
               "type": "boolean"
             },
             "date_format": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "time_format": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "export_format": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "display_utc": {
               "type": "boolean"
@@ -712,18 +667,14 @@
           "type": "object",
           "properties": {
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             }
           },
+          "minProperties": 1,
+          "removeIfFails": true,
           "additionalProperties": false
         },
         "fields": {
@@ -1055,22 +1006,13 @@
               "type": "boolean"
             },
             "labelField": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             }
           },
           "additionalProperties": false
@@ -1280,8 +1222,6 @@
         },
         "default": {
           "type": "array",
-          "minItems": 1,
-          "removeIfFails": true,
           "items": {
             "type": "string"
           }
@@ -1293,16 +1233,10 @@
               "type": "boolean"
             },
             "min": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "max": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "options": {
               "type": "array",
@@ -1339,22 +1273,13 @@
                         "const": "simple"
                       },
                       "section": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "file": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "path": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -1378,22 +1303,13 @@
                         "const": "pages"
                       },
                       "section": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "file": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "path": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -1418,22 +1334,13 @@
                         "const": "documents"
                       },
                       "section": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "file": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "path": {
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       }
                     },
                     "required": [

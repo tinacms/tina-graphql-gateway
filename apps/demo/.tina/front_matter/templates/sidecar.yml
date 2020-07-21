@@ -3,7 +3,6 @@ hide_body: true
 fields:
   - name: text
     type: textarea
-    default: ''
     config:
       required: false
       wysiwyg: true
@@ -17,7 +16,6 @@ fields:
     label: Image
   - name: cta
     type: field_group
-    config: {}
     fields:
       - name: header
         type: text
@@ -32,9 +30,6 @@ fields:
       - action-video
       - action-newsletter
       - action-page-reference
-    config:
-      min: null
-      max: null
   - name: style
     type: select
     default: Sidecar

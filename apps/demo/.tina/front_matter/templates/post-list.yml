@@ -12,8 +12,4 @@ fields:
             type: pages
             section: posts
         label: Post
-    config:
-      min: null
-      max: null
-      labelField: null
     label: Posts

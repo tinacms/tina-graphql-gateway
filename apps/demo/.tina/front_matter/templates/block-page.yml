@@ -19,9 +19,6 @@ fields:
       - sponsor-list
       - page-reference
       - section-index
-    config:
-      min: null
-      max: null
 pages:
   - content/pages/about.md
   - content/pages/home.md
