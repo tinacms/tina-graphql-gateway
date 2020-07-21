@@ -427,6 +427,14 @@ export const IncludeField = {
   additionalProperties: false,
   required: baseRequired,
 };
+
+const additionalListConfig = {
+  use_select: { type: "boolean" },
+  required: { type: "boolean" },
+  min: { type: "number" },
+  max: { type: "number" },
+};
+
 export const ListField = {
   $id: "#listField",
   label: "List Field",
@@ -448,98 +456,238 @@ export const ListField = {
       type: "object",
       properties: {
         use_select: { type: "boolean" },
-        min: { type: "number" },
-        max: { type: "number" },
-        options: {
-          // FIXME: this should only be present when source.type === 'simple'
-          type: "array",
-          items: { type: "string" },
-        },
         source: {
           type: "object",
           properties: {
-            type: {
-              type: "string",
-              enum: ["simple", "pages", "documents", "datafiles"],
-            },
+            type: { enum: ["simple", "pages", "documents", "datafiles"] },
           },
-          allOf: [
-            {
-              if: {
-                properties: {
-                  type: { const: "simple" },
-                },
-              },
-              then: {
-                type: "object",
-                properties: {
-                  type: { const: "simple" },
-                  section: { type: "string" },
-                  file: { type: "string" },
-                  path: { type: "string" },
-                },
-                required: ["type"],
-                additionalProperties: true, // FIXME: ideally when "simple" no other properties
-              },
-            },
-            {
-              if: {
-                properties: {
-                  type: { const: "pages" },
-                },
-              },
-              then: {
-                type: "object",
-                properties: {
-                  type: { const: "pages" },
-                  section: { type: "string" },
-                  file: { type: "string" },
-                  path: { type: "string" },
-                },
-                required: ["type", "section"],
-                additionalProperties: false,
-              },
-            },
-            {
-              if: {
-                properties: {
-                  type: { const: "documents" },
-                },
-              },
-              then: {
-                type: "object",
-                properties: {
-                  type: { const: "documents" },
-                  section: { type: "string" },
-                  file: { type: "string" },
-                  path: { type: "string" },
-                },
-                required: ["type", "section", "file", "path"],
-                additionalProperties: false,
-              },
-            },
-            {
-              // FIXME: I have no idea what this does
-              if: {
-                properties: {
-                  type: { const: "datafiles" },
-                },
-              },
-              then: {
-                type: "object",
-                properties: {
-                  type: { const: "datafiles" },
-                },
-                required: ["type"],
-                additionalProperties: false,
-              },
-            },
-          ],
-          required: ["type"],
         },
       },
-      additionalProperties: false,
+      allOf: [
+        {
+          if: {
+            properties: {
+              use_select: { const: false },
+            },
+          },
+          then: {
+            additionalProperties: false,
+            properties: additionalListConfig,
+          },
+          else: {
+            allOf: [
+              {
+                if: {
+                  properties: {
+                    source: {
+                      properties: {
+                        type: { const: "simple" },
+                      },
+                    },
+                  },
+                },
+                then: {
+                  additionalProperties: false,
+                  required: ["source", "options"],
+                  properties: {
+                    ...additionalListConfig,
+                    options: {
+                      type: "array",
+                      items: {
+                        type: "string",
+                      },
+                    },
+                    source: {
+                      properties: {
+                        type: { const: "simple" },
+                      },
+                      required: ["type"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+              },
+              {
+                if: {
+                  properties: {
+                    source: {
+                      properties: {
+                        type: { const: "pages" },
+                      },
+                    },
+                  },
+                },
+                then: {
+                  properties: {
+                    ...additionalListConfig,
+                    source: {
+                      properties: {
+                        type: { const: "pages" },
+                        section: { type: "string" },
+                      },
+                      required: ["type", "section"],
+                      additionalProperties: false,
+                    },
+                  },
+                  required: ["source"],
+                  additionalProperties: false,
+                },
+              },
+              {
+                if: {
+                  properties: {
+                    source: {
+                      properties: {
+                        type: { const: "documents" },
+                      },
+                    },
+                  },
+                },
+                then: {
+                  properties: {
+                    ...additionalListConfig,
+                    source: {
+                      properties: {
+                        type: { const: "documents" },
+                        section: { type: "string" },
+                        file: { type: "string" },
+                        path: { type: "string" },
+                      },
+                      required: ["type", "section", "file", "path"],
+                      additionalProperties: false,
+                    },
+                  },
+                  required: ["source"],
+                  additionalProperties: false,
+                },
+              },
+              // I have no idea what this is
+              {
+                if: {
+                  properties: {
+                    source: {
+                      properties: {
+                        type: { const: "datafiles" },
+                      },
+                    },
+                  },
+                },
+                then: {
+                  properties: {
+                    ...additionalListConfig,
+                    source: {
+                      properties: {
+                        type: { const: "datafiles" },
+                      },
+                      required: ["type"],
+                      additionalProperties: false,
+                    },
+                  },
+                  required: ["source"],
+                  additionalProperties: false,
+                },
+              },
+            ],
+          },
+        },
+      ],
     },
+    // config: {
+    //   type: "object",
+    //   properties: {
+    //     use_select: { type: "boolean" },
+    //     min: { type: "number" },
+    //     max: { type: "number" },
+    //     options: {
+    //       // FIXME: this should only be present when source.type === 'simple'
+    //       type: "array",
+    //       items: { type: "string" },
+    //     },
+    //     source: {
+    //       type: "object",
+    //       properties: {
+    //         type: {
+    //           type: "string",
+    //           enum: ["simple", "pages", "documents", "datafiles"],
+    //         },
+    //       },
+    //       allOf: [
+    //         {
+    //           if: {
+    //             properties: {
+    //               type: { const: "simple" },
+    //             },
+    //           },
+    //           then: {
+    //             type: "object",
+    //             properties: {
+    //               type: { const: "simple" },
+    //               section: { type: "string" },
+    //               file: { type: "string" },
+    //               path: { type: "string" },
+    //             },
+    //             required: ["type"],
+    //             additionalProperties: true, // FIXME: ideally when "simple" no other properties
+    //           },
+    //         },
+    //         {
+    //           if: {
+    //             properties: {
+    //               type: { const: "pages" },
+    //             },
+    //           },
+    //           then: {
+    //             type: "object",
+    //             properties: {
+    //               type: { const: "pages" },
+    //               section: { type: "string" },
+    //               file: { type: "string" },
+    //               path: { type: "string" },
+    //             },
+    //             required: ["type", "section"],
+    //             additionalProperties: false,
+    //           },
+    //         },
+    //         {
+    //           if: {
+    //             properties: {
+    //               type: { const: "documents" },
+    //             },
+    //           },
+    //           then: {
+    //             type: "object",
+    //             properties: {
+    //               type: { const: "documents" },
+    //               section: { type: "string" },
+    //               file: { type: "string" },
+    //               path: { type: "string" },
+    //             },
+    //             required: ["type", "section", "file", "path"],
+    //             additionalProperties: false,
+    //           },
+    //         },
+    //         {
+    //           // FIXME: I have no idea what this does
+    //           if: {
+    //             properties: {
+    //               type: { const: "datafiles" },
+    //             },
+    //           },
+    //           then: {
+    //             type: "object",
+    //             properties: {
+    //               type: { const: "datafiles" },
+    //             },
+    //             required: ["type"],
+    //             additionalProperties: false,
+    //           },
+    //         },
+    //       ],
+    //       required: ["type"],
+    //     },
+    //   },
+    //   additionalProperties: false,
+    // },
   },
   additionalProperties: false,
   required: baseRequired,
