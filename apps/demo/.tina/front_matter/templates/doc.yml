@@ -32,10 +32,10 @@ fields:
     label: Publish Date
     description: Date this page should be made public
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mmA
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mmA'
       required: true
-    default: 2017-12-07T04:00:00.000+00:00
+    default: '2017-12-07T04:00:00.000+00:00'
   - type: text
     name: headline
     label: Page Headline
@@ -68,9 +68,9 @@ fields:
     label: Expiry Date
     description: Date this page should be unpublished
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mmA
-    default: 2030-01-01T04:00:00.000+00:00
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mmA'
+    default: '2030-01-01T04:00:00.000+00:00'
   - type: field_group
     label: Footer Call To Action
     name: cta
@@ -111,7 +111,7 @@ fields:
   - type: number
     name: weight
     label: Weight
-    description: Used to handle sorting order, menu order, etc.
+    description: 'Used to handle sorting order, menu order, etc.'
   - type: list
     name: aliases
     label: Aliases
@@ -123,10 +123,11 @@ fields:
   - type: text
     name: layout
     label: Layout
-    description: Sets the Hugo's Layout (https://gohugo.io/themes/creating/#layouts)
+    description: 'Sets the Hugo''s Layout (https://gohugo.io/themes/creating/#layouts)'
     default: single
     hidden: true
 pages:
   - hugo/content/docs/faqs/can-i-edit-css-files.md
   - hugo/content/docs/settings/snippets.md
-  - hugo/content/docs/troubleshooting/unexpected-status-code-connection-expected-but-not-available.md
+  - >-
+    hugo/content/docs/troubleshooting/unexpected-status-code-connection-expected-but-not-available.md

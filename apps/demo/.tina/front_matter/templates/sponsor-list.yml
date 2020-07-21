@@ -3,7 +3,7 @@ hide_body: true
 fields:
   - name: description
     type: textarea
-    default: ""
+    default: ''
     config:
       required: false
       wysiwyg: true
@@ -29,7 +29,7 @@ fields:
           maxSize: 64
         label: Image
     config:
-      ? min
-      ? max
-      ? labelField
+      min: null
+      max: null
+      labelField: null
     label: Sponsor

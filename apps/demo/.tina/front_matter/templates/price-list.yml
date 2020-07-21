@@ -3,7 +3,7 @@ hide_body: true
 fields:
   - name: heading
     type: textarea
-    default: ""
+    default: ''
     config:
       required: true
       wysiwyg: true
@@ -20,7 +20,7 @@ fields:
         label: Title
       - name: description
         type: textarea
-        default: ""
+        default: ''
         config:
           required: true
           wysiwyg: true

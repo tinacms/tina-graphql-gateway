@@ -20,8 +20,8 @@ fields:
       - page-reference
       - section-index
     config:
-      ? min
-      ? max
+      min: null
+      max: null
 pages:
   - content/pages/about.md
   - content/pages/home.md

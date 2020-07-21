@@ -15,7 +15,7 @@ fields:
     label: Expirydate
     type: datetime
     hidden: false
-    default: 2029-12-31T23:00:00.000+00:00
+    default: '2029-12-31T23:00:00.000+00:00'
   - name: date
     label: Date
     type: datetime
@@ -24,7 +24,7 @@ fields:
     label: Weight
     type: text
     hidden: false
-    default: "3"
+    default: '3'
   - name: type
     label: Type
     type: text

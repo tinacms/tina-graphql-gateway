@@ -1,11 +1,11 @@
 import Ajv from "ajv";
-import YAML from "yaml";
+import * as jsyaml from "js-yaml";
 import fs from "fs-extra";
 import path from "path";
+import get from "lodash.get";
 import { neutralText, successText, dangerText } from "../../utils/theme";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
-import get from "lodash.get";
 
 export async function audit(
   _ctx,
@@ -23,9 +23,7 @@ export async function audit(
   let anyErrors = [];
 
   const workingDirReal = process.cwd();
-
   const configFolder = migrate || forestry ? ".forestry" : ".tina";
-
   const shouldFix = migrate || fix;
 
   if (shouldFix) {
@@ -34,8 +32,10 @@ export async function audit(
       verbose: true,
       removeAdditional: true,
       coerceTypes: "array",
+      strictNumbers: true,
+      $data: true,
     }).addKeyword("removeIfFails", {
-      // Used for remove empty datetime since that is invalid
+      // Used for remove empty string datetime since it would be invalid
       // https://github.com/ajv-validator/ajv/issues/300#issuecomment-247667922
       inline(it) {
         return `if (errors) {
@@ -52,6 +52,7 @@ export async function audit(
     var ajv = new Ajv({
       allErrors: true,
       verbose: true,
+      $data: true,
     });
   }
 
@@ -76,18 +77,18 @@ export async function audit(
   );
 
   // Store these schemas for now, VSCode uses them locally
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
-  //   ),
-  //   JSON.stringify(ForestrySettingsSchema, null, 2)
-  // );
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
-  //   ),
-  //   JSON.stringify(ForestryFMTSchema, null, 2)
-  // );
+  await fs.writeFileSync(
+    path.resolve(
+      __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
+    ),
+    JSON.stringify(ForestrySettingsSchema, null, 2)
+  );
+  await fs.writeFileSync(
+    path.resolve(
+      __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
+    ),
+    JSON.stringify(ForestryFMTSchema, null, 2)
+  );
 
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(
@@ -123,23 +124,31 @@ const validateFile = async (
   if (typeof fmtString !== "string") {
     throw "Expected a string";
   }
-  const fmt = YAML.parse(fmtString);
+  let fmt = jsyaml.safeLoad(fmtString);
+  if (migrate) {
+    fmt = preprocess(fmt);
+  }
   var validate = ajv.compile(schema);
   var valid = validate(fmt);
 
   if (!valid) {
     anyErrors.push(fmtPath);
-    console.log(`${neutralText(fmtPath)} is ${dangerText("invalid")}`);
+    console.log(`${neutralText(fmtPath)} ${dangerText("invalid")}`);
     printErrors(validate.errors, fmt);
+    if (migrate) {
+      console.log(
+        `Refusing to write file to ${fmtFullPath.replace(".forestry", ".tina")}`
+      );
+    }
     console.log("\n");
   } else {
-    console.log(`${neutralText(fmtPath)} is ${successText("valid")}`);
-  }
-  if (migrate) {
-    await fs.outputFile(
-      fmtFullPath.replace(".forestry", ".tina"),
-      YAML.stringify(fmt)
-    );
+    console.log(`${successText(fmtPath)}`);
+    if (migrate) {
+      await fs.outputFile(
+        fmtFullPath.replace(".forestry", ".tina"),
+        jsyaml.dump(fmt)
+      );
+    }
   }
 };
 
@@ -161,19 +170,20 @@ const keywordError = {
   minItems: (error) => {
     console.log(`${propertyName(error)} ${error.message}`);
   },
+  exclusiveMinimum: (error) => {
+    console.log(`${propertyName(error)} ${error.message}`);
+  },
   const: (error) => {
     if (error.schema === "now") {
-      // We accept either `now` or a datetime formatted string, the `oneOf` handler
-      // has better info on this so we'll ignore it here and handle it there
+      // Ignoring for this case since it's handled better by anyOf
     } else {
       console.log(`Unanticipated error - ${error.keyword}`);
       console.log(error);
     }
   },
-  format: (error, object) => {
+  format: (error) => {
     if (error.schema === "date-time") {
-      // We accept either `now` or a datetime formatted string, the `oneOf` handler
-      // has better info on this so we'll ignore it here and handle it there
+      // Ignoring for this case since it's handled better by anyOf
     } else {
       console.log(`Unanticipated error - ${error.keyword}`);
     }
@@ -212,6 +222,13 @@ const keywordError = {
         object
       )} contains an additional property ${dangerText(
         error.params.additionalProperty
+      )}`
+    );
+  },
+  multipleOf: (error, object) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
       )}`
     );
   },
@@ -277,12 +294,20 @@ const propertyName = (error, object = null) => {
     // console.log(field);
     return `
 Field with name ${successText(field.name)} of type ${neutralText(
-      field.type
+      fieldType(field)
     )} has an invalid property ${dangerText(property)}
      at ${dataPath}
     `;
   }
   return neutralText(error.dataPath);
+};
+
+const fieldType = (field) => {
+  if (field.type === "select") {
+    return `${field.type} (${field.config.source.type})`;
+  }
+
+  return field.type;
 };
 
 const oneOfSchemaMessage = (error) => {
@@ -298,11 +323,34 @@ const oneOfSchemaMessage = (error) => {
         } format`;
       }
 
+      if (item.multipleOf || item.type === "null") {
+        // Ignore, we're handling this better elsewhere
+        return false;
+      }
       console.log(`Unrecognized oneOf schema key`, item);
     })
+    .filter(Boolean)
     .join("\n");
 };
 
 const jsonSchemaFormats = {
   "date-time": "datetime",
+};
+
+const preprocess = (json) => {
+  const string = JSON.stringify(json);
+
+  return JSON.parse(string, (key, value) => {
+    if (key === "fields") {
+      const itemWithRequired = value.find((item) => item.required);
+      if (itemWithRequired) {
+        itemWithRequired.config = {
+          required: itemWithRequired.required,
+          ...itemWithRequired.config,
+        };
+        delete itemWithRequired.required;
+      }
+    }
+    return value;
+  });
 };

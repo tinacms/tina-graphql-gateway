@@ -82,11 +82,7 @@ export const NumberField = {
       const: "number",
     },
     default: {
-      type: "number",
-    },
-    // FIXME: sometimes this is present here instead of in the config
-    required: {
-      type: "boolean",
+      type: ["number", "null"],
     },
     config: {
       type: "object",
@@ -94,9 +90,33 @@ export const NumberField = {
         required: {
           type: "boolean",
         },
-        min: { type: ["number", "null"] },
-        max: { type: ["number", "null"] },
-        step: { type: ["number", "null"] },
+        min: {
+          type: ["number", "null"],
+        },
+        max: {
+          type: ["number", "null"],
+        },
+        step: {
+          type: ["number", "null"],
+          exclusiveMinimum: 0,
+        },
+      },
+      if: {
+        properties: {
+          step: { not: { type: "null" } },
+        },
+      },
+      then: {
+        properties: {
+          min: {
+            type: ["number", "null"],
+            multipleOf: { $data: "1/step" },
+          },
+          max: {
+            type: ["number", "null"],
+            multipleOf: { $data: "1/step" },
+          },
+        },
       },
       additionalProperties: false,
     },
@@ -161,8 +181,6 @@ export const DateField = {
     ...base,
     default: {
       type: "string",
-      minLength: 1,
-      // Deleting default values should be considered safe
       removeIfFails: true,
       anyOf: [
         {
@@ -248,73 +266,97 @@ export const SelectField = {
     config: {
       type: "object",
       properties: {
-        required: { type: "boolean" },
-        options: {
-          // FIXME: this is empty when the type is pages or document
-          type: "array",
-        },
         source: {
           type: "object",
           properties: {
-            type: {
-              type: "string",
-              enum: ["simple", "pages", "documents"],
-            },
+            type: { enum: ["simple", "pages", "documents"] },
           },
-          allOf: [
-            {
-              if: {
+        },
+      },
+      allOf: [
+        {
+          if: {
+            properties: {
+              source: {
                 properties: {
                   type: { const: "simple" },
                 },
               },
-              then: {
-                type: "object",
+            },
+          },
+          then: {
+            additionalProperties: false,
+            properties: {
+              required: { type: "boolean" },
+              source: {
                 properties: {
                   type: { const: "simple" },
                 },
                 required: ["type"],
                 additionalProperties: false,
               },
+              options: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+              },
             },
-            {
-              if: {
+          },
+        },
+        {
+          if: {
+            properties: {
+              source: {
                 properties: {
                   type: { const: "pages" },
                 },
               },
-              then: {
-                type: "object",
+            },
+          },
+          then: {
+            properties: {
+              required: { type: "boolean" },
+              source: {
                 properties: {
                   type: { const: "pages" },
-                  section: { type: ["string", "null"] },
+                  section: { type: "string" },
                 },
                 required: ["type", "section"],
                 additionalProperties: false,
               },
             },
-            {
-              if: {
+            additionalProperties: false,
+          },
+        },
+        {
+          if: {
+            properties: {
+              source: {
                 properties: {
                   type: { const: "documents" },
                 },
               },
-              then: {
-                type: "object",
+            },
+          },
+          then: {
+            properties: {
+              required: { type: "boolean" },
+              source: {
                 properties: {
                   type: { const: "documents" },
-                  section: { type: ["string", "null"] },
-                  file: { type: ["string", "null"] },
-                  path: { type: ["string", "null"] },
+                  section: { type: "string" },
+                  file: { type: "string" },
+                  path: { type: "string" },
                 },
                 required: ["type", "section", "file", "path"],
                 additionalProperties: false,
               },
             },
-          ],
-          required: ["type"],
+            additionalProperties: false,
+          },
         },
-      },
+      ],
     },
   },
   additionalProperties: false,

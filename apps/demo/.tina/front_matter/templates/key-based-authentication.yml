@@ -5,12 +5,12 @@ fields:
     label: Title
     type: text
     hidden: false
-    default: ""
+    default: ''
   - name: description
     label: Description
     type: textarea
     hidden: false
-    default: ""
+    default: ''
   - name: date
     label: Date
     type: datetime
@@ -20,7 +20,7 @@ fields:
     type: list
     hidden: false
     default:
-      - ""
+      - ''
   - name: publishdate
     label: Publishdate
     type: datetime
@@ -34,30 +34,30 @@ fields:
     label: Headline
     type: text
     hidden: false
-    default: ""
+    default: ''
   - name: textline
     label: Textline
     type: text
     hidden: false
-    default: ""
+    default: ''
   - name: images
     label: Images
     type: image_gallery
     hidden: false
     default:
-      - ""
+      - ''
   - name: categories
     label: Categories
     type: tag_list
     hidden: false
     default:
-      - ""
+      - ''
   - name: tags
     label: Tags
     type: tag_list
     hidden: false
     default:
-      - ""
+      - ''
   - name: cta
     label: Cta
     type: field_group
@@ -66,30 +66,30 @@ fields:
         label: Headline
         type: text
         hidden: false
-        default: ""
+        default: ''
       - name: textline
         label: Textline
         type: text
         hidden: false
-        default: ""
+        default: ''
       - name: calls_to_action
         label: Calls to action
         type: list
         hidden: false
         default:
-          - ""
+          - ''
     hidden: false
   - name: weight
     label: Weight
     type: text
     hidden: false
-    default: ""
+    default: ''
   - name: aliases
     label: Aliases
     type: list
     hidden: false
     default:
-      - ""
+      - ''
   - name: layout
     label: Layout
     type: text

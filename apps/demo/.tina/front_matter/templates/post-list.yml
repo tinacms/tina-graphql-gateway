@@ -8,13 +8,12 @@ fields:
         type: select
         config:
           required: false
-          options: []
           source:
             type: pages
             section: posts
         label: Post
     config:
-      ? min
-      ? max
-      ? labelField
+      min: null
+      max: null
+      labelField: null
     label: Posts

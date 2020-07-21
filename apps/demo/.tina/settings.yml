@@ -12,51 +12,51 @@ sections:
     path: hugo/content
     label: Pages
     create: all
-    match: "*"
+    match: '*'
   - type: directory
     path: hugo/content/job-openings
     label: Job Openings
     create: all
-    match: "**/*"
+    match: '**/*'
   - type: directory
     path: hugo/content/showcase
     label: Showcase
     create: all
-    match: "**/*"
+    match: '**/*'
     templates:
       - showcase
   - type: directory
     path: hugo/content/blog
     label: Blog
     create: all
-    match: "**/*"
+    match: '**/*'
   - type: heading
     label: Documentation
   - type: directory
     path: hugo/content/docs
     label: Docs
     create: all
-    match: "**/*"
-    exclude: "{changelog,sunset,faqs}/*"
+    match: '**/*'
+    exclude: '{changelog,sunset,faqs}/*'
     templates:
       - doc
   - type: directory
     path: hugo/content/docs/changelog
     label: Changelog
     create: all
-    match: "*"
+    match: '*'
     templates:
       - changelog
   - type: directory
     path: hugo/content/docs/sunset
     label: Sunset Notices
     create: all
-    match: "*"
+    match: '*'
   - type: directory
     path: hugo/content/docs/faqs
     label: FAQ
     create: all
-    match: "**/*"
+    match: '**/*'
     templates:
       - doc
   - type: heading
@@ -74,10 +74,10 @@ sections:
     path: hugo/data/pricing.yml
     label: Pricing
 upload_dir: hugo/static/uploads
-public_path: https://festive-stonebraker-e79687.netlify.app/.netlify/large-media
-front_matter_path: ""
+public_path: 'https://festive-stonebraker-e79687.netlify.app/.netlify/large-media'
+front_matter_path: ''
 use_front_matter_path: null
-file_template: ":filename:"
+file_template: ':filename:'
 build:
   preview_env:
     - HUGO_ENV=staging
@@ -86,8 +86,8 @@ build:
     - PREVIEW_PORT=8080
   preview_output_directory: dist
   install_dependencies_command: npm install
-  preview_docker_image: forestryio/hugo:node12
+  preview_docker_image: 'forestryio/hugo:node12'
   mount_path: /srv
   working_dir: /srv
-  instant_preview_command: npm run forestry:instant-preview
+  instant_preview_command: 'npm run forestry:instant-preview'
 version: 0.42.2
