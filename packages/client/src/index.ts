@@ -87,8 +87,10 @@ export class ForestryClient {
     });
   };
 
-  getContent = async (url: string, { query, path }) => {
-    const data = await this.request(url, query, { variables: { path } });
+  getContent = async ({ query, path }) => {
+    const data = await this.request(this.serverURL, query, {
+      variables: { path },
+    });
 
     const formConfig = {
       id: path,
@@ -103,15 +105,7 @@ export class ForestryClient {
     };
   };
 
-  updateContent = async ({
-    url,
-    path,
-    payload,
-  }: {
-    url: string;
-    path: string;
-    payload: any;
-  }) => {
+  updateContent = async ({ path, payload }: { path: string; payload: any }) => {
     const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
       updateDocument(path: $path, params: $params) {
         __typename
@@ -127,7 +121,7 @@ export class ForestryClient {
     // console.log(JSON.stringify(payload, null, 2));
     // console.log(JSON.stringify(transformedPayload, null, 2));
 
-    await this.request<UpdateVariables>(url, mutation, {
+    await this.request<UpdateVariables>(this.serverURL, mutation, {
       variables: { path: path, params: transformedPayload },
     });
   };
@@ -156,3 +150,5 @@ export class ForestryClient {
     return json.data;
   }
 }
+
+export { useForestryForm } from "./useForestryForm";
