@@ -160,8 +160,8 @@ const printErrors = (errors, object) => {
 };
 
 const keywordError = {
-  required: (error) => {
-    console.log(`${propertyName(error)} ${error.message}`);
+  required: (error, object) => {
+    console.log(`${propertyName(error, object)} ${error.message}`);
   },
   minItems: (error) => {
     console.log(
@@ -248,7 +248,7 @@ const keywordError = {
   },
   enum: (error, object) => {
     console.log(
-      `${propertyName(error)} ${error.message} but got ${dangerText(
+      `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}
         Allowed values: ${successText(error.schema.join(", "))}
@@ -317,8 +317,11 @@ Field with name ${successText(field.name)} of type ${neutralText(
 };
 
 const fieldType = (field) => {
-  if (field.type === "select") {
-    return `${field.type} (${field.config.source.type})`;
+  if (field.type === "select" || field.type === "list") {
+    if (!field.config) {
+      return `${field.type} (text)`;
+    }
+    return `${field.type} (${field.config?.source?.type})`;
   }
 
   return field.type;

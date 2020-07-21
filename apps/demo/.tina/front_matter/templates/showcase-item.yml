@@ -120,8 +120,6 @@ fields:
     description: Create page redirects. Put in relative path
     config:
       use_select: false
-      source:
-        type: datafiles
 pages:
   - hugo/content/showcase/_index.md
   - hugo/content/showcase/borisfx.md
