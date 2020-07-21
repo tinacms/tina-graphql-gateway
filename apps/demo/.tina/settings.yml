@@ -36,7 +36,6 @@ sections:
     label: Docs
     create: all
     match: '**/*'
-    exclude: '{changelog,sunset,faqs}/*'
     templates:
       - doc
   - type: directory

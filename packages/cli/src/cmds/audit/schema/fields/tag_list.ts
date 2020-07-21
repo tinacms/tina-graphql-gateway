@@ -1,29 +1,29 @@
 import { base, baseRequired } from "./common";
 
-export const TextField = {
-  $id: "#textField",
-  label: "Text Field",
+export const TagField = {
+  $id: "#tagField",
+  label: "Tags Field",
   description:
-    "Single line text input. Good for page titles, feature headlines etc.",
+    "A list of strings to make multiple selections displayed inline. Good for page categories, page tags etc.",
   type: "object",
   properties: {
-    ...base,
     type: {
-      const: "text",
+      const: "tag_list",
     },
+    ...base,
     default: {
-      type: "string",
+      type: "array",
+      items: {
+        type: "string",
+      },
     },
     config: {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        min: { type: "number" },
-        max: { type: "number" },
       },
       additionalProperties: false,
     },
   },
-  additionalProperties: false,
   required: baseRequired,
 };
