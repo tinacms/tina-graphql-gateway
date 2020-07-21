@@ -55,7 +55,7 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
   async onSubmit(form: FormShape, cms: CMS) {
     const fileRelativePath = await this.filename(form);
 
-    onAddSubmit({
+    await onAddSubmit({
       url: URL,
       path: fileRelativePath,
       payload: {
@@ -64,5 +64,7 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
         _template: "block-page",
       },
     });
+
+    window.location.href = fileRelativePath.split("pages/")[1].split(".")[0];
   }
 }
