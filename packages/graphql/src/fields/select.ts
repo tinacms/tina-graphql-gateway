@@ -57,14 +57,14 @@ export const select = ({
     const filepath = field.config?.source.file;
     if (!filepath) {
       throw new GraphQLError(
-        `No path specificied for list field ${field.name}
+        `No path specified for list field ${field.name}
           `
       );
     }
     const keyPath = field.config?.source.path;
     if (!keyPath) {
       throw new GraphQLError(
-        `No path specificied key for list field document ${field.name}
+        `No path specified key for list field document ${field.name}
           `
       );
     }
@@ -95,6 +95,29 @@ export const select = ({
       },
     };
   }
+
+  const getSectionSelectFieldResolver = async (
+    val: { [key: string]: unknown },
+    ctx: FieldContextType
+  ) => {
+    const path = val[field.name];
+    if (isString(path)) {
+      const res = await ctx.dataSource.getData<DocumentType>(
+        config.siteLookup,
+        path
+      );
+      const activeTemplate = getFmtForDocument(path, fieldData.templatePages);
+      return {
+        ...res,
+        path: val[field.name],
+        template: activeTemplate?.name,
+      };
+    }
+
+    throw new GraphQLError(
+      `Expected index lookup to return a string for ${field.name}`
+    );
+  };
 
   const setSectionSelectFieldResolver = async (field: SectionSelect) => {
     if (field?.config?.source?.type === "pages") {
@@ -138,28 +161,7 @@ export const select = ({
           val: { [key: string]: unknown },
           _args: { [argName: string]: any },
           ctx: FieldContextType
-        ) => {
-          const path = val[field.name];
-          if (isString(path)) {
-            const res = await ctx.dataSource.getData<DocumentType>(
-              config.siteLookup,
-              path
-            );
-            const activeTemplate = getFmtForDocument(
-              path,
-              fieldData.templatePages
-            );
-            return {
-              ...res,
-              path: val[field.name],
-              template: activeTemplate?.name,
-            };
-          }
-
-          throw new GraphQLError(
-            `Expected index lookup to return a string for ${field.name}`
-          );
-        },
+        ) => getSectionSelectFieldResolver(val, ctx),
       },
       setter: {
         type: selectInput,
