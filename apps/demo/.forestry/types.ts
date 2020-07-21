@@ -624,6 +624,7 @@ export type MutationUpdateDocumentArgs = {
 
 export type MutationAddDocumentArgs = {
   path: Scalars['String'];
+  template: Scalars['String'];
   params?: Maybe<DocumentInput>;
 };
 

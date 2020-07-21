@@ -1549,6 +1549,7 @@ export const buildSchema = async (
         type: documentType,
         args: {
           path: { type: GraphQLNonNull(GraphQLString) },
+          template: { type: GraphQLNonNull(GraphQLString) },
           params: documentInputType,
         },
       },
@@ -1611,6 +1612,7 @@ export const buildSchema = async (
 
   const addDocumentMutation = async (payload: {
     path: string;
+    template: string;
     params: any;
   }) => {
     const { content = "", data } = payload.params[
@@ -1618,11 +1620,12 @@ export const buildSchema = async (
       Object.keys(payload.params)[0]
     ];
 
-    await dataSource.writeData(
+    await dataSource.createContent(
       config.siteLookup,
       payload.path,
       content,
-      transform(data)
+      transform(data),
+      payload.template
     );
   };
 
