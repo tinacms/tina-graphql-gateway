@@ -18,17 +18,17 @@ export const ForestrySettingsSchema = {
     admin_path: {
       title: "Admin Path",
       description: "The folder where you store the Forestry admin file.",
-      type: ["string", "null"],
+      type: "string",
     },
     webhook_url: {
       title: "Webhook URL",
       description:
         "Forestry can send events to a webhook (ie. post_import, post_publish)",
-      type: ["string", "null"],
+      type: "string",
     },
     version: {
       title: "Schema version",
-      type: ["string", "null"],
+      type: "string",
     },
     upload_dir: {
       type: "string",
@@ -46,7 +46,7 @@ export const ForestrySettingsSchema = {
       description: "",
     },
     use_front_matter_path: {
-      type: ["null", "boolean"],
+      type: "boolean",
       title: "Use Front Matter Path",
       description: "Override the public path for front matter fields.",
     },
@@ -95,51 +95,45 @@ export const ForestrySettingsSchema = {
     },
     sections: {
       type: "array",
-      title: "Webhook URL",
-      description:
-        "Forestry can send events to a webhook (ie. post_import, post_publish)",
+      title: "Sidebar",
+      description: "Add sections to the sidebar to expose content to editors",
       items: {
         type: "object",
-        title: "Webhook URL",
-        description:
-          "Forestry can send events to a webhook (ie. post_import, post_publish)",
         properties: {
           type: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "Type",
+            description: "",
             enum: ["directory", "heading", "document"],
           },
           path: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "Path",
           },
           label: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "Label",
+            description: "",
           },
           create: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "Create",
+            description: "",
           },
           match: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "Match",
+            description: "",
+          },
+          exclude: {
+            type: "string",
+            title: "",
+            description: "",
           },
           new_doc_ext: {
             type: "string",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
+            title: "New doc",
+            description: "",
             enum: ["md", "html"],
           },
           templates: {
@@ -155,9 +149,11 @@ export const ForestrySettingsSchema = {
             },
           },
         },
+        required: ["type", "label"],
+        additionalProperties: false,
       },
     },
   },
-  required: [],
+  required: ["new_page_extension", "sections"],
   additionalProperties: false,
 };

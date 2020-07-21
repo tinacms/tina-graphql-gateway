@@ -20,25 +20,16 @@
     "admin_path": {
       "title": "Admin Path",
       "description": "The folder where you store the Forestry admin file.",
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "webhook_url": {
       "title": "Webhook URL",
       "description": "Forestry can send events to a webhook (ie. post_import, post_publish)",
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "version": {
       "title": "Schema version",
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "upload_dir": {
       "type": "string",
@@ -56,10 +47,7 @@
       "description": ""
     },
     "use_front_matter_path": {
-      "type": [
-        "null",
-        "boolean"
-      ],
+      "type": "boolean",
       "title": "Use Front Matter Path",
       "description": "Override the public path for front matter fields."
     },
@@ -158,10 +146,18 @@
               "description": "Forestry can send events to a webhook (ie. post_import, post_publish)"
             }
           }
-        }
+        },
+        "required": [
+          "type",
+          "label"
+        ],
+        "additionalProperties": false
       }
     }
   },
-  "required": [],
+  "required": [
+    "new_page_extension",
+    "sections"
+  ],
   "additionalProperties": false
 }

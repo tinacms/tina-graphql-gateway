@@ -1,25 +1,26 @@
 import { base, baseRequired } from "./common";
 
-export const TextField = {
-  $id: "#textField",
-  label: "Text Field",
+export const ImageField = {
+  $id: "#imageField",
+  label: "Image Field",
   description:
-    "Single line text input. Good for page titles, feature headlines etc.",
+    "A single file input that adds assets to the Media Library. Good for a featured image or a profile picture. ",
   type: "object",
   properties: {
-    ...base,
     type: {
-      const: "text",
+      const: "file",
     },
+    ...base,
     default: {
       type: "string",
+      minLength: 1,
+      removeIfFails: true,
     },
     config: {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        min: { type: "number" },
-        max: { type: "number" },
+        maxSize: { type: "number" },
       },
       additionalProperties: false,
     },
