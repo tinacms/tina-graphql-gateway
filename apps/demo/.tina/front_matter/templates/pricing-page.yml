@@ -15,16 +15,6 @@ fields:
   - type: list
     name: aliases
     label: aliases
-  - name: weight
-    type: number
-    label: weight
-    description: ""
-    default: 0
-    config:
-      required: true
-      min: null
-      max: null
-      step: null
   - type: datetime
     name: date
     label: date

@@ -23,8 +23,8 @@ fields:
     label: Publish Date
     description: Date this page should be made public
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mm A
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mm A'
       required: true
     default: now
   - type: datetime
@@ -32,9 +32,9 @@ fields:
     label: Expiry Date
     description: Date this page should be unpublished
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mmA
-    default: 2030-01-01T04:00:00.000+00:00
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mmA'
+    default: '2030-01-01T04:00:00.000+00:00'
   - type: textarea
     name: description
     label: Description
@@ -126,7 +126,7 @@ fields:
   - type: number
     name: weight
     label: Weight
-    description: Used to handle sorting order, menu order, etc.
+    description: 'Used to handle sorting order, menu order, etc.'
   - type: list
     name: aliases
     label: Aliases
@@ -147,11 +147,14 @@ pages:
   - hugo/content/blog/Using-JSON-Configuration-With-VuePress.md
   - hugo/content/blog/_index.md
   - hugo/content/blog/a-hugo-update-everyone-should-be-talking-about.md
-  - hugo/content/blog/add-functionality-to-your-hugo-site-with-theme-components.md
-  - hugo/content/blog/adding-dns-and-edge-functions-to-our-cloudformation-stack.md
+  - >-
+    hugo/content/blog/add-functionality-to-your-hugo-site-with-theme-components.md
+  - >-
+    hugo/content/blog/adding-dns-and-edge-functions-to-our-cloudformation-stack.md
   - hugo/content/blog/an-introduction-to-theming-in-vuepress.md
   - hugo/content/blog/announcing-tina-an-open-source-site-editor.md
-  - hugo/content/blog/automate-your-static-hosting-environment-with-aws-cloudformation.md
+  - >-
+    hugo/content/blog/automate-your-static-hosting-environment-with-aws-cloudformation.md
   - hugo/content/blog/better-content-management-for-gatsby.md
   - hugo/content/blog/big-improvements-to-front-matter-templates.md
   - hugo/content/blog/bigger-better-editor.md
@@ -187,7 +190,8 @@ pages:
   - hugo/content/blog/hugo-support-sorting-for-pages-and-more.md
   - hugo/content/blog/hugo-vs-jekyll-benchmark.md
   - hugo/content/blog/improved-collaboration-and-more.md
-  - hugo/content/blog/instant-production-ready-scaffolding-with-create-static-site.md
+  - >-
+    hugo/content/blog/instant-production-ready-scaffolding-with-create-static-site.md
   - hugo/content/blog/introducing-forestry-config-files.md
   - hugo/content/blog/introducing-media-management.md
   - hugo/content/blog/introducing-teams.md

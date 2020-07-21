@@ -5,14 +5,13 @@ fields:
     type: select
     config:
       required: false
-      options: []
       source:
         type: pages
         section: posts
     label: Post
   - name: description
     type: textarea
-    default: ""
+    default: ''
     config:
       required: false
       wysiwyg: false

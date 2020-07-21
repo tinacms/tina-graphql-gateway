@@ -57,18 +57,18 @@ fields:
     label: Publish Date
     description: Date this page should be made public
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mmA
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mmA'
       required: true
-    default: 2017-12-07T04:00:00.000+00:00
+    default: '2017-12-07T04:00:00.000+00:00'
   - type: datetime
     name: expirydate
     label: Expiry Date
     description: Date this page should be unpublished
     config:
-      date_format: MMMM DD, YYYY
-      time_format: h:mmA
-    default: 2030-01-01T04:00:00.000+00:00
+      date_format: 'MMMM DD, YYYY'
+      time_format: 'h:mmA'
+    default: '2030-01-01T04:00:00.000+00:00'
   - type: field_group
     label: Footer Call To Action
     name: cta
@@ -109,7 +109,7 @@ fields:
   - type: number
     name: weight
     label: Weight
-    description: Used to handle sorting order, menu order, etc.
+    description: 'Used to handle sorting order, menu order, etc.'
   - type: list
     name: aliases
     label: Aliases
@@ -121,7 +121,7 @@ fields:
   - type: text
     name: type
     label: Type
-    description: Sets the Hugo's Content Type (https://gohugo.io/content-management/types/)
+    description: 'Sets the Hugo''s Content Type (https://gohugo.io/content-management/types/)'
     default: pricing
     hidden: true
   - type: field_group_list

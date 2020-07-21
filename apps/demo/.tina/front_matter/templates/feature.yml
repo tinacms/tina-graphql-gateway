@@ -40,5 +40,6 @@ fields:
         - section-roots
         - section-sync
     label: Class
-    description: section-roots is dark bg, section-sync is light bg. We could
-      improve this later with more generic class names.
+    description: >-
+      section-roots is dark bg, section-sync is light bg. We could improve this
+      later with more generic class names.
