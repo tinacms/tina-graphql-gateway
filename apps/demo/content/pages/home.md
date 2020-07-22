@@ -18,15 +18,6 @@ blocks:
   - template: action-video
     url: 'https://youtu.be/347AVU6TccQ'
   style: Sidecar
-- template: section-index
-  body: |-
-    ## From the Blog
-
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
-
-    [Show more](http://localhost:3000/)
-  limit: 3
-  section: pages
 - template: author-list
   authors:
   - content/authors/terrence.md
@@ -51,6 +42,15 @@ blocks:
     - 'Over 40 specialized guides around strenth drills, nutrition and mindfulness tips'
     - Advanced guides for elite-level goals
     category: Pro
+- template: section-index
+  body: |-
+    ## From the Blog
+
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
+
+    [Show more](http://localhost:3000/)
+  limit: 3
+  section: pages
 - template: sidecar
   text: |-
     Founded by Terrence Mahon and Jennifer Rhines, and spurred on by our team of professional runners, Golden Coast Track Club is about teaching athletes the fundamentals of sport and life. As the name suggests we are located on the California Coast in San Diego, but no one is limited from joining our athletic community.
