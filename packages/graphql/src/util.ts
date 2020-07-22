@@ -15,7 +15,6 @@ import {
   TemplatePage,
   Templates,
   TemplatesData,
-  generatedFieldsType,
 } from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
@@ -168,6 +167,7 @@ export const getSectionFmtTypes = (
     .map((sectionTemplate) => templateObjectTypes[sectionTemplate])
     .filter(isNotNull);
 };
+
 export const getSectionFmtTypes2 = (
   section: string,
   sectionFmts: {

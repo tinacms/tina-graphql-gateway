@@ -34,7 +34,7 @@ import {
 
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
-import { generateFields } from "./fieldGenerator";
+import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
 require("dotenv").config();
@@ -110,9 +110,13 @@ export const buildSchema = async (
   config: configType,
   dataSource: DataSource
 ) => {
+  // get the settings file
   const settings = await dataSource.getSettings(config.siteLookup);
+
+  // get a list of all front matter templates
   const fmtList = await dataSource.getTemplateList(config.siteLookup);
 
+  // instantiating empty objects
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
   } = {};
@@ -127,6 +131,7 @@ export const buildSchema = async (
     templateObjectTypes[shortFMTName(path)] = null;
   });
 
+  // build a list of all FMTs and the pages that are contained within the FMT.
   const templatePages = await Promise.all(
     fmtList.map(async (fmt) => {
       return {
@@ -137,6 +142,7 @@ export const buildSchema = async (
     })
   );
 
+  // build a list of all directory sections from the settings file, associate each section with it's FMTs
   const sectionFmts = settings.data.sections
     .filter(isDirectorySection)
     .map(({ label, templates }) => {
@@ -157,9 +163,11 @@ export const buildSchema = async (
 
   await Promise.all(
     fmtList.map(async (path) => {
+      // get the FMT, contains all the metadata and the pages that use the FMT
       const fmt = await dataSource.getTemplate(config.siteLookup, path);
 
-      const { getters, setters, mutators } = generateFields({
+      // get all of the accessors and mutators for all of  the fields in the FMT
+      const { getters, setters, mutators } = generateFieldAccessors({
         fmt: friendlyName(path),
         fields: fmt.data.fields,
         config,
