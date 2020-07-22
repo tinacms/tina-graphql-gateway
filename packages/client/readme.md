@@ -114,7 +114,7 @@ To verify that everything is up an running, you can visit `http://localhost:4001
 
 Now that we have a working GraphQL server with our local data, let's use it within our site
 
-### Next.JS
+### Using the data within our Next.JS site
 
 This section assumes you have a working Next.JS site.
 
@@ -166,5 +166,6 @@ And that's it! Try making some changes and saving.
 
 Next steps:
 
+- Make changes to our data-model, and verify our templates with `$ forestry schema:audit`
 - Setup build server to run in production
 - Configure your site to use the `Tina Teams` API in your hosted Cloud Editing Environment
