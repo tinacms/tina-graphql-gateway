@@ -146,7 +146,9 @@ By registering the ForestryClient globally, we can now use it within our pages t
 ```tsx
 // content/posts/welcome.md
 
+import { useForestryForm } from "@forestryio/client";
 import config from "../.forestry/config";
+import { usePlugin } from "tinacms";
 
 const Home = (props) => {
   const [formData, form] = useForestryForm(props.response, config.serverURL);
