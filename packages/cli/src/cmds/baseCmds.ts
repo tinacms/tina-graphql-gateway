@@ -1,10 +1,10 @@
 import { Command } from "../command";
 import { chain } from "../middleware";
-import { genTypes } from "./type-gen";
+import { genTypes, attachSchema, genQueries } from "./query-gen";
 import { audit } from "./audit";
 import { startServer } from "./start-server";
 
-export const CMD_GEN_TYPES = "types:gen";
+export const CMD_GEN_QUERY = "schema:gen-query";
 export const CMD_AUDIT = "schema:audit";
 export const CMD_START_SERVER = "server:start";
 
@@ -16,12 +16,17 @@ const auditPathOption = {
   name: "--path <forestryPath>",
   description: "Specify a relative path to the .forestry folder (eg. my-site)",
 };
+const typescriptOption = {
+  name: "--typescript",
+  description: "Generate types for the schema",
+};
 
 export const baseCmds: Command[] = [
   {
-    command: CMD_GEN_TYPES,
+    command: CMD_GEN_QUERY,
     description: "Generate Typescript types",
-    action: (options) => chain([genTypes], options),
+    options: [typescriptOption],
+    action: (options) => chain([attachSchema, genQueries, genTypes], options),
   },
   {
     command: CMD_AUDIT,
