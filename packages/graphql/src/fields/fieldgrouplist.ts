@@ -1,3 +1,4 @@
+import { FieldData, configType } from "./types";
 import { FieldGroupListField, FieldType } from "../datasources/datasource";
 import {
   GraphQLError,
@@ -8,7 +9,6 @@ import {
   GraphQLUnionType,
 } from "graphql";
 
-import { configType } from "./types";
 import { friendlyName } from "../util";
 import { generateFieldAccessors } from "../fieldGenerator";
 
