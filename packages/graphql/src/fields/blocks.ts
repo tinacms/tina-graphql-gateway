@@ -1,3 +1,4 @@
+import { FieldContextType, FieldData, configType } from "./types";
 import {
   GraphQLInputObjectType,
   GraphQLList,
@@ -12,7 +13,6 @@ import {
 } from "../util";
 
 import { BlocksField } from "../datasources/datasource";
-import { FieldContextType } from "./types";
 import { baseInputFields } from ".";
 
 export const blocks = ({
@@ -23,15 +23,8 @@ export const blocks = ({
 }: {
   fmt: string;
   field: BlocksField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: configType;
+  fieldData: FieldData;
 }) => {
   return {
     getter: {

@@ -1,3 +1,4 @@
+import { FieldData, configType } from "./types";
 import { FieldGroupField, FieldType } from "../datasources/datasource";
 import {
   GraphQLError,
@@ -19,15 +20,8 @@ export const field_group = ({
 }: {
   fmt: string;
   field: FieldGroupField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: configType;
+  fieldData: FieldData;
 }) => {
   const { getters, setters, mutators } = generateFieldAccessors({
     fmt: `${fmt}_${field.name}`,

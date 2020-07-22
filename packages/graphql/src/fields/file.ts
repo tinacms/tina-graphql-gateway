@@ -1,6 +1,7 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 
 import { FileField } from "../datasources/datasource";
+import { configType } from "./types";
 import { friendlyName } from "../util";
 import { imageInput } from "./inputFields";
 
@@ -11,7 +12,7 @@ export const file = ({
 }: {
   fmt: string;
   field: FileField;
-  config: { rootPath: string; siteLookup: string };
+  config: configType;
 }) => {
   return {
     getter: {
