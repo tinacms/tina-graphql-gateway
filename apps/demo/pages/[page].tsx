@@ -3,8 +3,9 @@ import { useForm, usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
 import { DocumentUnion, BlocksUnion, DocumentInput } from "../.forestry/types";
 import config from "../.forestry/config";
-import query from "../.forestry/query";
 import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
+import query from "../.forestry/query";
+
 const fg = require("fast-glob");
 
 const URL = config.serverURL;
@@ -27,9 +28,8 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
-  const client = new ForestryClient({ serverURL: URL });
+  const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent<DocumentUnion>({
-    query,
     path,
   });
 
