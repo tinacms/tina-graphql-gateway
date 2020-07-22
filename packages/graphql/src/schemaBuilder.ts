@@ -318,10 +318,18 @@ export const buildSchema = async (
   const rootMutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
-      document: {
+      updateDocument: {
         type: documentType,
         args: {
           path: { type: GraphQLNonNull(GraphQLString) },
+          params: documentInputType,
+        },
+      },
+      addDocument: {
+        type: documentType,
+        args: {
+          path: { type: GraphQLNonNull(GraphQLString) },
+          template: { type: GraphQLNonNull(GraphQLString) },
           params: documentInputType,
         },
       },
@@ -365,7 +373,10 @@ export const buildSchema = async (
 
   // Mutations are transformed from a payload that is type-safe to what we eventually want to store
   // as a document - see https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md
-  const documentMutation = async (payload: { path: string; params: any }) => {
+  const updateDocumentMutation = async (payload: {
+    path: string;
+    params: any;
+  }) => {
     const { content = "", data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
@@ -379,5 +390,24 @@ export const buildSchema = async (
     );
   };
 
-  return { schema, documentMutation };
+  const addDocumentMutation = async (payload: {
+    path: string;
+    template: string;
+    params: any;
+  }) => {
+    const { content = "", data } = payload.params[
+      // Just grabbing the first item since we're following the Tagged Union pattern
+      Object.keys(payload.params)[0]
+    ];
+
+    await dataSource.createContent(
+      config.siteLookup,
+      payload.path,
+      content,
+      transform(data),
+      payload.template
+    );
+  };
+
+  return { schema, updateDocumentMutation, addDocumentMutation };
 };
