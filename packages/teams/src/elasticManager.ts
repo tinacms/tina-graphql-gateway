@@ -117,6 +117,17 @@ export class ElasticManager implements DataSource {
 
     return this.getData<T>(siteLookup, filepath);
   };
+
+  createContent = async <ContentType>(
+    _siteLookup: string,
+    filepath: string,
+    content: string,
+    data: Partial<ContentType>,
+    templateName: string
+  ) => {
+    throw new Error("Not implemented");
+  };
+
   getTemplateList = async (siteLookup: string): Promise<string[]> => {
     const result = await this.elasticClient.search({
       index: "project-templates",
