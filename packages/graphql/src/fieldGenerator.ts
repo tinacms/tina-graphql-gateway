@@ -7,9 +7,11 @@ import {
   GraphQLType,
 } from "graphql";
 import {
+  blocks,
   boolean,
   datetime,
   field_group,
+  field_group_list,
   file,
   image_gallery,
   list,
@@ -21,8 +23,6 @@ import {
 } from "./fields";
 
 import { FieldType } from "./datasources/datasource";
-import { blocks } from "./fields/blocks";
-import { field_group_list } from "./fields/fieldgrouplist";
 
 export type generatedFieldsType = {
   getters: {
