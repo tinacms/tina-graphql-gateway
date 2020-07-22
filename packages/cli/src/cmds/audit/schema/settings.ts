@@ -2,6 +2,8 @@ export const ForestrySettingsSchema = {
   title: "Forestry Settings Schema",
   type: "object",
   description: "Todo item sent by the client",
+  required: ["new_page_extension", "upload_dir", "sections"],
+  additionalProperties: false,
   properties: {
     new_page_extension: {
       title: "New file format",
@@ -9,6 +11,10 @@ export const ForestrySettingsSchema = {
         "New files created in Forestry can be Markdown or HTM\n\nFor example: HERE WE GO",
       type: "string",
       enum: ["md", "html"],
+    },
+    version: {
+      title: "Schema version",
+      type: "string",
     },
     auto_deploy: {
       title: "",
@@ -24,10 +30,6 @@ export const ForestrySettingsSchema = {
       title: "Webhook URL",
       description:
         "Forestry can send events to a webhook (ie. post_import, post_publish)",
-      type: "string",
-    },
-    version: {
-      title: "Schema version",
       type: "string",
     },
     upload_dir: {
@@ -61,6 +63,7 @@ export const ForestrySettingsSchema = {
       title: "Webhook URL",
       description:
         "Forestry can send events to a webhook (ie. post_import, post_publish)",
+      additionalProperties: false,
       properties: {
         install_dependencies_command: {
           type: "string",
@@ -72,6 +75,20 @@ export const ForestrySettingsSchema = {
           type: "string",
           title: "Preview Docker Image",
           description: "Path to a publicly available image on Docker hub",
+        },
+        preview_env: {
+          type: "array",
+          title: "Environment Variables",
+          description: "Ex. HUGO_ENV=staging",
+          items: {
+            type: "string",
+          },
+        },
+        preview_output_directory: {
+          type: "string",
+          title: "Output Directory",
+          description:
+            "The directory, relative to the root of your project, where your site is output to when previewing.",
         },
         mount_path: {
           type: "string",
@@ -102,58 +119,111 @@ export const ForestrySettingsSchema = {
         properties: {
           type: {
             type: "string",
-            title: "Type",
-            description: "",
             enum: ["directory", "heading", "document"],
           },
-          path: {
-            type: "string",
-            title: "Path",
-          },
-          label: {
-            type: "string",
-            title: "Label",
-            description: "",
-          },
-          create: {
-            type: "string",
-            title: "Create",
-            description: "",
-          },
-          match: {
-            type: "string",
-            title: "Match",
-            description: "",
-          },
-          exclude: {
-            type: "string",
-            title: "",
-            description: "",
-          },
-          new_doc_ext: {
-            type: "string",
-            title: "New doc",
-            description: "",
-            enum: ["md", "html"],
-          },
-          templates: {
-            type: "array",
-            title: "Webhook URL",
-            description:
-              "Forestry can send events to a webhook (ie. post_import, post_publish)",
-            items: {
-              type: "string",
-              title: "Webhook URL",
-              description:
-                "Forestry can send events to a webhook (ie. post_import, post_publish)",
+        },
+        allOf: [
+          {
+            if: {
+              properties: {
+                type: { const: "heading" },
+              },
+            },
+            then: {
+              properties: {
+                type: {
+                  const: "heading",
+                },
+                label: {
+                  type: "string",
+                },
+              },
+              required: ["type", "label"],
+              additionalProperties: false,
             },
           },
-        },
-        required: ["type", "label"],
-        additionalProperties: false,
+          {
+            if: {
+              properties: {
+                type: { const: "document" },
+              },
+            },
+            then: {
+              properties: {
+                type: {
+                  const: "document",
+                },
+                label: {
+                  type: "string",
+                },
+                path: {
+                  type: "string",
+                },
+                read_only: {
+                  type: "boolean",
+                },
+              },
+              required: ["type", "label", "path"],
+              additionalProperties: false,
+            },
+          },
+          {
+            if: {
+              properties: {
+                type: { const: "directory" },
+              },
+            },
+            then: {
+              properties: {
+                type: {
+                  const: "directory",
+                },
+                label: {
+                  type: "string",
+                },
+                create: {
+                  type: "string",
+                  title: "Create",
+                  description: "",
+                },
+                path: {
+                  type: "string",
+                },
+                match: {
+                  type: "string",
+                  title: "Match",
+                  description: "",
+                },
+                exclude: {
+                  type: "string",
+                  title: "",
+                  description: "",
+                },
+                new_page_extension: {
+                  type: "string",
+                  title: "New doc",
+                  description: "",
+                  enum: ["md", "html"],
+                },
+                templates: {
+                  type: "array",
+                  title: "Webhook URL",
+                  description:
+                    "Forestry can send events to a webhook (ie. post_import, post_publish)",
+                  items: {
+                    type: "string",
+                    title: "Webhook URL",
+                    description:
+                      "Forestry can send events to a webhook (ie. post_import, post_publish)",
+                  },
+                },
+              },
+              required: ["type", "path", "label", "create", "match"],
+              additionalProperties: false,
+            },
+          },
+        ],
       },
     },
   },
-  required: ["new_page_extension", "sections"],
-  additionalProperties: false,
 };

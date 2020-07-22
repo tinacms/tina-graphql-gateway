@@ -13,8 +13,7 @@ export const IncludeField = {
     template: {
       type: "string",
       label: "Template",
-      description:
-        "Include fields of another Front Matter Template into the current one. Good for commonly-reused fields such as SEO information.",
+      description: "The template you'd like to include",
     },
     ...base,
     config: {
