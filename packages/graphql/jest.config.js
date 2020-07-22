@@ -1,8 +1,4 @@
-module.exports = {
-  roots: ["<rootDir>"],
-  transform: {
-    "^.+\\.tsx?$": "ts-jest",
-  },
-  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-};
+const createJestConfig = require("./create.jest.config.js");
+const pack = require("./package");
+
+module.exports = createJestConfig(pack);
