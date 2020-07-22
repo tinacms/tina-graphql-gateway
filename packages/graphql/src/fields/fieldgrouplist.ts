@@ -8,6 +8,7 @@ import {
   GraphQLUnionType,
 } from "graphql";
 
+import { configType } from "./types";
 import { friendlyName } from "../util";
 import { generateFieldAccessors } from "../fieldGenerator";
 
@@ -19,15 +20,8 @@ export const field_group_list = ({
 }: {
   fmt: string;
   field: FieldGroupListField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: configType;
+  fieldData: FieldData;
 }) => {
   const { getters, setters, mutators } = generateFieldAccessors({
     fmt: `${fmt}_${field.name}`,

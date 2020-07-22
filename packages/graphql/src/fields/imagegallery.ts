@@ -6,12 +6,13 @@ import {
 } from "graphql";
 
 import { GalleryField } from "../datasources/datasource";
+import { configType } from "./types";
 import { friendlyName } from "../util";
 import { imageInput } from "./inputFields";
 
 export const generateImageGalleryObjectType = (
   name: string,
-  config: { rootPath: string; siteLookup: string }
+  config: configType
 ): GraphQLObjectType => {
   return new GraphQLObjectType({
     name,

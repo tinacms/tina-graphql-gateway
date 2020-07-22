@@ -1,7 +1,9 @@
 import {
   DocumentType,
   FieldContextType,
+  FieldData,
   FieldSourceType,
+  configType,
 } from "../fields/types";
 import {
   GraphQLError,
@@ -32,15 +34,8 @@ export const list = ({
 }: {
   fmt: string;
   field: ListField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: configType;
+  fieldData: FieldData;
 }) => {
   if (isDocumentListField(field)) {
     return {
