@@ -1,4 +1,5 @@
-import { base, baseRequired } from "./common";
+import { base, baseRequired } from "../common";
+
 export const BlocksField = {
   $id: "#blocksField",
   label: "Blocks",
@@ -26,10 +27,7 @@ export const BlocksField = {
       removeIfFails: true,
       additionalProperties: false,
     },
-    fields: {
-      $ref: "#/definitions/allFields",
-    },
   },
   additionalProperties: false,
-  required: baseRequired,
+  required: [...baseRequired, "template_types"],
 };
