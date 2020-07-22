@@ -66,7 +66,7 @@ const setDocumentSelectFieldResolver = async (
   };
 };
 
-const getSectionSelectFieldResolver = async (
+export const getSectionSelectFieldResolver = async (
   field: SectionSelect,
   val: { [key: string]: unknown },
   ctx: FieldContextType,
@@ -74,6 +74,7 @@ const getSectionSelectFieldResolver = async (
   config: configType
 ) => {
   const path = val[field.name];
+
   if (isString(path)) {
     const res = await ctx.dataSource.getData<DocumentType>(
       config.siteLookup,
@@ -92,7 +93,7 @@ const getSectionSelectFieldResolver = async (
   );
 };
 
-const setSectionSelectFieldResolver = async (
+export const setSectionSelectFieldResolver = async (
   field: SectionSelect,
   fieldData: FieldData
 ) => {

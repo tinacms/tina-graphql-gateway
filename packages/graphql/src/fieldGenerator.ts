@@ -1,4 +1,4 @@
-import { FieldContextType, FieldSourceType } from "./fields/types";
+import { FieldContextType, FieldData, FieldSourceType } from "./fields/types";
 import {
   GraphQLError,
   GraphQLFieldConfig,
@@ -26,24 +26,24 @@ import { field_group_list } from "./fields/fieldgrouplist";
 
 export type generatedFieldsType = {
   getters: {
-    [key: string]: fieldGetter;
+    [key: string]: FieldGetter;
   };
   setters: {
-    [key: string]: fieldSetter;
+    [key: string]: FieldSetter;
   };
   mutators: {
     [key: string]: { type: GraphQLInputType };
   };
 };
 
-type fieldGetter = GraphQLFieldConfig<
+type FieldGetter = GraphQLFieldConfig<
   FieldSourceType,
   FieldContextType,
   {
     [argName: string]: GraphQLType;
   }
 >;
-export type fieldSetter = {
+export type FieldSetter = {
   // FIXME: any should be replaced with the resolver function payload type
   type: GraphQLObjectType<any>;
   resolve: (
@@ -55,13 +55,13 @@ export type fieldSetter = {
     info: unknown
   ) => unknown;
 };
-export type fieldTypeType = {
-  getter: fieldGetter;
-  setter: fieldSetter;
+export type FieldAccessorTypes = {
+  getter: FieldGetter;
+  setter: FieldSetter;
   mutator: { type: GraphQLInputType };
 };
 
-export const generateFields = ({
+export const generateFieldAccessors = ({
   fmt,
   fields,
   config,
@@ -70,14 +70,7 @@ export const generateFields = ({
   fmt: string;
   fields: FieldType[];
   config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  fieldData: FieldData;
 }): generatedFieldsType => {
   const accumulator: generatedFieldsType = {
     getters: {},
@@ -92,6 +85,7 @@ export const generateFields = ({
       config,
       fieldData,
     });
+
     accumulator.getters[field.name] = getter;
     accumulator.setters[field.name] = setter;
     accumulator.mutators[field.name] = mutator;
@@ -113,15 +107,8 @@ export const getFieldType = ({
   fmt: string;
   field: FieldType;
   config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
-}): fieldTypeType => {
+  fieldData: FieldData;
+}): FieldAccessorTypes => {
   switch (field.type) {
     case "text":
       return text({ fmt, field });
