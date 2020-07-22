@@ -58,15 +58,18 @@ interface AddVariables {
 
 interface ForestryClientOptions {
   serverURL: string;
+  query: string;
 }
 
 export class ForestryClient {
   serverURL: string;
-  constructor({ serverURL }: ForestryClientOptions) {
+  query: string;
+  constructor({ serverURL, query }: ForestryClientOptions) {
     this.serverURL = serverURL;
+    this.query = query;
   }
 
-  addContent = async ({ url, path, template, payload }: AddProps) => {
+  addContent = async ({ path, template, payload }: AddProps) => {
     const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
       addDocument(path: $path, template: $template, params: $params) {
         __typename
@@ -78,7 +81,7 @@ export class ForestryClient {
       data: payload,
     });
 
-    await this.request<AddVariables>(url, mutation, {
+    await this.request<AddVariables>(mutation, {
       variables: {
         path: path,
         template: template + ".yml",
@@ -87,8 +90,8 @@ export class ForestryClient {
     });
   };
 
-  getContent = async ({ query, path }) => {
-    const data = await this.request(this.serverURL, query, {
+  getContent = async ({ path }) => {
+    const data = await this.request(this.query, {
       variables: { path },
     });
 
@@ -121,17 +124,16 @@ export class ForestryClient {
     // console.log(JSON.stringify(payload, null, 2));
     // console.log(JSON.stringify(transformedPayload, null, 2));
 
-    await this.request<UpdateVariables>(this.serverURL, mutation, {
+    await this.request<UpdateVariables>(mutation, {
       variables: { path: path, params: transformedPayload },
     });
   };
 
   private async request<VariableType>(
-    url: string,
     query: string,
     { variables }: { variables: VariableType }
   ) {
-    const res = await fetch(url, {
+    const res = await fetch(this.serverURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
