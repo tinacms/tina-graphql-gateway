@@ -1,9 +1,9 @@
-import Ajv from "ajv";
 import _ from "lodash";
 import * as jsyaml from "js-yaml";
 import fs from "fs-extra";
 import path from "path";
 import get from "lodash.get";
+import { validator } from "./validator";
 import { neutralText, successText, dangerText } from "../../utils/theme";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
@@ -27,35 +27,7 @@ export async function audit(
   const configFolder = migrate || forestry ? ".forestry" : ".tina";
   const shouldFix = migrate || fix;
 
-  if (shouldFix) {
-    var ajv = new Ajv({
-      allErrors: true,
-      verbose: true,
-      removeAdditional: true,
-      coerceTypes: "array",
-      strictNumbers: true,
-      $data: true,
-    }).addKeyword("removeIfFails", {
-      // Used for remove empty string datetime since it would be invalid
-      // https://github.com/ajv-validator/ajv/issues/300#issuecomment-247667922
-      inline(it) {
-        return `if (errors) {
-            vErrors.length = errs_${it.dataLevel || ""};
-            errors = errs_${it.dataLevel || ""};
-            delete data${it.dataLevel - 1 || ""}[${
-          it.dataPathArr[it.dataLevel]
-        }];
-          }`;
-      },
-      statements: true,
-    });
-  } else {
-    var ajv = new Ajv({
-      allErrors: true,
-      verbose: true,
-      $data: true,
-    });
-  }
+  const ajv = validator(shouldFix);
 
   const fmtDirPath = path.resolve(
     workingDirReal + `/${configFolder}/front_matter/templates`
@@ -67,15 +39,30 @@ export async function audit(
       Path: ${fmtDirPath}`;
     }
   }
+  const fmtFullPath = workingDirReal + "/" + `${configFolder}/settings.yml`;
+  const fmtString = await fs.readFileSync(fmtFullPath).toString();
+  if (typeof fmtString !== "string") {
+    throw "Expected a string";
+  }
+  let payload = jsyaml.safeLoad(fmtString);
 
-  validateFile(
-    workingDirReal,
-    `${configFolder}/settings.yml`,
-    ForestrySettingsSchema,
+  const output = await validateFile({
+    fmtPath: `${configFolder}/settings.yml`,
+    payload,
+    schema: ForestrySettingsSchema,
     ajv,
     migrate,
-    anyErrors
-  );
+    anyErrors,
+  });
+
+  if (output.success) {
+    if (migrate) {
+      await fs.outputFile(
+        fmtFullPath.replace(".forestry", ".tina"),
+        jsyaml.dump(output.fmt)
+      );
+    }
+  }
 
   // Store these schemas for now, VSCode uses them locally
   await fs.writeFileSync(
@@ -94,14 +81,29 @@ export async function audit(
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(
     fmts.map(async (fmtPath) => {
-      await validateFile(
-        fmtDirPath,
+      const fmtFullPath = fmtDirPath + "/" + fmtPath;
+      const fmtString = await fs.readFileSync(fmtFullPath).toString();
+      if (typeof fmtString !== "string") {
+        throw "Expected a string";
+      }
+      let payload = jsyaml.safeLoad(fmtString);
+
+      const output = await validateFile({
         fmtPath,
-        ForestryFMTSchema,
+        payload,
+        schema: ForestryFMTSchema,
         ajv,
         migrate,
-        anyErrors
-      );
+        anyErrors,
+      });
+      if (output.success) {
+        if (migrate) {
+          await fs.outputFile(
+            fmtFullPath.replace(".forestry", ".tina"),
+            jsyaml.dump(output.fmt)
+          );
+        }
+      }
     })
   );
 
@@ -112,20 +114,15 @@ export async function audit(
   }
 }
 
-const validateFile = async (
-  fmtDirPath,
+export const validateFile = async ({
   fmtPath,
+  payload,
   schema,
   ajv,
   migrate,
-  anyErrors
-) => {
-  const fmtFullPath = fmtDirPath + "/" + fmtPath;
-  const fmtString = await fs.readFileSync(fmtFullPath).toString();
-  if (typeof fmtString !== "string") {
-    throw "Expected a string";
-  }
-  let fmt = jsyaml.safeLoad(fmtString);
+  anyErrors,
+}) => {
+  let fmt = payload;
   if (migrate) {
     fmt = preprocess(fmt);
     fmt = pruneEmpty(fmt);
@@ -138,13 +135,9 @@ const validateFile = async (
     console.log(`${fmtPath} is ${dangerText("invalid")}`);
     printErrors(validate.errors, fmt);
     console.log("\n");
+    return { success: true, fmt };
   } else {
-    if (migrate) {
-      await fs.outputFile(
-        fmtFullPath.replace(".forestry", ".tina"),
-        jsyaml.dump(fmt)
-      );
-    }
+    return { success: true, fmt };
   }
 };
 

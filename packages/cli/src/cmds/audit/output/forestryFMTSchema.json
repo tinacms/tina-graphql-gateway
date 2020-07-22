@@ -676,16 +676,14 @@
           "minProperties": 1,
           "removeIfFails": true,
           "additionalProperties": false
-        },
-        "fields": {
-          "$ref": "#/definitions/allFields"
         }
       },
       "additionalProperties": false,
       "required": [
         "label",
         "name",
-        "type"
+        "type",
+        "template_types"
       ]
     },
     "selectField": {

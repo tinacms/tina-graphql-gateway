@@ -11,7 +11,7 @@ import { ImageField } from "./fields/image";
 import { ColorField } from "./fields/color";
 import { IncludeField } from "./fields/include";
 import { GalleryField } from "./fields/gallery";
-import { BlocksField } from "./fields/block";
+import { BlocksField } from "./fields/blocks";
 import { FieldGroupField } from "./fields/field_group";
 import { FieldGroupListField } from "./fields/field_group_list";
 
