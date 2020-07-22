@@ -1,3 +1,4 @@
+import { BlocksField, FieldType } from "../datasources/datasource";
 import { FieldContextType, FieldData, configType } from "./types";
 import {
   GraphQLInputObjectType,
@@ -12,8 +13,36 @@ import {
   shortFMTName,
 } from "../util";
 
-import { BlocksField } from "../datasources/datasource";
 import { baseInputFields } from ".";
+
+export const getBlocksInputField = (
+  field: BlocksField,
+  fieldData: FieldData
+): GraphQLObjectType => {
+  return new GraphQLObjectType({
+    name: friendlyName(field.name + "_fieldConfig"),
+    fields: {
+      ...baseInputFields,
+      templates: {
+        type: new GraphQLObjectType({
+          name: friendlyName(field.name + "_templates"),
+          fields: () => {
+            const blockObjectTypes = field.template_types.map(
+              (template) => fieldData.templateFormObjectTypes[template]
+            );
+
+            return arrayToObject(blockObjectTypes, (obj, item) => {
+              obj[item.name] = {
+                type: item,
+                resolve: (val: unknown) => val,
+              };
+            });
+          },
+        }),
+      },
+    },
+  });
+};
 
 export const blocks = ({
   fmt,
@@ -26,29 +55,6 @@ export const blocks = ({
   config: configType;
   fieldData: FieldData;
 }) => {
-  const blocksInputField = new GraphQLObjectType({
-    name: friendlyName(field.name + "_fieldConfig"),
-    fields: {
-      ...baseInputFields,
-      templates: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_templates"),
-          fields: () => {
-            const blockObjectTypes = field.template_types.map(
-              (template) => fieldData.templateFormObjectTypes[template]
-            );
-            return arrayToObject(blockObjectTypes, (obj, item) => {
-              obj[item.name] = {
-                type: item,
-                resolve: (val: unknown) => val,
-              };
-            });
-          },
-        }),
-      },
-    },
-  });
-
   return {
     getter: {
       type: GraphQLList(
@@ -67,7 +73,7 @@ export const blocks = ({
       ),
     },
     setter: {
-      type: blocksInputField,
+      type: getBlocksInputField(field, fieldData),
       resolve: async (val: any, _args: any, ctx: FieldContextType) => {
         return {
           ...field,
