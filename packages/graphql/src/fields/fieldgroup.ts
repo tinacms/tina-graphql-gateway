@@ -9,7 +9,7 @@ import {
 } from "graphql";
 
 import { friendlyName } from "../util";
-import { generateFields } from "../fieldGenerator";
+import { generateFieldAccessors } from "../fieldGenerator";
 
 export const field_group = ({
   fmt,
@@ -29,7 +29,7 @@ export const field_group = ({
     templateDataInputObjectTypes: any;
   };
 }) => {
-  const { getters, setters, mutators } = generateFields({
+  const { getters, setters, mutators } = generateFieldAccessors({
     fmt: `${fmt}_${field.name}`,
     fields: field.fields,
     config,
