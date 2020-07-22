@@ -1,9 +1,8 @@
-import { validator } from "../../../validator";
-import { validateFile } from "../../../index";
 import { BlocksField } from "./index";
+import { setupTests } from "../setupTests";
 
 const blocksDef = {
-  one: {
+  "config with empty values": {
     initial: {
       name: "blocks",
       type: "blocks",
@@ -11,9 +10,9 @@ const blocksDef = {
       template_types: ["sidecar"],
       config: {
         min: null,
-        max: null,
       },
     },
+    errors: ["should be number"],
     fixed: {
       name: "blocks",
       type: "blocks",
@@ -21,18 +20,50 @@ const blocksDef = {
       template_types: ["sidecar"],
     },
   },
+  "config with an incorrect min type": {
+    initial: {
+      name: "blocks",
+      type: "blocks",
+      label: "Blocks",
+      template_types: ["sidecar"],
+      config: {
+        min: "2",
+      },
+    },
+    errors: ["should be number"],
+    fixed: {
+      name: "blocks",
+      type: "blocks",
+      label: "Blocks",
+      template_types: ["sidecar"],
+      config: {
+        min: 2,
+      },
+    },
+  },
+  "missing template type": {
+    initial: {
+      name: "blocks",
+      type: "blocks",
+      label: "Blocks",
+      config: {
+        min: 2,
+      },
+    },
+    errors: ["should have required property 'template_types'"],
+  },
+  "empty template type": {
+    initial: {
+      name: "blocks",
+      type: "blocks",
+      label: "Blocks",
+      template_types: [],
+      config: {
+        min: 2,
+      },
+    },
+    errors: ["should NOT have fewer than 1 items"],
+  },
 };
 
-const ajv = validator(true);
-test("blocks", async () => {
-  const output = await validateFile({
-    fmtPath: "my-path.yml",
-    payload: blocksDef.one.initial,
-    schema: BlocksField,
-    ajv,
-    anyErrors: [],
-    migrate: true,
-  });
-
-  expect(output.fmt).toEqual(blocksDef.one.fixed);
-});
+setupTests(blocksDef, BlocksField);

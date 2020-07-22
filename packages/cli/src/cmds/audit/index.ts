@@ -135,9 +135,9 @@ export const validateFile = async ({
     console.log(`${fmtPath} is ${dangerText("invalid")}`);
     printErrors(validate.errors, fmt);
     console.log("\n");
-    return { success: true, fmt };
+    return { success: false, fmt, errors: validate.errors };
   } else {
-    return { success: true, fmt };
+    return { success: true, fmt, errors: [] };
   }
 };
 
@@ -221,6 +221,9 @@ const keywordError = {
         error.params.limit
       )} character`
     );
+  },
+  removeIfFails: () => {
+    // Do nothing
   },
   additionalProperties: (error, object) => {
     console.log(
