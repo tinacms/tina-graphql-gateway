@@ -20,6 +20,7 @@ export const SelectField = {
         source: {
           type: "object",
           properties: {
+            // FIXME: this doesnt look right
             type: { enum: ["simple", "pages", "documents"] },
           },
         },

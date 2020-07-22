@@ -305,13 +305,16 @@ const propertyName = (error, object = null) => {
     const property = error.dataPath.replace("." + dataPath, "");
 
     const field = get(object, dataPath);
-    // console.log(field);
-    return `
+    if (field) {
+      return `
 Field with name ${successText(field.name)} of type ${neutralText(
-      fieldType(field)
-    )} has an invalid property ${dangerText(property)}
+        fieldType(field)
+      )} has an invalid property ${dangerText(property)}
      at ${dataPath}
     `;
+    } else {
+      return `${neutralText(error.dataPath)}`;
+    }
   }
   return neutralText(error.dataPath);
 };
