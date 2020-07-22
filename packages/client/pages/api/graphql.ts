@@ -13,7 +13,7 @@ export default async (req, res) => {
 
   const dataSource = new FileSystemManager(forestryConfig.rootPath);
 
-  const { schema, documentMutation } = await buildForestrySchema(
+  const { schema, updateDocumentMutation } = await buildForestrySchema(
     forestryConfig,
     dataSource
   );
@@ -23,7 +23,10 @@ export default async (req, res) => {
   const response = await graphql(
     schema,
     query,
-    { document: documentMutation },
+    {
+      updateDocument: updateDocumentMutation,
+      addDocument: updateDocumentMutation,
+    },
     { dataSource },
     variables,
     operationName

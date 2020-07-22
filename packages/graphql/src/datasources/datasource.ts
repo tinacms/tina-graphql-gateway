@@ -9,6 +9,13 @@ export interface DataSource {
     data: any
   ): Promise<T>;
   getTemplateList(siteLookup: string): Promise<string[]>;
+  createContent<T extends Content>(
+    siteLookup: string,
+    path: string,
+    content: any,
+    data: any,
+    template: string
+  ): Promise<T>;
 }
 
 export type Content = {

@@ -1,3 +1,5 @@
+import { friendlyFMTName } from "@forestryio/graphql";
+
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
     return obj;
@@ -97,7 +99,7 @@ const traverse = (fields, customizations) => {
   });
 };
 
-export const onSubmit = async ({
+export const onUpdateSubmit = async ({
   url,
   path,
   payload,
@@ -106,12 +108,13 @@ export const onSubmit = async ({
   path: string;
   payload: any;
 }) => {
-  const mutation = `mutation DocumentMutation($path: String!, $params: DocumentInput) {
-    document(path: $path, params: $params) {
+  const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
+    updateDocument(path: $path, params: $params) {
       __typename
     }
   }`;
   const { _template, __typename, ...rest } = payload;
+
   const transformedPayload = transform({
     _template,
     __typename,
@@ -119,8 +122,42 @@ export const onSubmit = async ({
   });
   // console.log(JSON.stringify(payload, null, 2));
   // console.log(JSON.stringify(transformedPayload, null, 2));
-  await fetchAPI(url, mutation, {
+
+  await fetchAPI<UpdateVariables>(url, mutation, {
     variables: { path: path, params: transformedPayload },
+  });
+};
+
+interface AddProps {
+  url: string;
+  path: string;
+  template: string;
+  payload: any;
+}
+
+export const onAddSubmit = async ({
+  url,
+  path,
+  template,
+  payload,
+}: AddProps) => {
+  const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
+    addDocument(path: $path, template: $template, params: $params) {
+      __typename
+    }
+  }`;
+
+  const transformedPayload = transform({
+    _template: friendlyFMTName(template, { suffix: "field_config" }),
+    data: payload,
+  });
+
+  await fetchAPI<AddVariables>(url, mutation, {
+    variables: {
+      path: path,
+      template: template + ".yml",
+      params: transformedPayload,
+    },
   });
 };
 
@@ -134,7 +171,7 @@ export const useForestryForm = (
   const [formData, form] = useForm({
     ...formConfig,
     onSubmit: (values) => {
-      onSubmit({ url, path: formConfig.id, payload: values });
+      onUpdateSubmit({ url, path: formConfig.id, payload: values });
     },
   });
 
@@ -149,10 +186,21 @@ export const useForestryForm = (
   ];
 };
 
-async function fetchAPI(
+interface UpdateVariables {
+  path: string;
+  params?: any;
+}
+
+interface AddVariables {
+  path: string;
+  template: string;
+  params?: any;
+}
+
+async function fetchAPI<T>(
   url: string,
   query: string,
-  { variables }: { variables: { path: string; params?: any } }
+  { variables }: { variables: T }
 ) {
   const res = await fetch(url, {
     method: "POST",

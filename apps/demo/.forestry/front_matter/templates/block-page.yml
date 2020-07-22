@@ -3,29 +3,29 @@ label: Block Page
 hide_body: true
 display_field: title
 fields:
-- name: title
-  type: text
-  config:
-    required: false
-  label: Title
-- name: blocks
-  type: blocks
-  label: Blocks
-  template_types:
-  - sidecar
-  - excerpt-post
-  - post-list
-  - price-list
-  - author-list
-  - sponsor-list
-  - page-reference
-  - section-index
-  config:
-    min: 
-    max: 
+  - name: title
+    type: text
+    config:
+      required: false
+    label: Title
+  - name: blocks
+    type: blocks
+    label: Blocks
+    template_types:
+      - sidecar
+      - excerpt-post
+      - post-list
+      - price-list
+      - author-list
+      - sponsor-list
+      - page-reference
+      - section-index
+    config:
+      min: null
+      max: null
 pages:
-- content/pages/about.md
-- content/pages/home.md
-- content/pages/our-pros.md
-- content/pages/posts.md
-- content/pages/services.md
+  - content/pages/about.md
+  - content/pages/home.md
+  - content/pages/our-pros.md
+  - content/pages/posts.md
+  - content/pages/services.md

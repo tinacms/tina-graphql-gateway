@@ -24,12 +24,17 @@ app.use(
       rootPath: "",
       siteLookup: "qms5qlc0jk1o9g",
     };
-    const { schema, documentMutation } = await buildSchema(config, dataSource);
+    const {
+      schema,
+      updateDocumentMutation,
+      addDocumentMutation,
+    } = await buildSchema(config, dataSource);
 
     return {
       schema,
       rootValue: {
-        document: documentMutation,
+        updateDocument: updateDocumentMutation,
+        addDocument: addDocumentMutation,
       },
       context: { dataSource },
     };

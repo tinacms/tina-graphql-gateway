@@ -1,20 +1,33 @@
 import { GetStaticProps } from "next";
 import { useForm, usePlugin } from "tinacms";
 import { forestryFetch, useForestryForm } from "@forestryio/client";
-import { DocumentUnion, BlocksUnion } from "../.forestry/types";
+import {
+  DocumentUnion,
+  BlocksUnion,
+  BlockPageInput,
+  BlockPageDataInput,
+  DocumentInput,
+} from "../.forestry/types";
 import config from "../.forestry/config";
 import query from "../.forestry/query";
+import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
+const fg = require("fast-glob");
 
 const URL = config.serverURL;
 
+function fileToUrl(filepath: string) {
+  filepath = filepath.split(`/pages/`)[1];
+  return filepath.replace(/ /g, "-").slice(0, -3).trim();
+}
+
 export async function getStaticPaths() {
+  const pages = await fg(`./content/pages/**/*.md`);
+
   return {
-    paths: [
-      { params: { page: "home" } },
-      { params: { page: "about" } },
-      { params: { page: "services" } },
-    ],
-    fallback: false,
+    paths: pages.map((file) => {
+      return { params: { page: fileToUrl(file) } };
+    }),
+    fallback: true,
   };
 }
 
@@ -43,6 +56,31 @@ const Home = (props) => {
     },
   });
   usePlugin(form);
+
+  const createPagePlugin = new ContentCreatorPlugin<
+    DocumentInput & { title: string }
+  >({
+    label: "Add Page",
+    fields: [
+      { name: "title", label: "Title", component: "text", required: true },
+    ],
+    filename: ({ title }) => {
+      return `content/pages/${title.replace(/\s+/, "-").toLowerCase()}.md`;
+    },
+    body: () => ``,
+    frontmatter: ({ title }) => {
+      //remove any other dirs from the title, return only filename
+      const id = `/pages/${title.replace(/\s+/, "-").toLowerCase()}`;
+      return {
+        title,
+        id,
+        prev: null,
+        next: null,
+      };
+    },
+  });
+
+  usePlugin(createPagePlugin);
 
   return <PageSwitch document={formData} />;
 };
