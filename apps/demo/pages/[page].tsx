@@ -1,5 +1,5 @@
 import { GetStaticProps } from "next";
-import { useForm, usePlugin } from "tinacms";
+import { usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
 import { DocumentUnion, BlocksUnion, DocumentInput } from "../.forestry/types";
 import config from "../.forestry/config";
@@ -37,9 +37,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  // FIXME: running into issues with multiple instances so passing
-  // useForm by reference rather than importing it
-  const [formData, form] = useForestryForm(props.response, useForm, URL, {
+  const [formData, form] = useForestryForm(props.response, URL, {
     image: (field) => {
       return {
         ...field,
