@@ -15,7 +15,6 @@ import {
   TemplatePage,
   Templates,
   TemplatesData,
-  generatedFieldsType,
 } from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
