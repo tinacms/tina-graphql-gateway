@@ -1999,7 +1999,10 @@ __metadata:
     node-fetch: ^2.6.0
     react: 16.13.1
     react-dom: 16.13.1
+    tinacms: 0.21.1
     typescript: ^3.9.5
+  peerDependencies:
+    tinacms: ">0.21.1"
   bin:
     "forestry:start": bin.js
   languageName: unknown
