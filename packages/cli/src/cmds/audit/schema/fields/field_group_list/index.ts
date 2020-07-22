@@ -1,4 +1,4 @@
-import { base, baseRequired } from "./common";
+import { base, baseRequired } from "../common";
 
 export const FieldGroupListField = {
   $id: "#fieldGroupListField",

@@ -13,6 +13,7 @@ export const BlocksField = {
     ...base,
     template_types: {
       type: "array",
+      minItems: 1,
       items: {
         type: "string",
       },

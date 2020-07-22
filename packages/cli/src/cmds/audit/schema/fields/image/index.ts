@@ -1,23 +1,20 @@
-import { base, baseRequired } from "./common";
+import { base, baseRequired } from "../common";
 
-export const GalleryField = {
-  $id: "#galleryField",
-  label: "Gallery Field",
+export const ImageField = {
+  $id: "#imageField",
+  label: "Image Field",
   description:
-    "A list input that adds assets to the Media Library. Good for galleries and components that require multiple files. ",
+    "A single file input that adds assets to the Media Library. Good for a featured image or a profile picture. ",
   type: "object",
   properties: {
     type: {
-      const: "image_gallery",
+      const: "file",
     },
     ...base,
     default: {
-      type: "array",
-      minItems: 1,
+      type: "string",
+      minLength: 1,
       removeIfFails: true,
-      items: {
-        type: "string",
-      },
     },
     config: {
       type: "object",

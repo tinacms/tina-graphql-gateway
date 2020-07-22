@@ -1,4 +1,4 @@
-import { base, baseRequired } from "./common";
+import { base, baseRequired } from "../common";
 
 export const DateField = {
   $id: "#dateField",
@@ -37,6 +37,6 @@ export const DateField = {
       additionalProperties: false,
     },
   },
-  required: baseRequired,
+  required: [...baseRequired],
   additionalProperties: false,
 };
