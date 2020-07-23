@@ -83,20 +83,11 @@ export const blocks = ({
     },
     setter: {
       type: getBlocksFieldConfig(field, fieldData),
-      resolve: async (val: any, _args: any, ctx: FieldContextType) => {
-        return {
-          ...field,
-          component: field.type,
-          templates: Promise.all(
-            field.template_types.map(async (templateName) => {
-              return ctx.dataSource.getTemplate(
-                config.siteLookup,
-                templateName + ".yml"
-              );
-            })
-          ),
-        };
-      },
+      resolve: async (
+        _val: { [key: string]: unknown },
+        _args: { [argName: string]: any },
+        ctx: FieldContextType
+      ) => setBlockFieldResolver(field, ctx, config),
     },
     mutator: {
       type: GraphQLList(
@@ -113,5 +104,24 @@ export const blocks = ({
         })
       ),
     },
+  };
+};
+
+const setBlockFieldResolver = async (
+  field: BlocksField,
+  ctx: FieldContextType,
+  config: configType
+) => {
+  return {
+    ...field,
+    component: field.type,
+    templates: Promise.all(
+      field.template_types.map(async (templateName) => {
+        return ctx.dataSource.getTemplate(
+          config.siteLookup,
+          templateName + ".yml"
+        );
+      })
+    ),
   };
 };
