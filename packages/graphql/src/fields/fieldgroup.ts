@@ -1,5 +1,6 @@
 import { ConfigType, FieldData } from "./types";
 import { FieldGroupField, FieldType } from "../datasources/datasource";
+import { FieldSetter, generateFieldAccessors } from "../fieldGenerator";
 import {
   GraphQLError,
   GraphQLInputObjectType,
@@ -10,7 +11,6 @@ import {
 } from "graphql";
 
 import { friendlyName } from "../util";
-import { generateFieldAccessors } from "../fieldGenerator";
 
 export const field_group = ({
   fmt,
@@ -30,7 +30,34 @@ export const field_group = ({
     fieldData,
   });
 
-  const fieldsListInput = new GraphQLObjectType<FieldGroupField>({
+  return {
+    getter: {
+      type: new GraphQLObjectType({
+        name: friendlyName(field.name + "_fields_" + fmt),
+        fields: getters,
+      }),
+    },
+    setter: {
+      type: getFieldGroupInputType(field, fmt, setters),
+      resolve: () => field,
+    },
+    mutator: {
+      type: new GraphQLInputObjectType({
+        name: friendlyName(field.name + "_fields_" + fmt + "_input"),
+        fields: mutators,
+      }),
+    },
+  };
+};
+
+const getFieldGroupInputType = (
+  field: FieldGroupField,
+  fmt: string,
+  setters: {
+    [key: string]: FieldSetter;
+  }
+) => {
+  return new GraphQLObjectType<FieldGroupField>({
     name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
     fields: {
       label: {
@@ -82,23 +109,4 @@ export const field_group = ({
       },
     },
   });
-
-  return {
-    getter: {
-      type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_fields_" + fmt),
-        fields: getters,
-      }),
-    },
-    setter: {
-      type: fieldsListInput,
-      resolve: () => field,
-    },
-    mutator: {
-      type: new GraphQLInputObjectType({
-        name: friendlyName(field.name + "_fields_" + fmt + "_input"),
-        fields: mutators,
-      }),
-    },
-  };
 };
