@@ -62,7 +62,7 @@ This demo uses a couple of extra things from the `.forestry` folder:
 
 - **config.js** - This is where we can put site-specific configurations.
 - **types.ts** - This is auto-generated from the `@forestry/client` package, you can see it being used in the `[page].tsx` file.
-- **query.ts** - This is also auto-generated from the `@forestry/client` package
+- **query.js** - This is also auto-generated from the `@forestry/client` package
 
 ---
 

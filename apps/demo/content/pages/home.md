@@ -3,18 +3,6 @@ title: Home
 blocks:
 - template: sidecar
   text: |-
-    Founded by Terrence Mahon and Jennifer Rhines, and spurred on by our team of professional runners, Golden Coast Track Club is about teaching athletes the fundamentals of sport and life. As the name suggests we are located on the California Coast in San Diego, but no one is limited from joining our athletic community.
-
-    GCTC offers online running plans, health & wellness guides, and strength programs so people all over the world have the opportunity to get involved. These programs range from fundamental to highly individualized, with access to information provided by world class coaches and athletes.
-
-    We believe the path to success is found through a holistic approach to training and a strong sense of community. This culture is what fuels GCTC, and helps our runners to stay committed to their athletic endeavors. By joining our team you are taking the first step in breaking down barriers and achieving your goals.
-  image: /uploads/sunset.jpg
-  cta:
-    header: ''
-  actions: []
-  style: Column
-- template: sidecar
-  text: |-
     Introducing!
 
     # Golden Coast Track Club
@@ -30,15 +18,6 @@ blocks:
   - template: action-video
     url: 'https://youtu.be/347AVU6TccQ'
   style: Sidecar
-- template: section-index
-  body: |-
-    ## From the Blog
-
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
-
-    [Show more](http://localhost:3000/)
-  limit: 3
-  section: pages
 - template: author-list
   authors:
   - content/authors/terrence.md
@@ -63,5 +42,26 @@ blocks:
     - 'Over 40 specialized guides around strenth drills, nutrition and mindfulness tips'
     - Advanced guides for elite-level goals
     category: Pro
+- template: section-index
+  body: |-
+    ## From the Blog
+
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa libero labore natus atque, ducimus sed.
+
+    [Show more](http://localhost:3000/)
+  limit: 3
+  section: pages
+- template: sidecar
+  text: |-
+    Founded by Terrence Mahon and Jennifer Rhines, and spurred on by our team of professional runners, Golden Coast Track Club is about teaching athletes the fundamentals of sport and life. As the name suggests we are located on the California Coast in San Diego, but no one is limited from joining our athletic community.
+
+    GCTC offers online running plans, health & wellness guides, and strength programs so people all over the world have the opportunity to get involved. These programs range from fundamental to highly individualized, with access to information provided by world class coaches and athletes.
+
+    We believe the path to success is found through a holistic approach to training and a strong sense of community. This culture is what fuels GCTC, and helps our runners to stay committed to their athletic endeavors. By joining our team you are taking the first step in breaking down barriers and achieving your goals.
+  image: /uploads/sunset.jpg
+  cta:
+    header: ''
+  actions: []
+  style: Column
 ---
 
