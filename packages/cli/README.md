@@ -6,11 +6,15 @@ The CLI can be used to setup your local site with Forestry.io configuration.
 
 Npm:
 
-`npm install --save-dev @forestryio/cli`
+```bash
+npm install --save-dev @forestryio/cli
+```
 
 Yarn:
 
-`yarn add --dev @forestryio/cli`
+```bash
+yarn add --dev @forestryio/cli
+```
 
 ## Usage
 
@@ -54,13 +58,13 @@ Start a GraphQL server using your Filesystem's content as the datasource.
 
 To run this project locally in another directory, you can create a symlink by running
 
-```
+```bash
 npm link
 ```
 
 Then Forestry can be run in another directory by running:
 
-```
+```bash
 forestry <commands>
 ```
 
@@ -68,7 +72,7 @@ _Alternatively, the CLI can be added to a project instead of being used globally
 
 To run the command locally in this project directory, you can run:
 
-```
+```bash
 yarn forestry <commands>
 ```
 
