@@ -13,7 +13,9 @@
     "build": "forestry-build",
     "watch": "forestry-watch",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
-    "serve": "yarn nodemon dist/index.js"
+    "serve": "yarn nodemon dist/index.js",
+    "test": "jest --passWithNoTests",
+    "test-watch": "jest  --passWithNoTests --watch"
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
@@ -22,6 +24,7 @@
     "@graphql-codegen/typescript-operations": "^1.15.3",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
+    "@types/js-yaml": "^3.12.5",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.kebabcase": "^4.1.6",
@@ -40,6 +43,7 @@
     "graphql": "^15.1.0",
     "graphql-toolkit": "^0.7.5",
     "gray-matter": "^4.0.2",
+    "js-yaml": "3.14.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.flatten": "^4.4.0",
     "lodash.kebabcase": "^4.1.1",
@@ -64,5 +68,10 @@
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
     "directory": "packages/graphql"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.2"
   }
 }

@@ -2,7 +2,7 @@ import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
 import type { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
-
+import * as jsyaml from "js-yaml";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
 
@@ -25,23 +25,53 @@ export class FileSystemManager implements DataSource {
     // @ts-ignore
     return result;
   };
-  writeData = async <T>(
+  writeData = async <ContentType>(
     _siteLookup: string,
     filepath: string,
-    content: any,
-    data: any
+    content: string,
+    data: Partial<ContentType>
   ) => {
     const string = stringify(content, data);
 
     const fullPath = this.getFullPath(filepath);
     await fs.writeFileSync(fullPath, string);
 
-    return await this.getData<T>(_siteLookup, filepath);
+    return await this.getData<ContentType>(_siteLookup, filepath);
+  };
+
+  createContent = async <ContentType>(
+    _siteLookup: string,
+    filepath: string,
+    content: string,
+    data: Partial<ContentType>,
+    templateName: string
+  ) => {
+    const newContent = await this.writeData<ContentType>(
+      _siteLookup,
+      filepath,
+      content,
+      data
+    );
+
+    let template = await this.getTemplate(_siteLookup, templateName);
+
+    template.data.pages.push(filepath.replace(/^\/+/, ""));
+    await this.writeTemplate(_siteLookup, templateName, template);
+    return newContent;
   };
   getTemplateList = async (_siteLookup: string) => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
     return list;
+  };
+
+  private writeTemplate = async (
+    _siteLookup: string,
+    templateName: string,
+    template: FMT
+  ): Promise<void> => {
+    const string = "---\n" + jsyaml.dump(template.data);
+    await fs.writeFileSync(FMT_BASE + "/" + templateName, string);
   };
 
   private getFullPath(relPath: string) {

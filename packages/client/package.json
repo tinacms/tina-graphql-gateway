@@ -36,7 +36,11 @@
     "typescript": "^3.9.5"
   },
   "devDependencies": {
-    "@forestryio/build": "workspace:packages/build"
+    "@forestryio/build": "workspace:packages/build",
+    "tinacms": "0.21.1"
+  },
+  "peerDependencies": {
+    "tinacms": ">0.21.1"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
