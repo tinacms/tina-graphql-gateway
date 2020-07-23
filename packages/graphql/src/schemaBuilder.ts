@@ -1,9 +1,4 @@
-import {
-  DataSource,
-  FieldType,
-  Settings,
-  WithFields,
-} from "./datasources/datasource";
+import { DataSource, FieldType, WithFields } from "./datasources/datasource";
 import {
   DocumentType,
   FieldData,
@@ -22,24 +17,20 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import {
-  arrayToObject,
   friendlyName,
+  getSectionFmtInputTypes,
   getSectionFmtTypes,
   isDirectorySection,
-  isNotNull,
+  isNullOrUndefined,
   shortFMTName,
   slugify,
-  getSectionFmtInputTypes,
 } from "./util";
 
 import camelCase from "lodash.camelcase";
-import flatten from "lodash.flatten";
 import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
 require("dotenv").config();
-
-
 
 const getDocument = async (
   templatePages: {
@@ -77,32 +68,35 @@ const getDocument = async (
   };
 };
 
-function isNullOrUndefined<T>(
-  obj: T | null | undefined
-): obj is null | undefined {
-  return typeof obj === "undefined" || obj === null;
-}
-
-/
 export const buildSchema = async (
   config: configType,
   dataSource: DataSource
 ) => {
-  // get the settings file
   const settings = await dataSource.getSettings(config.siteLookup);
-
-  // get a list of all front matter templates
   const fmtList = await dataSource.getTemplateList(config.siteLookup);
 
-  // instantiating empty objects
+  // for a given FMT we build a list of input types (used for mutation) corresponding
+  // to the fields used in the FMT. These fields are wrapped in a `data` object.
+
+  // This keeps tracking of inputs on the `data` object
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
   } = {};
+  // This keeps track of the fields inside the `data`  object
   const templateInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
   } = {};
+
+  // A GraphQL response contains a `form` property (for building Tina form config) this
+  // contains the GraphQLObjectTypes for form objects that map to FMTs
   const templateFormObjectTypes: { [key: string]: GraphQLObjectType } = {};
+
+  // A GraphQL response contains a `data` property, this contains the GraphQLObject types
+  // for data that is described by FMTs
   const templateDataObjectTypes: TemplatesData = {};
+
+  // This keeps track of GraphQLObjectType that encapsulates the `data` and `form` data (mentioned above)
+  // and probably some other things
   const templateObjectTypes: Templates = {};
 
   fmtList.forEach((path) => {
@@ -197,7 +191,6 @@ export const buildSchema = async (
                   resolveType: (val: FieldType) => {
                     const setter = setters[val.name];
                     if (!setter) {
-                      console.log(val);
                       throw new GraphQLError(
                         `No setter defined for template FMT ${path}`
                       );
@@ -256,6 +249,7 @@ export const buildSchema = async (
       templateDataInputObjectTypes[
         shortFMTName(path)
       ] = templateDataInputObjectType;
+
       templateInputObjectTypes[shortFMTName(path)] = templateInputObjectType;
       templateFormObjectTypes[shortFMTName(path)] = templateFormObjectType.type;
       templateDataObjectTypes[shortFMTName(path)] = templateDataObjectType;
