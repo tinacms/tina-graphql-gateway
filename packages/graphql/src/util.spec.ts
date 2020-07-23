@@ -82,3 +82,17 @@ describe("isDirectorySection", () => {
     expect(utils.isDirectorySection(mockSection as Section)).toEqual(false);
   });
 });
+
+describe("getBlockFmtTypes", () => {
+  test("should convert list of string templates to list of GraphQLObjectTypes", () => {
+    const type1 = new GraphQLObjectType({ name: "Type1", fields: {} });
+    const type2 = new GraphQLObjectType({ name: "Type2", fields: {} });
+    const acceptedTypes = ["type1", "type2"];
+    const typeMapping = { type1, type2 };
+
+    const results = utils.getBlockFmtTypes(acceptedTypes, typeMapping);
+
+    expect(results[0].name).toBe("Type1");
+    expect(results[1].name).toBe("Type2");
+  });
+});
