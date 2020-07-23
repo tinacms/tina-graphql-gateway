@@ -7,6 +7,5 @@ import type {
   Content,
 } from "./datasources/datasource";
 import { buildSchema } from "./schemaBuilder";
-import { friendlyName as friendlyFMTName } from "./util";
-export { FileSystemManager, buildSchema, friendlyFMTName };
+export { FileSystemManager, buildSchema };
 export type { DataSource, Settings, FMT, FieldType, Content };

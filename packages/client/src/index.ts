@@ -1,4 +1,4 @@
-import { friendlyFMTName } from "@forestryio/graphql";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
