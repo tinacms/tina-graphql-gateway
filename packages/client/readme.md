@@ -71,7 +71,7 @@ module.exports = {
 };
 ```
 
-#### .forestry/front_matter/templates
+#### .forestry/front_matter/templates/<your_template_name>.yml
 
 This is where your templates live. These represent your data's content model.
 Let's wire one up:
