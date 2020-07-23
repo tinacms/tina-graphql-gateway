@@ -24,7 +24,11 @@ Arguments wrapped in `[]` in the command name are optional.
 
 You can get help on any command with `-h` or `--help`.
 
-e.g: `yarn forestry schema:gen-query --help`
+e.g:
+
+```bash
+yarn forestry schema:gen-query --help
+```
 
 This will describe how to use the schema:gen-query command.
 
