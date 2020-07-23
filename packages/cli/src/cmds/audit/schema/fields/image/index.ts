@@ -14,7 +14,7 @@ export const ImageField = {
     default: {
       type: "string",
       minLength: 1,
-      // removeIfFails: true,
+      removeIfFails: true,
     },
     config: {
       type: "object",

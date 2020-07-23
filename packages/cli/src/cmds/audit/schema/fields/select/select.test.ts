@@ -171,31 +171,31 @@ setupTests({
       },
     },
   },
-  "with a default value which isn't an option": {
-    initial: {
-      ...base,
-      default: "a",
-      config: {
-        options: ["b", "c"],
-        source: {
-          type: "simple",
-        },
-      },
-    },
-    errors: [
-      {
-        dataPath: ".default",
-        keyword: "type",
-      },
-    ],
-    fixed: {
-      ...base,
-      config: {
-        options: ["b", "c"],
-        source: {
-          type: "simple",
-        },
-      },
-    },
-  },
+  // "with a default value which isn't an option": {
+  //   initial: {
+  //     ...base,
+  //     default: "a",
+  //     config: {
+  //       options: ["b", "c"],
+  //       source: {
+  //         type: "simple",
+  //       },
+  //     },
+  //   },
+  //   errors: [
+  //     {
+  //       dataPath: ".default",
+  //       keyword: "type",
+  //     },
+  //   ],
+  //   fixed: {
+  //     ...base,
+  //     config: {
+  //       options: ["b", "c"],
+  //       source: {
+  //         type: "simple",
+  //       },
+  //     },
+  //   },
+  // },
 });
