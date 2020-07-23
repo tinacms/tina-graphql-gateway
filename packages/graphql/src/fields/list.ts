@@ -24,7 +24,7 @@ import {
 } from "../util";
 
 import { ListField } from "../datasources/datasource";
-import { baseInputFields } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
 
 export const list = ({
   fmt,
