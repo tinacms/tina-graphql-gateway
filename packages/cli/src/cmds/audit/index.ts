@@ -420,6 +420,12 @@ const preprocess = (json) => {
 function pruneEmpty(obj) {
   return (function prune(current) {
     _.forOwn(current, function (value, key) {
+      // Empty values in defaults might be valid
+      // let the schema decide
+      if (key === "default") {
+        return;
+      }
+
       if (
         _.isUndefined(value) ||
         _.isNull(value) ||

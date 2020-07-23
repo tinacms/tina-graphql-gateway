@@ -89,4 +89,113 @@ setupTests({
     },
     errors: [{ dataPath: ".config.source", keyword: "required" }],
   },
+  "with an empty array as a default value": {
+    initial: {
+      ...base,
+      default: [],
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+    errors: [
+      {
+        dataPath: ".default",
+        keyword: "type",
+      },
+    ],
+    fixed: {
+      ...base,
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+  },
+  "with an single-item array as a default value": {
+    initial: {
+      ...base,
+      default: ["some-option"],
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+    errors: [
+      {
+        dataPath: ".default",
+        keyword: "type",
+      },
+    ],
+    fixed: {
+      ...base,
+      default: "some-option",
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+  },
+  "with a multi-item array as a default value": {
+    initial: {
+      ...base,
+      default: ["some-option", "what-even-is-this"],
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+    errors: [
+      {
+        dataPath: ".default",
+        keyword: "type",
+      },
+    ],
+    fixed: {
+      ...base,
+      config: {
+        options: ["some-option"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+  },
+  "with a default value which isn't an option": {
+    initial: {
+      ...base,
+      default: "a",
+      config: {
+        options: ["b", "c"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+    errors: [
+      {
+        dataPath: ".default",
+        keyword: "type",
+      },
+    ],
+    fixed: {
+      ...base,
+      config: {
+        options: ["b", "c"],
+        source: {
+          type: "simple",
+        },
+      },
+    },
+  },
 });
