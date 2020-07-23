@@ -22,6 +22,7 @@ fields:
     label: Image
   - name: hashtags
     type: tag_list
+    default: []
     label: Hashtags
 pages:
   - content/posts/dreams-on-hold.md

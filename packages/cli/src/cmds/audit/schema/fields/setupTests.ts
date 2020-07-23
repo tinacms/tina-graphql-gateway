@@ -32,7 +32,8 @@ expect.extend({
       };
     } else {
       return {
-        message: () => `expected response to be successful`,
+        message: () =>
+          `expected to be able to fix data but there were still errors`,
         pass: false,
       };
     }

@@ -12,7 +12,7 @@ export const SelectField = {
     ...base,
     default: {
       type: "string",
-      // removeIfFails: true,
+      removeIfFails: true, // we put [] as a default value in lots of places
     },
     config: {
       type: "object",

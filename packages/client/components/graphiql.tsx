@@ -103,6 +103,8 @@ class App extends React.Component {
     }).then((result) => {
       const newState = { schema: buildClientSchema(result.data) };
 
+      console.log(JSON.stringify(result, null, 2));
+
       if (this.state.query === null) {
         if (!newState.query) {
           newState.query = generateDefaultFallbackQuery(QUERY_EXAMPLE_FALLBACK);

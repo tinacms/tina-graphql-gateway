@@ -35,3 +35,13 @@ Ensure the content matches the schema (ie. `title` is a `string`)
 ### Runtime validation
 
 Ensure the content matches the config for a given field (ie. the `title` is at least 3 charactrs long)
+
+### Fixing
+
+Multi-step process:
+
+1. Remove empty values, the only exception here is `default`
+2. Coerce types. If we get `3` and expect a string, we are able to coerce it to `"2"`
+3. For `default` fields which we aren't able to coerce, remove them. An example of this is our `select` field
+   We populate the default value with `[]`. This is invalid and it doesn't have any meaning so we discard it. However if
+   it was `[some-value]` we'd cast it to a string `some-value` and then evaluate that, if it's valid we'll keep it.
