@@ -1,7 +1,7 @@
-import { GraphQLList, GraphQLString } from "graphql";
+import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 
 import { TagListField } from "../datasources/datasource";
-import { tagInput } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
 
 export const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
   getter: {
@@ -9,7 +9,7 @@ export const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
     type: GraphQLList(GraphQLString),
   },
   setter: {
-    type: tagInput,
+    type: tagInputType,
     resolve: () => {
       return {
         name: field.name,
@@ -20,5 +20,12 @@ export const tag_list = ({ field }: { fmt: string; field: TagListField }) => ({
   },
   mutator: {
     type: GraphQLList(GraphQLString),
+  },
+});
+
+export const tagInputType = new GraphQLObjectType<TagListField>({
+  name: "TagsFormField",
+  fields: {
+    ...baseInputFields,
   },
 });

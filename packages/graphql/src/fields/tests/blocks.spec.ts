@@ -1,8 +1,8 @@
 import { BlocksField } from "../../datasources/datasource";
 import { FieldData } from "../types";
 import { GraphQLObjectType } from "graphql";
-import { baseInputFields } from "../inputFields";
-import { getBlocksFieldConfig } from "../blocks";
+import { baseInputFields } from "../inputTypes";
+import { getBlocksFieldConfigType } from "../blocks";
 import { queryMatchesType } from "./utils";
 
 describe("Blocks Field", () => {
@@ -26,7 +26,7 @@ describe("Blocks Field", () => {
         }),
       },
     };
-    const inputField: GraphQLObjectType = getBlocksFieldConfig(
+    const inputField: GraphQLObjectType = getBlocksFieldConfigType(
       mockBlockField,
       mockFieldData as FieldData
     );

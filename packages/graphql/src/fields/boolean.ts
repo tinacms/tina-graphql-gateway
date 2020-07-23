@@ -1,7 +1,7 @@
-import { GraphQLBoolean, GraphQLNonNull } from "graphql";
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql";
 
 import { BooleanField } from "../datasources/datasource";
-import { booleanInput } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
 
 export const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
   getter: {
@@ -10,7 +10,7 @@ export const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
       : GraphQLBoolean,
   },
   setter: {
-    type: booleanInput,
+    type: booleanInputType,
     resolve: () => {
       return {
         name: field.name,
@@ -21,5 +21,12 @@ export const boolean = ({ field }: { fmt: string; field: BooleanField }) => ({
   },
   mutator: {
     type: GraphQLBoolean,
+  },
+});
+
+export const booleanInputType = new GraphQLObjectType<BooleanField>({
+  name: "BooleanFormField",
+  fields: {
+    ...baseInputFields,
   },
 });

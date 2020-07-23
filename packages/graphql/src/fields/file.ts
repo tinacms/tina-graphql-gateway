@@ -3,7 +3,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { ConfigType } from "./types";
 import { FileField } from "../datasources/datasource";
 import { friendlyName } from "../util";
-import { imageInput } from "./inputFields";
+import { imageInputType } from "./inputTypes";
 
 export const file = ({
   fmt,
@@ -35,7 +35,7 @@ export const file = ({
       }),
     },
     setter: {
-      type: imageInput,
+      type: imageInputType,
       resolve: () => {
         return {
           name: field.name,

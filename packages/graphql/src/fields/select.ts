@@ -14,6 +14,8 @@ import {
 import {
   GraphQLEnumType,
   GraphQLError,
+  GraphQLList,
+  GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
 } from "graphql";
@@ -26,7 +28,106 @@ import {
   isString,
 } from "../util";
 
-import { selectInput } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
+
+export const select = ({
+  fmt,
+  field,
+  config,
+  fieldData,
+}: {
+  fmt: string;
+  field: SelectField;
+  config: ConfigType;
+  fieldData: FieldData;
+}) => {
+  if (isDocumentSelectField(field)) {
+    return {
+      getter: {
+        type: GraphQLString,
+      },
+      setter: {
+        type: selectInputType,
+        resolve: async (
+          val: FieldSourceType,
+          _args: { [argName: string]: any },
+          ctx: FieldContextType
+        ) => setDocumentSelectFieldResolver(field, ctx),
+      },
+      mutator: {
+        type: GraphQLString,
+      },
+    };
+  }
+
+  if (isSectionSelectField(field)) {
+    return {
+      getter: {
+        type: new GraphQLUnionType({
+          name: friendlyName(field.name + "_select_" + fmt),
+          types: () => {
+            return getSectionFmtTypes2(
+              field.config.source.section,
+              fieldData.sectionFmts,
+              fieldData.templateObjectTypes
+            );
+          },
+          resolveType: async (val) => {
+            return fieldData.templateObjectTypes[val.template];
+          },
+        }),
+        resolve: async (
+          val: { [key: string]: unknown },
+          _args: { [argName: string]: any },
+          ctx: FieldContextType
+        ) => getSectionSelectFieldResolver(field, val, ctx, fieldData, config), // TODO: Fix this, maybe combine into ctx
+      },
+      setter: {
+        type: selectInputType,
+        resolve: () => setSectionSelectFieldResolver(field, fieldData),
+      },
+      mutator: {
+        type: GraphQLString,
+      },
+    };
+  }
+
+  const options: { [key: string]: { value: string } } = {};
+  field.config?.options.forEach(
+    (option) => (options[option] = { value: option })
+  );
+
+  return {
+    getter: {
+      type: GraphQLString,
+    },
+    setter: {
+      type: selectInputType,
+      resolve: () => {
+        return {
+          name: field.name,
+          label: field.label,
+          component: "select",
+          options: field.config.options,
+        };
+      },
+    },
+    mutator: {
+      type: new GraphQLEnumType({
+        name: friendlyName(field.name + "_select_" + fmt),
+        values: options,
+      }),
+    },
+  };
+};
+
+export const selectInputType = new GraphQLObjectType<SelectField>({
+  name: "SelectFormField",
+  fields: {
+    ...baseInputFields,
+    options: { type: GraphQLList(GraphQLString) },
+  },
+});
 
 function isSelectField(field: FieldType): field is SelectField {
   return field.type === "select";
@@ -115,96 +216,5 @@ export const setSectionSelectFieldResolver = async (
     label: field.label,
     component: "select",
     options: ["this shouldn", "be seen"],
-  };
-};
-
-export const select = ({
-  fmt,
-  field,
-  config,
-  fieldData,
-}: {
-  fmt: string;
-  field: SelectField;
-  config: ConfigType;
-  fieldData: FieldData;
-}) => {
-  if (isDocumentSelectField(field)) {
-    return {
-      getter: {
-        type: GraphQLString,
-      },
-      setter: {
-        type: selectInput,
-        resolve: async (
-          val: FieldSourceType,
-          _args: { [argName: string]: any },
-          ctx: FieldContextType
-        ) => setDocumentSelectFieldResolver(field, ctx),
-      },
-      mutator: {
-        type: GraphQLString,
-      },
-    };
-  }
-
-  if (isSectionSelectField(field)) {
-    return {
-      getter: {
-        type: new GraphQLUnionType({
-          name: friendlyName(field.name + "_select_" + fmt),
-          types: () => {
-            return getSectionFmtTypes2(
-              field.config.source.section,
-              fieldData.sectionFmts,
-              fieldData.templateObjectTypes
-            );
-          },
-          resolveType: async (val) => {
-            return fieldData.templateObjectTypes[val.template];
-          },
-        }),
-        resolve: async (
-          val: { [key: string]: unknown },
-          _args: { [argName: string]: any },
-          ctx: FieldContextType
-        ) => getSectionSelectFieldResolver(field, val, ctx, fieldData, config), // TODO: Fix this, maybe combine into ctx
-      },
-      setter: {
-        type: selectInput,
-        resolve: () => setSectionSelectFieldResolver(field, fieldData),
-      },
-      mutator: {
-        type: GraphQLString,
-      },
-    };
-  }
-
-  const options: { [key: string]: { value: string } } = {};
-  field.config?.options.forEach(
-    (option) => (options[option] = { value: option })
-  );
-
-  return {
-    getter: {
-      type: GraphQLString,
-    },
-    setter: {
-      type: selectInput,
-      resolve: () => {
-        return {
-          name: field.name,
-          label: field.label,
-          component: "select",
-          options: field.config.options,
-        };
-      },
-    },
-    mutator: {
-      type: new GraphQLEnumType({
-        name: friendlyName(field.name + "_select_" + fmt),
-        values: options,
-      }),
-    },
   };
 };
