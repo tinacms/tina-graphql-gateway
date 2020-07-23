@@ -14,9 +14,9 @@ export const GalleryField = {
     default: {
       type: "array",
       minItems: 1,
-      // removeIfFails: true,
       items: {
         type: "string",
+        minLength: 1,
       },
     },
     config: {

@@ -1,7 +1,7 @@
 import { setupTests } from "../setupTests";
 
 setupTests({
-  "with an improper maxSize typemissing config": {
+  "with maxSize set as a string": {
     initial: {
       label: "Image",
       name: "image",

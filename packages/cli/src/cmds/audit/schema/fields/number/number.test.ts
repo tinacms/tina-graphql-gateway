@@ -53,4 +53,34 @@ setupTests({
       },
     },
   },
+  "when the default is not a multiple of the step config": {
+    initial: {
+      ...base,
+      default: 3,
+      config: {
+        step: 2,
+      },
+    },
+    errors: [{ dataPath: ".default", keyword: "multipleOf" }],
+  },
+  "when the default is greather than the max": {
+    initial: {
+      ...base,
+      default: 4,
+      config: {
+        max: 2,
+      },
+    },
+    errors: [{ dataPath: ".default", keyword: "maximum" }],
+  },
+  "when the default is less than the min": {
+    initial: {
+      ...base,
+      default: 4,
+      config: {
+        min: 6,
+      },
+    },
+    errors: [{ dataPath: ".default", keyword: "minimum" }],
+  },
 });

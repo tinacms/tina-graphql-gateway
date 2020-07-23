@@ -15,4 +15,18 @@ setupTests({
       },
     ],
   },
+  "an empty string as the default": {
+    initial: {
+      name: "expirydate",
+      label: "Expirydate",
+      type: "datetime",
+      default: "",
+    },
+    errors: [
+      {
+        dataPath: ".default",
+        keyword: "anyOf",
+      },
+    ],
+  },
 });
