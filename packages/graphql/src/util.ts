@@ -16,7 +16,12 @@ import {
   Templates,
   TemplatesData,
 } from "./fields/types";
-import { GraphQLError, GraphQLObjectType } from "graphql";
+import {
+  GraphQLError,
+  GraphQLInputObjectType,
+  GraphQLObjectType,
+  getNamedType,
+} from "graphql";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
 import camelCase from "lodash.camelcase";
@@ -211,4 +216,26 @@ export const arrayToObject = <T>(
   });
 
   return accumulator;
+};
+
+export const getSectionFmtInputTypes = (
+  settings: Settings,
+  templateInputObjectTypes: {
+    [key: string]: GraphQLInputObjectType;
+  }
+) => {
+  const sectionTemplates = flatten(
+    settings.data.sections
+      .filter(isDirectorySection)
+      .map(({ templates }) => templates)
+  );
+
+  return arrayToObject<GraphQLInputObjectType>(
+    sectionTemplates
+      .map((sectionTemplate) => templateInputObjectTypes[sectionTemplate])
+      ?.filter(isNotNull),
+    (obj: any, item: any) => {
+      obj[(getNamedType(item) || "").toString()] = { type: item };
+    }
+  );
 };
