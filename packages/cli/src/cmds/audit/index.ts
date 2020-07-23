@@ -111,7 +111,7 @@ async function run({
       let payload = jsyaml.safeLoad(fmtString);
 
       const output = await validateFile({
-        fmtPath,
+        fmtPath: `.forestry/front_matter/templates/${fmtPath}`,
         payload,
         schema: ForestryFMTSchema,
         ajv,
