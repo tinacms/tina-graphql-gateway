@@ -1,51 +1,53 @@
-import { BlocksField, FieldType } from "../../datasources/datasource";
-import {
-  GraphQLObjectType,
-  GraphQLObjectTypeConfig,
-  GraphQLSchema,
-  graphql,
-} from "graphql";
-
+import { BlocksField } from "../../datasources/datasource";
 import { FieldData } from "../types";
+import { GraphQLObjectType } from "graphql";
 import { baseInputFields } from "../inputFields";
-import { getBlocksInputField } from "../blocks";
-
-const queryMatchesType = async (gqlType: GraphQLObjectType, query: string) => {
-  const schema = new GraphQLSchema({ query: gqlType });
-  return await graphql(schema, query).then((result) => {
-    if (result.errors) return false;
-    return true;
-  });
-};
+import { getBlocksFieldConfig } from "../blocks";
+import { queryMatchesType } from "./utils";
 
 describe("Blocks Field", () => {
+  const mockBlockField: BlocksField = {
+    name: "mockBlock",
+    type: "blocks",
+    label: "MockBlock",
+    template_types: ["template1", "template2"],
+  };
+
   describe("Blocks input field", () => {
-    test("a thing", () => {
-      const mockBlockField: BlocksField = {
-        name: "actions",
-        type: "blocks",
-        label: "Action",
-        template_types: ["action-video"],
-      };
+    const mockFieldData: Partial<FieldData> = {
+      templateFormObjectTypes: {
+        template1: new GraphQLObjectType({
+          name: "Template1",
+          fields: { ...baseInputFields },
+        }),
+        template2: new GraphQLObjectType({
+          name: "Template2",
+          fields: { ...baseInputFields },
+        }),
+      },
+    };
+    const inputField: GraphQLObjectType = getBlocksFieldConfig(
+      mockBlockField,
+      mockFieldData as FieldData
+    );
 
-      const mockFieldData: Partial<FieldData> = {
-        templateFormObjectTypes: {
-          "action-video": new GraphQLObjectType({
-            name: "MockObject",
-            fields: { ...baseInputFields },
-          }),
-        },
-      };
+    test("should get the correct typename", () => {
+      expect(inputField.name).toBe("MockBlockFieldConfig");
+    });
 
-      const inputField: GraphQLObjectType = getBlocksInputField(
-        mockBlockField,
-        mockFieldData as FieldData
-      );
-
-      queryMatchesType(
-        inputField,
-        "{ name, label, description, component, templates { MockObject { name, label, description, component } }  }"
-      ).then((result) => expect(result).toBe(true));
+    test("should be the expected format", async () => {
+      expect(
+        await queryMatchesType(
+          inputField,
+          `{ 
+            name, 
+            templates { 
+              Template1 { name }
+              Template2 { description }
+             }  
+            }`
+        )
+      ).toBe(true);
     });
   });
 });

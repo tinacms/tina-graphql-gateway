@@ -135,7 +135,7 @@ export const getFieldType = ({
     case "field_group_list":
       return field_group_list({ fmt, field, config, fieldData });
     case "blocks":
-      return blocks({ fmt, field, config, fieldData });
+      return blocks({ field, config, fieldData });
     default:
       throw new GraphQLError(
         `No function provided for field type ${JSON.stringify(field)}`

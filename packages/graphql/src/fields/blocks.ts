@@ -15,7 +15,18 @@ import {
 
 import { baseInputFields } from ".";
 
-export const getBlocksInputField = (
+/*
+Gets the GraphQL object type that describes a block field. Should generate something that looks like the following:
+  BlocksFieldConfig = {
+    __typename: String;
+    name: String
+    label: String;
+    description: String;
+    component: String;
+    templates: BlocksTemplates;
+  };
+*/
+export const getBlocksFieldConfig = (
   field: BlocksField,
   fieldData: FieldData
 ): GraphQLObjectType => {
@@ -45,12 +56,10 @@ export const getBlocksInputField = (
 };
 
 export const blocks = ({
-  fmt,
   field,
   config,
   fieldData,
 }: {
-  fmt: string;
   field: BlocksField;
   config: configType;
   fieldData: FieldData;
@@ -73,7 +82,7 @@ export const blocks = ({
       ),
     },
     setter: {
-      type: getBlocksInputField(field, fieldData),
+      type: getBlocksFieldConfig(field, fieldData),
       resolve: async (val: any, _args: any, ctx: FieldContextType) => {
         return {
           ...field,
