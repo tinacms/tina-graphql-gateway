@@ -39,6 +39,7 @@ export const ListField = {
         {
           if: {
             properties: {
+              // FIXME: datafiles is probably deprecated but it can be set while this is false (in forestry.io)
               use_select: { const: false },
             },
           },

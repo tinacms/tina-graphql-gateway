@@ -83,17 +83,6 @@ setupTests({
         keyword: "required",
       },
     ],
-    fixed: {
-      ...base,
-      config: {
-        // use_select: true,
-        source: {
-          type: "documents",
-          file: "hugo/data/authors.yml",
-          section: "authors",
-        },
-      },
-    },
   },
   "with a options for documents list": {
     initial: {
@@ -126,6 +115,55 @@ setupTests({
           path: "map",
           section: "authors",
         },
+      },
+    },
+  },
+  "with a datafile source": {
+    initial: {
+      ...base,
+      config: {
+        use_select: true,
+        source: {
+          type: "datafiles",
+        },
+      },
+    },
+    errors: [],
+    fixed: {
+      ...base,
+      config: {
+        use_select: true,
+        source: {
+          type: "datafiles",
+        },
+      },
+    },
+  },
+  // FIXME: this is passing but it's invalid, the "fix" removes the config.source becuase
+  // it's treating the value like a text-based list. Need to know more about datafiles
+  "with a datafile source while use_select is false": {
+    initial: {
+      ...base,
+      config: {
+        use_select: false,
+        source: {
+          type: "datafiles",
+        },
+      },
+    },
+    errors: [
+      {
+        dataPath: ".config",
+        keyword: "additionalProperties",
+      },
+    ],
+    fixed: {
+      ...base,
+      config: {
+        use_select: false,
+        // source: {
+        //   type: "datafiles",
+        // },
       },
     },
   },
