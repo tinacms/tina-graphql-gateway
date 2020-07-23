@@ -12,7 +12,6 @@ export async function audit(
   _ctx,
   _next,
   {
-    migrate = false,
     forestry = false,
     fix = false,
   }: {
@@ -21,6 +20,29 @@ export async function audit(
     fix: boolean;
   }
 ) {
+  run({
+    migrate: false,
+    forestry: forestry,
+    fix,
+  });
+}
+export async function migrate(_ctx, _next) {
+  run({
+    migrate: true,
+    forestry: false,
+    fix: true,
+  });
+}
+
+async function run({
+  migrate = false,
+  forestry = false,
+  fix = false,
+}: {
+  migrate: boolean;
+  forestry: boolean;
+  fix: boolean;
+}) {
   let anyErrors = [];
 
   const workingDirReal = process.cwd();
