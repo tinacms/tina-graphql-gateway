@@ -5,14 +5,14 @@ import {
   GraphQLString,
 } from "graphql";
 
+import { ConfigType } from "./types";
 import { GalleryField } from "../datasources/datasource";
-import { configType } from "./types";
 import { friendlyName } from "../util";
 import { imageInput } from "./inputFields";
 
 export const generateImageGalleryObjectType = (
   name: string,
-  config: configType
+  config: ConfigType
 ): GraphQLObjectType => {
   return new GraphQLObjectType({
     name,

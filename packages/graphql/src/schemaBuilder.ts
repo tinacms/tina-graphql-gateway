@@ -1,16 +1,16 @@
 import {
+  ConfigType,
+  DocumentType,
+  FieldData,
+  Templates,
+  TemplatesData,
+} from "./fields/types";
+import {
   DataSource,
   FMT,
   FieldType,
   WithFields,
 } from "./datasources/datasource";
-import {
-  DocumentType,
-  FieldData,
-  Templates,
-  TemplatesData,
-  configType,
-} from "./fields/types";
 import { FieldSetter, generateFieldAccessors } from "./fieldGenerator";
 import {
   GraphQLError,
@@ -38,7 +38,7 @@ import kebabCase from "lodash.kebabcase";
 require("dotenv").config();
 
 export const buildSchema = async (
-  config: configType,
+  config: ConfigType,
   dataSource: DataSource
 ) => {
   const settings = await dataSource.getSettings(config.siteLookup);
@@ -312,7 +312,7 @@ const getDocument = async (
   args: {
     path?: string;
   },
-  config: configType,
+  config: ConfigType,
   dataSource: DataSource
 ): Promise<DocumentType> => {
   const path = args.path;

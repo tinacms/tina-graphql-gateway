@@ -1,4 +1,4 @@
-import { FieldData, configType } from "./types";
+import { ConfigType, FieldData } from "./types";
 import { FieldGroupListField, FieldType } from "../datasources/datasource";
 import {
   GraphQLError,
@@ -20,7 +20,7 @@ export const field_group_list = ({
 }: {
   fmt: string;
   field: FieldGroupListField;
-  config: configType;
+  config: ConfigType;
   fieldData: FieldData;
 }) => {
   const { getters, setters, mutators } = generateFieldAccessors({
