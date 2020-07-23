@@ -13,47 +13,7 @@ import {
   shortFMTName,
 } from "../util";
 
-import { baseInputFields } from ".";
-
-/*
-Gets the GraphQL object type that describes a block field. Should generate something that looks like the following:
-  BlocksFieldConfig = {
-    __typename: String;
-    name: String
-    label: String;
-    description: String;
-    component: String;
-    templates: BlocksTemplates;
-  };
-*/
-export const getBlocksFieldConfigType = (
-  field: BlocksField,
-  fieldData: FieldData
-): GraphQLObjectType => {
-  return new GraphQLObjectType({
-    name: friendlyName(field.name + "_fieldConfig"),
-    fields: {
-      ...baseInputFields,
-      templates: {
-        type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_templates"),
-          fields: () => {
-            const blockObjectTypes = field.template_types.map(
-              (template) => fieldData.templateFormObjectTypes[template]
-            );
-
-            return arrayToObject(blockObjectTypes, (obj, item) => {
-              obj[item.name] = {
-                type: item,
-                resolve: (val: unknown) => val,
-              };
-            });
-          },
-        }),
-      },
-    },
-  });
-};
+import { baseInputFields } from "./inputTypes";
 
 export const blocks = ({
   field,
@@ -105,6 +65,46 @@ export const blocks = ({
       ),
     },
   };
+};
+
+/*
+Gets the GraphQL object type that describes a block field. Should generate something that looks like the following:
+  BlocksFieldConfig = {
+    __typename: String;
+    name: String
+    label: String;
+    description: String;
+    component: String;
+    templates: BlocksTemplates;
+  };
+*/
+export const getBlocksFieldConfigType = (
+  field: BlocksField,
+  fieldData: FieldData
+): GraphQLObjectType => {
+  return new GraphQLObjectType({
+    name: friendlyName(field.name + "_fieldConfig"),
+    fields: {
+      ...baseInputFields,
+      templates: {
+        type: new GraphQLObjectType({
+          name: friendlyName(field.name + "_templates"),
+          fields: () => {
+            const blockObjectTypes = field.template_types.map(
+              (template) => fieldData.templateFormObjectTypes[template]
+            );
+
+            return arrayToObject(blockObjectTypes, (obj, item) => {
+              obj[item.name] = {
+                type: item,
+                resolve: (val: unknown) => val,
+              };
+            });
+          },
+        }),
+      },
+    },
+  });
 };
 
 const setBlockFieldResolver = async (
