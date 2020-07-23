@@ -51,7 +51,7 @@ export type Plugin = {
   ) => GraphQLFieldConfig<FieldSourceType, FieldContextType>;
 };
 
-export type configType = {
+export type ConfigType = {
   rootPath: string;
   siteLookup: string;
 };

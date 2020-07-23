@@ -1,16 +1,16 @@
 import * as utilModule from "../../util";
 
 import {
+  ConfigType,
+  FieldContextType,
+  FieldData,
+  TemplatePage,
+} from "../types";
+import {
   Content,
   DataSource,
   SectionSelect,
 } from "../../datasources/datasource";
-import {
-  FieldContextType,
-  FieldData,
-  TemplatePage,
-  configType,
-} from "../types";
 import {
   getSectionSelectFieldResolver,
   setSectionSelectFieldResolver,
@@ -24,6 +24,7 @@ const mockDataSource: DataSource = {
   getTemplate: jest.fn(),
   getTemplateList: jest.fn(),
   writeData: jest.fn(),
+  createContent: jest.fn(),
 };
 
 describe("Section Select Field", () => {
@@ -86,7 +87,7 @@ describe("Section Select Field", () => {
     let mockFieldData: Partial<FieldData> = {
       templatePages: [{ name: "pages1", pages: ["page1", "page2"] }],
     };
-    let mockConfig: configType = {
+    let mockConfig: ConfigType = {
       rootPath: "rootPath",
       siteLookup: "siteLookup",
     };

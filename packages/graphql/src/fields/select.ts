@@ -1,16 +1,16 @@
 import {
+  ConfigType,
+  DocumentType,
+  FieldContextType,
+  FieldData,
+  FieldSourceType,
+} from "./types";
+import {
   DocumentSelect,
   FieldType,
   SectionSelect,
   SelectField,
 } from "../datasources/datasource";
-import {
-  DocumentType,
-  FieldContextType,
-  FieldData,
-  FieldSourceType,
-  configType,
-} from "./types";
 import {
   GraphQLEnumType,
   GraphQLError,
@@ -71,7 +71,7 @@ export const getSectionSelectFieldResolver = async (
   val: { [key: string]: unknown },
   ctx: FieldContextType,
   fieldData: FieldData,
-  config: configType
+  config: ConfigType
 ) => {
   const path = val[field.name];
 
@@ -126,7 +126,7 @@ export const select = ({
 }: {
   fmt: string;
   field: SelectField;
-  config: configType;
+  config: ConfigType;
   fieldData: FieldData;
 }) => {
   if (isDocumentSelectField(field)) {

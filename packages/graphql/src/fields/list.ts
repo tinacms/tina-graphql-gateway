@@ -1,9 +1,9 @@
 import {
+  ConfigType,
   DocumentType,
   FieldContextType,
   FieldData,
   FieldSourceType,
-  configType,
 } from "../fields/types";
 import {
   GraphQLError,
@@ -34,7 +34,7 @@ export const list = ({
 }: {
   fmt: string;
   field: ListField;
-  config: configType;
+  config: ConfigType;
   fieldData: FieldData;
 }) => {
   if (isDocumentListField(field)) {

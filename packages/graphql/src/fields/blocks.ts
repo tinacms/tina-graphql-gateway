@@ -1,5 +1,5 @@
 import { BlocksField, FieldType } from "../datasources/datasource";
-import { FieldContextType, FieldData, configType } from "./types";
+import { ConfigType, FieldContextType, FieldData } from "./types";
 import {
   GraphQLInputObjectType,
   GraphQLList,
@@ -26,7 +26,7 @@ Gets the GraphQL object type that describes a block field. Should generate somet
     templates: BlocksTemplates;
   };
 */
-export const getBlocksFieldConfig = (
+export const getBlocksFieldConfigType = (
   field: BlocksField,
   fieldData: FieldData
 ): GraphQLObjectType => {
@@ -61,7 +61,7 @@ export const blocks = ({
   fieldData,
 }: {
   field: BlocksField;
-  config: configType;
+  config: ConfigType;
   fieldData: FieldData;
 }) => {
   return {
@@ -82,7 +82,7 @@ export const blocks = ({
       ),
     },
     setter: {
-      type: getBlocksFieldConfig(field, fieldData),
+      type: getBlocksFieldConfigType(field, fieldData),
       resolve: async (
         _val: { [key: string]: unknown },
         _args: { [argName: string]: any },
@@ -110,7 +110,7 @@ export const blocks = ({
 const setBlockFieldResolver = async (
   field: BlocksField,
   ctx: FieldContextType,
-  config: configType
+  config: ConfigType
 ) => {
   return {
     ...field,
