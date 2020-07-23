@@ -42,7 +42,7 @@ export const blocks = ({
       ),
     },
     setter: {
-      type: getBlocksFieldConfigType(field, fieldData),
+      type: getBlocksFieldInputType(field, fieldData),
       resolve: async (
         _val: { [key: string]: unknown },
         _args: { [argName: string]: any },
@@ -78,7 +78,7 @@ Gets the GraphQL object type that describes a block field. Should generate somet
     templates: BlocksTemplates;
   };
 */
-export const getBlocksFieldConfigType = (
+export const getBlocksFieldInputType = (
   field: BlocksField,
   fieldData: FieldData
 ): GraphQLObjectType => {
