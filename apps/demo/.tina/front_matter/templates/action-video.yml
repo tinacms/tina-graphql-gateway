@@ -1,8 +1,0 @@
-label: Action - Video
-hide_body: true
-fields:
-  - name: url
-    type: text
-    config:
-      required: false
-    label: URL
