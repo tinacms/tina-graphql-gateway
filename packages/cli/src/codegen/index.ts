@@ -2,9 +2,8 @@ import { parse, printSchema, GraphQLSchema } from "graphql";
 import { codegen } from "@graphql-codegen/core";
 import { plugin as typescriptPlugin } from "@graphql-codegen/typescript";
 import { plugin as typescriptOperationsPlugin } from "@graphql-codegen/typescript-operations";
-import { queryBuilder } from "./queryBuilder";
 
-export const generateTypes = async ({ schema }: { schema: GraphQLSchema }) => {
+export const generateTypes = async (schema: GraphQLSchema) => {
   try {
     const res = await codegen({
       filename: process.cwd() + "/.forestry/autoschema.gql",
@@ -35,7 +34,7 @@ export const generateTypes = async ({ schema }: { schema: GraphQLSchema }) => {
         },
       },
     });
-    return { typescriptTypes: res, query: queryBuilder(schema) };
+    return res;
   } catch (e) {
     console.error(e);
   }

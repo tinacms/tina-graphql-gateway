@@ -20,7 +20,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".forestry/types.ts",
-    ".forestry/config.ts",
-    ".forestry/query.ts"
+    ".forestry/config.ts"
   ]
 }
