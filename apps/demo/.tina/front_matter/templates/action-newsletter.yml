@@ -1,0 +1,19 @@
+label: Action - Newsletter
+hide_body: true
+fields:
+  - name: body
+    type: textarea
+    config:
+      required: false
+      wysiwyg: true
+      schema:
+        format: markdown
+    label: Body
+  - name: footer
+    type: textarea
+    config:
+      required: false
+      wysiwyg: true
+      schema:
+        format: markdown
+    label: Footer

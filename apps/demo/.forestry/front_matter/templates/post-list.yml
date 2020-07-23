@@ -1,0 +1,24 @@
+---
+label: Post List
+hide_body: true
+fields:
+- name: posts
+  type: field_group_list
+  fields:
+  - name: post
+    type: select
+    default: []
+    config:
+      required: false
+      options: []
+      source:
+        type: pages
+        section: posts
+        file: 
+        path: 
+    label: Post
+  config:
+    min: 
+    max: 
+    labelField: 
+  label: Posts

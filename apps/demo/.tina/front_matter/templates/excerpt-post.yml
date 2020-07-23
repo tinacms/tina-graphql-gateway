@@ -1,0 +1,30 @@
+label: Excerpt Post
+hide_body: true
+fields:
+  - name: post
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: posts
+    label: Post
+  - name: description
+    type: textarea
+    config:
+      required: false
+      wysiwyg: false
+      schema:
+        format: markdown
+    label: Description
+  - name: style
+    type: select
+    default: Simple
+    config:
+      required: false
+      options:
+        - Simple
+        - Full
+      source:
+        type: simple
+    label: Style
