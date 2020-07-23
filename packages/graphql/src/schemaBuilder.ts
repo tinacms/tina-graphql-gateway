@@ -1,4 +1,9 @@
-import { DataSource, FieldType, WithFields } from "./datasources/datasource";
+import {
+  DataSource,
+  FMT,
+  FieldType,
+  WithFields,
+} from "./datasources/datasource";
 import {
   DocumentType,
   FieldData,
@@ -6,6 +11,7 @@ import {
   TemplatesData,
   configType,
 } from "./fields/types";
+import { FieldSetter, generateFieldAccessors } from "./fieldGenerator";
 import {
   GraphQLError,
   GraphQLInputObjectType,
@@ -27,46 +33,9 @@ import {
 } from "./util";
 
 import camelCase from "lodash.camelcase";
-import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
 require("dotenv").config();
-
-const getDocument = async (
-  templatePages: {
-    name: string;
-    pages: string[];
-  }[],
-  args: {
-    path?: string;
-  },
-  config: configType,
-  dataSource: DataSource
-): Promise<DocumentType> => {
-  const path = args.path;
-  if (isNullOrUndefined(path)) {
-    throw new GraphQLError("Expected argument 'path'");
-  }
-
-  const activeTemplate = templatePages.find(({ pages }) => {
-    return pages?.includes(path);
-  });
-
-  const document = await dataSource.getData<DocumentType>(
-    config.siteLookup,
-    args.path || ""
-  );
-
-  if (!activeTemplate) {
-    throw new GraphQLError(`Unable to find active template for ${path}`);
-  }
-
-  return {
-    ...document,
-    path,
-    template: activeTemplate.name,
-  };
-};
 
 export const buildSchema = async (
   config: configType,
@@ -77,7 +46,6 @@ export const buildSchema = async (
 
   // for a given FMT we build a list of input types (used for mutation) corresponding
   // to the fields used in the FMT. These fields are wrapped in a `data` object.
-
   // This keeps tracking of inputs on the `data` object
   const templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
@@ -159,65 +127,8 @@ export const buildSchema = async (
         },
       });
 
-      const name = friendlyName(path, { suffix: "field_config" });
-      const field = fmt.data;
       const templateFormObjectType = {
-        type: new GraphQLObjectType<WithFields>({
-          name: name,
-          fields: {
-            label: {
-              type: GraphQLString,
-              resolve: () => {
-                return field.label;
-              },
-            },
-            key: {
-              type: GraphQLString,
-              resolve: () => {
-                return camelCase(field.label);
-              },
-            },
-            fields: {
-              type: GraphQLList(
-                new GraphQLUnionType({
-                  name: name + "_component_config",
-                  types: () => {
-                    const setterValues = Object.values(setters);
-                    // FIXME:confusing - this is just making sure we only return unique items
-                    return Array.from(
-                      new Set(setterValues.map((item) => item.type))
-                    );
-                  },
-                  resolveType: (val: FieldType) => {
-                    const setter = setters[val.name];
-                    if (!setter) {
-                      throw new GraphQLError(
-                        `No setter defined for template FMT ${path}`
-                      );
-                    }
-
-                    return setter.type;
-                  },
-                })
-              ),
-              resolve: async (fmtData, args, context, info) => {
-                return Promise.all(
-                  fmt.data.fields.map(async (field) => {
-                    const setter = setters[field.name];
-
-                    if (!setter.resolve) {
-                      throw new GraphQLError(
-                        `No resolver defined for ${fmtData.label}`
-                      );
-                    }
-
-                    return setter.resolve(field, args, context, info);
-                  })
-                );
-              },
-            },
-          },
-        }),
+        type: generateTemplateFormObjectType(fmt, setters, path),
         resolve: () => fmt.data,
       };
 
@@ -391,4 +302,105 @@ export const buildSchema = async (
   };
 
   return { schema, updateDocumentMutation, addDocumentMutation };
+};
+
+const getDocument = async (
+  templatePages: {
+    name: string;
+    pages: string[];
+  }[],
+  args: {
+    path?: string;
+  },
+  config: configType,
+  dataSource: DataSource
+): Promise<DocumentType> => {
+  const path = args.path;
+  if (isNullOrUndefined(path)) {
+    throw new GraphQLError("Expected argument 'path'");
+  }
+
+  const activeTemplate = templatePages.find(({ pages }) => {
+    return pages?.includes(path);
+  });
+
+  const document = await dataSource.getData<DocumentType>(
+    config.siteLookup,
+    args.path || ""
+  );
+
+  if (!activeTemplate) {
+    throw new GraphQLError(`Unable to find active template for ${path}`);
+  }
+
+  return {
+    ...document,
+    path,
+    template: activeTemplate.name,
+  };
+};
+
+const generateTemplateFormObjectType = (
+  fmt: FMT,
+  setters: {
+    [key: string]: FieldSetter;
+  },
+  path: string
+) => {
+  const name = friendlyName(path, { suffix: "field_config" });
+  const field = fmt.data;
+  return new GraphQLObjectType<WithFields>({
+    name: name,
+    fields: {
+      label: {
+        type: GraphQLString,
+        resolve: () => {
+          return field.label;
+        },
+      },
+      key: {
+        type: GraphQLString,
+        resolve: () => {
+          return camelCase(field.label);
+        },
+      },
+      fields: {
+        type: GraphQLList(
+          new GraphQLUnionType({
+            name: name + "_component_config",
+            types: () => {
+              const setterValues = Object.values(setters);
+              // FIXME:confusing - this is just making sure we only return unique items
+              return Array.from(new Set(setterValues.map((item) => item.type)));
+            },
+            resolveType: (val: FieldType) => {
+              const setter = setters[val.name];
+              if (!setter) {
+                throw new GraphQLError(
+                  `No setter defined for template FMT ${path}`
+                );
+              }
+
+              return setter.type;
+            },
+          })
+        ),
+        resolve: async (fmtData, args, context, info) => {
+          return Promise.all(
+            fmt.data.fields.map(async (field) => {
+              const setter = setters[field.name];
+
+              if (!setter.resolve) {
+                throw new GraphQLError(
+                  `No resolver defined for ${fmtData.label}`
+                );
+              }
+
+              return setter.resolve(field, args, context, info);
+            })
+          );
+        },
+      },
+    },
+  });
 };

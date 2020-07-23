@@ -30,7 +30,9 @@ import kebabCase from "lodash.kebabcase";
 import toLower from "lodash.tolower";
 import upperFist from "lodash.upperfirst";
 
-// TODO: find the right spot for this
+// TODO: There is probably too much in this "util" file. Once schemaBuilder
+// is a bit cleaner, similar utils can be grouped together elsewhere
+
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const matter = <I extends Input, O extends GrayMatterOption<I, O>>(
   data: Buffer
@@ -73,7 +75,6 @@ export const getFmtForDocument = (
   if (!fmt) {
     throw new GraphQLError(`Unable to find FMT for path: ${itemPath}`);
   }
-
   return fmt;
 };
 
@@ -239,3 +240,9 @@ export const getSectionFmtInputTypes = (
     }
   );
 };
+
+export function isNullOrUndefined<T>(
+  obj: T | null | undefined
+): obj is null | undefined {
+  return typeof obj === "undefined" || obj === null;
+}
