@@ -16,9 +16,9 @@ import {
   Templates,
   TemplatesData,
 } from "./fields/types";
+import { GraphQLError, GraphQLObjectType } from "graphql";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
-import { GraphQLError } from "graphql";
 import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
 import kebabCase from "lodash.kebabcase";
@@ -190,10 +190,14 @@ export const getSectionFmtTypes2 = (
   return types;
 };
 
+/*
+ * Takes in a list of strings corresponding to the types the blocks field contain,
+ * and returns a list of corresponding GraphQL object types.
+ */
 export const getBlockFmtTypes = (
   templateTypes: string[],
   templateDataObjectTypes: TemplatesData
-) => {
+): GraphQLObjectType[] => {
   return templateTypes.map((template) => templateDataObjectTypes[template]);
 };
 
