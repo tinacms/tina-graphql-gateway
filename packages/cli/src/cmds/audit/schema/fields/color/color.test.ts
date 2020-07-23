@@ -1,14 +1,23 @@
-import { ColorField } from "./index";
 import { setupTests } from "../setupTests";
 
-const examples = {
+setupTests({
+  "with a missing label": {
+    initial: {
+      name: "color",
+      type: "color",
+      config: {
+        color_format: "Hex",
+      },
+    },
+    errors: [{ dataPath: "", keyword: "required" }],
+  },
   "with a missing config": {
     initial: {
       name: "color",
       label: "My Color",
       type: "color",
     },
-    errors: ["should have required property 'config'"],
+    errors: [{ dataPath: "", keyword: "required" }],
   },
   "without a color_format": {
     initial: {
@@ -19,7 +28,12 @@ const examples = {
         required: true,
       },
     },
-    errors: ["should have required property 'color_format'"],
+    errors: [
+      {
+        dataPath: ".config",
+        keyword: "required",
+      },
+    ],
   },
   "with an invalid color_format": {
     initial: {
@@ -30,8 +44,11 @@ const examples = {
         color_format: "Whoa!",
       },
     },
-    errors: ["should be equal to one of the allowed values"],
+    errors: [
+      {
+        dataPath: ".config.color_format",
+        keyword: "enum",
+      },
+    ],
   },
-};
-
-setupTests(examples, ColorField);
+});

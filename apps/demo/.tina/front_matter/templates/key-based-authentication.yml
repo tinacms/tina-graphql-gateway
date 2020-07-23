@@ -26,6 +26,7 @@ fields:
     label: Expirydate
     type: datetime
     hidden: false
+    default: '2000-07-13T19:00:00-03:00'
   - name: headline
     label: Headline
     type: text

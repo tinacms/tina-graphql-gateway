@@ -76,6 +76,5 @@ fields:
         label: calls_to_action
   - type: boolean
     name: private
-    label: private
 pages:
   - hugo/content/pricing.md

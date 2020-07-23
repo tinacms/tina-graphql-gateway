@@ -7,7 +7,7 @@ export const validator = (shouldFix) => {
       verbose: true,
       removeAdditional: true,
       coerceTypes: "array",
-      strictNumbers: true,
+      // strictNumbers: true,
       $data: true,
     }).addKeyword("removeIfFails", {
       // Used for remove empty string datetime since it would be invalid

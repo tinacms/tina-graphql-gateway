@@ -7,10 +7,10 @@ export const BlocksField = {
     "A list of unlike Field Groups. Great for allowing a series of different page sections be assembled in a custom way.",
   type: "object",
   properties: {
+    ...base,
     type: {
       const: "blocks",
     },
-    ...base,
     template_types: {
       type: "array",
       minItems: 1,
@@ -21,11 +21,11 @@ export const BlocksField = {
     config: {
       type: "object",
       properties: {
+        required: { type: "boolean" },
         min: { type: "number" },
         max: { type: "number" },
       },
       minProperties: 1,
-      removeIfFails: true,
       additionalProperties: false,
     },
   },

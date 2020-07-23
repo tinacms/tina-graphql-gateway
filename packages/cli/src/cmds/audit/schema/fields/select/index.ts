@@ -12,7 +12,7 @@ export const SelectField = {
     ...base,
     default: {
       type: "string",
-      removeIfFails: true,
+      // removeIfFails: true,
     },
     config: {
       type: "object",
@@ -38,6 +38,7 @@ export const SelectField = {
           },
           then: {
             additionalProperties: false,
+            required: ["options", "source"],
             properties: {
               required: { type: "boolean" },
               source: {

@@ -1,40 +1,47 @@
-import { BlocksField } from "./index";
 import { setupTests } from "../setupTests";
 
-const blocksDef = {
-  "config with empty values": {
+const base = {
+  name: "blocks",
+  type: "blocks",
+  label: "Blocks",
+};
+
+setupTests({
+  "config with null properties": {
     initial: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
+      ...base,
       template_types: ["sidecar"],
       config: {
         min: null,
       },
     },
-    errors: ["should be number"],
+    errors: [
+      {
+        dataPath: ".config.min",
+        keyword: "type",
+      },
+    ],
     fixed: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
+      ...base,
       template_types: ["sidecar"],
     },
   },
-  "config with an incorrect min type": {
+  "config with an incorrect type": {
     initial: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
+      ...base,
       template_types: ["sidecar"],
       config: {
         min: "2",
       },
     },
-    errors: ["should be number"],
+    errors: [
+      {
+        dataPath: ".config.min",
+        keyword: "type",
+      },
+    ],
     fixed: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
+      ...base,
       template_types: ["sidecar"],
       config: {
         min: 2,
@@ -43,27 +50,25 @@ const blocksDef = {
   },
   "missing template type": {
     initial: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
-      config: {
-        min: 2,
-      },
+      ...base,
     },
-    errors: ["should have required property 'template_types'"],
+    errors: [
+      {
+        dataPath: "",
+        keyword: "required",
+      },
+    ],
   },
   "empty template type": {
     initial: {
-      name: "blocks",
-      type: "blocks",
-      label: "Blocks",
+      ...base,
       template_types: [],
-      config: {
-        min: 2,
-      },
     },
-    errors: ["should NOT have fewer than 1 items"],
+    errors: [
+      {
+        dataPath: ".template_types",
+        keyword: "minItems",
+      },
+    ],
   },
-};
-
-setupTests(blocksDef, BlocksField);
+});
