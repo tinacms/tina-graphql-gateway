@@ -20,7 +20,6 @@ import {
   GraphQLSchema,
   GraphQLString,
   GraphQLUnionType,
-  getNamedType,
 } from "graphql";
 import {
   arrayToObject,
@@ -30,6 +29,7 @@ import {
   isNotNull,
   shortFMTName,
   slugify,
+  getSectionFmtInputTypes,
 } from "./util";
 
 import camelCase from "lodash.camelcase";
@@ -39,27 +39,7 @@ import kebabCase from "lodash.kebabcase";
 
 require("dotenv").config();
 
-const getSectionFmtInputTypes = (
-  settings: Settings,
-  templateInputObjectTypes: {
-    [key: string]: GraphQLInputObjectType;
-  }
-) => {
-  const sectionTemplates = flatten(
-    settings.data.sections
-      .filter(isDirectorySection)
-      .map(({ templates }) => templates)
-  );
 
-  return arrayToObject<GraphQLInputObjectType>(
-    sectionTemplates
-      .map((sectionTemplate) => templateInputObjectTypes[sectionTemplate])
-      ?.filter(isNotNull),
-    (obj: any, item: any) => {
-      obj[(getNamedType(item) || "").toString()] = { type: item };
-    }
-  );
-};
 
 const getDocument = async (
   templatePages: {
@@ -103,9 +83,7 @@ function isNullOrUndefined<T>(
   return typeof obj === "undefined" || obj === null;
 }
 
-/**
- * This is the main function in this script, it returns all the types
- */
+/
 export const buildSchema = async (
   config: configType,
   dataSource: DataSource
