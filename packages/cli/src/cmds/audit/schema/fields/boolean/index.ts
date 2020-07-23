@@ -7,10 +7,10 @@ export const BooleanField = {
     "A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ",
   type: "object",
   properties: {
+    ...base,
     type: {
       const: "boolean",
     },
-    ...base,
   },
   additionalProperties: false,
   required: baseRequired,

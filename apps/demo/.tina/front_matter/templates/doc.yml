@@ -102,7 +102,6 @@ fields:
               required: true
           - type: boolean
             name: button
-            label: Is button?
         config:
           labelField: textline
   - type: boolean

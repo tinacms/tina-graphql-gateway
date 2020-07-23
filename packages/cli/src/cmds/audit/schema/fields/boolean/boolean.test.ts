@@ -1,14 +1,16 @@
-import { BooleanField } from "./index";
 import { setupTests } from "../setupTests";
 
-const examples = {
+setupTests({
   "with a missing label": {
     initial: {
-      name: "blocks",
+      name: "boolean",
       type: "boolean",
     },
-    errors: ["should have required property 'label'"],
+    errors: [
+      {
+        dataPath: "",
+        keyword: "required",
+      },
+    ],
   },
-};
-
-setupTests(examples, BooleanField);
+});

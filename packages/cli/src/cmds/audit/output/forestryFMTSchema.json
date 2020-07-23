@@ -315,14 +315,11 @@
       ]
     },
     "booleanField": {
-      "$id": "#booleanField",
+      "$id": "#boolanField",
       "label": "Toggle Field",
       "description": "A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ",
       "type": "object",
       "properties": {
-        "type": {
-          "const": "boolean"
-        },
         "label": {
           "type": "string",
           "label": "Label",
@@ -359,13 +356,20 @@
             "field",
             "value"
           ]
+        },
+        "type": {
+          "const": "boolean"
+        },
+        "something": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
         "label",
         "name",
-        "type"
+        "type",
+        "something"
       ]
     },
     "textAreaField": {
@@ -506,7 +510,6 @@
         },
         "default": {
           "type": "string",
-          "removeIfFails": true,
           "anyOf": [
             {
               "type": "string",
@@ -617,9 +620,6 @@
       "description": "A list of unlike Field Groups. Great for allowing a series of different page sections be assembled in a custom way.",
       "type": "object",
       "properties": {
-        "type": {
-          "const": "blocks"
-        },
         "label": {
           "type": "string",
           "label": "Label",
@@ -657,6 +657,9 @@
             "value"
           ]
         },
+        "type": {
+          "const": "blocks"
+        },
         "template_types": {
           "type": "array",
           "minItems": 1,
@@ -667,6 +670,9 @@
         "config": {
           "type": "object",
           "properties": {
+            "required": {
+              "type": "boolean"
+            },
             "min": {
               "type": "number"
             },
@@ -675,7 +681,6 @@
             }
           },
           "minProperties": 1,
-          "removeIfFails": true,
           "additionalProperties": false
         }
       },
@@ -734,8 +739,7 @@
           ]
         },
         "default": {
-          "type": "string",
-          "removeIfFails": true
+          "type": "string"
         },
         "config": {
           "type": "object",
@@ -768,6 +772,10 @@
               },
               "then": {
                 "additionalProperties": false,
+                "required": [
+                  "options",
+                  "source"
+                ],
                 "properties": {
                   "required": {
                     "type": "boolean"
@@ -1076,8 +1084,7 @@
         },
         "default": {
           "type": "string",
-          "minLength": 1,
-          "removeIfFails": true
+          "minLength": 1
         },
         "config": {
           "type": "object",
@@ -1148,7 +1155,6 @@
         "default": {
           "type": "array",
           "minItems": 1,
-          "removeIfFails": true,
           "items": {
             "type": "string"
           }
@@ -1636,6 +1642,18 @@
             },
             "then": {
               "$ref": "#/definitions/imageField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "boolean"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/booleanField"
             }
           },
           {

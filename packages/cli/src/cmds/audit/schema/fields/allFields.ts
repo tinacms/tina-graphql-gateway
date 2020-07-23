@@ -132,6 +132,16 @@ export const AllFields = {
       {
         if: {
           properties: {
+            type: { const: "boolean" },
+          },
+        },
+        then: {
+          $ref: "#/definitions/booleanField",
+        },
+      },
+      {
+        if: {
+          properties: {
             type: { const: "image_gallery" },
           },
         },

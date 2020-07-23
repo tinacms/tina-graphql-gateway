@@ -133,28 +133,32 @@ export const validateFile = async ({
   if (!valid) {
     anyErrors.push(fmtPath);
     console.log(`${fmtPath} is ${dangerText("invalid")}`);
-    printErrors(validate.errors, fmt);
+    const errorKeys = printErrors(validate.errors, fmt);
     console.log("\n");
-    return { success: false, fmt, errors: validate.errors };
+    return { success: false, fmt, errors: errorKeys };
   } else {
     return { success: true, fmt, errors: [] };
   }
 };
 
 const printErrors = (errors, object) => {
-  errors.map((error) => {
-    const handler = keywordError[error.keyword];
-    if (!handler) {
-      console.error(`Unable to find handler for ${error.keyword}`);
-    } else {
-      handler(error, object);
-    }
-  });
+  return errors
+    .map((error) => {
+      const handler = keywordError[error.keyword];
+      if (!handler) {
+        throw `Unable to find handler for ${error.keyword}`;
+      } else {
+        return handler(error, object);
+      }
+    })
+    .filter(Boolean);
 };
 
 const keywordError = {
   required: (error, object) => {
     console.log(`${propertyName(error, object)} ${error.message}`);
+
+    return error;
   },
   minItems: (error) => {
     console.log(
@@ -162,9 +166,13 @@ const keywordError = {
         displayType(error)
       )}`
     );
+
+    return error;
   },
   exclusiveMinimum: (error, object) => {
     console.log(`${propertyName(error, object)} ${error.message}`);
+
+    return error;
   },
   minimum: (error, object) => {
     console.log(
@@ -172,6 +180,8 @@ const keywordError = {
         displayType(error)
       )}`
     );
+
+    return error;
   },
   maximum: (error, object) => {
     console.log(
@@ -179,6 +189,8 @@ const keywordError = {
         displayType(error)
       )}`
     );
+
+    return error;
   },
   const: (error) => {
     if (error.schema === "now") {
@@ -187,6 +199,8 @@ const keywordError = {
       console.log(`Unanticipated error - ${error.keyword}`);
       console.log(error);
     }
+
+    return false;
   },
   format: (error) => {
     if (error.schema === "date-time") {
@@ -194,16 +208,19 @@ const keywordError = {
     } else {
       console.log(`Unanticipated error - ${error.keyword}`);
     }
+    return false;
   },
   anyOf: (error, object) => {
     console.log(`${propertyName(error, object)} should be one of:
     ${oneOfSchemaMessage(error)}
     But got ${dangerText(displayType(error))}
 `);
+    return error;
   },
   oneOf: (error) => {
     console.log(`Unanticipated error - ${error.keyword}`);
     console.log(error);
+    return false;
   },
   datetimeFormat: (error, object) => {
     console.log(
@@ -214,6 +231,7 @@ const keywordError = {
         error.data
       )})`
     );
+    return error;
   },
   minLength: (error, object) => {
     console.log(
@@ -221,9 +239,11 @@ const keywordError = {
         error.params.limit
       )} character`
     );
+    return error;
   },
   removeIfFails: () => {
     // Do nothing
+    return false;
   },
   additionalProperties: (error, object) => {
     console.log(
@@ -234,6 +254,7 @@ const keywordError = {
         error.params.additionalProperty
       )}`
     );
+    return error;
   },
   multipleOf: (error, object) => {
     console.log(
@@ -241,6 +262,7 @@ const keywordError = {
         displayType(error)
       )}`
     );
+    return error;
   },
   enum: (error, object) => {
     console.log(
@@ -250,21 +272,23 @@ const keywordError = {
         Allowed values: ${successText(error.schema.join(", "))}
     `
     );
+    return error;
   },
   type: (error, object) => {
     console.log(
       `${propertyName(error, object)} ${error.message.replace(
         "should be",
         "should be of type"
-      )} but got ${dangerText(displayType(error))}
-`
+      )} but got ${dangerText(displayType(error))}`
     );
+    return error;
   },
   if: () => {
     // an error stating should match "then" schema
     // indicates that the conditional schema isn't matched -
     // we should get a more specific error elsewhere so ignore these
     // unless debugging.
+    return false;
   },
 };
 

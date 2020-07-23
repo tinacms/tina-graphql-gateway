@@ -13,7 +13,7 @@ export const DateField = {
     ...base,
     default: {
       type: "string",
-      removeIfFails: true,
+      // removeIfFails: true,
       anyOf: [
         {
           type: "string",
