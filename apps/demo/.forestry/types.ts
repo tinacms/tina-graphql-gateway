@@ -611,12 +611,20 @@ export type PageSelectMenuMenuItem = BlockPage;
 
 export type Mutation = {
   __typename?: 'Mutation';
-  document?: Maybe<DocumentUnion>;
+  updateDocument?: Maybe<DocumentUnion>;
+  addDocument?: Maybe<DocumentUnion>;
 };
 
 
-export type MutationDocumentArgs = {
+export type MutationUpdateDocumentArgs = {
   path: Scalars['String'];
+  params?: Maybe<DocumentInput>;
+};
+
+
+export type MutationAddDocumentArgs = {
+  path: Scalars['String'];
+  template: Scalars['String'];
   params?: Maybe<DocumentInput>;
 };
 
