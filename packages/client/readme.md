@@ -3,13 +3,13 @@
 This "@forestryio/client" package allows you to access your datasource through a GraphQL adapter.
 You might want to use this for a few reasons:
 
-### Consistent data querying of dynamic datasource through a GraphqQL API
+### Consistent GraphqQL API regardless of your datsource
 
 If your content is backed by Git, you might want to use your local content in development. With your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code.
 
 ### GraphQL Typescript type generation
 
-With the "@forestryio/cli" package, you can generate typescript types based on your schema.
+With the "@forestryio/cli" package, you can generate typescript types based on your schema. Your schema will be defined within your site in the **.forestry** folder
 
 ## Install
 
@@ -56,9 +56,9 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 ### Define Schema
 
-Your site's schema is defined within the `<site_root>/.forestry` directory
+Your site's schema is defined within the **<site_root>/.forestry** directory
 
-You'll need to setup a few files:
+You'll need to setup a few configuration files:
 
 #### .forestry/config.js
 
@@ -136,16 +136,16 @@ yarn forestry server:start
 
 To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
 
-Now that we have a working GraphQL server with our local data, let's use it within our site
+Now that we have a working GraphQL server with our local content, let's use it within our site
 
 ### Using the data within our Next.JS site
 
 This section assumes you have a working Next.JS site.
 
-There is some manual configuration your site will need temporariliy:
+There is currently some manual configuration required:
 
 ```js
-//next.config.js
+// next.config.js
 const path = require("path");
 
 module.exports = {
@@ -153,19 +153,6 @@ module.exports = {
     config.node = {
       fs: "empty",
     };
-
-    // This was awkard with the tinacms webpack helpers package
-    // just doing this for now works fine
-    config.resolve.alias["@tinacms"] = path.resolve(
-      "../../tinacms/packages/@tinacms"
-    );
-    config.resolve.alias["tinacms"] = path.resolve(
-      "../../tinacms/packages/tinacms"
-    );
-    // Using yarn pnp - we rely on Yarn to set this properly, the file ends up looking like
-    // <My-Root-Path>/code/scratch/sc/.yarn/$$virtual/react-dom-virtual-e706100de8/0/cache/react-dom-npm-16.13.1-b0abd8a83a-2.zip/node_modules/react-dom/index.js
-    config.resolve.alias["react-dom"] = require.resolve("react-dom");
-    config.resolve.alias["react"] = require.resolve("react");
 
     return config;
   },
@@ -181,7 +168,7 @@ yarn add tinacms styled-components
 In your site root, add TinaCMS & register the ForestryClient like so:
 
 ```tsx
-//_app.jsx
+// _app.jsx
 import React from "react";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
@@ -199,13 +186,16 @@ export default withTina(MyApp, {
       query,
     }),
   },
+  sidebar: {
+    hidden: false,
+  },
 });
 ```
 
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// content/posts/welcome.md
+// content/posts/welcome.jsx
 
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
@@ -232,7 +222,7 @@ const Home = (props) => {
 
   return (
     <div>
-      <h1>{formData.document.title}</h1>
+      <h1>{formData.data.title}</h1>
     </div>
   );
 };
