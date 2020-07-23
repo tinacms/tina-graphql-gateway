@@ -34,9 +34,7 @@ This will describe how to use the schema:gen-query command.
 
 ## Commands
 
-```bash
-forestry schema:gen-query \[options\]
-```
+### forestry schema:gen-query \[options\]
 
 Generate a GraphQL query for your site's schema
 
@@ -44,9 +42,7 @@ Generate a GraphQL query for your site's schema
 
 --typescript Include this option to also generate typescript types for your schema
 
-```bash
-forestry schema:audit \[options\]
-```
+### forestry schema:audit \[options\]
 
 Check for **.forestry/front_matter/templates** folder for any issues.
 
@@ -54,9 +50,7 @@ Check for **.forestry/front_matter/templates** folder for any issues.
 
 --path <forestryPath> Specify a relative path to the .forestry folder (eg. my-site)
 
-```bash
-forestry server:start \[options\]
-```
+### forestry server:start \[options\]
 
 Start a GraphQL server using your Filesystem's content as the datasource.
 
