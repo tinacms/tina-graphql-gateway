@@ -22,7 +22,7 @@ npm install --save @forestryio/client
 or
 
 ```bash
-yarn install @forestryio/client
+yarn add @forestryio/client
 ```
 
 This package provides a few things:
@@ -41,7 +41,7 @@ npm install --save-dev @forestryio/cli
 or
 
 ```bash
-yarn install --dev @forestryio/cli
+yarn add --dev @forestryio/cli
 ```
 
 This CLI performs a few functions:
@@ -60,18 +60,18 @@ Your site's schema is defined within the `<site_root>/.forestry` directory
 
 You'll need to setup a few files:
 
-#### .forestry/.config
+#### .forestry/config.js
 
 This file specifies where we'll load our data. It should look like:
 
 ```js
-// .config
+// config.js
 module.exports = {
   serverURL: "http://localhost:4001/api/graphql",
 };
 ```
 
-#### .forestry/front_matter/templates/<your_template_name>.yml
+#### .forestry/front_matter/templates/test.yml
 
 This is where your templates live. These represent your data's content model.
 Let's wire one up:
@@ -89,6 +89,30 @@ fields:
     label: Title
 pages:
   - content/posts/welcome.md # This keeps reference to all the pages using this template
+```
+
+#### .forestry/settings.yml
+
+```yml
+---
+new_page_extension: md
+auto_deploy: false
+admin_path:
+webhook_url:
+sections:
+  - type: directory
+    path: content/posts
+    label: Posts
+    create: documents
+    match: "**/*.md"
+    new_doc_ext: md
+    templates:
+      - test # replace this with your template filename name
+upload_dir: public/uploads
+public_path: "/uploads"
+front_matter_path: ""
+use_front_matter_path: false
+file_template: ":filename:"
 ```
 
 #### Creating the GraphQL server
@@ -118,9 +142,46 @@ Now that we have a working GraphQL server with our local data, let's use it with
 
 This section assumes you have a working Next.JS site.
 
+There is some manual configuration your site will need temporariliy:
+
+```js
+//next.config.js
+const path = require("path");
+
+module.exports = {
+  webpack: (config, options) => {
+    config.node = {
+      fs: "empty",
+    };
+
+    // This was awkard with the tinacms webpack helpers package
+    // just doing this for now works fine
+    config.resolve.alias["@tinacms"] = path.resolve(
+      "../../tinacms/packages/@tinacms"
+    );
+    config.resolve.alias["tinacms"] = path.resolve(
+      "../../tinacms/packages/tinacms"
+    );
+    // Using yarn pnp - we rely on Yarn to set this properly, the file ends up looking like
+    // <My-Root-Path>/code/scratch/sc/.yarn/$$virtual/react-dom-virtual-e706100de8/0/cache/react-dom-npm-16.13.1-b0abd8a83a-2.zip/node_modules/react-dom/index.js
+    config.resolve.alias["react-dom"] = require.resolve("react-dom");
+    config.resolve.alias["react"] = require.resolve("react");
+
+    return config;
+  },
+};
+```
+
+Install the TinaCMS depedencies
+
+```bash
+yarn add tinacms styled-components
+```
+
 In your site root, add TinaCMS & register the ForestryClient like so:
 
 ```tsx
+//_app.jsx
 import React from "react";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
@@ -146,9 +207,24 @@ By registering the ForestryClient globally, we can now use it within our pages t
 ```tsx
 // content/posts/welcome.md
 
-import { useForestryForm } from "@forestryio/client";
+import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
 import { usePlugin } from "tinacms";
+
+import config from "../.forestry/config";
+import query from "../.forestry/query";
+
+const URL = config.serverURL;
+
+export const getStaticProps = async () => {
+  const path = `content/posts/test.md`;
+  const client = new ForestryClient({ serverURL: URL, query });
+  const response = await client.getContent({
+    path,
+  });
+
+  return { props: { path, response } };
+};
 
 const Home = (props) => {
   const [formData, form] = useForestryForm(props.response, config.serverURL);
