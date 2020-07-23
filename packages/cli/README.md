@@ -6,26 +6,49 @@ The CLI can be used to setup your local site with Forestry.io configuration.
 
 Npm:
 
-`npm install @forestryio/cli`
+`npm install --save-dev @forestryio/cli`
 
 Yarn:
 
-`yarn add @forestryio/cli`
+`yarn add --dev @forestryio/cli`
 
 ## Usage
 
-Arguments wrapped in `[]` in the command name are optional. If not provided, the user will be prompted for their values.
-E.g:
+Arguments wrapped in `[]` in the command name are optional.
 
 ## Help
 
 You can get help on any command with `-h` or `--help`.
 
-e.g: `yarn forestry types:gen --help`
+e.g: `yarn forestry schema:gen-query --help`
 
-This will describe how to use the types:gen command.
+This will describe how to use the schema:gen-query command.
 
 ## Commands
+
+### forestry gen-query \[options\]
+
+Generate a GraphQL query for your site's schema
+
+#### Options
+
+--typescript Include this option to also generate typescript types for your schema
+
+### forestry schema:audit \[options\]
+
+Check for **.forestry/front_matter/templates** folder for any issues.
+
+#### Options
+
+--path <forestryPath> Specify a relative path to the .forestry folder (eg. my-site)
+
+### forestry server:start \[options\]
+
+Start a GraphQL server using your Filesystem's content as the datasource.
+
+#### Options
+
+--port <port> Specify a port to run the server on. (default 4001)
 
 ## Development
 
