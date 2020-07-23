@@ -19,9 +19,9 @@ setupTests({
         },
       },
     },
-    errors: [],
     fixed: {
       ...base,
+      default: [],
       config: {
         use_select: true,
         source: {
@@ -84,7 +84,7 @@ setupTests({
       },
     ],
   },
-  "with a options for documents list": {
+  "with an options array for a documents list": {
     initial: {
       ...base,
       config: {
@@ -97,7 +97,6 @@ setupTests({
           section: "authors",
         },
       },
-      default: [],
     },
     errors: [
       {
@@ -128,43 +127,11 @@ setupTests({
         },
       },
     },
-    errors: [],
-    fixed: {
-      ...base,
-      config: {
-        use_select: true,
-        source: {
-          type: "datafiles",
-        },
-      },
-    },
-  },
-  // FIXME: this is passing but it's invalid, the "fix" removes the config.source becuase
-  // it's treating the value like a text-based list. Need to know more about datafiles
-  "with a datafile source while use_select is false": {
-    initial: {
-      ...base,
-      config: {
-        use_select: false,
-        source: {
-          type: "datafiles",
-        },
-      },
-    },
     errors: [
       {
-        dataPath: ".config",
-        keyword: "additionalProperties",
+        dataPath: ".config.source.type",
+        keyword: "enum",
       },
     ],
-    fixed: {
-      ...base,
-      config: {
-        use_select: false,
-        // source: {
-        //   type: "datafiles",
-        // },
-      },
-    },
   },
 });

@@ -24,6 +24,17 @@ setupTests({
       default: 2,
     },
   },
+  "with 0 as the default": {
+    initial: {
+      ...base,
+      default: 0,
+    },
+    errors: [],
+    fixed: {
+      ...base,
+      default: 0,
+    },
+  },
   "with a misplaced 'required' key": {
     initial: {
       ...base,

@@ -31,7 +31,7 @@ export const ListField = {
         source: {
           type: "object",
           properties: {
-            type: { enum: ["simple", "pages", "documents", "datafiles"] },
+            type: { enum: ["simple", "pages", "documents"] },
           },
         },
       },
@@ -39,7 +39,6 @@ export const ListField = {
         {
           if: {
             properties: {
-              // FIXME: datafiles is probably deprecated but it can be set while this is false (in forestry.io)
               use_select: { const: false },
             },
           },
@@ -127,32 +126,6 @@ export const ListField = {
                         path: { type: "string" },
                       },
                       required: ["type", "section", "file", "path"],
-                      additionalProperties: false,
-                    },
-                  },
-                  required: ["source"],
-                  additionalProperties: false,
-                },
-              },
-              // I have no idea what this is
-              {
-                if: {
-                  properties: {
-                    source: {
-                      properties: {
-                        type: { const: "datafiles" },
-                      },
-                    },
-                  },
-                },
-                then: {
-                  properties: {
-                    ...additionalListConfig,
-                    source: {
-                      properties: {
-                        type: { const: "datafiles" },
-                      },
-                      required: ["type"],
                       additionalProperties: false,
                     },
                   },

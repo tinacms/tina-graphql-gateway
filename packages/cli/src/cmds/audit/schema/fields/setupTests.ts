@@ -1,13 +1,14 @@
 import { validator } from "../../validator";
 import { validateFile } from "../../index";
 import { ForestryFMTSchema } from "../fmt";
+import { text } from "figlet";
 
 /**
  * The idea with these test are that you can provide 3 keys (initial, error, fixed).
  *
  * Initial is the setup
  *
- * Error is the expectation for what kind of error we'll get
+ * Error is the expectation for what kind of error we'll get. If no errors are expected you can omit this key
  *
  * Fixed is the result if the error can be fixed automatically, if it can't be fixed
  * this value should be left off.
@@ -60,64 +61,87 @@ export const setupTests = (example) => {
   Object.keys(example).map((item) => {
     const ajv = validator(true);
     const ajvWithErrors = validator(false);
-    describe(item, () => {
-      const { initial, fixed, errors } = example[item];
+    const { initial, fixed, errors } = example[item];
+    describe(`The ${initial.type} field`, () => {
+      describe(item, () => {
+        const payload = {
+          label: "my-fmt",
+          hide_body: false,
+          fields: [initial],
+        };
 
-      const payload = {
-        label: "my-fmt",
-        hide_body: false,
-        fields: [initial],
-      };
-
-      if (fixed) {
-        test(`is fixed properly`, async () => {
-          const output = await validateFile({
-            fmtPath: "my-path.yml",
-            payload,
-            schema: ForestryFMTSchema,
-            ajv,
-            anyErrors: [],
-            migrate: true,
-          });
-          expect(output).toBeSuccessful();
-          expect(output.fmt.fields[0]).toEqual(fixed);
+        describe("when run as a fix/migrate task", () => {
+          if (fixed) {
+            test(`can be fixed/migrated`, async () => {
+              const output = await validateFile({
+                fmtPath: "my-path.yml",
+                payload,
+                schema: ForestryFMTSchema,
+                ajv,
+                anyErrors: [],
+                migrate: true,
+              });
+              expect(output).toBeSuccessful();
+              expect(output.fmt.fields[0]).toEqual(fixed);
+            });
+          } else {
+            test(`cannot be fixed/migrated`, async () => {
+              const output = await validateFile({
+                fmtPath: "my-path.yml",
+                payload,
+                schema: ForestryFMTSchema,
+                ajv,
+                anyErrors: [],
+                migrate: true,
+              });
+              expect(output).toBeUnsuccessful();
+            });
+          }
         });
-      } else {
-        test(`is unabled to be fixed`, async () => {
-          const output = await validateFile({
-            fmtPath: "my-path.yml",
-            payload,
-            schema: ForestryFMTSchema,
-            ajv,
-            anyErrors: [],
-            migrate: true,
-          });
-          expect(output).toBeUnsuccessful();
-        });
-      }
-      if (errors) {
-        test(`has proper errors`, async () => {
-          const outputWithErrors = await validateFile({
-            fmtPath: "my-path.yml",
-            payload,
-            schema: ForestryFMTSchema,
-            ajv: ajvWithErrors,
-            anyErrors: [],
-            migrate: false,
-          });
+        describe("when run as an audit task", () => {
+          if (errors?.length > 0) {
+            test(`returns expected errors: \n            ${errors
+              .map(({ dataPath, keyword }) => `field${dataPath}: ${keyword}`)
+              .join("\n            ")}`, async () => {
+              const outputWithErrors = await validateFile({
+                fmtPath: "my-path.yml",
+                payload,
+                schema: ForestryFMTSchema,
+                ajv: ajvWithErrors,
+                anyErrors: [],
+                migrate: false,
+              });
 
-          const errorKeys = outputWithErrors.errors;
-          const errorList = errorKeys.map(({ dataPath, keyword }) => {
-            return { dataPath: dataPath.replace(".fields[0]", ""), keyword };
-          });
+              const errorKeys = outputWithErrors.errors;
+              const errorList = errorKeys.map(({ dataPath, keyword }) => {
+                return {
+                  dataPath: dataPath.replace(".fields[0]", ""),
+                  keyword,
+                };
+              });
 
-          expect(errorList).toEqual(
-            errors.map(({ dataPath, keyword }) => {
-              return { dataPath: `${dataPath}`, keyword };
-            })
-          );
+              expect(errorList).toEqual(
+                errors.map(({ dataPath, keyword }) => {
+                  return { dataPath: `${dataPath}`, keyword };
+                })
+              );
+            });
+          } else {
+            test("has no errors", async () => {
+              const outputWithErrors = await validateFile({
+                fmtPath: "my-path.yml",
+                payload,
+                schema: ForestryFMTSchema,
+                ajv: ajvWithErrors,
+                anyErrors: [],
+                migrate: false,
+              });
+
+              expect(outputWithErrors.errors).toEqual([]);
+            });
+          }
         });
-      }
+      });
     });
   });
 };
