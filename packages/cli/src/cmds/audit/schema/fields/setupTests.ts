@@ -2,6 +2,17 @@ import { validator } from "../../validator";
 import { validateFile } from "../../index";
 import { ForestryFMTSchema } from "../fmt";
 
+/**
+ * The idea with these test are that you can provide 3 keys (initial, error, fixed).
+ *
+ * Initial is the setup
+ *
+ * Error is the expectation for what kind of error we'll get
+ *
+ * Fixed is the result if the error can be fixed automatically, if it can't be fixed
+ * this value should be left off.
+ */
+
 declare global {
   namespace jest {
     interface Matchers<R> {

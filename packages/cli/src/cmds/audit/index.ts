@@ -65,18 +65,18 @@ export async function audit(
   }
 
   // Store these schemas for now, VSCode uses them locally
-  await fs.writeFileSync(
-    path.resolve(
-      __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
-    ),
-    JSON.stringify(ForestrySettingsSchema, null, 2)
-  );
-  await fs.writeFileSync(
-    path.resolve(
-      __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
-    ),
-    JSON.stringify(ForestryFMTSchema, null, 2)
-  );
+  // await fs.writeFileSync(
+  //   path.resolve(
+  //     __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
+  //   ),
+  //   JSON.stringify(ForestrySettingsSchema, null, 2)
+  // );
+  // await fs.writeFileSync(
+  //   path.resolve(
+  //     __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
+  //   ),
+  //   JSON.stringify(ForestryFMTSchema, null, 2)
+  // );
 
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(
