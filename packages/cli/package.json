@@ -1,11 +1,11 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.9",
+  "version": "0.2.14",
   "main": "dist/index.js",
   "files": [
-    "./dist",
-    "./bin",
-    "./.env"
+    "dist/*",
+    "bin/*",
+    ".env"
   ],
   "bin": {
     "forestry": "bin/forestry"
