@@ -315,7 +315,7 @@
       ]
     },
     "booleanField": {
-      "$id": "#boolanField",
+      "$id": "#booleanField",
       "label": "Toggle Field",
       "description": "A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ",
       "type": "object",
@@ -359,17 +359,13 @@
         },
         "type": {
           "const": "boolean"
-        },
-        "something": {
-          "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
         "label",
         "name",
-        "type",
-        "something"
+        "type"
       ]
     },
     "textAreaField": {
@@ -739,7 +735,8 @@
           ]
         },
         "default": {
-          "type": "string"
+          "type": "string",
+          "removeIfFails": true
         },
         "config": {
           "type": "object",
@@ -1084,7 +1081,8 @@
         },
         "default": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "removeIfFails": true
         },
         "config": {
           "type": "object",
@@ -1156,7 +1154,8 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "config": {
@@ -1244,8 +1243,7 @@
                   "enum": [
                     "simple",
                     "pages",
-                    "documents",
-                    "datafiles"
+                    "documents"
                   ]
                 }
               }
@@ -1424,50 +1422,6 @@
                             "section",
                             "file",
                             "path"
-                          ],
-                          "additionalProperties": false
-                        }
-                      },
-                      "required": [
-                        "source"
-                      ],
-                      "additionalProperties": false
-                    }
-                  },
-                  {
-                    "if": {
-                      "properties": {
-                        "source": {
-                          "properties": {
-                            "type": {
-                              "const": "datafiles"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "then": {
-                      "properties": {
-                        "use_select": {
-                          "type": "boolean"
-                        },
-                        "required": {
-                          "type": "boolean"
-                        },
-                        "min": {
-                          "type": "number"
-                        },
-                        "max": {
-                          "type": "number"
-                        },
-                        "source": {
-                          "properties": {
-                            "type": {
-                              "const": "datafiles"
-                            }
-                          },
-                          "required": [
-                            "type"
                           ],
                           "additionalProperties": false
                         }

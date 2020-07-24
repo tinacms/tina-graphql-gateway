@@ -7,8 +7,7 @@ export const ForestrySettingsSchema = {
   properties: {
     new_page_extension: {
       title: "New file format",
-      description:
-        "New files created in Forestry can be Markdown or HTM\n\nFor example: HERE WE GO",
+      description: "New files created in Forestry can be Markdown or HTML",
       type: "string",
       enum: ["md", "html"],
     },
@@ -199,7 +198,7 @@ export const ForestrySettingsSchema = {
                   title: "",
                   description: "",
                 },
-                new_page_extension: {
+                new_doc_ext: {
                   type: "string",
                   title: "New doc",
                   description: "",
