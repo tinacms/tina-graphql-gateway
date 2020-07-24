@@ -192,6 +192,42 @@ export default withTina(MyApp, {
 });
 ```
 
+If your site uses SSR, you may also need to add this to your **\_document.js** to handle tinacms's Styled Components
+
+```js
+// pages/_document.js
+import Document from "next/document";
+import { ServerStyleSheet } from "styled-components";
+
+export default class MyDocument extends Document {
+  static async getInitialProps(ctx) {
+    const sheet = new ServerStyleSheet();
+    const originalRenderPage = ctx.renderPage;
+
+    try {
+      ctx.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(<App {...props} />),
+        });
+
+      const initialProps = await Document.getInitialProps(ctx);
+      return {
+        ...initialProps,
+        styles: (
+          <>
+            {initialProps.styles}
+            {sheet.getStyleElement()}
+          </>
+        ),
+      };
+    } finally {
+      sheet.seal();
+    }
+  }
+}
+```
+
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
