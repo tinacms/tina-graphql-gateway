@@ -6,6 +6,7 @@ sections:
     label: Pages
     create: documents
     match: '**/*.md'
+    new_doc_ext: md
     templates:
       - block-page
   - type: directory

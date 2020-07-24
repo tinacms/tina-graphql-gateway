@@ -1,173 +1,134 @@
-import _ from "lodash";
-import * as jsyaml from "js-yaml";
 import fs from "fs-extra";
 import path from "path";
+import { validator } from "./schema/validator";
+import _ from "lodash";
+import type { Ajv } from "ajv";
 import get from "lodash.get";
-import { validator } from "./validator";
-import { neutralText, successText, dangerText } from "../../utils/theme";
+import * as jsyaml from "js-yaml";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
+import { neutralText, successText, dangerText } from "../../utils/theme";
 
-export async function audit(
-  _ctx,
-  _next,
-  {
-    forestry = false,
-    fix = false,
-    dump,
-  }: {
-    migrate: boolean;
-    forestry: boolean;
-    fix: boolean;
-    dump?: string;
-  }
-) {
-  run({
-    migrate: false,
-    forestry: forestry,
+export const audit = async (_ctx, _next, { fix }: { fix: boolean }) => {
+  const output = await runValidation({
+    directory: ".tina",
+    ajv: validator({ fix }),
     fix,
-    dump,
   });
-}
-export async function migrate(_ctx, _next) {
-  run({
-    migrate: true,
-    forestry: false,
-    fix: true,
-  });
-}
 
-async function run({
-  migrate = false,
-  forestry = false,
-  fix = false,
-  dump,
-}: {
-  migrate: boolean;
-  forestry: boolean;
-  fix: boolean;
-  dump?: string;
-}) {
-  let anyErrors = [];
-
-  if (dump) {
-    const directory = process.cwd() + "/" + dump;
-    if (!(await fs.existsSync(directory))) {
-      await fs.mkdirSync(directory);
-    }
-    // Store these schemas for now, VSCode uses them locally
-    await fs.writeFileSync(
-      directory + "/settings_schema.json",
-      JSON.stringify(ForestrySettingsSchema, null, 2)
-    );
-    await fs.writeFileSync(
-      directory + "/fmt_schema.json",
-      JSON.stringify(ForestryFMTSchema, null, 2)
-    );
-    return;
+  if (fix) {
+    writeToDisk(output);
   }
+};
 
-  const workingDirReal = process.cwd();
-  const configFolder = migrate || forestry ? ".forestry" : ".tina";
-  const shouldFix = migrate || fix;
+export const migrate = async (_ctx, _next, { dryRun }: { dryRun: boolean }) => {
+  const output = await runValidation({
+    directory: ".forestry",
+    ajv: validator({ fix: !dryRun }),
+    fix: !dryRun,
+  });
 
-  const ajv = validator(shouldFix);
+  if (!dryRun) {
+    writeToDisk(output);
+  }
+};
 
-  const fmtDirPath = path.resolve(
-    workingDirReal + `/${configFolder}/front_matter/templates`
+export const dump = async (_ctx, _next, { folder }) => {
+  console.log(folder);
+  const directory = path.join(process.cwd(), folder);
+  if (!(await fs.existsSync(directory))) {
+    await fs.mkdirSync(directory);
+  }
+  await fs.writeFileSync(
+    directory + "/settings_schema.json",
+    JSON.stringify(ForestrySettingsSchema, null, 2)
   );
+  await fs.writeFileSync(
+    directory + "/fmt_schema.json",
+    JSON.stringify(ForestryFMTSchema, null, 2)
+  );
+};
 
-  if (!(await fs.existsSync(fmtDirPath))) {
-    if (!migrate || !forestry) {
-      throw `No directory found. Have you migrated yet (forestry schema:audit --migrate)?
-      Path: ${fmtDirPath}`;
-    }
-  }
-  const fmtFullPath = workingDirReal + "/" + `${configFolder}/settings.yml`;
-  const fmtString = await fs.readFileSync(fmtFullPath).toString();
-  if (typeof fmtString !== "string") {
-    throw "Expected a string";
-  }
-  let payload = jsyaml.safeLoad(fmtString);
-
-  const output = await validateFile({
-    fmtPath: `${configFolder}/settings.yml`,
-    payload,
-    schema: ForestrySettingsSchema,
-    ajv,
-    migrate,
-    anyErrors,
-  });
-
-  if (output.success) {
-    if (migrate) {
+const writeToDisk = async (output) => {
+  output.map(async ({ path, result }) => {
+    if (result.success) {
       await fs.outputFile(
-        fmtFullPath.replace(".forestry", ".tina"),
-        jsyaml.dump(output.fmt)
+        path.replace(".forestry", ".tina"),
+        jsyaml.dump(result.fileJSON)
       );
     }
-  }
+  });
+};
 
-  const fmts = await fs.readdirSync(fmtDirPath);
+export const runValidation = async ({
+  directory,
+  ajv,
+  fix,
+}: {
+  directory: string;
+  ajv: Ajv;
+  fix: boolean;
+}) => {
+  const output = [];
+  const configDirPath = path.resolve(process.cwd(), directory);
+
+  const settingsFullPath = path.join(configDirPath, "settings.yml");
+  const settingsJSON = jsyaml.safeLoad(
+    await fs.readFileSync(settingsFullPath).toString()
+  );
+  output.push({
+    path: settingsFullPath,
+    result: await validateFile({
+      filePath: "settings.yml",
+      payload: settingsJSON,
+      schema: ForestrySettingsSchema,
+      ajv,
+      fix,
+    }),
+  });
+
+  const templateDirPath = path.join(configDirPath, "front_matter", "templates");
+  const templateList = await fs.readdirSync(path.join(templateDirPath));
   await Promise.all(
-    fmts.map(async (fmtPath) => {
-      const fmtFullPath = fmtDirPath + "/" + fmtPath;
-      const fmtString = await fs.readFileSync(fmtFullPath).toString();
-      if (typeof fmtString !== "string") {
-        throw "Expected a string";
-      }
-      let payload = jsyaml.safeLoad(fmtString);
+    templateList.map(async (templatePath) => {
+      const templateFullpath = path.join(templateDirPath, templatePath);
+      const templateJSON = jsyaml.safeLoad(
+        await fs.readFileSync(templateFullpath).toString()
+      );
 
-      const output = await validateFile({
-        fmtPath: `.forestry/front_matter/templates/${fmtPath}`,
-        payload,
-        schema: ForestryFMTSchema,
-        ajv,
-        migrate,
-        anyErrors,
+      output.push({
+        path: templateFullpath,
+        result: await validateFile({
+          filePath: templatePath,
+          payload: templateJSON,
+          schema: ForestryFMTSchema,
+          ajv,
+          fix,
+        }),
       });
-      if (output.success) {
-        if (migrate) {
-          await fs.outputFile(
-            fmtFullPath.replace(".forestry", ".tina"),
-            jsyaml.dump(output.fmt)
-          );
-        }
-      }
     })
   );
 
-  if (anyErrors.length > 0) {
-    throw `Audit failed with ${anyErrors.length} error(s)`;
-  } else {
-    console.log(`Audit completed with no errors.`);
-  }
-}
+  return output;
+};
 
-export const validateFile = async ({
-  fmtPath,
-  payload,
-  schema,
-  ajv,
-  migrate,
-  anyErrors,
-}) => {
-  let fmt = payload;
-  if (migrate) {
-    fmt = preprocess(fmt);
-    fmt = pruneEmpty(fmt);
+export const validateFile = async ({ filePath, payload, schema, ajv, fix }) => {
+  let fileJSON = payload;
+  // if (fix) {
+  if (fix) {
+    fileJSON = moveRequiredKeys(fileJSON);
+    fileJSON = pruneEmpty(fileJSON);
   }
   var validate = ajv.compile(schema);
-  var valid = validate(fmt);
+  var valid = validate(fileJSON);
 
   if (!valid) {
-    anyErrors.push(fmtPath);
-    console.log(`${fmtPath} is ${dangerText("invalid")}`);
-    const errorKeys = printErrors(validate.errors, fmt);
+    console.log(`${filePath} is ${dangerText("invalid")}`);
+    const errorKeys = printErrors(validate.errors, fileJSON);
     console.log("\n");
-    return { success: false, fmt, errors: errorKeys };
+    return { success: false, fileJSON, errors: errorKeys };
   } else {
-    return { success: true, fmt, errors: [] };
+    return { success: true, fileJSON, errors: [] };
   }
 };
 
@@ -407,7 +368,8 @@ const jsonSchemaFormats = {
   "date-time": "datetime",
 };
 
-const preprocess = (json) => {
+// Some fields have the "required" key in the wrong spot. Put them in the config
+const moveRequiredKeys = (json) => {
   const string = JSON.stringify(json);
 
   return JSON.parse(string, (key, value) => {
@@ -444,10 +406,8 @@ function pruneEmpty(obj) {
         delete current[key];
       }
     });
-    // remove any leftover undefined values from the delete
-    // operation on an array
     if (_.isArray(current)) _.pull(current, undefined);
 
     return current;
-  })(_.cloneDeep(obj)); // Do not modify the original object, create a clone instead
+  })(_.cloneDeep(obj));
 }
