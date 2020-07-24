@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.15.3",
     "@graphql-codegen/typescript": "^1.15.3",
     "@graphql-codegen/typescript-operations": "^1.15.3",
@@ -34,7 +35,6 @@
     "@types/node": "^13.13.2",
     "@types/pg": "^7.14.3",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "glob": "^7.1.6",
