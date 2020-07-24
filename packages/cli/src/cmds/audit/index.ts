@@ -34,7 +34,6 @@ export const migrate = async (_ctx, _next, { dryRun }: { dryRun: boolean }) => {
 };
 
 export const dump = async (_ctx, _next, { folder }) => {
-  console.log(folder);
   const directory = path.join(process.cwd(), folder);
   if (!(await fs.existsSync(directory))) {
     await fs.mkdirSync(directory);
