@@ -1,6 +1,5 @@
-import { ConfigType, FieldData } from "./types";
+import { ConfigType, FieldData, FieldSetter } from "./types";
 import { FieldGroupField, FieldType } from "../datasources/datasource";
-import { FieldSetter, generateFieldAccessors } from "../fieldGenerator";
 import {
   GraphQLError,
   GraphQLInputObjectType,
@@ -11,6 +10,7 @@ import {
 } from "graphql";
 
 import { friendlyFMTName } from "@forestryio/graphql-helpers";
+import { generateFieldAccessors } from "../fieldGenerator";
 
 export const field_group = ({
   fmt,

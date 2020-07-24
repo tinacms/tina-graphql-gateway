@@ -2,6 +2,7 @@ import {
   ConfigType,
   DocumentType,
   FieldData,
+  FieldSetter,
   Templates,
   TemplatesData,
 } from "./fields/types";
@@ -11,7 +12,6 @@ import {
   FieldType,
   WithFields,
 } from "./datasources/datasource";
-import { FieldSetter, generateFieldAccessors } from "./fieldGenerator";
 import {
   GraphQLError,
   GraphQLInputObjectType,
@@ -32,6 +32,7 @@ import {
 } from "./util";
 
 import camelCase from "lodash.camelcase";
+import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
 require("dotenv").config();

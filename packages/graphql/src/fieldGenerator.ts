@@ -1,4 +1,10 @@
-import { FieldContextType, FieldData, FieldSourceType } from "./fields/types";
+import {
+  FieldAccessorTypes,
+  FieldContextType,
+  FieldData,
+  FieldSourceType,
+  GeneratedFieldsType,
+} from "./fields/types";
 import {
   GraphQLError,
   GraphQLFieldConfig,
@@ -24,43 +30,6 @@ import {
 
 import { FieldType } from "./datasources/datasource";
 
-export type generatedFieldsType = {
-  getters: {
-    [key: string]: FieldGetter;
-  };
-  setters: {
-    [key: string]: FieldSetter;
-  };
-  mutators: {
-    [key: string]: { type: GraphQLInputType };
-  };
-};
-
-type FieldGetter = GraphQLFieldConfig<
-  FieldSourceType,
-  FieldContextType,
-  {
-    [argName: string]: GraphQLType;
-  }
->;
-export type FieldSetter = {
-  // FIXME: any should be replaced with the resolver function payload type
-  type: GraphQLObjectType<any>;
-  resolve: (
-    val: FieldSourceType,
-    args: {
-      [argName: string]: unknown;
-    },
-    context: FieldContextType,
-    info: unknown
-  ) => unknown;
-};
-export type FieldAccessorTypes = {
-  getter: FieldGetter;
-  setter: FieldSetter;
-  mutator: { type: GraphQLInputType };
-};
-
 export const generateFieldAccessors = ({
   fmt,
   fields,
@@ -71,8 +40,8 @@ export const generateFieldAccessors = ({
   fields: FieldType[];
   config: { rootPath: string; siteLookup: string };
   fieldData: FieldData;
-}): generatedFieldsType => {
-  const accumulator: generatedFieldsType = {
+}): GeneratedFieldsType => {
+  const accumulator: GeneratedFieldsType = {
     getters: {},
     setters: {},
     mutators: {},
