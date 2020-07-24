@@ -122,7 +122,7 @@ Now that we've defined our schema, let's use the CLI to setup a GraphQL server f
 From the cli in your site root, run:
 
 ```bash
-yarn forestry schema:gen-query --typescript
+yarn tina-gql schema:gen-query --typescript
 ```
 
 This should create two files:
@@ -131,7 +131,7 @@ This should create two files:
 Now let's start our server! run:
 
 ```bash
-yarn forestry server:start
+yarn tina-gql server:start
 ```
 
 To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
@@ -265,6 +265,6 @@ And that's it! Try making some changes and saving.
 
 Next steps:
 
-- Make changes to our data-model, and verify our templates with `$ forestry schema:audit`
+- Make changes to our data-model, and verify our templates with `$ tina-gql schema:audit`
 - Setup build server to run in production
 - Configure your site to use the `Tina Teams` API in your hosted Cloud Editing Environment

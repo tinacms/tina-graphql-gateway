@@ -1,7 +1,3 @@
-import * as path from "path";
-
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") }); // load process.env values
-
 import * as commander from "commander";
 //@ts-ignore
 import { version } from "../package.json";
