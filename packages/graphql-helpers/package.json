@@ -1,0 +1,40 @@
+{
+  "name": "@forestryio/graphql-helpers",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "files": [
+    "dist/*"
+  ],
+  "typings": "dist/index.d.ts",
+  "bin": {
+    "forestry:serve": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "forestry-build",
+    "watch": "forestry-watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
+    "serve": "yarn nodemon dist/index.js",
+    "test": "jest --passWithNoTests",
+    "test-watch": "jest  --passWithNoTests --watch"
+  },
+  "dependencies": {
+    "@forestryio/build": "workspace:packages/build",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.upperfirst": "^4.3.1",
+    "tslib": "^1.11.1"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/graphql"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "@types/lodash.camelcase": "^4.3.6",
+    "@types/lodash.upperfirst": "^4.3.6",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.2"
+  }
+}

@@ -7,10 +7,6 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   webpack: (config, options) => {
-    config.node = {
-      fs: "empty",
-    };
-
     // This was awkard with the tinacms webpack helpers package
     // just doing this for now works fine
     config.resolve.alias["@tinacms"] = path.resolve(
