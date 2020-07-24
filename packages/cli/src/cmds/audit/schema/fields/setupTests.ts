@@ -1,7 +1,6 @@
-import { validator } from "../../validator";
+import { validator } from "../validator";
 import { validateFile } from "../../index";
 import { ForestryFMTSchema } from "../fmt";
-import { text } from "figlet";
 
 /**
  * The idea with these test are that you can provide 3 keys (initial, error, fixed).
@@ -59,8 +58,8 @@ expect.extend({
 jest.spyOn(console, "log").mockImplementation();
 export const setupTests = (example) => {
   Object.keys(example).map((item) => {
-    const ajv = validator(true);
-    const ajvWithErrors = validator(false);
+    const ajv = validator({ fix: true });
+    const ajvWithErrors = validator({ fix: false });
     const { initial, fixed, errors } = example[item];
     describe(`The ${initial.type} field`, () => {
       describe(item, () => {
@@ -74,25 +73,23 @@ export const setupTests = (example) => {
           if (fixed) {
             test(`can be fixed/migrated`, async () => {
               const output = await validateFile({
-                fmtPath: "my-path.yml",
+                filePath: "my-path.yml",
                 payload,
                 schema: ForestryFMTSchema,
                 ajv,
-                anyErrors: [],
-                migrate: true,
+                fix: true,
               });
               expect(output).toBeSuccessful();
-              expect(output.fmt.fields[0]).toEqual(fixed);
+              expect(output.fileJSON.fields[0]).toEqual(fixed);
             });
           } else {
             test(`cannot be fixed/migrated`, async () => {
               const output = await validateFile({
-                fmtPath: "my-path.yml",
+                filePath: "my-path.yml",
                 payload,
                 schema: ForestryFMTSchema,
                 ajv,
-                anyErrors: [],
-                migrate: true,
+                fix: true,
               });
               expect(output).toBeUnsuccessful();
             });
@@ -104,12 +101,11 @@ export const setupTests = (example) => {
               .map(({ dataPath, keyword }) => `field${dataPath}: ${keyword}`)
               .join("\n            ")}`, async () => {
               const outputWithErrors = await validateFile({
-                fmtPath: "my-path.yml",
+                filePath: "my-path.yml",
                 payload,
                 schema: ForestryFMTSchema,
                 ajv: ajvWithErrors,
-                anyErrors: [],
-                migrate: false,
+                fix: false,
               });
 
               const errorKeys = outputWithErrors.errors;
@@ -129,12 +125,11 @@ export const setupTests = (example) => {
           } else {
             test("has no errors", async () => {
               const outputWithErrors = await validateFile({
-                fmtPath: "my-path.yml",
+                filePath: "my-path.yml",
                 payload,
                 schema: ForestryFMTSchema,
                 ajv: ajvWithErrors,
-                anyErrors: [],
-                migrate: false,
+                fix: false,
               });
 
               expect(outputWithErrors.errors).toEqual([]);

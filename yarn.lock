@@ -2055,6 +2055,7 @@ __metadata:
     "@types/node": ^13.13.2
     "@types/pg": ^7.14.3
     cors: ^2.8.5
+    dotenv: ^8.2.0
     express: ^4.17.1
     express-graphql: ^0.9.0
     glob: ^7.1.6
@@ -9522,9 +9523,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"forestry-schema@workspace:packages/forestry-schema":
+"forestry-schema@workspace:packages/forestry-schema-extension":
   version: 0.0.0-use.local
-  resolution: "forestry-schema@workspace:packages/forestry-schema"
+  resolution: "forestry-schema@workspace:packages/forestry-schema-extension"
   dependencies:
     "@forestryio/cli": "workspace:packages/cli"
     "@types/glob": ^7.1.1
