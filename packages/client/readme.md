@@ -142,27 +142,16 @@ Now that we have a working GraphQL server with our local content, let's use it w
 
 This section assumes you have a working Next.JS site.
 
-There is currently some manual configuration required:
-
-```js
-// next.config.js
-const path = require("path");
-
-module.exports = {
-  webpack: (config, options) => {
-    config.node = {
-      fs: "empty",
-    };
-
-    return config;
-  },
-};
-```
-
-Install the TinaCMS depedencies
+Install the TinaCMS depedencies:
 
 ```bash
 yarn add tinacms styled-components
+```
+
+or
+
+```bash
+npm install tinacms styled-components
 ```
 
 In your site root, add TinaCMS & register the ForestryClient like so:
