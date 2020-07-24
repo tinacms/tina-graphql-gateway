@@ -1,27 +1,6 @@
-import {
-  DirectorySection,
-  DocumentList,
-  FieldType,
-  ListField,
-  Section,
-  SectionList,
-  SectionSelect,
-  SelectField,
-  Settings,
-} from "./datasources/datasource";
-import {
-  FieldSourceType,
-  ListValue,
-  TemplatePage,
-  Templates,
-  TemplatesData,
-} from "./fields/types";
-import {
-  GraphQLError,
-  GraphQLInputObjectType,
-  GraphQLObjectType,
-  getNamedType,
-} from "graphql";
+import { DirectorySection, Section, Settings } from "./datasources/datasource";
+import { GraphQLError, GraphQLInputObjectType, getNamedType } from "graphql";
+import { TemplatePage, Templates } from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
 import camelCase from "lodash.camelcase";
@@ -112,49 +91,12 @@ export function isString(arg: unknown | unknown[]): arg is string {
   return typeof arg === "string";
 }
 
-export function isSelectField(field: FieldType): field is SelectField {
-  return field.type === "select";
-}
-
-export function isSectionSelectField(field: FieldType): field is SectionSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
-
 export function isDirectorySection(
   section: Section
 ): section is DirectorySection {
   return section.type === "directory";
 }
 
-export function isListField(field: FieldType): field is ListField {
-  return field.type === "list";
-}
-export function isDocumentListField(field: FieldType): field is DocumentList {
-  if (!isListField(field)) {
-    return false;
-  }
-
-  if (field && field.config && field?.config?.source?.type === "documents") {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-export function isListValue(val: FieldSourceType): val is ListValue {
-  // FIXME: not sure if this is strong enough
-  return val.hasOwnProperty("template");
-}
-
-export function isSectionListField(field: FieldType): field is SectionList {
-  if (!isListField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "pages";
-}
 export function isNotNull<T>(arg: T): arg is Exclude<T, null> {
   return arg !== null;
 }
@@ -194,17 +136,6 @@ export const getSectionFmtTypes2 = (
   }
 
   return types;
-};
-
-/*
- * Takes in a list of strings corresponding to the types the blocks field contain,
- * and returns a list of corresponding GraphQL object types.
- */
-export const getBlockFmtTypes = (
-  templateTypes: string[],
-  templateDataObjectTypes: TemplatesData
-): GraphQLObjectType[] => {
-  return templateTypes.map((template) => templateDataObjectTypes[template]);
 };
 
 export const arrayToObject = <T>(
