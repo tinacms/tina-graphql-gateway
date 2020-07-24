@@ -1,6 +1,6 @@
 import * as utils from "./util";
 
-import { DirectorySection, Section, Settings } from "./datasources/datasource";
+import { Section, Settings } from "./datasources/datasource";
 
 import { GraphQLObjectType } from "graphql";
 import { Templates } from "./fields/types";
