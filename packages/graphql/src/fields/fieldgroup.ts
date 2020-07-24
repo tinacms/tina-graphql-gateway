@@ -10,7 +10,7 @@ import {
   GraphQLUnionType,
 } from "graphql";
 
-import { friendlyName } from "../util";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
 export const field_group = ({
   fmt,
@@ -33,7 +33,7 @@ export const field_group = ({
   return {
     getter: {
       type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_fields_" + fmt),
+        name: friendlyFMTName(field.name + "_fields_" + fmt),
         fields: getters,
       }),
     },
@@ -43,7 +43,7 @@ export const field_group = ({
     },
     mutator: {
       type: new GraphQLInputObjectType({
-        name: friendlyName(field.name + "_fields_" + fmt + "_input"),
+        name: friendlyFMTName(field.name + "_fields_" + fmt + "_input"),
         fields: mutators,
       }),
     },
@@ -58,7 +58,7 @@ const getFieldGroupInputType = (
   }
 ) => {
   return new GraphQLObjectType<FieldGroupField>({
-    name: friendlyName(field.name + "_fields_list_" + fmt + "_config"),
+    name: friendlyFMTName(field.name + "_fields_list_" + fmt + "_config"),
     fields: {
       label: {
         type: GraphQLString,
@@ -74,7 +74,7 @@ const getFieldGroupInputType = (
       fields: {
         type: GraphQLList(
           new GraphQLUnionType({
-            name: friendlyName(
+            name: friendlyFMTName(
               field.name + "_fields_list_" + fmt + "_config" + "_fields"
             ),
             types: () => {

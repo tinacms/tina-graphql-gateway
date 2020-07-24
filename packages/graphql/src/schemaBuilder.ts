@@ -22,13 +22,12 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql";
+import { friendlyFMTName, shortFMTName } from "@forestryio/graphql-helpers";
 import {
-  friendlyName,
   getSectionFmtInputTypes,
   getSectionFmtTypes,
   isDirectorySection,
   isNullOrUndefined,
-  shortFMTName,
   slugify,
 } from "./util";
 
@@ -108,19 +107,19 @@ export const buildSchema = async (
 
       // get all of the accessors and mutators for all of  the fields in the FMT
       const { getters, setters, mutators } = generateFieldAccessors({
-        fmt: friendlyName(path),
+        fmt: friendlyFMTName(path),
         fields: fmt.data.fields,
         config,
         fieldData,
       });
 
       const templateDataInputObjectType = new GraphQLInputObjectType({
-        name: friendlyName(path + "_data_input"),
+        name: friendlyFMTName(path + "_data_input"),
         fields: mutators,
       });
 
       const templateInputObjectType = new GraphQLInputObjectType({
-        name: friendlyName(path + "_input"),
+        name: friendlyFMTName(path + "_input"),
         fields: {
           data: { type: templateDataInputObjectType },
           content: { type: GraphQLString },
@@ -133,18 +132,18 @@ export const buildSchema = async (
       };
 
       const templateDataObjectType = new GraphQLObjectType({
-        name: friendlyName(path, { suffix: "data" }),
+        name: friendlyFMTName(path, { suffix: "data" }),
         fields: {
           _template: {
             type: GraphQLString,
-            resolve: () => friendlyName(path, { suffix: "field_config" }),
+            resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
           },
           ...getters,
         },
       });
 
       const templateObjectType = new GraphQLObjectType({
-        name: friendlyName(path),
+        name: friendlyFMTName(path),
         fields: {
           form: templateFormObjectType,
           absolutePath: { type: GraphQLString },
@@ -169,7 +168,7 @@ export const buildSchema = async (
   );
 
   const documentType = new GraphQLUnionType({
-    name: friendlyName("document_union"),
+    name: friendlyFMTName("document_union"),
     types: () => getSectionFmtTypes(settings, templateObjectTypes),
     resolveType: (val: { template: string }): GraphQLObjectType => {
       const type = templateObjectTypes[val.template];
@@ -347,7 +346,7 @@ const generateTemplateFormObjectType = (
   },
   path: string
 ) => {
-  const name = friendlyName(path, { suffix: "field_config" });
+  const name = friendlyFMTName(path, { suffix: "field_config" });
   const field = fmt.data;
   return new GraphQLObjectType<WithFields>({
     name: name,

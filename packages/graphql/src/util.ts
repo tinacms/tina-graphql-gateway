@@ -3,11 +3,9 @@ import { GraphQLError, GraphQLInputObjectType, getNamedType } from "graphql";
 import { TemplatePage, Templates } from "./fields/types";
 import matterOrig, { GrayMatterOption, Input } from "gray-matter";
 
-import camelCase from "lodash.camelcase";
 import flatten from "lodash.flatten";
 import kebabCase from "lodash.kebabcase";
 import toLower from "lodash.tolower";
-import upperFist from "lodash.upperfirst";
 
 // TODO: There is probably too much in this "util" file. Once schemaBuilder
 // is a bit cleaner, similar utils can be grouped together elsewhere
@@ -20,20 +18,6 @@ export const matter = <I extends Input, O extends GrayMatterOption<I, O>>(
   res = matterOrig(data, { excerpt_separator: "<!-- excerpt -->" });
 
   return res;
-};
-
-export const shortFMTName = (path: string) => {
-  return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
-};
-
-export const friendlyName = (name: string, options = { suffix: "" }) => {
-  const delimiter = "_";
-
-  return upperFist(
-    camelCase(
-      shortFMTName(name) + (options.suffix && delimiter + options.suffix)
-    )
-  );
 };
 
 export const slugify = (string: string) => {

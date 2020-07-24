@@ -11,7 +11,11 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { arrayToObject, friendlyName, shortFMTName } from "../util";
+import {
+  arrayToObject,
+  friendlyFMTName,
+  shortFMTName,
+} from "@forestryio/graphql-helpers";
 
 import { baseInputFields } from "./inputTypes";
 
@@ -28,7 +32,7 @@ export const blocks = ({
     getter: {
       type: GraphQLList(
         new GraphQLUnionType({
-          name: friendlyName(field.name + "_union"),
+          name: friendlyFMTName(field.name + "_union"),
           types: () => {
             return getBlockFmtTypes(
               field.template_types,
@@ -52,10 +56,10 @@ export const blocks = ({
     mutator: {
       type: GraphQLList(
         new GraphQLInputObjectType({
-          name: friendlyName(field.name + "_input"),
+          name: friendlyFMTName(field.name + "_input"),
           fields: () => {
             return arrayToObject(field.template_types, (obj, item) => {
-              obj[friendlyName(item + "_input")] = {
+              obj[friendlyFMTName(item + "_input")] = {
                 type:
                   fieldData.templateDataInputObjectTypes[shortFMTName(item)],
               };
@@ -83,12 +87,12 @@ export const getBlocksFieldInputType = (
   fieldData: FieldData
 ): GraphQLObjectType => {
   return new GraphQLObjectType({
-    name: friendlyName(field.name + "_fieldConfig"),
+    name: friendlyFMTName(field.name + "_fieldConfig"),
     fields: {
       ...baseInputFields,
       templates: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_templates"),
+          name: friendlyFMTName(field.name + "_templates"),
           fields: () => {
             const blockObjectTypes = field.template_types.map(
               (template) => fieldData.templateFormObjectTypes[template]

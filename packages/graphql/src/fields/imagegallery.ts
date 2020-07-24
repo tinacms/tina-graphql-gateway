@@ -7,7 +7,7 @@ import {
 
 import { ConfigType } from "./types";
 import { GalleryField } from "../datasources/datasource";
-import { friendlyName } from "../util";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 import { imageInputType } from "./inputTypes";
 
 export const image_gallery = ({
@@ -23,7 +23,7 @@ export const image_gallery = ({
     getter: {
       type: GraphQLList(
         generateImageGalleryObjectType(
-          friendlyName(field.name + "_gallery_" + fmt),
+          friendlyFMTName(field.name + "_gallery_" + fmt),
           config
         )
       ),

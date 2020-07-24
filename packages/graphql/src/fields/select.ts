@@ -20,7 +20,6 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import {
-  friendlyName,
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
@@ -28,6 +27,7 @@ import {
 } from "../util";
 
 import { baseInputFields } from "./inputTypes";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
 export const select = ({
   fmt,
@@ -63,7 +63,7 @@ export const select = ({
     return {
       getter: {
         type: new GraphQLUnionType({
-          name: friendlyName(field.name + "_select_" + fmt),
+          name: friendlyFMTName(field.name + "_select_" + fmt),
           types: () => {
             return getSectionFmtTypes2(
               field.config.source.section,
@@ -113,7 +113,7 @@ export const select = ({
     },
     mutator: {
       type: new GraphQLEnumType({
-        name: friendlyName(field.name + "_select_" + fmt),
+        name: friendlyFMTName(field.name + "_select_" + fmt),
         values: options,
       }),
     },

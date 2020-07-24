@@ -20,7 +20,6 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import {
-  friendlyName,
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
@@ -28,6 +27,7 @@ import {
 } from "../util";
 
 import { baseInputFields } from "./inputTypes";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
 export const list = ({
   fmt,
@@ -45,7 +45,7 @@ export const list = ({
       getter: {
         type: GraphQLList(
           new GraphQLObjectType({
-            name: friendlyName(field.name + "_list_" + fmt + "_item"),
+            name: friendlyFMTName(field.name + "_list_" + fmt + "_item"),
             fields: {
               path: { type: GraphQLString },
             },
@@ -59,14 +59,14 @@ export const list = ({
       },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_list_" + fmt + "_config"),
+          name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
           fields: {
             ...baseInputFields,
             component: { type: GraphQLString },
             fields: {
               type: GraphQLList(
                 new GraphQLObjectType({
-                  name: friendlyName(
+                  name: friendlyFMTName(
                     field.name + "_list_" + fmt + "_config_item"
                   ),
                   fields: {
@@ -125,7 +125,7 @@ export const list = ({
       getter: {
         type: GraphQLList(
           new GraphQLUnionType({
-            name: friendlyName(field.name + "_list_" + fmt),
+            name: friendlyFMTName(field.name + "_list_" + fmt),
             types: () => {
               return getSectionFmtTypes2(
                 field.config?.source.section || "",
@@ -176,14 +176,14 @@ export const list = ({
       },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_list_" + fmt + "_config"),
+          name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
           fields: {
             ...baseInputFields,
             component: { type: GraphQLString },
             fields: {
               type: GraphQLList(
                 new GraphQLObjectType({
-                  name: friendlyName(
+                  name: friendlyFMTName(
                     field.name + "_list_" + fmt + "_config_item"
                   ),
                   fields: {
@@ -229,13 +229,15 @@ export const list = ({
     getter: { type: GraphQLList(GraphQLString) },
     setter: {
       type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_list_" + fmt + "_config"),
+        name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
         fields: {
           ...baseInputFields,
           component: { type: GraphQLString },
           itemField: {
             type: new GraphQLObjectType({
-              name: friendlyName(field.name + "_list_" + fmt + "_config_item"),
+              name: friendlyFMTName(
+                field.name + "_list_" + fmt + "_config_item"
+              ),
               fields: {
                 name: { type: GraphQLString },
                 label: { type: GraphQLString },

@@ -2,7 +2,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 
 import { ConfigType } from "./types";
 import { FileField } from "../datasources/datasource";
-import { friendlyName } from "../util";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 import { imageInputType } from "./inputTypes";
 
 export const file = ({
@@ -17,7 +17,7 @@ export const file = ({
   return {
     getter: {
       type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_gallery_" + fmt),
+        name: friendlyFMTName(field.name + "_gallery_" + fmt),
         fields: {
           path: {
             type: GraphQLNonNull(GraphQLString),
