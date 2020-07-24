@@ -21,6 +21,10 @@ const auditForestryOption = {
   name: "--forestry",
   description: "Audit the .forestry folder without migration",
 };
+const auditDumpOption = {
+  name: "--dump <path>",
+  description: "Dump the schema into the given path",
+};
 const typescriptOption = {
   name: "--typescript",
   description: "Generate types for the schema",
@@ -36,7 +40,7 @@ export const baseCmds: Command[] = [
   {
     command: CMD_AUDIT,
     description: "Audit .tina schema",
-    options: [auditFixOption, auditForestryOption],
+    options: [auditFixOption, auditForestryOption, auditDumpOption],
     action: (options) => chain([audit], options),
   },
   {

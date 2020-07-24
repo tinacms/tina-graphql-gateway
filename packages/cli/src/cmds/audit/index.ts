@@ -14,16 +14,19 @@ export async function audit(
   {
     forestry = false,
     fix = false,
+    dump,
   }: {
     migrate: boolean;
     forestry: boolean;
     fix: boolean;
+    dump?: string;
   }
 ) {
   run({
     migrate: false,
     forestry: forestry,
     fix,
+    dump,
   });
 }
 export async function migrate(_ctx, _next) {
@@ -38,12 +41,31 @@ async function run({
   migrate = false,
   forestry = false,
   fix = false,
+  dump,
 }: {
   migrate: boolean;
   forestry: boolean;
   fix: boolean;
+  dump?: string;
 }) {
   let anyErrors = [];
+
+  if (dump) {
+    const directory = process.cwd() + "/" + dump;
+    if (!(await fs.existsSync(directory))) {
+      await fs.mkdirSync(directory);
+    }
+    // Store these schemas for now, VSCode uses them locally
+    await fs.writeFileSync(
+      directory + "/settings_schema.json",
+      JSON.stringify(ForestrySettingsSchema, null, 2)
+    );
+    await fs.writeFileSync(
+      directory + "/fmt_schema.json",
+      JSON.stringify(ForestryFMTSchema, null, 2)
+    );
+    return;
+  }
 
   const workingDirReal = process.cwd();
   const configFolder = migrate || forestry ? ".forestry" : ".tina";
@@ -85,20 +107,6 @@ async function run({
       );
     }
   }
-
-  // Store these schemas for now, VSCode uses them locally
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
-  //   ),
-  //   JSON.stringify(ForestrySettingsSchema, null, 2)
-  // );
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
-  //   ),
-  //   JSON.stringify(ForestryFMTSchema, null, 2)
-  // );
 
   const fmts = await fs.readdirSync(fmtDirPath);
   await Promise.all(

@@ -28,7 +28,8 @@
     "build": "forestry-build",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
-    "watch": "forestry-watch"
+    "watch": "forestry-watch",
+    "generate:schema": "yarn node scripts/generateSchema.js"
   },
   "dependencies": {
     "@forestryio/graphql": "workspace:packages/graphql",
@@ -52,6 +53,7 @@
     "express-graphql": "^0.11.0",
     "figlet": "^1.2.3",
     "fs-extra": "^9.0.1",
+    "generator-code": "^1.2.19",
     "graphql": "^15.1.0",
     "http-proxy": "^1.18.0",
     "inquirer": "^6.5.1",
@@ -66,7 +68,8 @@
     "ora": "^4.0.2",
     "path": "^0.12.7",
     "simple-git": "1.124.0",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.0",
+    "yo": "^3.1.1"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
