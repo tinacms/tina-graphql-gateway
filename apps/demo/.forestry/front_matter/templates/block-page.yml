@@ -5,19 +5,9 @@ display_field: title
 fields:
   - name: title
     type: text
-    default: 3
     config:
       required: false
     label: Title
-  - name: date
-    label: Date
-    type: datetime
-    hidden: false
-    default: 2001-02-02
-    config:
-      date_format: YYYY/MM/DD
-      export_format: YYYY-MM-DD
-      required: true
   - name: blocks
     type: blocks
     label: Blocks
@@ -39,4 +29,3 @@ pages:
   - content/pages/our-pros.md
   - content/pages/posts.md
   - content/pages/services.md
-  - content/pages/hello.md
