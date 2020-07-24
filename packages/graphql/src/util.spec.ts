@@ -4,7 +4,7 @@ import { DirectorySection, Section, Settings } from "./datasources/datasource";
 
 import { GraphQLObjectType } from "graphql";
 import { Templates } from "./fields/types";
-import { baseInputFields } from "./fields";
+import { baseInputFields } from "./fields/inputTypes";
 
 describe("shortFMTName", () => {
   test("it should remove the extension", () => {
