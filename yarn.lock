@@ -1990,6 +1990,7 @@ __metadata:
   dependencies:
     "@forestryio/build": "workspace:packages/build"
     "@forestryio/graphql": "workspace:packages/graphql"
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
@@ -2014,11 +2015,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@forestryio/graphql-helpers@workspace:packages/graphql-helpers":
+  version: 0.0.0-use.local
+  resolution: "@forestryio/graphql-helpers@workspace:packages/graphql-helpers"
+  dependencies:
+    "@forestryio/build": "workspace:packages/build"
+    "@types/jest": ^26.0.4
+    "@types/lodash.camelcase": ^4.3.6
+    "@types/lodash.upperfirst": ^4.3.6
+    jest: ^26.1.0
+    lodash.camelcase: ^4.3.0
+    lodash.upperfirst: ^4.3.1
+    ts-jest: ^26.1.2
+    tslib: ^1.11.1
+  bin:
+    "forestry:serve": ./dist/index.js
+  languageName: unknown
+  linkType: soft
+
 "@forestryio/graphql@workspace:packages/graphql":
   version: 0.0.0-use.local
   resolution: "@forestryio/graphql@workspace:packages/graphql"
   dependencies:
     "@forestryio/build": "workspace:packages/build"
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-codegen/core": ^1.15.3
     "@graphql-codegen/typescript": ^1.15.3
     "@graphql-codegen/typescript-operations": ^1.15.3
@@ -2035,7 +2055,6 @@ __metadata:
     "@types/node": ^13.13.2
     "@types/pg": ^7.14.3
     cors: ^2.8.5
-    dotenv: ^8.2.0
     express: ^4.17.1
     express-graphql: ^0.9.0
     glob: ^7.1.6
