@@ -24,7 +24,6 @@ import {
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
-  isSectionSelectField,
   isString,
 } from "../util";
 
@@ -131,6 +130,13 @@ export const selectInputType = new GraphQLObjectType<SelectField>({
 
 function isSelectField(field: FieldType): field is SelectField {
   return field.type === "select";
+}
+
+function isSectionSelectField(field: FieldType): field is SectionSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
 }
 
 function isDocumentSelectField(field: FieldType): field is DocumentSelect {

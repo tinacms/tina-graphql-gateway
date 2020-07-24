@@ -1,17 +1,17 @@
 import { BlocksField, FieldType } from "../datasources/datasource";
-import { ConfigType, FieldContextType, FieldData } from "./types";
+import {
+  ConfigType,
+  FieldContextType,
+  FieldData,
+  TemplatesData,
+} from "./types";
 import {
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import {
-  arrayToObject,
-  friendlyName,
-  getBlockFmtTypes,
-  shortFMTName,
-} from "../util";
+import { arrayToObject, friendlyName, shortFMTName } from "../util";
 
 import { baseInputFields } from "./inputTypes";
 
@@ -124,4 +124,15 @@ const setBlockFieldResolver = async (
       })
     ),
   };
+};
+
+/*
+ * Takes in a list of strings corresponding to the types the blocks field contain,
+ * and returns a list of corresponding GraphQL object types.
+ */
+const getBlockFmtTypes = (
+  templateTypes: string[],
+  templateDataObjectTypes: TemplatesData
+): GraphQLObjectType[] => {
+  return templateTypes.map((template) => templateDataObjectTypes[template]);
 };

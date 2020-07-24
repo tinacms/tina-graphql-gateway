@@ -4,7 +4,14 @@ import {
   FieldContextType,
   FieldData,
   FieldSourceType,
+  ListValue,
 } from "../fields/types";
+import {
+  DocumentList,
+  FieldType,
+  ListField,
+  SectionList,
+} from "../datasources/datasource";
 import {
   GraphQLError,
   GraphQLList,
@@ -17,13 +24,9 @@ import {
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
-  isDocumentListField,
-  isListValue,
-  isSectionListField,
   isString,
 } from "../util";
 
-import { ListField } from "../datasources/datasource";
 import { baseInputFields } from "./inputTypes";
 
 export const list = ({
@@ -259,3 +262,31 @@ export const list = ({
     },
   };
 };
+
+function isListField(field: FieldType): field is ListField {
+  return field.type === "list";
+}
+
+function isDocumentListField(field: FieldType): field is DocumentList {
+  if (!isListField(field)) {
+    return false;
+  }
+
+  if (field && field.config && field?.config?.source?.type === "documents") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isSectionListField(field: FieldType): field is SectionList {
+  if (!isListField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
+
+function isListValue(val: FieldSourceType): val is ListValue {
+  // FIXME: not sure if this is strong enough
+  return val.hasOwnProperty("template");
+}
