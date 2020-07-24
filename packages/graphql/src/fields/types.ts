@@ -2,7 +2,9 @@ import { DataSource, FieldType } from "../datasources/datasource";
 import {
   GraphQLFieldConfig,
   GraphQLInputObjectType,
+  GraphQLInputType,
   GraphQLObjectType,
+  GraphQLType,
 } from "graphql";
 
 export type BaseDocumentType = {
@@ -74,5 +76,42 @@ export type FieldData = {
   templateFormObjectTypes: { [key: string]: GraphQLObjectType };
   templateDataInputObjectTypes: {
     [key: string]: GraphQLInputObjectType;
+  };
+};
+
+type FieldGetter = GraphQLFieldConfig<
+  FieldSourceType,
+  FieldContextType,
+  {
+    [argName: string]: GraphQLType;
+  }
+>;
+export type FieldSetter = {
+  // FIXME: any should be replaced with the resolver function payload type
+  type: GraphQLObjectType<any>;
+  resolve: (
+    val: FieldSourceType,
+    args: {
+      [argName: string]: unknown;
+    },
+    context: FieldContextType,
+    info: unknown
+  ) => unknown;
+};
+export type FieldAccessorTypes = {
+  getter: FieldGetter;
+  setter: FieldSetter;
+  mutator: { type: GraphQLInputType };
+};
+
+export type GeneratedFieldsType = {
+  getters: {
+    [key: string]: FieldGetter;
+  };
+  setters: {
+    [key: string]: FieldSetter;
+  };
+  mutators: {
+    [key: string]: { type: GraphQLInputType };
   };
 };
