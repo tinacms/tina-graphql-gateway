@@ -243,7 +243,7 @@ import query from "../.forestry/query";
 const URL = config.serverURL;
 
 export const getStaticProps = async () => {
-  const path = `content/posts/test.md`;
+  const path = `content/posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent({
     path,
@@ -262,6 +262,14 @@ const Home = (props) => {
     </div>
   );
 };
+```
+
+You'll notice that in the view above, we're loading our content from **/content/posts/welcome.md**. Let's create file that now.
+
+```md
+---
+title: This is my post
+---
 ```
 
 And that's it! Try making some changes and saving.
