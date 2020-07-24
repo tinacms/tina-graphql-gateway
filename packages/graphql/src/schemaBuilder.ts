@@ -36,8 +36,6 @@ import flatten from "lodash.flatten";
 import { generateFields } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
-require("dotenv").config();
-
 const getSectionFmtInputTypes = (
   settings: Settings,
   templateInputObjectTypes: {
