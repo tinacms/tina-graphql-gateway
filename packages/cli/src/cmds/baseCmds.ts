@@ -24,7 +24,8 @@ const typescriptOption = {
 export const baseCmds: Command[] = [
   {
     command: CMD_GEN_QUERY,
-    description: "Generate Typescript types",
+    description:
+      "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
     options: [typescriptOption],
     action: (options) => chain([attachSchema, genQueries, genTypes], options),
   },
