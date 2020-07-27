@@ -1,7 +1,7 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 import { TextField, TextareaField } from "../datasources/datasource";
 
-import { textInput } from "./inputFields";
+import { textInputType } from "./inputTypes";
 
 export const textarea = ({ field }: { fmt: string; field: TextareaField }) => ({
   getter: {
@@ -10,7 +10,7 @@ export const textarea = ({ field }: { fmt: string; field: TextareaField }) => ({
       : GraphQLString,
   },
   setter: {
-    type: textInput,
+    type: textInputType,
     resolve: () => {
       return {
         name: field.name,
