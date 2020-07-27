@@ -54,6 +54,15 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 ## Implementation
 
+Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
+
+**/content/posts/welcome.md**
+```md
+---
+title: This is my post
+---
+```
+
 ### Define Schema
 
 Your site's schema is defined within the **<site_root>/.forestry** directory
@@ -255,14 +264,6 @@ const Home = (props) => {
     </div>
   );
 };
-```
-
-You'll notice that in the view above, we're loading our content from **/content/posts/welcome.md**. Let's create file that now.
-
-```md
----
-title: This is my post
----
 ```
 
 And that's it! Try making some changes and saving.
