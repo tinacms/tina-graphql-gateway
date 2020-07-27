@@ -5,32 +5,10 @@ import {
   GraphQLString,
 } from "graphql";
 
+import { ConfigType } from "./types";
 import { GalleryField } from "../datasources/datasource";
-import { friendlyName } from "../util";
-import { imageInput } from "./inputFields";
-
-export const generateImageGalleryObjectType = (
-  name: string,
-  config: { rootPath: string; siteLookup: string }
-): GraphQLObjectType => {
-  return new GraphQLObjectType({
-    name,
-    fields: {
-      path: {
-        type: GraphQLNonNull(GraphQLString),
-        resolve: async (val) => {
-          return val;
-        },
-      },
-      absolutePath: {
-        type: GraphQLString,
-        resolve: async (val) => {
-          return config.rootPath + val;
-        },
-      },
-    },
-  });
-};
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
+import { imageInputType } from "./inputTypes";
 
 export const image_gallery = ({
   fmt,
@@ -45,13 +23,13 @@ export const image_gallery = ({
     getter: {
       type: GraphQLList(
         generateImageGalleryObjectType(
-          friendlyName(field.name + "_gallery_" + fmt),
+          friendlyFMTName(field.name + "_gallery_" + fmt),
           config
         )
       ),
     },
     setter: {
-      type: imageInput,
+      type: imageInputType,
       resolve: () => {
         return {
           name: field.name,
@@ -70,4 +48,27 @@ export const image_gallery = ({
       type: GraphQLList(GraphQLString),
     },
   };
+};
+
+export const generateImageGalleryObjectType = (
+  name: string,
+  config: ConfigType
+): GraphQLObjectType => {
+  return new GraphQLObjectType({
+    name,
+    fields: {
+      path: {
+        type: GraphQLNonNull(GraphQLString),
+        resolve: async (val) => {
+          return val;
+        },
+      },
+      absolutePath: {
+        type: GraphQLString,
+        resolve: async (val) => {
+          return config.rootPath + val;
+        },
+      },
+    },
+  });
 };

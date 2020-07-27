@@ -1,8 +1,17 @@
 import {
+  ConfigType,
   DocumentType,
   FieldContextType,
+  FieldData,
   FieldSourceType,
+  ListValue,
 } from "../fields/types";
+import {
+  DocumentList,
+  FieldType,
+  ListField,
+  SectionList,
+} from "../datasources/datasource";
 import {
   GraphQLError,
   GraphQLList,
@@ -11,18 +20,14 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import {
-  friendlyName,
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
-  isDocumentListField,
-  isListValue,
-  isSectionListField,
   isString,
 } from "../util";
 
-import { ListField } from "../datasources/datasource";
-import { baseInputFields } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
 export const list = ({
   fmt,
@@ -32,22 +37,15 @@ export const list = ({
 }: {
   fmt: string;
   field: ListField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: ConfigType;
+  fieldData: FieldData;
 }) => {
   if (isDocumentListField(field)) {
     return {
       getter: {
         type: GraphQLList(
           new GraphQLObjectType({
-            name: friendlyName(field.name + "_list_" + fmt + "_item"),
+            name: friendlyFMTName(field.name + "_list_" + fmt + "_item"),
             fields: {
               path: { type: GraphQLString },
             },
@@ -61,14 +59,14 @@ export const list = ({
       },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_list_" + fmt + "_config"),
+          name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
           fields: {
             ...baseInputFields,
             component: { type: GraphQLString },
             fields: {
               type: GraphQLList(
                 new GraphQLObjectType({
-                  name: friendlyName(
+                  name: friendlyFMTName(
                     field.name + "_list_" + fmt + "_config_item"
                   ),
                   fields: {
@@ -127,7 +125,7 @@ export const list = ({
       getter: {
         type: GraphQLList(
           new GraphQLUnionType({
-            name: friendlyName(field.name + "_list_" + fmt),
+            name: friendlyFMTName(field.name + "_list_" + fmt),
             types: () => {
               return getSectionFmtTypes2(
                 field.config?.source.section || "",
@@ -178,14 +176,14 @@ export const list = ({
       },
       setter: {
         type: new GraphQLObjectType({
-          name: friendlyName(field.name + "_list_" + fmt + "_config"),
+          name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
           fields: {
             ...baseInputFields,
             component: { type: GraphQLString },
             fields: {
               type: GraphQLList(
                 new GraphQLObjectType({
-                  name: friendlyName(
+                  name: friendlyFMTName(
                     field.name + "_list_" + fmt + "_config_item"
                   ),
                   fields: {
@@ -231,13 +229,15 @@ export const list = ({
     getter: { type: GraphQLList(GraphQLString) },
     setter: {
       type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_list_" + fmt + "_config"),
+        name: friendlyFMTName(field.name + "_list_" + fmt + "_config"),
         fields: {
           ...baseInputFields,
           component: { type: GraphQLString },
           itemField: {
             type: new GraphQLObjectType({
-              name: friendlyName(field.name + "_list_" + fmt + "_config_item"),
+              name: friendlyFMTName(
+                field.name + "_list_" + fmt + "_config_item"
+              ),
               fields: {
                 name: { type: GraphQLString },
                 label: { type: GraphQLString },
@@ -264,3 +264,31 @@ export const list = ({
     },
   };
 };
+
+function isListField(field: FieldType): field is ListField {
+  return field.type === "list";
+}
+
+function isDocumentListField(field: FieldType): field is DocumentList {
+  if (!isListField(field)) {
+    return false;
+  }
+
+  if (field && field.config && field?.config?.source?.type === "documents") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isSectionListField(field: FieldType): field is SectionList {
+  if (!isListField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
+
+function isListValue(val: FieldSourceType): val is ListValue {
+  // FIXME: not sure if this is strong enough
+  return val.hasOwnProperty("template");
+}
