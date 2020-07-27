@@ -101,7 +101,7 @@ admin_path:
 webhook_url:
 sections:
   - type: directory
-    path: content/posts
+    path: content/posts # replace this with the relative path to your content section
     label: Posts
     create: documents
     match: "**/*.md"
