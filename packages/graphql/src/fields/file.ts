@@ -1,8 +1,9 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
 
+import { ConfigType } from "./types";
 import { FileField } from "../datasources/datasource";
-import { friendlyName } from "../util";
-import { imageInput } from "./inputFields";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
+import { imageInputType } from "./inputTypes";
 
 export const file = ({
   fmt,
@@ -11,12 +12,12 @@ export const file = ({
 }: {
   fmt: string;
   field: FileField;
-  config: { rootPath: string; siteLookup: string };
+  config: ConfigType;
 }) => {
   return {
     getter: {
       type: new GraphQLObjectType({
-        name: friendlyName(field.name + "_gallery_" + fmt),
+        name: friendlyFMTName(field.name + "_gallery_" + fmt),
         fields: {
           path: {
             type: GraphQLNonNull(GraphQLString),
@@ -34,7 +35,7 @@ export const file = ({
       }),
     },
     setter: {
-      type: imageInput,
+      type: imageInputType,
       resolve: () => {
         return {
           name: field.name,
