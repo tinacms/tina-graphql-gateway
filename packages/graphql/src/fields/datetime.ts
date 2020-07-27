@@ -6,7 +6,7 @@ import {
   GraphQLString,
 } from "graphql";
 
-import { baseInputFields } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
 
 export const datetime = ({
   fmt,

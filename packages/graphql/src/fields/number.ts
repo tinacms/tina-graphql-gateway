@@ -1,7 +1,7 @@
 import { GraphQLInt, GraphQLNonNull } from "graphql";
 
 import { NumberField } from "../datasources/datasource";
-import { textInput } from "./inputFields";
+import { textInputType } from "./inputTypes";
 
 export const number = ({ field }: { fmt: string; field: NumberField }) => ({
   getter: {
@@ -9,7 +9,7 @@ export const number = ({ field }: { fmt: string; field: NumberField }) => ({
     type: field?.config?.required ? GraphQLNonNull(GraphQLInt) : GraphQLInt,
   },
   setter: {
-    type: textInput,
+    type: textInputType,
     resolve: () => {
       return {
         name: field.name,
