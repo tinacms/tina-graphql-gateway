@@ -35,8 +35,9 @@ import camelCase from "lodash.camelcase";
 import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
 
-require("dotenv").config();
-
+/**
+ * This is the main function in this script, it returns all the types
+ */
 export const buildSchema = async (
   config: ConfigType,
   dataSource: DataSource
