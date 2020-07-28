@@ -65,7 +65,7 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
 
-**/content/posts/welcome.md**
+**/posts/welcome.md**
 ```md
 ---
 title: This is my post
@@ -106,7 +106,7 @@ fields:
       required: false
     label: Title
 pages:
-  - content/posts/welcome.md # This keeps reference to all the pages using this template
+  - posts/welcome.md # This keeps reference to all the pages using this template
 ```
 
 #### .forestry/settings.yml
@@ -119,7 +119,7 @@ admin_path:
 webhook_url:
 sections:
   - type: directory
-    path: content/posts # replace this with the relative path to your content section
+    path: posts # replace this with the relative path to your content section
     label: Posts
     create: documents
     match: "**/*.md"
@@ -240,19 +240,17 @@ export default class MyDocument extends Document {
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// content/posts/welcome.jsx
+// posts/welcome.jsx
 
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
 import { usePlugin } from "tinacms";
-
-import config from "../.forestry/config";
 import query from "../.forestry/query";
 
 const URL = config.serverURL;
 
 export const getStaticProps = async () => {
-  const path = `content/posts/welcome.md`;
+  const path = `posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent({
     path,
