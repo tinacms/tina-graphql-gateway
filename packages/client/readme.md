@@ -160,7 +160,7 @@ You can use the query from your **/.forestry/query.js**, add a **path** query va
 
 Now that we have a working GraphQL server with our local content, let's use it within our site.
 
-_We will want to keep this graphql server running in its own tab to serve content to our site_
+_We will want to keep this graphql server running in its own tab to serve content for our local site_
 
 ### Using the data within our Next.JS site
 
