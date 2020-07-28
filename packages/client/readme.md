@@ -19,7 +19,8 @@ You can create you quickly with:
 ```bash
 npx create-next-app --example blog-starter-typescript blog-starter-typescript-app
 # or
-yarn create next-app --example blog-starter-typescript blog-starter-typescript-app```
+yarn create next-app --example blog-starter-typescript blog-starter-typescript-app
+```
 
 ## Install
 
