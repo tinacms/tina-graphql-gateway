@@ -1996,6 +1996,7 @@ __metadata:
     graphiql-code-exporter: ^2.0.8
     graphiql-explorer: ^0.6.2
     graphql: ^15.1.0
+    isomorphic-unfetch: ^3.0.0
     next: 9.4.2
     node-fetch: ^2.6.0
     react: 16.13.1
@@ -10421,6 +10422,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"isomorphic-unfetch@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "isomorphic-unfetch@npm:3.0.0"
+  dependencies:
+    node-fetch: ^2.2.0
+    unfetch: ^4.0.0
+  checksum: c095a48045076159e4c20457f5df49720d146f44da25da8dd127a0c51a6cd0ac8100bd6a7021cab42755261987f1f1dd8f47a7b90682a9465c2c1241f41e4103
+  languageName: node
+  linkType: hard
+
 "isstream@npm:~0.1.2":
   version: 0.1.2
   resolution: "isstream@npm:0.1.2"
@@ -12446,7 +12457,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.6.0, node-fetch@npm:^2.6.0":
+"node-fetch@npm:2.6.0, node-fetch@npm:^2.2.0, node-fetch@npm:^2.6.0":
   version: 2.6.0
   resolution: "node-fetch@npm:2.6.0"
   checksum: dd9f586a9f7ddb7dd94d2aba9cb693d32f5001e9850098512fbc8a4cbdd56838afa08ed0a6725b9fce9b01ec12b713e622cbfc16d92762d8b937b238330a632a
@@ -17345,6 +17356,13 @@ typescript@^3.9.5:
   dependencies:
     debug: ^2.2.0
   checksum: 0974f82a8750c3c247d5a9cf7fe91279d1fad0069dda7b717937e7960addddedf2ddabe3ffb1f504929acd0c924ef654c5c85185aee4c514a0fbf2e2a4efcf39
+  languageName: node
+  linkType: hard
+
+"unfetch@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "unfetch@npm:4.1.0"
+  checksum: 22b729e6e6db8ce58fb64f5063bd72f91fb5badd34f6ae8aaa489bec11ecb189b6654105e1cdfeaecf25841ceb83b4be1b9b4c7ed529287ad2d79e9620d03033
   languageName: node
   linkType: hard
 
