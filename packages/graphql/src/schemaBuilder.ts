@@ -226,6 +226,12 @@ export const buildSchema = async (
           params: documentInputType,
         },
       },
+      deleteDocument: {
+        type: documentType,
+        args: {
+          path: { type: GraphQLNonNull(GraphQLString) },
+        },
+      },
     },
   });
 
@@ -302,7 +308,16 @@ export const buildSchema = async (
     );
   };
 
-  return { schema, updateDocumentMutation, addDocumentMutation };
+  const deleteDocumentMutation = async (payload: { path: string }) => {
+    await dataSource.deleteContent(config.siteLookup, payload.path);
+  };
+
+  return {
+    schema,
+    updateDocumentMutation,
+    addDocumentMutation,
+    deleteDocumentMutation,
+  };
 };
 
 const getDocument = async (

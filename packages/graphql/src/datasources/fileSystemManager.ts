@@ -25,6 +25,7 @@ export class FileSystemManager implements DataSource {
     // @ts-ignore
     return result;
   };
+
   writeData = async <ContentType>(
     _siteLookup: string,
     filepath: string,
@@ -37,6 +38,24 @@ export class FileSystemManager implements DataSource {
     await fs.writeFileSync(fullPath, string);
 
     return await this.getData<ContentType>(_siteLookup, filepath);
+  };
+
+  fileExists = async (fullPath: string): Promise<boolean> => {
+    return fs.promises
+      .access(fullPath, fs.constants.F_OK)
+      .then(() => true)
+      .catch(() => false);
+  };
+
+  deleteData = async (filePath: string) => {
+    const fullPath = this.getFullPath(filePath);
+
+    if (!(await this.fileExists(fullPath)))
+      throw new Error(`Cannot delete ${fullPath}: Does not exist.`);
+    fs.unlinkSync(fullPath);
+
+    // TODO: Delete things from pages arrays
+    return !(await this.fileExists(fullPath));
   };
 
   createContent = async <ContentType>(
@@ -59,6 +78,14 @@ export class FileSystemManager implements DataSource {
     await this.writeTemplate(_siteLookup, templateName, template);
     return newContent;
   };
+
+  deleteContent = async (_siteLookup: string, filePath: string) => {
+    // delete the file
+    await this.deleteData(filePath);
+    // delete the stuff from pages
+    return Promise.resolve(true);
+  };
+
   getTemplateList = async (_siteLookup: string) => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
