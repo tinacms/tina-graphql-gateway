@@ -1,36 +1,34 @@
 import {
+  ConfigType,
+  DocumentType,
+  FieldContextType,
+  FieldData,
+  FieldSourceType,
+} from "./types";
+import {
   DocumentSelect,
   FieldType,
+  SectionSelect,
   SelectField,
 } from "../datasources/datasource";
-import { DocumentType, FieldContextType, FieldSourceType } from "./types";
 import {
   GraphQLEnumType,
   GraphQLError,
+  GraphQLList,
+  GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
 } from "graphql";
 import {
-  friendlyName,
   getFmtForDocument,
   getPagesForSection,
   getSectionFmtTypes2,
-  isSectionSelectField,
   isString,
 } from "../util";
 
-import { selectInput } from "./inputFields";
+import { baseInputFields } from "./inputTypes";
+import { friendlyFMTName } from "@forestryio/graphql-helpers";
 
-function isSelectField(field: FieldType): field is SelectField {
-  return field.type === "select";
-}
-
-function isDocumentSelectField(field: FieldType): field is DocumentSelect {
-  if (!isSelectField(field)) {
-    return false;
-  }
-  return field?.config?.source?.type === "documents";
-}
 export const select = ({
   fmt,
   field,
@@ -39,15 +37,8 @@ export const select = ({
 }: {
   fmt: string;
   field: SelectField;
-  config: { rootPath: string; siteLookup: string };
-  fieldData: {
-    sectionFmts: any;
-    templateObjectTypes: any;
-    templatePages: any;
-    templateDataObjectTypes: any;
-    templateFormObjectTypes: any;
-    templateDataInputObjectTypes: any;
-  };
+  config: ConfigType;
+  fieldData: FieldData;
 }) => {
   if (isDocumentSelectField(field)) {
     return {
@@ -55,34 +46,12 @@ export const select = ({
         type: GraphQLString,
       },
       setter: {
-        type: selectInput,
+        type: selectInputType,
         resolve: async (
           val: FieldSourceType,
           _args: { [argName: string]: any },
           ctx: FieldContextType
-        ) => {
-          const filepath = field.config?.source.file;
-          if (!filepath) {
-            throw new GraphQLError(
-              `No path specificied for list field ${field.name}
-                `
-            );
-          }
-          const keyPath = field.config?.source.path;
-          if (!keyPath) {
-            throw new GraphQLError(
-              `No path specificied key for list field document ${field.name}
-                `
-            );
-          }
-          const res = await ctx.dataSource.getData<any>("", filepath);
-          return {
-            name: field.name,
-            label: field.label,
-            component: "select",
-            options: Object.keys(res.data[keyPath]),
-          };
-        },
+        ) => setDocumentSelectFieldResolver(field, ctx),
       },
       mutator: {
         type: GraphQLString,
@@ -94,7 +63,7 @@ export const select = ({
     return {
       getter: {
         type: new GraphQLUnionType({
-          name: friendlyName(field.name + "_select_" + fmt),
+          name: friendlyFMTName(field.name + "_select_" + fmt),
           types: () => {
             return getSectionFmtTypes2(
               field.config.source.section,
@@ -110,52 +79,11 @@ export const select = ({
           val: { [key: string]: unknown },
           _args: { [argName: string]: any },
           ctx: FieldContextType
-        ) => {
-          const path = val[field.name];
-          if (isString(path)) {
-            const res = await ctx.dataSource.getData<DocumentType>(
-              config.siteLookup,
-              path
-            );
-            const activeTemplate = getFmtForDocument(
-              path,
-              fieldData.templatePages
-            );
-            return {
-              ...res,
-              path: val[field.name],
-              template: activeTemplate?.name,
-            };
-          }
-
-          throw new GraphQLError(
-            `Expected index lookup to return a string for ${field.name}`
-          );
-        },
+        ) => getSectionSelectFieldResolver(field, val, ctx, fieldData, config), // TODO: Fix this, maybe combine into ctx
       },
       setter: {
-        type: selectInput,
-        resolve: () => {
-          if (field?.config?.source?.type === "pages") {
-            const options = getPagesForSection(
-              field.config.source.section,
-              fieldData.sectionFmts,
-              fieldData.templatePages
-            );
-            return {
-              ...field,
-              component: "select",
-              options,
-            };
-          }
-
-          return {
-            name: field.name,
-            label: field.label,
-            component: "select",
-            options: ["this shouldn", "be seen"],
-          };
-        },
+        type: selectInputType,
+        resolve: () => setSectionSelectFieldResolver(field, fieldData),
       },
       mutator: {
         type: GraphQLString,
@@ -173,7 +101,7 @@ export const select = ({
       type: GraphQLString,
     },
     setter: {
-      type: selectInput,
+      type: selectInputType,
       resolve: () => {
         return {
           name: field.name,
@@ -185,9 +113,114 @@ export const select = ({
     },
     mutator: {
       type: new GraphQLEnumType({
-        name: friendlyName(field.name + "_select_" + fmt),
+        name: friendlyFMTName(field.name + "_select_" + fmt),
         values: options,
       }),
     },
+  };
+};
+
+export const selectInputType = new GraphQLObjectType<SelectField>({
+  name: "SelectFormField",
+  fields: {
+    ...baseInputFields,
+    options: { type: GraphQLList(GraphQLString) },
+  },
+});
+
+function isSelectField(field: FieldType): field is SelectField {
+  return field.type === "select";
+}
+
+function isSectionSelectField(field: FieldType): field is SectionSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "pages";
+}
+
+function isDocumentSelectField(field: FieldType): field is DocumentSelect {
+  if (!isSelectField(field)) {
+    return false;
+  }
+  return field?.config?.source?.type === "documents";
+}
+
+const setDocumentSelectFieldResolver = async (
+  field: DocumentSelect,
+  ctx: FieldContextType
+) => {
+  const filepath = field.config?.source.file;
+  if (!filepath) {
+    throw new GraphQLError(
+      `No path specified for list field ${field.name}
+        `
+    );
+  }
+  const keyPath = field.config?.source.path;
+  if (!keyPath) {
+    throw new GraphQLError(
+      `No path specified key for list field document ${field.name}
+        `
+    );
+  }
+  const res = await ctx.dataSource.getData<any>("", filepath);
+  return {
+    name: field.name,
+    label: field.label,
+    component: "select",
+    options: Object.keys(res.data[keyPath]),
+  };
+};
+
+export const getSectionSelectFieldResolver = async (
+  field: SectionSelect,
+  val: { [key: string]: unknown },
+  ctx: FieldContextType,
+  fieldData: FieldData,
+  config: ConfigType
+) => {
+  const path = val[field.name];
+
+  if (isString(path)) {
+    const res = await ctx.dataSource.getData<DocumentType>(
+      config.siteLookup,
+      path
+    );
+    const activeTemplate = getFmtForDocument(path, fieldData.templatePages);
+    return {
+      ...res,
+      path: val[field.name],
+      template: activeTemplate?.name,
+    };
+  }
+
+  throw new GraphQLError(
+    `Expected index lookup to return a string for ${field.name}`
+  );
+};
+
+export const setSectionSelectFieldResolver = async (
+  field: SectionSelect,
+  fieldData: FieldData
+) => {
+  if (field?.config?.source?.type === "pages") {
+    const options = getPagesForSection(
+      field.config.source.section,
+      fieldData.sectionFmts,
+      fieldData.templatePages
+    );
+    return {
+      ...field,
+      component: "select",
+      options,
+    };
+  }
+
+  return {
+    name: field.name,
+    label: field.label,
+    component: "select",
+    options: ["this shouldn", "be seen"],
   };
 };

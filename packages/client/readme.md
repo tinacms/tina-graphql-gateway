@@ -54,6 +54,15 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 ## Implementation
 
+Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
+
+**/content/posts/welcome.md**
+```md
+---
+title: This is my post
+---
+```
+
 ### Define Schema
 
 Your site's schema is defined within the **<site_root>/.forestry** directory
@@ -101,7 +110,7 @@ admin_path:
 webhook_url:
 sections:
   - type: directory
-    path: content/posts
+    path: content/posts # replace this with the relative path to your content section
     label: Posts
     create: documents
     match: "**/*.md"
@@ -122,7 +131,7 @@ Now that we've defined our schema, let's use the CLI to setup a GraphQL server f
 From the cli in your site root, run:
 
 ```bash
-yarn forestry schema:gen-query --typescript
+yarn tina-gql schema:gen-query --typescript
 ```
 
 This should create two files:
@@ -131,10 +140,14 @@ This should create two files:
 Now let's start our server! run:
 
 ```bash
-yarn forestry server:start
+yarn tina-gql server:start
 ```
 
 To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
+
+[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
+
+You can use the query from your **/.forestry/query.js**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
 Now that we have a working GraphQL server with our local content, let's use it within our site
 
@@ -142,27 +155,16 @@ Now that we have a working GraphQL server with our local content, let's use it w
 
 This section assumes you have a working Next.JS site.
 
-There is currently some manual configuration required:
-
-```js
-// next.config.js
-const path = require("path");
-
-module.exports = {
-  webpack: (config, options) => {
-    config.node = {
-      fs: "empty",
-    };
-
-    return config;
-  },
-};
-```
-
-Install the TinaCMS depedencies
+Install the TinaCMS depedencies:
 
 ```bash
 yarn add tinacms styled-components
+```
+
+or
+
+```bash
+npm install tinacms styled-components
 ```
 
 In your site root, add TinaCMS & register the ForestryClient like so:
@@ -264,18 +266,10 @@ const Home = (props) => {
 };
 ```
 
-You'll notice that in the view above, we're loading our content from **/content/posts/welcome.md**. Let's create file that now.
-
-```md
----
-title: This is my post
----
-```
-
 And that's it! Try making some changes and saving.
 
 Next steps:
 
-- Make changes to our data-model, and verify our templates with `$ forestry schema:audit`
+- Make changes to our data-model, and verify our templates with `$ tina-gql schema:audit`
 - Setup build server to run in production
 - Configure your site to use the `Tina Teams` API in your hosted Cloud Editing Environment
