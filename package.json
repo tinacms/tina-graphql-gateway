@@ -10,12 +10,12 @@
     "watch": "yarn workspaces foreach run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
-    "workspaces:publish": "yarn workspaces foreach -ptv --exclude demo run npm publish --tolerate-republish",
-    "workspaces:patch": "yarn workspaces foreach -ptv --exclude demo version patch",
+    "apply:workspaces": "yarn version apply --all",
+    "publish:workspaces": "yarn workspaces foreach --exclude=demo --verbose npm publish --tolerate-republish",
     "check:auth": "yarn npm whoami --scope forestryio"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "type": "git",
