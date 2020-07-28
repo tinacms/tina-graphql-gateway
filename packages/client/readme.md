@@ -11,6 +11,15 @@ If your content is backed by Git, you might want to use your local content in de
 
 With the "@forestryio/cli" package, you can generate typescript types based on your schema. Your schema will be defined within your site in the **.forestry** folder
 
+### Prerequisites
+
+This guide assumes you have a working NextJS site.
+You can create you quickly with:
+
+```bash
+npx create-next-app nextjs-blog --use-npm --example "https://github.com/vercel/next-learn-starter/tree/master/basics-final"
+```
+
 ## Install
 
 ### Client package
@@ -152,8 +161,6 @@ You can use the query from your **/.forestry/query.js**, add a **path** query va
 Now that we have a working GraphQL server with our local content, let's use it within our site
 
 ### Using the data within our Next.JS site
-
-This section assumes you have a working Next.JS site.
 
 Install the TinaCMS depedencies:
 
