@@ -2,6 +2,7 @@ export interface DataSource {
   getData<T extends Content>(siteLookup: string, filepath: string): Promise<T>;
   getSettings(siteLookup: string): Promise<Settings>;
   getTemplate(siteLookup: string, name: string): Promise<FMT>;
+  getTemplates(siteLookup: string, templateNames: string[]): Promise<FMT[]>;
   writeData<T extends Content>(
     siteLookup: string,
     path: string,

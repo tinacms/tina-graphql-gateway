@@ -119,13 +119,9 @@ const setBlockFieldResolver = async (
   return {
     ...field,
     component: field.type,
-    templates: Promise.all(
-      field.template_types.map(async (templateName) => {
-        return ctx.dataSource.getTemplate(
-          config.siteLookup,
-          templateName + ".yml"
-        );
-      })
+    templates: ctx.dataSource.getTemplates(
+      config.siteLookup,
+      field.template_types.map((template) => template + ".yml")
     ),
   };
 };

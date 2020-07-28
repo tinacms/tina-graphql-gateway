@@ -20,6 +20,14 @@ export class FileSystemManager implements DataSource {
   ): Promise<FMT> => {
     return this.dataLoader.load(FMT_BASE + "/" + templateName);
   };
+  getTemplates = async (
+    _siteLookup: string,
+    templateNames: string[]
+  ): Promise<FMT[]> => {
+    return this.dataLoader.loadMany(
+      templateNames.map((templateName) => FMT_BASE + "/" + templateName)
+    );
+  };
   getSettings = async (_siteLookup: string): Promise<Settings> => {
     return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
   };
