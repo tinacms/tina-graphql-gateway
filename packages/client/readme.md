@@ -65,7 +65,7 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
 
-**/posts/welcome.md**
+**/_posts/welcome.md**
 ```md
 ---
 title: This is my post
@@ -106,7 +106,7 @@ fields:
       required: false
     label: Title
 pages:
-  - posts/welcome.md # This keeps reference to all the pages using this template
+  - _posts/welcome.md # This keeps reference to all the pages using this template
 ```
 
 #### .forestry/settings.yml
@@ -242,7 +242,7 @@ export default class MyDocument extends Document {
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// posts/welcome.jsx
+// pages/posts/welcome.jsx
 
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
@@ -254,7 +254,7 @@ import 'isomorphic-unfetch' // polyfill workaround
 const URL = config.serverURL;
 
 export const getStaticProps = async () => {
-  const path = `posts/welcome.md`;
+  const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent({
     path,
