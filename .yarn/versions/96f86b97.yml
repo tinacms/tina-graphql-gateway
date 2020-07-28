@@ -1,2 +1,7 @@
 releases:
-
+  "@forestryio/build": patch
+  "@forestryio/cli": patch
+  "@forestryio/client": patch
+  "@forestryio/graphql": patch
+  "@forestryio/graphql-helpers": patch
+  "@forestryio/teams": patch
