@@ -11,6 +11,17 @@ If your content is backed by Git, you might want to use your local content in de
 
 With the "@forestryio/cli" package, you can generate typescript types based on your schema. Your schema will be defined within your site in the **.forestry** folder
 
+### Prerequisites
+
+This guide assumes you have a working NextJS site.
+You can create you quickly with:
+
+```bash
+npx create-next-app --example blog-starter-typescript blog-starter-typescript-app
+# or
+yarn create next-app --example blog-starter-typescript blog-starter-typescript-app
+```
+
 ## Install
 
 ### Client package
@@ -56,7 +67,7 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
 
-**/content/posts/welcome.md**
+**/_posts/welcome.md**
 ```md
 ---
 title: This is my post
@@ -80,7 +91,7 @@ module.exports = {
 };
 ```
 
-#### .forestry/front_matter/templates/test.yml
+#### .forestry/front_matter/templates/post.yml
 
 This is where your templates live. These represent your data's content model.
 Let's wire one up:
@@ -97,7 +108,7 @@ fields:
       required: false
     label: Title
 pages:
-  - content/posts/welcome.md # This keeps reference to all the pages using this template
+  - _posts/welcome.md # This keeps reference to all the pages using this template
 ```
 
 #### .forestry/settings.yml
@@ -110,13 +121,13 @@ admin_path:
 webhook_url:
 sections:
   - type: directory
-    path: content/posts # replace this with the relative path to your content section
+    path: posts # replace this with the relative path to your content section
     label: Posts
     create: documents
     match: "**/*.md"
     new_doc_ext: md
     templates:
-      - test # replace this with your template filename name
+      - post # replace this with your template filename name
 upload_dir: public/uploads
 public_path: "/uploads"
 front_matter_path: ""
@@ -149,11 +160,11 @@ To verify that everything is up an running, you can visit `http://localhost:4001
 
 You can use the query from your **/.forestry/query.js**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
-Now that we have a working GraphQL server with our local content, let's use it within our site
+Now that we have a working GraphQL server with our local content, let's use it within our site.
+
+_We will want to keep this graphql server running in its own tab to serve content for our local site_
 
 ### Using the data within our Next.JS site
-
-This section assumes you have a working Next.JS site.
 
 Install the TinaCMS depedencies:
 
@@ -233,19 +244,19 @@ export default class MyDocument extends Document {
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// content/posts/welcome.jsx
+// pages/posts/welcome.jsx
 
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
 import { usePlugin } from "tinacms";
-
-import config from "../.forestry/config";
 import query from "../.forestry/query";
+
+import 'isomorphic-unfetch' // polyfill workaround
 
 const URL = config.serverURL;
 
 export const getStaticProps = async () => {
-  const path = `content/posts/welcome.md`;
+  const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent({
     path,
