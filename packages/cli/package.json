@@ -8,7 +8,7 @@
     ".env"
   ],
   "bin": {
-    "forestry": "bin/forestry"
+    "tina-gql": "bin/tina-gql"
   },
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
@@ -45,7 +45,6 @@
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "8.1.0",
     "esm": "3.2.25",
     "express": "^4.17.1",
     "express-graphql": "^0.11.0",

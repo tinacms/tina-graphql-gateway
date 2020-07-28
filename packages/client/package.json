@@ -5,7 +5,7 @@
   "files": [
     "dist/*"
   ],
-  "typings": "dist/types.d.ts",
+  "typings": "dist/index.d.ts",
   "bin": {
     "forestry:start": "bin.js"
   },

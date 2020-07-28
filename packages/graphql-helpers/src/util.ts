@@ -15,3 +15,15 @@ export const friendlyName = (name: string, options = { suffix: "" }) => {
     )
   );
 };
+
+export const arrayToObject = <T>(
+  array: T[],
+  func: (accumulator: { [key: string]: any }, item: T) => void
+) => {
+  const accumulator = {};
+  array.forEach((item) => {
+    func(accumulator, item);
+  });
+
+  return accumulator;
+};
