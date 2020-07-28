@@ -247,6 +247,8 @@ import config from "../.forestry/config";
 import { usePlugin } from "tinacms";
 import query from "../.forestry/query";
 
+import 'isomorphic-unfetch' // polyfill workaround
+
 const URL = config.serverURL;
 
 export const getStaticProps = async () => {
