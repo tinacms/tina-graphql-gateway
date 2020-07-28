@@ -17,8 +17,9 @@ This guide assumes you have a working NextJS site.
 You can create you quickly with:
 
 ```bash
-npx create-next-app nextjs-blog --use-npm --example "https://github.com/vercel/next-learn-starter/tree/master/basics-final"
-```
+npx create-next-app --example blog-starter-typescript blog-starter-typescript-app
+# or
+yarn create next-app --example blog-starter-typescript blog-starter-typescript-app```
 
 ## Install
 
