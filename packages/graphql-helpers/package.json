@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/graphql-helpers",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -24,7 +24,7 @@
     "tslib": "^1.11.1"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
