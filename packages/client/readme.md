@@ -158,7 +158,9 @@ To verify that everything is up an running, you can visit `http://localhost:4001
 
 You can use the query from your **/.forestry/query.js**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
-Now that we have a working GraphQL server with our local content, let's use it within our site
+Now that we have a working GraphQL server with our local content, let's use it within our site.
+
+_We will want to keep this graphql server running in its own tab to serve content to our site_
 
 ### Using the data within our Next.JS site
 
