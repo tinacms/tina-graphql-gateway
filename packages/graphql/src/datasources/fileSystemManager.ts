@@ -5,17 +5,20 @@ import path from "path";
 import * as jsyaml from "js-yaml";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
+import DataLoader from "dataloader";
 
 export class FileSystemManager implements DataSource {
   rootPath: string;
+  dataLoader: DataLoader<any, any>;
   constructor(rootPath: string) {
     this.rootPath = rootPath;
+    this.dataLoader = new DataLoader(this.batchTemplates);
   }
   getTemplate = async (
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
-    return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
+    return this.dataLoader.load(FMT_BASE + "/" + templateName);
   };
   getSettings = async (_siteLookup: string): Promise<Settings> => {
     return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
@@ -65,6 +68,13 @@ export class FileSystemManager implements DataSource {
     return list;
   };
 
+  private _getTemplate = async (
+    _siteLookup: string,
+    templateName: string
+  ): Promise<FMT> => {
+    return this.getData<FMT>(_siteLookup, templateName);
+  };
+
   private writeTemplate = async (
     _siteLookup: string,
     templateName: string,
@@ -77,6 +87,38 @@ export class FileSystemManager implements DataSource {
   private getFullPath(relPath: string) {
     return path.join(this.rootPath, relPath);
   }
+
+  private formatBatchedResult = (
+    templates: (FMT & { path: string })[],
+    ids: readonly string[]
+  ) => {
+    const templateMap: { [key: string]: any } = {};
+    templates.forEach((template) => {
+      templateMap[template.path] = template;
+    });
+
+    return ids.map((id) => templateMap[id]);
+  };
+
+  private batchTemplates = async (
+    templateIds: readonly string[]
+  ): Promise<(FMT & { path: string })[][]> => {
+    try {
+      const templates = await Promise.all(
+        //TODO - if datasource supports it, we can do a batch operation here
+        templateIds.map(async (templateId) => {
+          const template = await this._getTemplate("", templateId);
+          return {
+            ...template,
+            path: templateId,
+          };
+        })
+      );
+      return this.formatBatchedResult(templates, templateIds);
+    } catch (err) {
+      throw new Error("There was an issue loading the templates.");
+    }
+  };
 }
 
 const stringify = (content: string, data: object) => {
