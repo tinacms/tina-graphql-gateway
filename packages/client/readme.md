@@ -89,7 +89,7 @@ module.exports = {
 };
 ```
 
-#### .forestry/front_matter/templates/test.yml
+#### .forestry/front_matter/templates/post.yml
 
 This is where your templates live. These represent your data's content model.
 Let's wire one up:
@@ -125,7 +125,7 @@ sections:
     match: "**/*.md"
     new_doc_ext: md
     templates:
-      - test # replace this with your template filename name
+      - post # replace this with your template filename name
 upload_dir: public/uploads
 public_path: "/uploads"
 front_matter_path: ""
