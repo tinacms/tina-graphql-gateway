@@ -3,7 +3,7 @@
 
 __metadata:
   version: 4
-  cacheKey: 4
+  cacheKey: 5
 
 "@ampproject/toolbox-core@npm:^2.3.0":
   version: 2.3.0
@@ -1995,6 +1995,7 @@ __metadata:
     graphiql-code-exporter: ^2.0.8
     graphiql-explorer: ^0.6.2
     graphql: ^15.1.0
+    isomorphic-unfetch: ^3.0.0
     next: 9.4.2
     node-fetch: ^2.6.0
     react: 16.13.1
@@ -2003,8 +2004,6 @@ __metadata:
     typescript: ^3.9.5
   peerDependencies:
     tinacms: ">0.21.1"
-  bin:
-    "forestry:start": bin.js
   languageName: unknown
   linkType: soft
 
@@ -2048,6 +2047,7 @@ __metadata:
     "@types/node": ^13.13.2
     "@types/pg": ^7.14.3
     cors: ^2.8.5
+    dotenv: ^8.2.0
     express: ^4.17.1
     express-graphql: ^0.9.0
     glob: ^7.1.6
@@ -8733,7 +8733,7 @@ fsevents@^1.2.7:
     nan: ^2.12.1
     node-gyp: latest
     node-pre-gyp: "*"
-  checksum: 181d9f88933413ce7653288b743abae38bb12d4327552698dcfa4663583933f79e63e8ce0ec7987ca087e0c49add8f05e735d17ada20bd406403fa603ded93c2
+  checksum: 07f95321e9908fc81115320b2e94bad9cd381c5a3f041ff46611f8170031da34700db3b19fd37861377d74fe92675c2c203e3537bfa561b4af5e4c7091cc2434
   languageName: node
   linkType: hard
 
@@ -8742,7 +8742,7 @@ fsevents@^1.2.7:
   resolution: "fsevents@patch:fsevents@npm%3A2.1.2#builtin<compat/fsevents>::version=2.1.2&hash=495457"
   dependencies:
     node-gyp: latest
-  checksum: 6fb6ae0c1e5aca68fec6c0bf119d0dc9a1d653af60925c7ec69868f0ac68fa6930eeb769745030ecb560e00c144c74068da62bb77a000cc7dc263963ba4e2d7f
+  checksum: 1d1501fde92a2c1ff0a134fe2db97a10916ed83321c8604998441a2cab4f5343040cd60ba64a6a06e3e321778139178c4b4a565eaa05b9cf7e16b511cdf9dcab
   languageName: node
   linkType: hard
 
@@ -10410,6 +10410,16 @@ fsevents@^1.2.7:
     node-fetch: ^1.0.1
     whatwg-fetch: ">=0.10.0"
   checksum: a4174e332ae98fc93269162f1d8a3ee1f7255257d4eaeea5145d4068f64ac2dbff7e7f681889097238e1e009f7a74ba1a23ffd8ed967402777a32cca96204508
+  languageName: node
+  linkType: hard
+
+"isomorphic-unfetch@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "isomorphic-unfetch@npm:3.0.0"
+  dependencies:
+    node-fetch: ^2.2.0
+    unfetch: ^4.0.0
+  checksum: c095a48045076159e4c20457f5df49720d146f44da25da8dd127a0c51a6cd0ac8100bd6a7021cab42755261987f1f1dd8f47a7b90682a9465c2c1241f41e4103
   languageName: node
   linkType: hard
 
@@ -12438,7 +12448,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.6.0, node-fetch@npm:^2.6.0":
+"node-fetch@npm:2.6.0, node-fetch@npm:^2.2.0, node-fetch@npm:^2.6.0":
   version: 2.6.0
   resolution: "node-fetch@npm:2.6.0"
   checksum: dd9f586a9f7ddb7dd94d2aba9cb693d32f5001e9850098512fbc8a4cbdd56838afa08ed0a6725b9fce9b01ec12b713e622cbfc16d92762d8b937b238330a632a
@@ -15171,7 +15181,7 @@ fsevents@^1.2.7:
   resolution: "resolve@patch:resolve@npm%3A1.15.1#builtin<compat/resolve>::version=1.15.1&hash=3388aa"
   dependencies:
     path-parse: ^1.0.6
-  checksum: 6e76c94f84457c88dfff3f0ff894be6f6250380c9bb8a712891282d2f4ed146c6b4588c3ed2082ae530981adea1743ca6f56732de99004ab31b79f958cd42c0e
+  checksum: 6588c8a8735d8b2a00cfee2a325538f325ae5e48653490882d3e8afe6124f25c25d60ec09864f30a03c4471a3201c9cfba0e14ca0f74f626ac4b5c8d2e42c2c2
   languageName: node
   linkType: hard
 
@@ -15180,7 +15190,7 @@ fsevents@^1.2.7:
   resolution: "resolve@patch:resolve@npm%3A1.17.0#builtin<compat/resolve>::version=1.17.0&hash=3388aa"
   dependencies:
     path-parse: ^1.0.6
-  checksum: 99df12ab341fb8e96c6bce2ea521d3a1294c5c56f85524369808f7294fbf6f01d6f6c7f4408a1f6cd4fb5762b800a889629ff64abc08f12bcc8c3553e3564ab8
+  checksum: 4bcfb568860d0c361fd16c26b6fce429711138ff0de7dd353bdd73fcb5c7eede2f4602d40ccfa08ff45ec7ef9830845eab2021a46036af0a6e5b58bab1ff6399
   languageName: node
   linkType: hard
 
@@ -17282,31 +17292,31 @@ typescript@^3.9.5:
 
 "typescript@patch:typescript@^3.6.3#builtin<compat/typescript>":
   version: 3.9.6
-  resolution: "typescript@patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=64df9d"
+  resolution: "typescript@patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=5b02a2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 74cb55c847841e1aeea9c78bdf0156cf6ba311eb353e555ba70cb6df120e9b4c4a7feff2a153f04fda3d6b7124496fd4d444be62f3d2d448e77c667ea5beaa0b
+  checksum: de0b64b2df571ddb6a87e058605b011b1d7e2ed5e1bb27ba658251a380041abbbdf5bdf8da25d5605ac84e7fb3882a816b9a283ffaddedebfde1a57db4c18c30
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^3.8.3#builtin<compat/typescript>":
   version: 3.8.3
-  resolution: "typescript@patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=64df9d"
+  resolution: "typescript@patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=5b02a2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 7b29bcb0576cc81266c5b4e6f84bb5a760483fa80bcd7d9588b0d3e16063c733552acf686c8541b93be2cf29ec5d8360ec927509b11e4e723f0dc91366b9cb1a
+  checksum: dcadfa6d7c90af4ac23181cccda22bdc7270f23a2c8773ab0b6047e2b9b86bcd885da5c5acc020addc1a0df042940ab8e9bbfb33aedcf884bea554fe60fccd32
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^3.9.5#builtin<compat/typescript>":
   version: 3.9.5
-  resolution: "typescript@patch:typescript@npm%3A3.9.5#builtin<compat/typescript>::version=3.9.5&hash=64df9d"
+  resolution: "typescript@patch:typescript@npm%3A3.9.5#builtin<compat/typescript>::version=3.9.5&hash=5b02a2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 5849aa7c2d887b4d0b289530b45690fc26e606ea3719cf958dbb7f531ca1b968895bbef89b21ecb3903d5039fb047ebf6a0047ba147123060cbe1940ce5c91be
+  checksum: 452cdd20d801630727433a990652c1e65f5eb5586383dda60f178b4fbda5c7951256f9aa31327c73722af9b1b664e3a53d724aabfd8a68866e9b1631818f004c
   languageName: node
   linkType: hard
 
@@ -17337,6 +17347,13 @@ typescript@^3.9.5:
   dependencies:
     debug: ^2.2.0
   checksum: 0974f82a8750c3c247d5a9cf7fe91279d1fad0069dda7b717937e7960addddedf2ddabe3ffb1f504929acd0c924ef654c5c85185aee4c514a0fbf2e2a4efcf39
+  languageName: node
+  linkType: hard
+
+"unfetch@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "unfetch@npm:4.1.0"
+  checksum: 22b729e6e6db8ce58fb64f5063bd72f91fb5badd34f6ae8aaa489bec11ecb189b6654105e1cdfeaecf25841ceb83b4be1b9b4c7ed529287ad2d79e9620d03033
   languageName: node
   linkType: hard
 
