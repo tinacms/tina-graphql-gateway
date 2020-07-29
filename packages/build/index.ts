@@ -233,7 +233,7 @@ async function buildAction() {
 
   await cleanDistFolder();
 
-  const logger = await createProgressEstimator();
+  const logger: any = await createProgressEstimator();
   const promise = writeCjsEntryFile(opts.name).catch(logError);
   logger(promise, "Creating entry file");
 
