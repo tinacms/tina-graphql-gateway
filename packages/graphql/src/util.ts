@@ -122,6 +122,15 @@ export const getSectionFmtTypes2 = (
   return types;
 };
 
+export const getSectionFmts = (sections: Section[]) => {
+  return sections.filter(isDirectorySection).map(({ label, templates }) => {
+    return {
+      name: slugify(label),
+      templates,
+    };
+  });
+};
+
 export const arrayToObject = <T>(
   array: T[],
   func: (accumulator: { [key: string]: any }, item: T) => void
