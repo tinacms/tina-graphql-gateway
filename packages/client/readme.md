@@ -199,9 +199,7 @@ export default withTina(MyApp, {
       query,
     }),
   },
-  sidebar: {
-    hidden: false,
-  },
+  sidebar: true,
 });
 ```
 
