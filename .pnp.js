@@ -2982,6 +2982,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@forestryio/cli", "workspace:packages/cli"],
             ["@forestryio/build", "workspace:packages/build"],
             ["@forestryio/graphql", "workspace:packages/graphql"],
+            ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@graphql-codegen/core", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
             ["@graphql-codegen/typescript", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
             ["@graphql-codegen/typescript-operations", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
