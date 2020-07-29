@@ -86,14 +86,13 @@ export class ForestryClient {
   };
 
   getQuery = async () => {
-    // if (!this.query) {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
+    if (!this.query) {
+      const data = await this.request(getIntrospectionQuery(), {
+        variables: {},
+      });
 
-    this.query = print(queryBuilder(buildClientSchema(data)));
-    // }
-    console.log(this.query);
+      this.query = print(queryBuilder(buildClientSchema(data)));
+    }
 
     return this.query;
   };
