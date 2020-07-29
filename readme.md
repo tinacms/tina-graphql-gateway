@@ -69,11 +69,15 @@ For demonstation purposes I've put the demos in the `apps` folder. But the Fores
 These packages are currently published to NPM under the `forestryio` scope so you'll need to be sure you have access.
 
 ```
-//npm.pkg.github.com/:_authToken=<My-Github-Personal-Access-Token-Here>
+//npm.pkg.github.com/:_authToken=<My-NPM-Auth-Access-Token-Here>
 @forestryio:registry=https://npm.pkg.github.com/
 always-auth=true
 registry=http://registry.npmjs.org/ # All other packages
 ```
+
+### Yarn v2 repos ignore .npmrc
+
+If you're setting up a new repo with yarn v2, note that it [won't respect any settings](https://yarnpkg.com/advanced/migration/#dont-use-npmrc-files) in your `.npmrc` - instead you can configure your settings in the .yarnrc.yml` file.
 
 ## Release Workflow
 
