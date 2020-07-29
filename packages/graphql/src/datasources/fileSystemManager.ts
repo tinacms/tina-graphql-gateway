@@ -30,7 +30,7 @@ export class FileSystemManager implements DataSource {
     return sectionTemplates.map(async (templateName: string) => {
       return {
         name: templateName,
-        fmt: this.getTemplate(_siteLookup, templateName),
+        fmt: await this.getTemplate(_siteLookup, templateName),
       };
     });
   };
@@ -73,7 +73,6 @@ export class FileSystemManager implements DataSource {
       throw new Error(`Cannot delete ${fullPath}: Does not exist.`);
     fs.unlinkSync(fullPath);
 
-    // TODO: Delete things from pages arrays
     return !(await this.fileExists(fullPath));
   };
 
@@ -99,19 +98,19 @@ export class FileSystemManager implements DataSource {
   };
 
   deleteContent = async (_siteLookup: string, filePath: string) => {
-    // delete the file
+    // deletes the file
     await this.deleteData(filePath);
-    // delete the stuff from pages
-    const templates = await this.getSectionTemplates(_siteLookup);
-    templates.map(async (template) => {
-      let t = await template;
-      let fmt = await t.fmt;
-      fmt.data.pages = fmt.data.pages.filter(
-        (page: string) => page !== filePath
-      );
-      await this.writeTemplate(_siteLookup, t.name, fmt);
-    });
 
+    // deletes references from pages arrays
+    const templates = await this.getSectionTemplates(_siteLookup);
+    Promise.all(templates).then((resolved) => {
+      resolved.map(async (template) => {
+        template.fmt.data.pages = template.fmt.data.pages.filter(
+          (page: string) => page !== filePath
+        );
+        await this.writeTemplate(_siteLookup, template.name, template.fmt);
+      });
+    });
     return Promise.resolve(true);
   };
 
