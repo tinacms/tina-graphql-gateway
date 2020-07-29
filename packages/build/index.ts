@@ -1,4 +1,3 @@
-// Forked and simplified from https://github.com/jaredpalmer/tsdx
 import { DEFAULT_EXTENSIONS, createConfigItem } from "@babel/core";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
