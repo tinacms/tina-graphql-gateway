@@ -3,7 +3,7 @@
 This "@forestryio/client" package allows you to access your datasource through a GraphQL adapter.
 You might want to use this for a few reasons:
 
-### Consistent GraphqQL API regardless of your datsource
+### Consistent GraphqQL API regardless of your datasource
 
 If your content is backed by Git, you might want to use your local content in development. With your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code.
 
