@@ -1,10 +1,9 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import type { DataSource, Settings, FMT, Section } from "./datasource";
+import type { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
 import * as jsyaml from "js-yaml";
 import { getSectionFmts } from "../util";
-import { stripIgnoredCharacters } from "graphql";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
 
