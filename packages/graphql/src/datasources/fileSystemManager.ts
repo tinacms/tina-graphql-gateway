@@ -1,8 +1,10 @@
 import fs from "fs";
 import matterOrig, { Input, GrayMatterOption } from "gray-matter";
-import type { DataSource, Settings, FMT } from "./datasource";
+import type { DataSource, Settings, FMT, Section } from "./datasource";
 import path from "path";
 import * as jsyaml from "js-yaml";
+import { getSectionFmts } from "../util";
+import { stripIgnoredCharacters } from "graphql";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
 
@@ -11,15 +13,32 @@ export class FileSystemManager implements DataSource {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
   }
+
   getTemplate = async (
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
     return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
+
+  getSectionTemplates = async (_siteLookup: string) => {
+    const settings = await this.getSettings(_siteLookup);
+    const sectionFmtNames = getSectionFmts(settings.data.sections);
+    const sectionTemplates = ([] as string[]).concat(
+      ...sectionFmtNames.map((section) => section.templates + ".yml")
+    );
+    return sectionTemplates.map(async (templateName: string) => {
+      return {
+        name: templateName,
+        fmt: this.getTemplate(_siteLookup, templateName),
+      };
+    });
+  };
+
   getSettings = async (_siteLookup: string): Promise<Settings> => {
     return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
   };
+
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
     const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
     // @ts-ignore
@@ -83,6 +102,16 @@ export class FileSystemManager implements DataSource {
     // delete the file
     await this.deleteData(filePath);
     // delete the stuff from pages
+    const templates = await this.getSectionTemplates(_siteLookup);
+    templates.map(async (template) => {
+      let t = await template;
+      let fmt = await t.fmt;
+      fmt.data.pages = fmt.data.pages.filter(
+        (page: string) => page !== filePath
+      );
+      await this.writeTemplate(_siteLookup, t.name, fmt);
+    });
+
     return Promise.resolve(true);
   };
 

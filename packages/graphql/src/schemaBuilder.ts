@@ -26,9 +26,8 @@ import { friendlyFMTName, shortFMTName } from "@forestryio/graphql-helpers";
 import {
   getSectionFmtInputTypes,
   getSectionFmtTypes,
-  isDirectorySection,
+  getSectionFmts,
   isNullOrUndefined,
-  slugify,
 } from "./util";
 
 import camelCase from "lodash.camelcase";
@@ -84,14 +83,7 @@ export const buildSchema = async (
   );
 
   // build a list of all directory sections from the settings file, associate each section with it's FMTs
-  const sectionFmts = settings.data.sections
-    .filter(isDirectorySection)
-    .map(({ label, templates }) => {
-      return {
-        name: slugify(label),
-        templates,
-      };
-    });
+  const sectionFmts = getSectionFmts(settings.data.sections);
 
   const fieldData: FieldData = {
     sectionFmts,
