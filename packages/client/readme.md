@@ -147,7 +147,7 @@ yarn tina-gql schema:gen-query --typescript
 ```
 
 This should create two files:
-`.forestry/query.js` & `.forestry/types.ts`
+`.forestry/query.gql` & `.forestry/types.ts`
 
 Now let's start our server! run:
 
@@ -157,9 +157,9 @@ yarn tina-gql server:start
 
 To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
 
-[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
+You can use the query from your **/.forestry/query.gql**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
-You can use the query from your **/.forestry/query.js**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
+[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
 
 Now that we have a working GraphQL server with our local content, let's use it within our site.
 
