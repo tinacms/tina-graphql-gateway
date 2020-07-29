@@ -263,7 +263,7 @@ export const getStaticProps = async () => {
   return { props: { path, response } };
 };
 
-const Home = (props) => {
+export default const Home = (props) => {
   const [formData, form] = useForestryForm(props.response, config.serverURL);
   usePlugin(form);
 
