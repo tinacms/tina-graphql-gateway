@@ -1,2 +1,2 @@
-releases:
-  "@forestryio/build": patch
+declined:
+  - "@forestryio/build"
