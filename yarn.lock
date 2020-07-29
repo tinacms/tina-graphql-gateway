@@ -1840,6 +1840,7 @@ __metadata:
   dependencies:
     "@forestryio/build": "workspace:packages/build"
     "@forestryio/graphql": "workspace:packages/graphql"
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-codegen/core": ^1.17.0
     "@graphql-codegen/typescript": ^1.17.0
     "@graphql-codegen/typescript-operations": ^1.17.0
