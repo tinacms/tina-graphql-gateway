@@ -43,10 +43,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/graphql-helpers"
       },
       {
-        "name": "@forestryio/teams",
-        "reference": "workspace:packages/teams"
-      },
-      {
         "name": "demo",
         "reference": "workspace:apps/demo"
       }
@@ -59,7 +55,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@forestryio/client", ["virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client", "workspace:packages/client"]],
       ["@forestryio/graphql", ["workspace:packages/graphql"]],
       ["@forestryio/graphql-helpers", ["workspace:packages/graphql-helpers"]],
-      ["@forestryio/teams", ["workspace:packages/teams"]],
       ["demo", ["workspace:apps/demo"]],
       ["sc", ["workspace:."]]
     ],
@@ -2780,20 +2775,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["@elastic/elasticsearch", [
-        ["npm:7.8.0", {
-          "packageLocation": "./.yarn/cache/@elastic-elasticsearch-npm-7.8.0-5a0edfca30-3183d28261.zip/node_modules/@elastic/elasticsearch/",
-          "packageDependencies": [
-            ["@elastic/elasticsearch", "npm:7.8.0"],
-            ["debug", "virtual:def3895674157733a64bcd7bb1fb7dae4fe688ea302e9fb38e6f02d9d93eee57879df8ac8d6f5fce67c4a2bc20462b79c8a9e958b290ac3d269b3ae0bad08209#npm:4.2.0"],
-            ["decompress-response", "npm:4.2.1"],
-            ["ms", "npm:2.1.2"],
-            ["pump", "npm:3.0.0"],
-            ["secure-json-parse", "npm:2.1.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["@emotion/cache", [
         ["npm:10.0.29", {
           "packageLocation": "./.yarn/cache/@emotion-cache-npm-10.0.29-076efd3781-a2bdf4dd21.zip/node_modules/@emotion/cache/",
@@ -3202,57 +3183,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.upperfirst", "npm:4.3.1"],
             ["ts-jest", "virtual:23afd5ce58ee21a819bf3b29aea391fd3a730601309c03ed281fc04a148c1fdc4e77aab651de0c440b09f82700e0985836b951436eb37149b26c567d40a3ac43#npm:26.1.2"],
             ["tslib", "npm:1.11.1"]
-          ],
-          "linkType": "SOFT",
-        }]
-      ]],
-      ["@forestryio/teams", [
-        ["workspace:packages/teams", {
-          "packageLocation": "./packages/teams/",
-          "packageDependencies": [
-            ["@forestryio/teams", "workspace:packages/teams"],
-            ["@elastic/elasticsearch", "npm:7.8.0"],
-            ["@forestryio/build", "workspace:packages/build"],
-            ["@forestryio/graphql", "workspace:packages/graphql"],
-            ["@graphql-codegen/core", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.15.3"],
-            ["@graphql-codegen/typescript", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.15.3"],
-            ["@graphql-codegen/typescript-operations", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.15.3"],
-            ["@types/cors", "npm:2.8.6"],
-            ["@types/elasticsearch", "npm:5.0.36"],
-            ["@types/express", "npm:4.17.6"],
-            ["@types/lodash.camelcase", "npm:4.3.6"],
-            ["@types/lodash.flatten", "npm:4.4.6"],
-            ["@types/lodash.kebabcase", "npm:4.1.6"],
-            ["@types/lodash.snakecase", "npm:4.1.6"],
-            ["@types/lodash.upperfirst", "npm:4.3.6"],
-            ["@types/node", "npm:13.13.2"],
-            ["@types/pg", "npm:7.14.3"],
-            ["cors", "npm:2.8.5"],
-            ["dotenv", "npm:8.2.0"],
-            ["express", "npm:4.17.1"],
-            ["express-graphql", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:0.9.0"],
-            ["glob", "npm:7.1.6"],
-            ["graphiql", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:0.17.5"],
-            ["graphiql-explorer", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:0.5.1"],
-            ["graphql", "npm:15.1.0"],
-            ["graphql-toolkit", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:0.7.5"],
-            ["gray-matter", "npm:4.0.2"],
-            ["lodash.camelcase", "npm:4.3.0"],
-            ["lodash.flatten", "npm:4.4.0"],
-            ["lodash.kebabcase", "npm:4.1.1"],
-            ["lodash.snakecase", "npm:4.1.1"],
-            ["lodash.upperfirst", "npm:4.3.1"],
-            ["nodemon", "npm:2.0.3"],
-            ["pg", "npm:8.2.1"],
-            ["remark", "npm:12.0.0"],
-            ["remark-excerpt", "npm:1.0.0-beta.1"],
-            ["remark-parse", "npm:8.0.2"],
-            ["toml", "npm:3.0.0"],
-            ["ts-node", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:8.9.0"],
-            ["tslib", "npm:1.11.1"],
-            ["typescript", "patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=5b02a2"],
-            ["unified", "npm:9.0.0"],
-            ["yaml", "npm:1.8.3"]
           ],
           "linkType": "SOFT",
         }]
@@ -5483,15 +5413,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@types/cors", "npm:2.8.6"],
             ["@types/express", "npm:4.17.6"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["@types/elasticsearch", [
-        ["npm:5.0.36", {
-          "packageLocation": "./.yarn/cache/@types-elasticsearch-npm-5.0.36-eedfe3a345-ab5b04e2db.zip/node_modules/@types/elasticsearch/",
-          "packageDependencies": [
-            ["@types/elasticsearch", "npm:5.0.36"]
           ],
           "linkType": "HARD",
         }]
@@ -9389,14 +9310,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["decompress-response", "npm:3.3.0"],
             ["mimic-response", "npm:1.0.1"]
-          ],
-          "linkType": "HARD",
-        }],
-        ["npm:4.2.1", {
-          "packageLocation": "./.yarn/cache/decompress-response-npm-4.2.1-abe5b4ebe4-d854171a10.zip/node_modules/decompress-response/",
-          "packageDependencies": [
-            ["decompress-response", "npm:4.2.1"],
-            ["mimic-response", "npm:2.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -14835,13 +14748,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mimic-response", "npm:1.0.1"]
           ],
           "linkType": "HARD",
-        }],
-        ["npm:2.1.0", {
-          "packageLocation": "./.yarn/cache/mimic-response-npm-2.1.0-037463e454-9c206f3aeb.zip/node_modules/mimic-response/",
-          "packageDependencies": [
-            ["mimic-response", "npm:2.1.0"]
-          ],
-          "linkType": "HARD",
         }]
       ]],
       ["mini-css-extract-plugin", [
@@ -18830,15 +18736,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["section-matter", "npm:1.0.0"],
             ["extend-shallow", "npm:2.0.1"],
             ["kind-of", "npm:6.0.3"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["secure-json-parse", [
-        ["npm:2.1.0", {
-          "packageLocation": "./.yarn/cache/secure-json-parse-npm-2.1.0-3949cc4a79-1d5327c1ec.zip/node_modules/secure-json-parse/",
-          "packageDependencies": [
-            ["secure-json-parse", "npm:2.1.0"]
           ],
           "linkType": "HARD",
         }]

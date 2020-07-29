@@ -1732,19 +1732,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch@npm:^7.8.0":
-  version: 7.8.0
-  resolution: "@elastic/elasticsearch@npm:7.8.0"
-  dependencies:
-    debug: ^4.1.1
-    decompress-response: ^4.2.0
-    ms: ^2.1.1
-    pump: ^3.0.0
-    secure-json-parse: ^2.1.0
-  checksum: 3183d282611d0774a2b40bb54902628ff9ec82f7b65f0da46b29c12e8465c491bb2de280dc03a3cec5b8d76346021895894d3ece1e9a9ac3ec561b005e04a996
-  languageName: node
-  linkType: hard
-
 "@emotion/cache@npm:^10.0.27":
   version: 10.0.29
   resolution: "@emotion/cache@npm:10.0.29"
@@ -2071,57 +2058,6 @@ __metadata:
     remark-parse: ^8.0.2
     toml: ^3.0.0
     ts-jest: ^26.1.2
-    ts-node: ^8.9.0
-    tslib: ^1.11.1
-    typescript: ^3.8.3
-    unified: ^9.0.0
-    yaml: ^1.8.3
-  bin:
-    "forestry:serve": ./dist/index.js
-  languageName: unknown
-  linkType: soft
-
-"@forestryio/teams@workspace:packages/teams":
-  version: 0.0.0-use.local
-  resolution: "@forestryio/teams@workspace:packages/teams"
-  dependencies:
-    "@elastic/elasticsearch": ^7.8.0
-    "@forestryio/build": "workspace:packages/build"
-    "@forestryio/graphql": "workspace:packages/graphql"
-    "@graphql-codegen/core": ^1.15.3
-    "@graphql-codegen/typescript": ^1.15.3
-    "@graphql-codegen/typescript-operations": ^1.15.3
-    "@types/cors": ^2.8.6
-    "@types/elasticsearch": ^5.0.36
-    "@types/express": ^4.17.6
-    "@types/lodash.camelcase": ^4.3.6
-    "@types/lodash.flatten": ^4.4.6
-    "@types/lodash.kebabcase": ^4.1.6
-    "@types/lodash.snakecase": ^4.1.6
-    "@types/lodash.upperfirst": ^4.3.6
-    "@types/node": ^13.13.2
-    "@types/pg": ^7.14.3
-    cors: ^2.8.5
-    dotenv: ^8.2.0
-    express: ^4.17.1
-    express-graphql: ^0.9.0
-    glob: ^7.1.6
-    graphiql: ^0.17.5
-    graphiql-explorer: ^0.5.1
-    graphql: ^15.1.0
-    graphql-toolkit: ^0.7.5
-    gray-matter: ^4.0.2
-    lodash.camelcase: ^4.3.0
-    lodash.flatten: ^4.4.0
-    lodash.kebabcase: ^4.1.1
-    lodash.snakecase: ^4.1.1
-    lodash.upperfirst: ^4.3.1
-    nodemon: ^2.0.2
-    pg: ^8.2.1
-    remark: ^12.0.0
-    remark-excerpt: ^1.0.0-beta.1
-    remark-parse: ^8.0.2
-    toml: ^3.0.0
     ts-node: ^8.9.0
     tslib: ^1.11.1
     typescript: ^3.8.3
@@ -3711,13 +3647,6 @@ __metadata:
   dependencies:
     "@types/express": "*"
   checksum: 911a8696e8a8b26687de5facabe78d9966a9970f7489e3cd42589115173eee0b7fcf7cc8941fe25054fc43f4c81c6977582d84cd52c26b6675a9ddac5776c8ca
-  languageName: node
-  linkType: hard
-
-"@types/elasticsearch@npm:^5.0.36":
-  version: 5.0.36
-  resolution: "@types/elasticsearch@npm:5.0.36"
-  checksum: ab5b04e2dbb75226bbbf077288c8e74b655f299bc9468a99a79f63514a33670e75644564f4694e5d0a13231063c1a0b67c2221e98fe663120db701aced6f922e
   languageName: node
   linkType: hard
 
@@ -7142,15 +7071,6 @@ __metadata:
   dependencies:
     mimic-response: ^1.0.0
   checksum: 93b0dcc8f0c32f1d5eb656e7db54fa5554227b8bfefd242c9d28f7b9c3908052c2ab8297b4af6256759da496679ee3a806d559f22d29b7e71a25879a2c25b99b
-  languageName: node
-  linkType: hard
-
-"decompress-response@npm:^4.2.0":
-  version: 4.2.1
-  resolution: "decompress-response@npm:4.2.1"
-  dependencies:
-    mimic-response: ^2.0.0
-  checksum: d854171a100833d66171ffba0990fc581133cfb62befc18edd2365edc40e8a48f9f96b6156465f1a74802112b9c241c792d865f5ee27e285c2e4417a17ac6c66
   languageName: node
   linkType: hard
 
@@ -12002,13 +11922,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mimic-response@npm:^2.0.0":
-  version: 2.1.0
-  resolution: "mimic-response@npm:2.1.0"
-  checksum: 9c206f3aebdc8de306550394301de8ce593e7757f3f9be43b5f99728e38ae787d17e6b72b96eb1b7a998d041da0ee465c48d29c927be4ff6ac3319453285d075
-  languageName: node
-  linkType: hard
-
 "mini-css-extract-plugin@npm:0.8.0":
   version: 0.8.0
   resolution: "mini-css-extract-plugin@npm:0.8.0"
@@ -15608,13 +15521,6 @@ fsevents@^1.2.7:
     extend-shallow: ^2.0.1
     kind-of: ^6.0.0
   checksum: 4c64ed0cf3fb58ab216a04185ee5b51790c8033bd121cf69bf74c9686d7100198606a63dbc05db336ebca28cd80a325d9b7ad564d7e0929ead8556eb3a38de65
-  languageName: node
-  linkType: hard
-
-"secure-json-parse@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "secure-json-parse@npm:2.1.0"
-  checksum: 1d5327c1ecabc99678620e0c005a3e9d08ff0b2d8b8aef8ba8242b39e0cb17984453dfcf1967bde072c010a4e9f02a3abb1c186f56c0bbd39654a0ee247b77dd
   languageName: node
   linkType: hard
 
