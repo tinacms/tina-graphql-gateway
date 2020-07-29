@@ -12,8 +12,8 @@
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",
     "ci:build": "yarn workspaces foreach -pt --exclude demo run build",
-    "ci:check:auth": "yarn npm whoami --scope @forestryio",
-    "ci:workspaces": "yarn workspaces foreach --exclude=demo --verbose npm publish --tolerate-republish"
+    "ci:version-check": "yarn version check",
+    "ci:piblish": "yarn workspaces foreach --exclude=demo --verbose npm publish --tolerate-republish"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
