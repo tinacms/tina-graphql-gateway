@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.15",
+  "version": "0.2.18",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -71,7 +71,7 @@
     "yo": "^3.1.1"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",

@@ -11,7 +11,6 @@ const projectRoot = path.resolve(__dirname, "../");
 export const paths = {
   projectRoot,
   packagePackageJson: resolveApp("package.json"),
-  // packageTsconfigBuildJson: path.join(projectRoot, "tsconfig.json"),
   packageTsconfigBuildJson: resolveApp("tsconfig.build.json"),
   testsSetup: path.join(projectRoot, "test/setupTests.ts"),
   packageRoot: resolveApp("."),

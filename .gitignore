@@ -5,11 +5,12 @@ node_modules
 .cache
 
 .yarn/*
+!.yarn/cache
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
-.pnp.*
+# .pnp.*
 package.tgz
 
 .env
