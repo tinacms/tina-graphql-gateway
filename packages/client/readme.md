@@ -65,9 +65,10 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 ## Implementation
 
-Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
+Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server.
 
-**/_posts/welcome.md**
+**/\_posts/welcome.md**
+
 ```md
 ---
 title: This is my post
@@ -242,18 +243,15 @@ export default class MyDocument extends Document {
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// pages/posts/welcome.jsx
+// pages/posts/welcome.tsx
 
-import { useForestryForm, ForestryClient } from "@forestryio/client";
-import config from "../.forestry/config";
+import config from "../../.forestry/config";
+import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
-import query from "../.forestry/query";
-
-import 'isomorphic-unfetch' // polyfill workaround
 
 const URL = config.serverURL;
 
-export const getStaticProps = async () => {
+export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL, query });
   const response = await client.getContent({
@@ -261,10 +259,10 @@ export const getStaticProps = async () => {
   });
 
   return { props: { path, response } };
-};
+}
 
-export default const Home = (props) => {
-  const [formData, form] = useForestryForm(props.response, config.serverURL);
+export default function Home(props) {
+  const [formData, form] = useForestryForm(props.response);
   usePlugin(form);
 
   return (
@@ -272,7 +270,7 @@ export default const Home = (props) => {
       <h1>{formData.data.title}</h1>
     </div>
   );
-};
+}
 ```
 
 And that's it! Try making some changes and saving.
