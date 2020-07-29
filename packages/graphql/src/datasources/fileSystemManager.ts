@@ -3,7 +3,6 @@ import matterOrig, { Input, GrayMatterOption } from "gray-matter";
 import type { DataSource, Settings, FMT } from "./datasource";
 import path from "path";
 import * as jsyaml from "js-yaml";
-import { getSectionFmts } from "../util";
 const FMT_BASE = ".forestry/front_matter/templates";
 const SETTINGS_PATH = ".forestry/settings.yml";
 
@@ -18,28 +17,6 @@ export class FileSystemManager implements DataSource {
     templateName: string
   ): Promise<FMT> => {
     return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
-  };
-
-  getSectionTemplates = async (_siteLookup: string) => {
-    const settings = await this.getSettings(_siteLookup);
-    const sectionFmtNames = getSectionFmts(settings.data.sections);
-
-    // basically just building a list of all the templates mentioned in sections
-    // in the settings file
-    // TODO: Do I need to worry about duplicates?
-    const sectionTemplates = ([] as string[]).concat(
-      ...sectionFmtNames.map((section) => section.templates + ".yml")
-    );
-
-    // a little optimization to remove duplicates from section templates
-    return Array.from(new Set(sectionTemplates)).map(
-      async (templateName: string) => {
-      return {
-        name: templateName,
-        fmt: await this.getTemplate(_siteLookup, templateName),
-      };
-      }
-    );
   };
 
   getSettings = async (_siteLookup: string): Promise<Settings> => {
@@ -111,15 +88,17 @@ export class FileSystemManager implements DataSource {
     }
 
     // deletes references from pages arrays
-    const templates = await this.getSectionTemplates(_siteLookup);
-    Promise.all(templates).then((resolved) => {
-      resolved.map(async (template) => {
-        template.fmt.data.pages = template.fmt.data.pages.filter(
+    const templateNames = await this.getTemplateList(_siteLookup);
+    templateNames.map(async (templateName) => {
+      const fmt = await this.getTemplate(_siteLookup, templateName);
+      if (fmt.data.pages) {
+        fmt.data.pages = fmt.data.pages.filter(
           (page: string) => page !== filePath
         );
-        await this.writeTemplate(_siteLookup, template.name, template.fmt);
-      });
+        await this.writeTemplate(_siteLookup, templateName, fmt);
+      }
     });
+
     return Promise.resolve(true);
   };
 
