@@ -1897,7 +1897,6 @@ __metadata:
   resolution: "@forestryio/client@workspace:packages/client"
   dependencies:
     "@forestryio/build": "workspace:packages/build"
-    "@forestryio/graphql": "workspace:packages/graphql"
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
@@ -1930,6 +1929,7 @@ __metadata:
     "@types/jest": ^26.0.4
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
+    graphql: ^15.3.0
     jest: ^26.1.0
     lodash.camelcase: ^4.3.0
     lodash.upperfirst: ^4.3.1
@@ -10110,7 +10110,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.0.0, graphql@npm:^15.1.0":
+"graphql@npm:^15.0.0, graphql@npm:^15.1.0, graphql@npm:^15.3.0":
   version: 15.3.0
   resolution: "graphql@npm:15.3.0"
   checksum: f01c05eb9102a88f33b4276b38399f066067d5be03c66c3bfec3e71e1793a91750e408f7abb001831bc2daf09746ab70ac0af16894d0ef1f1c1246fb0c2f4b0e

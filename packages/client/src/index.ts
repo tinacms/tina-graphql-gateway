@@ -1,4 +1,5 @@
-import { friendlyFMTName } from "@forestryio/graphql-helpers";
+import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -34,10 +35,6 @@ const transform = (obj: any) => {
   return meh;
 };
 
-interface GetContentVariables {
-  path: string;
-}
-
 interface AddProps {
   url: string;
   path: string;
@@ -58,15 +55,13 @@ interface AddVariables {
 
 interface ForestryClientOptions {
   serverURL: string;
-  query: string;
 }
 
 export class ForestryClient {
   serverURL: string;
   query: string;
-  constructor({ serverURL, query }: ForestryClientOptions) {
+  constructor({ serverURL }: ForestryClientOptions) {
     this.serverURL = serverURL;
-    this.query = query;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -90,8 +85,29 @@ export class ForestryClient {
     });
   };
 
-  getContent = async ({ path }) => {
-    const data = await this.request(this.query, {
+  getQuery = async () => {
+    // if (!this.query) {
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+
+    this.query = print(queryBuilder(buildClientSchema(data)));
+    // }
+    console.log(this.query);
+
+    return this.query;
+  };
+
+  getContent = async <T>({
+    path,
+  }: {
+    path: string;
+  }): Promise<{
+    data: T;
+    formConfig: any;
+  }> => {
+    const query = await this.getQuery();
+    const data = await this.request(query, {
       variables: { path },
     });
 

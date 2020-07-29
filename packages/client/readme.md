@@ -65,9 +65,10 @@ For full documentation of the CLI, see [here](https://github.com/forestryio/grap
 
 ## Implementation
 
-Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server. 
+Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server.
 
-**/_posts/welcome.md**
+**/\_posts/welcome.md**
+
 ```md
 ---
 title: This is my post
@@ -186,7 +187,6 @@ import React from "react";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
-import query from "../.forestry/query";
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
@@ -196,7 +196,6 @@ export default withTina(MyApp, {
   apis: {
     forestry: new ForestryClient({
       serverURL: config.serverURL,
-      query,
     }),
   },
   sidebar: true,
@@ -247,7 +246,6 @@ By registering the ForestryClient globally, we can now use it within our pages t
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
 import { usePlugin } from "tinacms";
-import query from "../.forestry/query";
 
 import 'isomorphic-unfetch' // polyfill workaround
 
@@ -255,7 +253,7 @@ const URL = config.serverURL;
 
 export const getStaticProps = async () => {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient({ serverURL: URL, query });
+  const client = new ForestryClient({ serverURL: URL });
   const response = await client.getContent({
     path,
   });

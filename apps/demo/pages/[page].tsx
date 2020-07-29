@@ -4,7 +4,6 @@ import { ForestryClient, useForestryForm } from "@forestryio/client";
 import { DocumentUnion, BlocksUnion, DocumentInput } from "../.forestry/types";
 import config from "../.forestry/config";
 import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
-import query from "../.forestry/query";
 
 const fg = require("fast-glob");
 
@@ -28,7 +27,7 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
-  const client = new ForestryClient({ serverURL: URL, query });
+  const client = new ForestryClient({ serverURL: URL });
   const response = await client.getContent<DocumentUnion>({
     path,
   });
@@ -37,15 +36,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  const [formData, form] = useForestryForm(props.response, URL, {
-    image: (field) => {
-      return {
-        ...field,
-        previewSrc: (_, { input }) => {
-          return input.value;
-        },
-        uploadDir: () => "/not/yet/implemented/",
-      };
+  const [formData, form] = useForestryForm({
+    ...props.response,
+    customizations: {
+      image: (field) => {
+        return {
+          ...field,
+          previewSrc: (_, { input }) => {
+            return input.value;
+          },
+          uploadDir: () => "/not/yet/implemented/",
+        };
+      },
     },
   });
   usePlugin(form);
@@ -90,14 +92,14 @@ const PageSwitch = ({ document }: { document: DocumentUnion }) => {
 const BlockOutput = ({ blocks }: { blocks: BlocksUnion[] }) => {
   return (
     <>
-      {blocks.map((block) => {
+      {blocks.map((block, index) => {
         return (
-          <>
+          <div key={`${block.__typename}-${index}`}>
             <h3>{block.__typename}</h3>
             <pre>
               <code>{JSON.stringify(block, null, 2)}</code>
             </pre>
-          </>
+          </div>
         );
       })}
     </>

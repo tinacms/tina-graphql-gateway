@@ -3039,7 +3039,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@forestryio/client", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
             ["@forestryio/build", "workspace:packages/build"],
-            ["@forestryio/graphql", "workspace:packages/graphql"],
             ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@graphql-codegen/core", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
             ["@graphql-codegen/typescript", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
@@ -3070,7 +3069,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@forestryio/client", "workspace:packages/client"],
             ["@forestryio/build", "workspace:packages/build"],
-            ["@forestryio/graphql", "workspace:packages/graphql"],
             ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@graphql-codegen/core", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
             ["@graphql-codegen/typescript", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:1.17.6"],
@@ -3159,6 +3157,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:26.0.7"],
             ["@types/lodash.camelcase", "npm:4.3.6"],
             ["@types/lodash.upperfirst", "npm:4.3.6"],
+            ["graphql", "npm:15.3.0"],
             ["jest", "npm:26.1.0"],
             ["lodash.camelcase", "npm:4.3.0"],
             ["lodash.upperfirst", "npm:4.3.1"],
