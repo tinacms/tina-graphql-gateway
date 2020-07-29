@@ -31,12 +31,15 @@ export class FileSystemManager implements DataSource {
       ...sectionFmtNames.map((section) => section.templates + ".yml")
     );
 
-    return sectionTemplates.map(async (templateName: string) => {
+    // a little optimization to remove duplicates from section templates
+    return Array.from(new Set(sectionTemplates)).map(
+      async (templateName: string) => {
       return {
         name: templateName,
         fmt: await this.getTemplate(_siteLookup, templateName),
       };
-    });
+      }
+    );
   };
 
   getSettings = async (_siteLookup: string): Promise<Settings> => {
