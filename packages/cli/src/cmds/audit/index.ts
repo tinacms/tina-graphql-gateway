@@ -202,7 +202,7 @@ const keywordError = {
   },
   anyOf: (error, object) => {
     console.log(`${propertyName(error, object)} should be one of:
-    ${oneOfSchemaMessage(error)}
+    ${anyOfPossibleTypes(error)}
     But got ${dangerText(displayType(error))}
 `);
     return error;
@@ -318,7 +318,7 @@ const propertyName = (error, object = null) => {
     if (field) {
       return `
 Field with name ${successText(field.name)} of type ${neutralText(
-        fieldType(field)
+        fieldTypeLabel(field)
       )} has an invalid property ${dangerText(property)}
      at ${dataPath}
     `;
@@ -329,7 +329,7 @@ Field with name ${successText(field.name)} of type ${neutralText(
   return neutralText(error.dataPath);
 };
 
-const fieldType = (field) => {
+const fieldTypeLabel = (field) => {
   if (field.type === "select" || field.type === "list") {
     if (!field.config) {
       return `${field.type} (text)`;
@@ -340,7 +340,7 @@ const fieldType = (field) => {
   return field.type;
 };
 
-const oneOfSchemaMessage = (error) => {
+const anyOfPossibleTypes = (error) => {
   return error.schema
     .map((item) => {
       if (item.const) {
