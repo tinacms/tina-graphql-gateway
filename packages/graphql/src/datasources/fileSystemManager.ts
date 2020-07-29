@@ -106,7 +106,9 @@ export class FileSystemManager implements DataSource {
 
   deleteContent = async (_siteLookup: string, filePath: string) => {
     // deletes the file
-    await this.deleteData(filePath);
+    if (!(await this.deleteData(filePath))) {
+      throw new Error(`${filePath} could not be deleted.`);
+    }
 
     // deletes references from pages arrays
     const templates = await this.getSectionTemplates(_siteLookup);
