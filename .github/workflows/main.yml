@@ -25,7 +25,10 @@ jobs:
       - name: Echo ident
         run: echo $FORESTRYIO_NPM_AUTH_IDENT
       - name: Echo token
-        run: echo $FORESTRYIO_NPM_AUTH_TOKEN
+        run: echo $NPM_AUTH_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
+          NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }} # You need to set this in your repo settings
       # - name: Install
       #   run: yarn install
       - name: Build
