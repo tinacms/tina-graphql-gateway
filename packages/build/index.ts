@@ -1,4 +1,3 @@
-// Forked and simplified from https://github.com/jaredpalmer/tsdx
 import { DEFAULT_EXTENSIONS, createConfigItem } from "@babel/core";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
@@ -25,7 +24,6 @@ import {
 import { ScriptOpts, NormalizedOpts } from "./types";
 import * as fs from "fs-extra";
 
-// shebang cache map thing because the transform only gets run once
 let shebang: any = {};
 
 export async function createRollupConfig(
