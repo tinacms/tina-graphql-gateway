@@ -11795,6 +11795,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:67a3610513aca2745007ac78fa48ddef77134e00cc1ba1608882e23ea85379e39fd257b3d5822c67b3a99d7046638889a3989fb4115882a243a7c308e064b7f1#npm:2.34.0"],
             ["eslint", "npm:6.8.0"],
             ["glob", "npm:7.1.6"],
+            ["minimist", "npm:1.2.5"],
             ["mocha", "npm:7.2.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"],
             ["vsce", "npm:1.77.0"],

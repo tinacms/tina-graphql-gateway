@@ -36,11 +36,11 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
+    "build": "tsc -p ./",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
-    "test": "node ./out/test/runTest.js",
     "dump:schema": "yarn forestry schema:audit --dump forestrySchema"
   },
   "devDependencies": {
@@ -53,6 +53,7 @@
     "@typescript-eslint/parser": "^2.30.0",
     "eslint": "^6.8.0",
     "glob": "^7.1.6",
+    "minimist": "^1.2.5",
     "mocha": "^7.1.2",
     "typescript": "^3.8.3",
     "vsce": "^1.77.0",
