@@ -31,9 +31,9 @@ Currently this is a monorepo built with Yarn V2 and Plug-n-Play. This is a more 
 You should :fingers_crossed: be able to just run these commands. (Please make a note of any hang-ups you ran into during this process)
 
 ```sh
-# check yarn version, this repo ships with yarn so it should be 2.0.0-rc.36
+# check yarn version, this repo ships with yarn so it should be 2.1.1
 yarn -v
-# if that doesn't show 2.0.0-rc.36 it needs to be fixed. You can install the version manually https://yarnpkg.com/getting-started/install but you'll definitely need +2.0
+# if that doesn't show 2.1.1 it needs to be fixed. You can install the version manually https://yarnpkg.com/getting-started/install but you'll definitely need +2.0
 yarn install
 # build all the packages
 yarn run build
