@@ -40,6 +40,8 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }} # You need to set this in your repo settings
           FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }} # You need to set this in your repo settings
           FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }} # You need to set this in your repo settings
+      - name: Check Versions
+        run: yarn version check
       - name: Whoami
         run: yarn npm whoami --scope=@forestryio
         env:
