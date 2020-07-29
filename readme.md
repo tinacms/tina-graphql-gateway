@@ -14,12 +14,6 @@ Environment: `browser`
 
 Provides React hooks for fetching and building the Tina form. It also exposes a CLI for things like generating Typescript types for your content models.
 
-### @forestry/teams
-
-Environment: `node`
-
-This package should eventually be moved out of this repo. Utilitizes `buildSchema` by passing a **database** `DataSource` in for Forestry.io compatibility.
-
 ### @forestry/build
 
 Just a package builder, uses Rollup.
@@ -50,11 +44,7 @@ That should allow you to see 2 things: The GraphiQL playground at `http:localhos
 
 To use the Database version, ensure you have a database site that matches your `.forestry` folder config. Your site `lookup` attribute should be `qms5qlc0jk1o9g` for now.
 
-Change the values in `apps/demo/.forestry/config.js` so that `serverURL` points to the Express process ("http://localhost:4002/api/graphql").
-
-Ensure that you've populated your own `.env` file in `packages/teams/.env`.
-
-From the `packages/teams` directory: `yarn forestry:serve` will start up the GraphQL server, you'll be able to inspect it in more detail at `http://localhost:4001/graphql`.
+Change the values in `apps/demo/.forestry/config.js` so that `serverURL` points to the Express process ("http://localhost:4002/api/graphql")
 
 ### The `.forestry` folder
 
