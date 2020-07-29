@@ -10,6 +10,8 @@ import toLower from "lodash.tolower";
 // TODO: There is probably too much in this "util" file. Once schemaBuilder
 // is a bit cleaner, similar utils can be grouped together elsewhere
 
+// FIXME testing CI
+
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const matter = <I extends Input, O extends GrayMatterOption<I, O>>(
   data: Buffer

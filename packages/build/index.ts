@@ -24,7 +24,6 @@ import {
 import { ScriptOpts, NormalizedOpts } from "./types";
 import * as fs from "fs-extra";
 
-// shebang cache map thing because the transform only gets run once
 let shebang: any = {};
 
 export async function createRollupConfig(
