@@ -24,9 +24,14 @@ export class FileSystemManager implements DataSource {
   getSectionTemplates = async (_siteLookup: string) => {
     const settings = await this.getSettings(_siteLookup);
     const sectionFmtNames = getSectionFmts(settings.data.sections);
+
+    // basically just building a list of all the templates mentioned in sections
+    // in the settings file
+    // TODO: Do I need to worry about duplicates?
     const sectionTemplates = ([] as string[]).concat(
       ...sectionFmtNames.map((section) => section.templates + ".yml")
     );
+
     return sectionTemplates.map(async (templateName: string) => {
       return {
         name: templateName,
