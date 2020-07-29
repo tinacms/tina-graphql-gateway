@@ -1,14 +1,11 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "main": "dist/index.js",
   "files": [
     "dist/*"
   ],
   "typings": "dist/index.d.ts",
-  "bin": {
-    "forestry:start": "bin.js"
-  },
   "scripts": {
     "build": "forestry-build",
     "watch": "forestry-watch",

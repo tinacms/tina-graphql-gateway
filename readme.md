@@ -84,3 +84,21 @@ These packages are currently published to Github Packages, with plans to open-so
 always-auth=true
 registry=http://registry.npmjs.org/ # All other packages
 ```
+
+## Release Workflow
+
+> Note: we're trialing yarn v2 so this is experimental. We're confident in the Lerna setup but it leaves a lot of gaps - hoping yarn v2 fills them but if it's too much trouble we'll scrap this.
+
+When making edits to a package, manually run `yarn version <patch | minor | major> --deferred`. This will populate a `version` file in the `.yarn` folder which will keep track of what type of version bump should be applied during the next release. Your commit message has nothing to do with the release (not using Conventional Commits here).
+
+### CI check versions
+
+Since you're now responsible for manually maintaining your package updates that can be cumbersome, it'd be easy to forget that your change would require an upstream package to bump it's version. For that reason there's `yarn version check` and `yarn version check --interactive`. CI will fail when a "release strategy" hasn't been set for a package with changes or with dependency changes. You can see which packages need to be addressed in `--interactive` mode.
+
+### Explanation
+
+#### Versioning is deferred
+
+https://yarnpkg.com/features/release-workflow#deferred-versioning
+
+In order to prevent inconsistencies in versioning we'll push changes manually - not relying on Conventional Commits as they are tough to keep track of and don't typically trace very well through a changelog. The hope here is that `yarn version apply --all` will still allow us to version things in a single commit, the difference being the changelog messages need to be hand-written. There's some work being done on this, but I'm not sure the Conventional Commit approach makes things any more clear. Tracking this issue for context (https://github.com/yarnpkg/berry/issues/1510)
