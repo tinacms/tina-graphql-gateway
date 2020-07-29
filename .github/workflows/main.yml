@@ -29,8 +29,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
           NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }} # You need to set this in your repo settings
-      # - name: Install
-      #   run: yarn install
+          FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }} # You need to set this in your repo settings
+          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }} # You need to set this in your repo settings
+      - name: Whoami
+        run: yarn npm whoami
       - name: Build
         run: yarn run ci:check:auth
   # npm-publish:
