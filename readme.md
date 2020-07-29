@@ -76,7 +76,7 @@ For demonstation purposes I've put the demos in the `apps` folder. But the Fores
 
 ## Using these packages externally
 
-These packages are currently published to Github Packages, with plans to open-source at some point. Until then, you'll need to set up a new personal access token in Github with the `read:packages` permission. Then ensure your `.npmrc` is setup for fetching packages with the `@forestryio` scope:
+These packages are currently published to NPM under the `forestryio` scope so you'll need to be sure you have access.
 
 ```
 //npm.pkg.github.com/:_authToken=<My-Github-Personal-Access-Token-Here>
