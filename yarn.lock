@@ -2004,8 +2004,6 @@ __metadata:
     typescript: ^3.9.5
   peerDependencies:
     tinacms: ">0.21.1"
-  bin:
-    "forestry:start": bin.js
   languageName: unknown
   linkType: soft
 
