@@ -1,30 +1,33 @@
 ## Introduction
 
-This `@forestryio/client` package allows you to access your datasource through a GraphQL adapter.
-You might want to use this for a few reasons:
+This package allows you to interact with an automatically generated GraphQL API using TinaCMS. Included are multiple GraphQL adapters that give you a consistent GraphQL API regardless of your datasource.
 
-### Consistent GraphqQL API regardless of your datasource
+> For example, if your content Git-backed, you might want to use your local content in development. While in your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code.
 
-If your content is backed by Git, you might want to use your local content in development. With your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code.
-
-### GraphQL Typescript type generation
-
-With the `@forestryio/cli` package, you can generate typescript types based on your schema. Your schema will be defined within your site in the `.forestry` folder
-
-### Prerequisites
-
-This guide assumes you have a working NextJS site.
-You can create you quickly with:
-
-```bash
-npx create-next-app --example blog-starter-typescript blog-starter-typescript-app
-# or
-yarn create next-app --example blog-starter-typescript blog-starter-typescript-app
-```
+If you like to work in TypeScript, the [@forestry/cli](https://github.com/forestryio/graphql-demo/tree/master/packages/cli) package can generate types using the same schema definition that the GraphQL adapters will use.
 
 ## Install
 
-### Client package
+### Prerequisites
+
+This guide assumes you have a working NextJS site. You can create one quickly with:
+
+```bash
+npx create-next-app --example blog-starter-typescript blog-starter-typescript-app
+```
+
+or
+
+```bash
+yarn create next-app --example blog-starter-typescript blog-starter-typescript-app
+```
+
+### Install the client package
+
+This package provides you with:
+
+- A `ForestryClient` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
+- A `useForestryForm` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
 npm install --save @forestryio/client
@@ -35,11 +38,6 @@ or
 ```bash
 yarn add @forestryio/client
 ```
-
-This package provides a few things:
-
-- A `ForestryClient` class (which can be used as a TinaCMS API plugin).
-- A `useForestryForm` helper.
 
 ### CLI package
 
@@ -57,15 +55,17 @@ yarn add --dev @forestryio/cli
 
 This CLI performs a few functions:
 
-- Generating GraphQL queries (and optional typescript types) based on your site's schema.
-- Auditing your site schema and checking for errors.
-- Running a GraphQL server using the built-in Filesystem adapter.
+- Generates GraphQL queries (and optionally TypeScript types) based on your content's schema.
+- Auditing your content's schema and checking for errors.
+- Running a GraphQL server using the built-in filesystem adapter.
 
-For full documentation of the CLI, see [here](https://github.com/forestryio/graphql-demo/tree/client-documentation/packages/cli)
+For full documentation of the CLI, see [here].(https://github.com/forestryio/graphql-demo/tree/client-documentation/packages/cli)
 
 ## Implementation
 
-Let's start by creating a simple dummy piece of content. We'll eventually try loading this file from our graphql server.
+Let's start by creating a simple dummy piece of content. Our goal will to be able to access and change this content through an auto-generated GraphQL API and Tina forms.
+
+### Create Dummy Content
 
 **/\_posts/welcome.md**
 
@@ -75,15 +75,11 @@ title: This is my post
 ---
 ```
 
-### Define Schema
+### Configuration
 
-Your site's schema is defined within the `<site_root>/.forestry` directory
+Before we can define the schema of our content, we need set up some configuration. Create a `.forestry` directory and then create the following two files.
 
-You'll need to setup a few configuration files:
-
-#### .forestry/config.js
-
-This file specifies where we'll load our data. It should look like:
+**.forestry/config.js**
 
 ```js
 // config.js
@@ -92,27 +88,7 @@ module.exports = {
 };
 ```
 
-#### .forestry/front_matter/templates/post.yml
-
-This is where your templates live. These represent your data's content model.
-Let's wire one up:
-
-```yml
----
-label: Post
-hide_body: false
-display_field: title
-fields:
-  - name: title
-    type: text
-    config:
-      required: false
-    label: Title
-pages:
-  - _posts/welcome.md # This keeps reference to all the pages using this template
-```
-
-#### .forestry/settings.yml
+**.forestry/settings.yml**
 
 ```yml
 ---
@@ -136,34 +112,62 @@ use_front_matter_path: false
 file_template: ":filename:"
 ```
 
+These files will store a reference to the GraphQL endpoint we'll end up using, and will also let us know where we can find our content schemas.
+
+### Define Content Schema
+
+Now we define the shape of our content. This allows us to build a GraphQL API that will match the content, automatically generate the Tina forms that can interact with it, and optionally let us create TypeScript types.
+
+**.forestry/front_matter/templates/post.yml**
+
+```yml
+---
+label: Post
+hide_body: false
+display_field: title
+fields:
+  - name: title
+    type: text
+    config:
+      required: false
+    label: Title
+pages:
+  - _posts/welcome.md # This keeps reference to all the pages using this template
+```
+
 #### Creating the GraphQL server
 
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
-From the cli in your site root, run:
+**From the CLI in your site root, run:**
+
 ```bash
 npx tina-gql schema:gen-query --typescript
 ```
+
 or
+
 ```bash
 yarn tina-gql schema:gen-query --typescript
 ```
 
-This should create two files:
-`.forestry/query.js` & `.forestry/types.ts`
+then,
 
-Now let's start our server, run:
+**Start your local GraphQL server by running:**
+
 ```bash
 npx tina-gql server:start
 ```
 
-or 
+or
 
 ```bash
 yarn tina-gql server:start
 ```
 
-To verify that everything is up an running, you can visit [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and navigate through your schema.
+You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
+
+**TODO: I think we need to adjust this section after Jeff's changes get merged in.**
 
 [![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
 
@@ -175,7 +179,9 @@ _We will want to keep this graphql server running in its own tab to serve conten
 
 ### Using the data within our Next.JS site
 
-Install the TinaCMS dependencies:
+Now that we have our data accessible through a GraphQL API we can use it within our site.
+
+First, install the TinaCMS dependencies:
 
 ```bash
 npm install tinacms styled-components
@@ -187,12 +193,11 @@ or
 yarn add tinacms styled-components
 ```
 
+In your site root, add TinaCMS & register the `ForestryClient` like so:
 
-
-In your site root, add TinaCMS & register the ForestryClient like so:
+**\_app.tsx**
 
 ```tsx
-// _app.jsx
 import React from "react";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
@@ -214,10 +219,11 @@ export default withTina(MyApp, {
 });
 ```
 
-If your site uses SSR, you may also need to add this to your **\_document.js** to handle tinacms's Styled Components
+If your site uses SSR, you may also need to add this to your **\_document.js** to handle TinaCMS's Styled Components
+
+**pages/\_document.js**
 
 ```js
-// pages/_document.js
 import Document from "next/document";
 import { ServerStyleSheet } from "styled-components";
 
@@ -250,15 +256,15 @@ export default class MyDocument extends Document {
 }
 ```
 
-By registering the ForestryClient globally, we can now use it within our pages to fetch content.
+By registering the `ForestryClient` globally, we can now use it within our pages to fetch content.
+
+**pages/posts/welcome.tsx**
 
 ```tsx
-// pages/posts/welcome.tsx
-
 import config from "../../.forestry/config";
 import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
-import { useForestryForm, ForestryClient } from "@forestryio/client";	
+import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
@@ -271,7 +277,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Home(props) {
-  const [formData, form] = useForestryForm(props.response,{});
+  const [formData, form] = useForestryForm(props.response, {});
   usePlugin(form);
 
   return (
@@ -282,7 +288,7 @@ export default function Home(props) {
 }
 ```
 
-And that's it! Try making some changes and saving.
+Now, if you navigate to [/posts/welcome](http://localhost:3000/posts/welcome) you should see your content. You should also be able to update your content using the TinaCMS sidebar.
 
 Next steps:
 
