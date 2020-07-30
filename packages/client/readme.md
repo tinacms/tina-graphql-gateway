@@ -2,7 +2,7 @@
 
 This package allows you to interact with an automatically generated GraphQL API using TinaCMS. Included are multiple GraphQL adapters that give you a consistent GraphQL API regardless of your datasource.
 
-> For example, if your content Git-backed, you might want to use your local content in development. While in your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code.
+_For example, if your content Git-backed, you might want to use your local content in development. While in your production Cloud Editing Environment, you can use our "Tina Teams" server to fetch your content. The API for both backends will be consistent, so you can easily switch between the two datasources without changing your site's code._
 
 If you like to work in TypeScript, the [@forestry/cli](https://github.com/forestryio/graphql-demo/tree/master/packages/cli) package can generate types using the same schema definition that the GraphQL adapters will use.
 
