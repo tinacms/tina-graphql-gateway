@@ -1,10 +1,13 @@
-import { useCMS, useForm } from "tinacms";
+import { useCMS, useForm, Form } from "tinacms";
 
-export const useForestryForm = ({ data, formConfig }, customizations = {}) => {
+export const useForestryForm = <FormShape = any>(
+  { data, formConfig },
+  customizations = {}
+): [{ data: FormShape; __typename: string }, Form] => {
   const cms = useCMS();
 
   formConfig.fields = traverse(formConfig.fields, customizations);
-  const [formData, form] = useForm({
+  const [formData, form] = useForm<FormShape>({
     ...formConfig,
     onSubmit: (values) => {
       cms.api.forestry.updateContent({
@@ -21,7 +24,7 @@ export const useForestryForm = ({ data, formConfig }, customizations = {}) => {
       __typename,
       data: formData,
     },
-    form,
+    form as any, //hack - seems to be a dependency issue with duplicate @tinacms/form Form types
   ];
 };
 
