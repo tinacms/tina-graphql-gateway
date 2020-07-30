@@ -46,7 +46,7 @@ That should allow you to see 2 things: The GraphiQL playground at `http:localhos
 
 To use the Database version, ensure you have a database site that matches your `.forestry` folder config. Your site `lookup` attribute should be `qms5qlc0jk1o9g` for now.
 
-Set an environment variable called DEFAULT_TINA_GQL_SERVER that points to the Express process (for local testing this is "http://localhost:4002/api/graphql")
+Set an environment variable called TINA_GQL_SERVER that points to the Express process (for local testing this is "http://localhost:4002/api/graphql")
 
 ### The `.forestry` folder
 
