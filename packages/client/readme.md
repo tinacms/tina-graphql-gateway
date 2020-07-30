@@ -141,7 +141,10 @@ file_template: ":filename:"
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
 From the cli in your site root, run:
-
+```bash
+npx tina-gql schema:gen-query --typescript
+```
+or
 ```bash
 yarn tina-gql schema:gen-query --typescript
 ```
@@ -150,6 +153,11 @@ This should create two files:
 `.forestry/query.js` & `.forestry/types.ts`
 
 Now let's start our server, run:
+```bash
+npx tina-gql server:start
+```
+
+or 
 
 ```bash
 yarn tina-gql server:start
@@ -167,17 +175,19 @@ _We will want to keep this graphql server running in its own tab to serve conten
 
 ### Using the data within our Next.JS site
 
-Install the TinaCMS depedencies:
+Install the TinaCMS dependencies:
 
 ```bash
-yarn add tinacms styled-components
+npm install tinacms styled-components
 ```
 
 or
 
 ```bash
-npm install tinacms styled-components
+yarn add tinacms styled-components
 ```
+
+
 
 In your site root, add TinaCMS & register the ForestryClient like so:
 
