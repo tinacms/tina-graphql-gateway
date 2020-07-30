@@ -1,0 +1,11 @@
+label: Author List
+hide_body: true
+fields:
+  - name: authors
+    type: list
+    config:
+      use_select: true
+      source:
+        type: pages
+        section: authors
+    label: Authors

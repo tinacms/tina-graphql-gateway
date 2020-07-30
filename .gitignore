@@ -17,3 +17,5 @@ package.tgz
 
 builds/*
 !builds/.gitkeep
+
+out
