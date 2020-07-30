@@ -1,32 +1,34 @@
 import { GetStaticProps } from "next";
 import { usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
-import { DocumentUnion, BlocksUnion, DocumentInput } from "../.forestry/types";
-import config from "../.forestry/config";
-import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
+import { DocumentUnion, DocumentInput } from "../../.forestry/types";
+import config from "../../.forestry/config";
+import { ContentCreatorPlugin } from "../../utils/contentCreatorPlugin";
 
 const fg = require("fast-glob");
 
 const URL = config.serverURL;
 
+const template = "posts";
+
 function fileToUrl(filepath: string) {
-  filepath = filepath.split(`/pages/`)[1];
+  filepath = filepath.split(`/${template}/`)[1];
   return filepath.replace(/ /g, "-").slice(0, -3).trim();
 }
 
 export async function getStaticPaths() {
-  const pages = await fg(`./content/pages/**/*.md`);
+  const items = await fg(`./content/${template}/**/*.md`);
 
   return {
-    paths: pages.map((file) => {
-      return { params: { page: fileToUrl(file) } };
+    paths: items.map((file) => {
+      return { params: { slug: fileToUrl(file) } };
     }),
     fallback: true,
   };
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const path = `content/pages/${params.page}.md`;
+  const path = `content/${template}/${params.slug}.md`;
   const client = new ForestryClient({ serverURL: URL });
   const response = await client.getContent<DocumentUnion>({
     path,
@@ -60,12 +62,14 @@ const Home = (props) => {
       { name: "title", label: "Title", component: "text", required: true },
     ],
     filename: ({ title }) => {
-      return `content/pages/${title.replace(/\s+/, "-").toLowerCase()}.md`;
+      return `content/${template}/${title
+        .replace(/\s+/, "-")
+        .toLowerCase()}.md`;
     },
     body: () => ``,
     frontmatter: ({ title }) => {
       //remove any other dirs from the title, return only filename
-      const id = `/pages/${title.replace(/\s+/, "-").toLowerCase()}`;
+      const id = `/${template}/${title.replace(/\s+/, "-").toLowerCase()}`;
       return {
         title,
         id,
@@ -77,32 +81,10 @@ const Home = (props) => {
 
   usePlugin(createPagePlugin);
 
-  return <PageSwitch document={formData} />;
-};
-
-const PageSwitch = ({ document }: { document: DocumentUnion }) => {
-  switch (document.__typename) {
-    case "BlockPage":
-      return <BlockOutput blocks={document.data.blocks} />;
-    default:
-      return <div>Other document renderers</div>;
-  }
-};
-
-const BlockOutput = ({ blocks }: { blocks: BlocksUnion[] }) => {
   return (
-    <>
-      {blocks.map((block, index) => {
-        return (
-          <div key={`${block.__typename}-${index}`}>
-            <h3>{block.__typename}</h3>
-            <pre>
-              <code>{JSON.stringify(block, null, 2)}</code>
-            </pre>
-          </div>
-        );
-      })}
-    </>
+    <pre>
+      <code>{JSON.stringify(formData, null, 2)}</code>
+    </pre>
   );
 };
 

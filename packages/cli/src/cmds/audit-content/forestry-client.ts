@@ -1,3 +1,4 @@
+import fetch from "isomorphic-unfetch";
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 
@@ -54,14 +55,16 @@ interface AddVariables {
 }
 
 interface ForestryClientOptions {
-  serverURL: string;
+  serverURL?: string;
 }
+
+const LOCAL_SERVER_URL = "http://localhost:4001/api/graphql";
 
 export class ForestryClient {
   serverURL: string;
   query: string;
   constructor({ serverURL }: ForestryClientOptions) {
-    this.serverURL = serverURL;
+    this.serverURL = serverURL || LOCAL_SERVER_URL;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -167,5 +170,3 @@ export class ForestryClient {
     return json.data;
   }
 }
-
-export { useForestryForm } from "./useForestryForm";

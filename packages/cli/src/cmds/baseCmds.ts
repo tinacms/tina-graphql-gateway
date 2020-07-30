@@ -2,10 +2,12 @@ import { Command } from "../command";
 import { chain } from "../middleware";
 import { genTypes, attachSchema, genQueries } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
+import { contentAudit } from "./audit-content";
 import { startServer } from "./start-server";
 
 export const CMD_GEN_QUERY = "schema:gen-query";
 export const CMD_AUDIT = "schema:audit";
+export const CMD_AUDIT_CONTENT = "content:audit";
 export const CMD_DUMP = "schema:dump";
 export const CMD_MIGRATE = "schema:migrate";
 export const CMD_START_SERVER = "server:start";
@@ -44,6 +46,11 @@ export const baseCmds: Command[] = [
     description: "Audit .tina schema",
     options: [auditFixOption],
     action: (options) => chain([audit], options),
+  },
+  {
+    command: CMD_AUDIT_CONTENT,
+    description: "Audit content",
+    action: (options) => chain([contentAudit], options),
   },
   {
     command: CMD_MIGRATE,
