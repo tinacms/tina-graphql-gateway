@@ -248,12 +248,11 @@ By registering the ForestryClient globally, we can now use it within our pages t
 import config from "../../.forestry/config";
 import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
-
-const URL = config.serverURL;
+import { useForestryForm, ForestryClient } from "@forestryio/client";	
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient({ serverURL: URL, query });
+  const client = new ForestryClient({ serverURL: config.serverURL, query });
   const response = await client.getContent({
     path,
   });
@@ -262,7 +261,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Home(props) {
-  const [formData, form] = useForestryForm(props.response);
+  const [formData, form] = useForestryForm(props.response,{});
   usePlugin(form);
 
   return (
