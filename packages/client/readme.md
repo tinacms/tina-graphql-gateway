@@ -62,10 +62,11 @@ This CLI performs a few functions:
 For full documentation of the CLI, see [here].(https://github.com/forestryio/graphql-demo/tree/client-documentation/packages/cli)
 
 ## Implementation
-
-Let's start by creating a simple dummy piece of content. Our goal will to be able to access and change this content through an auto-generated GraphQL API and Tina forms.
+We'll show how to use this package in a NextJS site
 
 ### Create Dummy Content
+
+Let's start by creating a simple dummy piece of content. Our goal will to be able to access and change this content through an auto-generated GraphQL API and Tina forms.
 
 **/\_posts/welcome.md**
 
