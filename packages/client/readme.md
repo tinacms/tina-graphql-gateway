@@ -1,6 +1,6 @@
 ## Introduction
 
-This "@forestryio/client" package allows you to access your datasource through a GraphQL adapter.
+This `@forestryio/client` package allows you to access your datasource through a GraphQL adapter.
 You might want to use this for a few reasons:
 
 ### Consistent GraphqQL API regardless of your datasource
@@ -9,7 +9,7 @@ If your content is backed by Git, you might want to use your local content in de
 
 ### GraphQL Typescript type generation
 
-With the "@forestryio/cli" package, you can generate typescript types based on your schema. Your schema will be defined within your site in the **.forestry** folder
+With the `@forestryio/cli` package, you can generate typescript types based on your schema. Your schema will be defined within your site in the `.forestry` folder
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ title: This is my post
 
 ### Define Schema
 
-Your site's schema is defined within the **<site_root>/.forestry** directory
+Your site's schema is defined within the `<site_root>/.forestry` directory
 
 You'll need to setup a few configuration files:
 
@@ -143,19 +143,31 @@ Now that we've defined our schema, let's use the CLI to setup a GraphQL server f
 From the cli in your site root, run:
 
 ```bash
+npx tina-gql schema:gen-query --typescript
+```
+
+or
+
+```bash
 yarn tina-gql schema:gen-query --typescript
 ```
 
 This should create two files:
 `.forestry/query.gql` & `.forestry/types.ts`
 
-Now let's start our server! run:
+Now let's start our server, run:
+
+```bash
+npx tina-gql server:start
+```
+
+or
 
 ```bash
 yarn tina-gql server:start
 ```
 
-To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
+To verify that everything is up an running, you can visit [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and navigate through your schema.
 
 You can use the query from your **/.forestry/query.gql**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
@@ -167,16 +179,16 @@ _We will want to keep this graphql server running in its own tab to serve conten
 
 ### Using the data within our Next.JS site
 
-Install the TinaCMS depedencies:
+Install the TinaCMS dependencies:
 
 ```bash
-yarn add tinacms styled-components
+npm install tinacms styled-components
 ```
 
 or
 
 ```bash
-npm install tinacms styled-components
+yarn add tinacms styled-components
 ```
 
 In your site root, add TinaCMS & register the ForestryClient like so:
@@ -241,17 +253,14 @@ export default class MyDocument extends Document {
 By registering the ForestryClient globally, we can now use it within our pages to fetch content.
 
 ```tsx
-// pages/posts/welcome.jsx
+// pages/posts/welcome.tsx
 
-import { useForestryForm, ForestryClient } from "@forestryio/client";
-import config from "../.forestry/config";
+import config from "../../.forestry/config";
+import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
+import { useForestryForm, ForestryClient } from "@forestryio/client";
 
-import 'isomorphic-unfetch' // polyfill workaround
-
-const URL = config.serverURL;
-
-export const getStaticProps = async () => {
+export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: URL });
   const response = await client.getContent({
@@ -259,10 +268,10 @@ export const getStaticProps = async () => {
   });
 
   return { props: { path, response } };
-};
+}
 
-export default const Home = (props) => {
-  const [formData, form] = useForestryForm(props.response, config.serverURL);
+export default function Home(props) {
+  const [formData, form] = useForestryForm(props.response, {});
   usePlugin(form);
 
   return (
@@ -270,7 +279,7 @@ export default const Home = (props) => {
       <h1>{formData.data.title}</h1>
     </div>
   );
-};
+}
 ```
 
 And that's it! Try making some changes and saving.
