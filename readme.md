@@ -42,15 +42,16 @@ That should allow you to see 2 things: The GraphiQL playground at `http:localhos
 
 ## Using the **database** GraphQL Server Locally
 
+> NOTE: deprecated until we focus on the Teams repo.
+
 To use the Database version, ensure you have a database site that matches your `.forestry` folder config. Your site `lookup` attribute should be `qms5qlc0jk1o9g` for now.
 
-Change the values in `apps/demo/.forestry/config.js` so that `serverURL` points to the Express process ("http://localhost:4002/api/graphql")
+Set an environment variable called DEFAULT_TINA_GQL_SERVER that points to the Express process (for local testing this is "http://localhost:4002/api/graphql")
 
 ### The `.forestry` folder
 
 This demo uses a couple of extra things from the `.forestry` folder:
 
-- **config.js** - This is where we can put site-specific configurations.
 - **types.ts** - This is auto-generated from the `@forestry/client` package, you can see it being used in the `[page].tsx` file.
 - **query.gql** - This is also auto-generated from the `@forestry/client` package. It's a reference and isn't needed.
 
