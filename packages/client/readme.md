@@ -141,10 +141,13 @@ file_template: ":filename:"
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
 From the cli in your site root, run:
+
 ```bash
 npx tina-gql schema:gen-query --typescript
 ```
+
 or
+
 ```bash
 yarn tina-gql schema:gen-query --typescript
 ```
@@ -153,11 +156,12 @@ This should create two files:
 `.forestry/query.js` & `.forestry/types.ts`
 
 Now let's start our server, run:
+
 ```bash
 npx tina-gql server:start
 ```
 
-or 
+or
 
 ```bash
 yarn tina-gql server:start
@@ -186,8 +190,6 @@ or
 ```bash
 yarn add tinacms styled-components
 ```
-
-
 
 In your site root, add TinaCMS & register the ForestryClient like so:
 
@@ -258,20 +260,18 @@ By registering the ForestryClient globally, we can now use it within our pages t
 import config from "../../.forestry/config";
 import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
-import { useForestryForm, ForestryClient } from "@forestryio/client";	
+import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: config.serverURL, query });
-  const response = await client.getContent({
-    path,
-  });
+  const data = await client.getContent({ path });
 
-  return { props: { path, response } };
+  return { props: { path, data } };
 }
 
 export default function Home(props) {
-  const [formData, form] = useForestryForm(props.response,{});
+  const [formData, form] = useForestryForm(props.data, {});
   usePlugin(form);
 
   return (

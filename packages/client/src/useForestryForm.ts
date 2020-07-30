@@ -1,10 +1,18 @@
 import { useCMS, useForm, Form } from "tinacms";
 
 export const useForestryForm = <FormShape = any>(
-  { data, formConfig },
+  data,
   customizations = {}
 ): [{ data: FormShape; __typename: string }, Form] => {
   const cms = useCMS();
+
+  const { path } = data.document;
+  const formConfig = {
+    id: path,
+    label: path,
+    initialValues: data.document.data,
+    fields: data.document.form.fields,
+  };
 
   formConfig.fields = traverse(formConfig.fields, customizations);
   const [formData, form] = useForm<FormShape>({
