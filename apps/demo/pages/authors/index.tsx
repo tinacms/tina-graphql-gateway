@@ -13,7 +13,7 @@ const Main = (props) => {
     <div>
       <h1>{template}</h1>
       {props.paths.map((path) => (
-        <div>
+        <div key={path}>
           <Link href={`/${template}/${path}`}>
             <a>{path}</a>
           </Link>
