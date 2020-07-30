@@ -1,4 +1,5 @@
 import { FieldAccessorTypes, FieldData } from "./types";
+import type { GenerateFieldAccessorsFunction } from "../fieldGenerator";
 
 import { FieldType } from "../datasources/datasource";
 import { GraphQLError } from "graphql";
@@ -21,11 +22,13 @@ export const getFieldType = ({
   field,
   config,
   fieldData,
+  generateFieldAccessors,
 }: {
   fmt: string;
   field: FieldType;
   config: { rootPath: string; siteLookup: string };
   fieldData: FieldData;
+  generateFieldAccessors: GenerateFieldAccessorsFunction;
 }): FieldAccessorTypes => {
   switch (field.type) {
     case "text":
@@ -49,9 +52,21 @@ export const getFieldType = ({
     case "image_gallery":
       return image_gallery({ fmt, field, config });
     case "field_group":
-      return field_group({ fmt, field, config, fieldData });
+      return field_group({
+        fmt,
+        field,
+        config,
+        fieldData,
+        generateFieldAccessors,
+      });
     case "field_group_list":
-      return field_group_list({ fmt, field, config, fieldData });
+      return field_group_list({
+        fmt,
+        field,
+        config,
+        fieldData,
+        generateFieldAccessors,
+      });
     case "blocks":
       return blocks({ field, config, fieldData });
     default:
