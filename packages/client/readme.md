@@ -163,7 +163,7 @@ or
 yarn tina-gql server:start
 ```
 
-To verify that everything is up an running, you can visit `http://localhost:4001/api/graphql` and navigate through your schema.
+To verify that everything is up an running, you can visit [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and navigate through your schema.
 
 [![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
 
