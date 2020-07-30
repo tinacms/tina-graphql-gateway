@@ -50,14 +50,9 @@ export class FileSystemManager implements DataSource {
       .catch(() => false);
   };
 
-  deleteData = async (filePath: string) => {
+  deleteData = (filePath: string) => {
     const fullPath = this.getFullPath(filePath);
-
-    if (!(await this.fileExists(fullPath)))
-      throw new Error(`Cannot delete ${fullPath}: Does not exist.`);
     fs.unlinkSync(fullPath);
-
-    return !(await this.fileExists(fullPath));
   };
 
   createContent = async <ContentType>(
@@ -83,9 +78,7 @@ export class FileSystemManager implements DataSource {
 
   deleteContent = async (_siteLookup: string, filePath: string) => {
     // deletes the file
-    if (!(await this.deleteData(filePath))) {
-      throw new Error(`${filePath} could not be deleted.`);
-    }
+    this.deleteData(filePath);
 
     // deletes references from pages arrays
     const templateNames = await this.getTemplateList(_siteLookup);
