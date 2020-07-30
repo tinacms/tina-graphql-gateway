@@ -16,6 +16,7 @@ export interface DataSource {
     data: any,
     template: string
   ): Promise<T>;
+  deleteContent(siteLookup: string, path: string): Promise<boolean>;
 }
 
 export type Content = {
