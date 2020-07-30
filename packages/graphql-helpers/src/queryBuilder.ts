@@ -223,7 +223,10 @@ const buildField = (
         ObjectTypeDefinition: (node) => {
           // @ts-ignore
           if (node.name.value === realType.name.value) {
-            fields = node.fields as FieldDefinitionNode[];
+            fields = node.fields?.filter(
+              // NOTE: we might want to remove this from the schema if we're not using it
+              (field) => field.name.value !== "absolutePath"
+            ) as FieldDefinitionNode[];
           }
         },
         UnionTypeDefinition: (node) => {

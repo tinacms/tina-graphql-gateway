@@ -22,15 +22,17 @@ const transform = (obj: any) => {
   }
 
   const meh = {};
-  Object.keys(rest).forEach((key) => {
-    if (Array.isArray(rest[key])) {
-      meh[key] = rest[key].map((item) => {
-        return transform(item);
-      });
-    } else {
-      meh[key] = transform(rest[key]);
-    }
-  });
+  Object.keys(rest)
+    .filter((key) => rest[key]) // remove items with null values
+    .forEach((key) => {
+      if (Array.isArray(rest[key])) {
+        meh[key] = rest[key].map((item) => {
+          return transform(item);
+        });
+      } else {
+        meh[key] = transform(rest[key]);
+      }
+    });
 
   return meh;
 };
@@ -135,7 +137,7 @@ export class ForestryClient {
       data: rest,
     });
     // console.log(JSON.stringify(payload, null, 2));
-    // console.log(JSON.stringify(transformedPayload, null, 2));
+    console.log(JSON.stringify(transformedPayload, null, 2));
 
     await this.request<UpdateVariables>(mutation, {
       variables: { path: path, params: transformedPayload },
