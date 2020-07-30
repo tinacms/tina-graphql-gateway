@@ -1,11 +1,12 @@
-import express from "express";
-import { graphqlHTTP } from "express-graphql";
 import {
   FileSystemManager,
   buildSchema as buildForestrySchema,
 } from "@forestryio/graphql";
-import { successText } from "../../utils/theme";
+
 import cors from "cors";
+import express from "express";
+import { graphqlHTTP } from "express-graphql";
+import { successText } from "../../utils/theme";
 
 const GRAPHQL_ENDPOINT = "/api/graphql";
 
@@ -38,6 +39,7 @@ export async function startServer(_ctx, _next, { port = 4001 }: Options) {
         schema,
         updateDocumentMutation,
         addDocumentMutation,
+        deleteDocumentMutation,
       } = await buildForestrySchema(config, dataSource);
 
       return {
@@ -45,6 +47,7 @@ export async function startServer(_ctx, _next, { port = 4001 }: Options) {
         rootValue: {
           updateDocument: updateDocumentMutation,
           addDocument: addDocumentMutation,
+          deleteDocument: deleteDocumentMutation,
         },
         context: { dataSource },
         graphiql: true,

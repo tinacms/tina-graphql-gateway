@@ -11,20 +11,24 @@ export class FileSystemManager implements DataSource {
   constructor(rootPath: string) {
     this.rootPath = rootPath;
   }
+
   getTemplate = async (
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
     return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
+
   getSettings = async (_siteLookup: string): Promise<Settings> => {
     return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
   };
+
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
     const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
     // @ts-ignore
     return result;
   };
+
   writeData = async <ContentType>(
     _siteLookup: string,
     filepath: string,
@@ -37,6 +41,18 @@ export class FileSystemManager implements DataSource {
     await fs.writeFileSync(fullPath, string);
 
     return await this.getData<ContentType>(_siteLookup, filepath);
+  };
+
+  fileExists = async (fullPath: string): Promise<boolean> => {
+    return fs.promises
+      .access(fullPath, fs.constants.F_OK)
+      .then(() => true)
+      .catch(() => false);
+  };
+
+  deleteData = (filePath: string) => {
+    const fullPath = this.getFullPath(filePath);
+    fs.unlinkSync(fullPath);
   };
 
   createContent = async <ContentType>(
@@ -59,6 +75,26 @@ export class FileSystemManager implements DataSource {
     await this.writeTemplate(_siteLookup, templateName, template);
     return newContent;
   };
+
+  deleteContent = async (_siteLookup: string, filePath: string) => {
+    // deletes the file
+    this.deleteData(filePath);
+
+    // deletes references from pages arrays
+    const templateNames = await this.getTemplateList(_siteLookup);
+    templateNames.map(async (templateName) => {
+      const fmt = await this.getTemplate(_siteLookup, templateName);
+      if (fmt.data.pages) {
+        fmt.data.pages = fmt.data.pages.filter(
+          (page: string) => page !== filePath
+        );
+        await this.writeTemplate(_siteLookup, templateName, fmt);
+      }
+    });
+
+    return Promise.resolve(true);
+  };
+
   getTemplateList = async (_siteLookup: string) => {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
