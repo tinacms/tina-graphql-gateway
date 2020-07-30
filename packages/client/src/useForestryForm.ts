@@ -1,10 +1,6 @@
 import { useCMS, useForm } from "tinacms";
 
-<<<<<<< HEAD
 export const useForestryForm = ({ data, formConfig, customizations = {} }) => {
-=======
-export const useForestryForm = ({ data, formConfig }, customizations = {}) => {
->>>>>>> origin
   const cms = useCMS();
 
   formConfig.fields = traverse(formConfig.fields, customizations);
