@@ -59,8 +59,7 @@ export class ForestryClient {
   serverURL: string;
   query: string;
   constructor() {
-    this.serverURL =
-      process.env.DEFAULT_TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
+    this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
