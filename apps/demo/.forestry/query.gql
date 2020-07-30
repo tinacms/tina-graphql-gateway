@@ -189,9 +189,7 @@ query DocumentQuery($path: String!) {
                         label
                         description
                         component
-                        itemField {
-                          name
-                          label
+                        field {
                           component
                         }
                       }
@@ -496,9 +494,7 @@ query DocumentQuery($path: String!) {
             label
             description
             component
-            itemField {
-              name
-              label
+            field {
               component
             }
           }
@@ -601,4 +597,3 @@ query DocumentQuery($path: String!) {
     }
   }
 }
-
