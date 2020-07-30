@@ -1,5 +1,5 @@
 ---
-title: Home3
+title: Home
 blocks:
 - template: sidecar
   text: |-
