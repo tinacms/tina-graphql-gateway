@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
   const client = new ForestryClient({ serverURL: URL, query });
-  const data = await client.getContent<DocumentUnion>({
+  const data = await client.getContent({
     path,
   });
 
@@ -37,7 +37,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  const [formData, form] = useForestryForm(props.data, URL, {
+  const [formData, form] = useForestryForm(props.data, null, {
     image: (field) => {
       return {
         ...field,

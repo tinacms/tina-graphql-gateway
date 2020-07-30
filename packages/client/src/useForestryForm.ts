@@ -1,9 +1,17 @@
-import { useCMS, useForm, Form } from "tinacms";
+import { useCMS, useForm, Form, FormOptions } from "tinacms";
 
-export const useForestryForm = <FormShape = any>(
-  data,
-  customizations = {}
-): [{ data: FormShape; __typename: string }, Form] => {
+type BaseDataShape = {
+  document: any;
+};
+
+export function useForestryForm<
+  DataShape extends BaseDataShape = any,
+  FormShape = any
+>(
+  data: DataShape,
+  customFormConfig: Partial<FormOptions<any>>,
+  customFields: any = {}
+): [{ data: FormShape; __typename: string }, Form] {
   const cms = useCMS();
 
   const { path } = data.document;
@@ -12,29 +20,28 @@ export const useForestryForm = <FormShape = any>(
     label: path,
     initialValues: data.document.data,
     fields: data.document.form.fields,
-  };
-
-  formConfig.fields = traverse(formConfig.fields, customizations);
-  const [formData, form] = useForm<FormShape>({
-    ...formConfig,
     onSubmit: (values) => {
       cms.api.forestry.updateContent({
-        path: formConfig.id,
+        path: path,
         payload: values,
       });
     },
-  });
+    ...customFormConfig,
+  };
+
+  formConfig.fields = traverse(formConfig.fields, customFields);
+  const [formData, form] = useForm<FormShape>(formConfig);
 
   const { __typename } = data.document;
 
   return [
     {
       __typename,
-      data: formData,
+      data: formData, // TODO - should we be returning more than just data here?
     },
     form as any, //hack - seems to be a dependency issue with duplicate @tinacms/form Form types
   ];
-};
+}
 
 const traverse = (fields, customizations) => {
   const customizeComponentNames = Object.keys(customizations);
