@@ -1,6 +1,6 @@
 ## Introduction
 
-This "@forestryio/client" package allows you to access your datasource through a GraphQL adapter.
+This `@forestryio/client` package allows you to access your datasource through a GraphQL adapter.
 You might want to use this for a few reasons:
 
 ### Consistent GraphqQL API regardless of your datasource
@@ -9,7 +9,7 @@ If your content is backed by Git, you might want to use your local content in de
 
 ### GraphQL Typescript type generation
 
-With the "@forestryio/cli" package, you can generate typescript types based on your schema. Your schema will be defined within your site in the **.forestry** folder
+With the `@forestryio/cli` package, you can generate typescript types based on your schema. Your schema will be defined within your site in the `.forestry` folder
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ title: This is my post
 
 ### Define Schema
 
-Your site's schema is defined within the **<site_root>/.forestry** directory
+Your site's schema is defined within the `<site_root>/.forestry` directory
 
 You'll need to setup a few configuration files:
 
@@ -149,7 +149,7 @@ yarn tina-gql schema:gen-query --typescript
 This should create two files:
 `.forestry/query.js` & `.forestry/types.ts`
 
-Now let's start our server! run:
+Now let's start our server, run:
 
 ```bash
 yarn tina-gql server:start
