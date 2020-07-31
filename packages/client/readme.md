@@ -141,12 +141,7 @@ pages:
 
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
-<<<<<<< HEAD
-From the cli in your site root, run:
-=======
 **Start your local GraphQL server by running:**
-
-> > > > > > > master
 
 ```bash
 npx tina-gql server:start
@@ -163,13 +158,6 @@ You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/
 **(Optional) Generate TypeScript types**
 
 We can automatically generate TypeScript types based on your schema by running the following command:
-
-<<<<<<< HEAD
-Now let's start our server, run:
-
-=======
-
-> > > > > > > master
 
 ```bash
 npx tina-gql schema:gen-query --typescript
@@ -201,14 +189,9 @@ or
 yarn add tinacms styled-components
 ```
 
-<<<<<<< HEAD
-In your site root, add TinaCMS & register the ForestryClient like so:
-=======
 In your site root, add TinaCMS & register the `ForestryClient` like so:
 
 **\_app.tsx**
-
-> > > > > > > master
 
 ```tsx
 import React from "react";
