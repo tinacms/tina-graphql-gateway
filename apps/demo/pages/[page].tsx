@@ -1,7 +1,12 @@
 import { GetStaticProps } from "next";
 import { usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
-import { DocumentUnion, BlocksUnion, DocumentInput } from "../.forestry/types";
+import {
+  DocumentUnion,
+  BlocksUnion,
+  DocumentInput,
+  Query,
+} from "../.forestry/types";
 import config from "../.forestry/config";
 import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
 import query from "../.forestry/query";
@@ -37,17 +42,24 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  const [formData, form] = useForestryForm(props.data, null, {
-    image: (field) => {
-      return {
-        ...field,
-        previewSrc: (_, { input }) => {
-          return input.value;
-        },
-        uploadDir: () => "/not/yet/implemented/",
-      };
-    },
-  });
+  if (!props.data) {
+    return <div />;
+  }
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(
+    props.data,
+    null,
+    {
+      image: (field) => {
+        return {
+          ...field,
+          previewSrc: (_, { input }) => {
+            return input.value;
+          },
+          uploadDir: () => "/not/yet/implemented/",
+        };
+      },
+    }
+  );
   usePlugin(form);
 
   const createPagePlugin = new ContentCreatorPlugin<
@@ -75,7 +87,7 @@ const Home = (props) => {
 
   usePlugin(createPagePlugin);
 
-  return <PageSwitch document={formData} />;
+  return <PageSwitch document={formData} />; //TODO - fix this cast to any
 };
 
 const PageSwitch = ({ document }: { document: DocumentUnion }) => {
