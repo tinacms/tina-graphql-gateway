@@ -1,13 +1,10 @@
-import { GetStaticProps } from "next";
+import { GetStaticProps, GetStaticPaths } from "next";
 import { usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
 import { DocumentUnion, DocumentInput } from "../../.forestry/types";
-import config from "../../.forestry/config";
 import { ContentCreatorPlugin } from "../../utils/contentCreatorPlugin";
 
 const fg = require("fast-glob");
-
-const URL = config.serverURL;
 
 const template = "pages";
 
@@ -16,7 +13,7 @@ function fileToUrl(filepath: string) {
   return filepath.replace(/ /g, "-").slice(0, -3).trim();
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   const items = await fg(`./content/${template}/**/*.md`);
 
   return {
@@ -25,11 +22,11 @@ export async function getStaticPaths() {
     }),
     fallback: true,
   };
-}
+};
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/${template}/${params.slug}.md`;
-  const client = new ForestryClient({ serverURL: URL });
+  const client = new ForestryClient();
   const response = await client.getContent<DocumentUnion>({
     path,
   });
@@ -38,20 +35,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  const [formData, form] = useForestryForm({
-    ...props.response,
-    customizations: {
-      image: (field) => {
-        return {
-          ...field,
-          previewSrc: (_, { input }) => {
-            return input.value;
-          },
-          uploadDir: () => "/not/yet/implemented/",
-        };
-      },
-    },
-  });
+  const [formData, form] = useForestryForm(props.response);
   usePlugin(form);
 
   const createPagePlugin = new ContentCreatorPlugin<
