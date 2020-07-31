@@ -233,14 +233,12 @@ export const list = ({
         fields: {
           ...baseInputFields,
           component: { type: GraphQLString },
-          itemField: {
+          field: {
             type: new GraphQLObjectType({
               name: friendlyFMTName(
                 field.name + "_list_" + fmt + "_config_item"
               ),
               fields: {
-                name: { type: GraphQLString },
-                label: { type: GraphQLString },
                 component: { type: GraphQLString },
               },
             }),
@@ -252,8 +250,7 @@ export const list = ({
           name: field.name,
           label: field.label,
           component: "list",
-          itemField: {
-            label: field.label + " Item",
+          field: {
             component: "text",
           },
         };
