@@ -21,20 +21,20 @@ const transform = (obj: any) => {
     return { [_template.replace("FieldConfig", "Input")]: transform(rest) };
   }
 
-  const meh = {};
+  const accumulator = {};
   Object.keys(rest)
     .filter((key) => rest[key]) // remove items with null values
     .forEach((key) => {
       if (Array.isArray(rest[key])) {
-        meh[key] = rest[key].map((item) => {
+        accumulator[key] = rest[key].map((item) => {
           return transform(item);
         });
       } else {
-        meh[key] = transform(rest[key]);
+        accumulator[key] = transform(rest[key]);
       }
     });
 
-  return meh;
+  return accumulator;
 };
 
 interface AddProps {
@@ -137,7 +137,7 @@ export class ForestryClient {
       data: rest,
     });
     // console.log(JSON.stringify(payload, null, 2));
-    console.log(JSON.stringify(transformedPayload, null, 2));
+    // console.log(JSON.stringify(transformedPayload, null, 2));
 
     await this.request<UpdateVariables>(mutation, {
       variables: { path: path, params: transformedPayload },
