@@ -4,14 +4,14 @@ type BaseDataShape = {
   document?: any;
 };
 
-type BaseFormShape = { data: any; __typename: string };
+type BaseFormShape = { data: any; __typename?: string };
 
 export function useForestryForm<
   DataShape extends BaseDataShape = any,
   FormShape extends BaseFormShape = any
 >(
   data: DataShape,
-  customFormConfig: Partial<FormOptions<any>>,
+  customFormConfig: Partial<FormOptions<any>> = {},
   customFields: any = {}
 ): [FormShape, Form] {
   const cms = useCMS();

@@ -1,93 +1,239 @@
-import Ajv from "ajv";
-import YAML from "yaml";
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
-import { neutralText, successText, dangerText } from "../../utils/theme";
+import { validator } from "./schema/validator";
+import _ from "lodash";
+import type { Ajv } from "ajv";
+import get from "lodash.get";
+import * as jsyaml from "js-yaml";
 import { ForestryFMTSchema } from "./schema/fmt";
 import { ForestrySettingsSchema } from "./schema/settings";
-import get from "lodash.get";
+import { neutralText, successText, dangerText } from "../../utils/theme";
 
-const stripSlashes = (value) => {
-  return value.replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "");
+export const audit = async (_ctx, _next, { fix }: { fix: boolean }) => {
+  const output = await runValidation({
+    directory: ".tina",
+    ajv: validator({ fix }),
+    fix,
+  });
+
+  if (fix) {
+    writeToDisk(output);
+  }
 };
 
-export async function audit(
-  _ctx,
-  _next,
-  {
-    workingDir = "",
-  }: {
-    workingDir: string;
+export const migrate = async (_ctx, _next, { dryRun }: { dryRun: boolean }) => {
+  const output = await runValidation({
+    directory: ".forestry",
+    ajv: validator({ fix: !dryRun }),
+    fix: !dryRun,
+  });
+
+  if (!dryRun) {
+    writeToDisk(output);
   }
-) {
-  const workingDirReal = workingDir.startsWith("/")
-    ? workingDir
-    : process.cwd() + "/" + stripSlashes(workingDir);
-  var ajv = new Ajv({ allErrors: true, verbose: true });
-  const fmtDirPath = path.resolve(
-    workingDirReal + "/.forestry/front_matter/templates"
+};
+
+export const dump = async (_ctx, _next, { folder }) => {
+  const directory = path.join(process.cwd(), folder);
+  if (!(await fs.existsSync(directory))) {
+    await fs.mkdirSync(directory);
+  }
+  await fs.writeFileSync(
+    directory + "/settings_schema.json",
+    JSON.stringify(ForestrySettingsSchema, null, 2)
   );
-
-  validateFile(
-    workingDirReal,
-    ".forestry/settings.yml",
-    ForestrySettingsSchema,
-    ajv
+  await fs.writeFileSync(
+    directory + "/fmt_schema.json",
+    JSON.stringify(ForestryFMTSchema, null, 2)
   );
+};
 
-  // Store these schemas for now, VSCode uses them locally
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestrySettingsSchema.json"
-  //   ),
-  //   JSON.stringify(ForestrySettingsSchema, null, 2)
-  // );
-  // await fs.writeFileSync(
-  //   path.resolve(
-  //     __dirname + "/../src/cmds/audit/output/forestryFMTSchema.json"
-  //   ),
-  //   JSON.stringify(ForestryFMTSchema, null, 2)
-  // );
+const writeToDisk = async (output) => {
+  output.map(async ({ path, result }) => {
+    if (result.success) {
+      await fs.outputFile(
+        path.replace(".forestry", ".tina"),
+        jsyaml.dump(result.fileJSON)
+      );
+    }
+  });
+};
 
-  const fmts = await fs.readdirSync(fmtDirPath);
+export const runValidation = async ({
+  directory,
+  ajv,
+  fix,
+}: {
+  directory: string;
+  ajv: Ajv;
+  fix: boolean;
+}) => {
+  const output = [];
+  const configDirPath = path.resolve(process.cwd(), directory);
+
+  const settingsFullPath = path.join(configDirPath, "settings.yml");
+  const settingsJSON = jsyaml.safeLoad(
+    await fs.readFileSync(settingsFullPath).toString()
+  );
+  output.push({
+    path: settingsFullPath,
+    result: await validateFile({
+      filePath: "settings.yml",
+      payload: settingsJSON,
+      schema: ForestrySettingsSchema,
+      ajv,
+      fix,
+    }),
+  });
+
+  const templateDirPath = path.join(configDirPath, "front_matter", "templates");
+  const templateList = await fs.readdirSync(path.join(templateDirPath));
   await Promise.all(
-    fmts.map(async (fmtPath) => {
-      await validateFile(fmtDirPath, fmtPath, ForestryFMTSchema, ajv);
+    templateList.map(async (templatePath) => {
+      const templateFullpath = path.join(templateDirPath, templatePath);
+      const templateJSON = jsyaml.safeLoad(
+        await fs.readFileSync(templateFullpath).toString()
+      );
+
+      output.push({
+        path: templateFullpath,
+        result: await validateFile({
+          filePath: templatePath,
+          payload: templateJSON,
+          schema: ForestryFMTSchema,
+          ajv,
+          fix,
+        }),
+      });
     })
   );
-}
 
-const validateFile = async (fmtDirPath, fmtPath, schema, ajv) => {
-  const fmtFullPath = fmtDirPath + "/" + fmtPath;
-  const fmtString = await fs.readFileSync(fmtFullPath).toString();
-  if (typeof fmtString !== "string") {
-    throw "Expected a string";
+  return output;
+};
+
+export const validateFile = async ({ filePath, payload, schema, ajv, fix }) => {
+  let fileJSON = payload;
+  // if (fix) {
+  if (fix) {
+    fileJSON = moveRequiredKeys(fileJSON);
+    fileJSON = pruneEmpty(fileJSON);
   }
-  const fmt = YAML.parse(fmtString);
   var validate = ajv.compile(schema);
-  var valid = validate(fmt);
+  var valid = validate(fileJSON);
+
   if (!valid) {
-    console.log(`${fmtPath} is ${dangerText("invalid")}`);
-    printErrors(validate.errors, fmt);
+    console.log(`${filePath} is ${dangerText("invalid")}`);
+    const errorKeys = printErrors(validate.errors, fileJSON);
+    console.log("\n");
+    return { success: false, fileJSON, errors: errorKeys };
   } else {
-    console.log(`${fmtPath} is ${successText("valid")}`);
+    return { success: true, fileJSON, errors: [] };
   }
 };
 
 const printErrors = (errors, object) => {
-  errors.map((error) => {
-    const handler = keywordError[error.keyword];
-    handler(error, object);
-  });
+  return errors
+    .map((error) => {
+      const handler = keywordError[error.keyword];
+      if (!handler) {
+        throw `Unable to find handler for ${error.keyword}`;
+      } else {
+        return handler(error, object);
+      }
+    })
+    .filter(Boolean);
 };
 
 const keywordError = {
-  required: (error) => {
-    console.log(`${propertyName(error)} ${error.message}`);
+  required: (error, object) => {
+    console.log(`${propertyName(error, object)} ${error.message}`);
+
+    return error;
+  },
+  minItems: (error) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
+
+    return error;
+  },
+  exclusiveMinimum: (error, object) => {
+    console.log(`${propertyName(error, object)} ${error.message}`);
+
+    return error;
+  },
+  minimum: (error, object) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
+
+    return error;
+  },
+  maximum: (error, object) => {
+    console.log(
+      `${propertyName(error)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
+    );
+
+    return error;
   },
   const: (error) => {
+    if (error.schema === "now") {
+      // Ignoring for this case since it's handled better by anyOf
+    } else {
+      console.log(`Unanticipated error - ${error.keyword}`);
+      console.log(error);
+    }
+
+    return false;
+  },
+  format: (error) => {
+    if (error.schema === "date-time") {
+      // Ignoring for this case since it's handled better by anyOf
+    } else {
+      console.log(`Unanticipated error - ${error.keyword}`);
+    }
+    return false;
+  },
+  anyOf: (error, object) => {
+    console.log(`${propertyName(error, object)} should be one of:
+    ${anyOfPossibleTypes(error)}
+    But got ${dangerText(displayType(error))}
+`);
+    return error;
+  },
+  oneOf: (error) => {
     console.log(`Unanticipated error - ${error.keyword}`);
     console.log(error);
+    return false;
+  },
+  datetimeFormat: (error, object) => {
+    console.log(
+      `${propertyName(
+        error,
+        object
+      )} should be either "now" or a valid datetime format (${dangerText(
+        error.data
+      )})`
+    );
+    return error;
+  },
+  minLength: (error, object) => {
+    console.log(
+      `${propertyName(error, object)} should not be shorter than ${dangerText(
+        error.params.limit
+      )} character`
+    );
+    return error;
+  },
+  removeIfFails: () => {
+    // Do nothing
+    return false;
   },
   additionalProperties: (error, object) => {
     console.log(
@@ -98,38 +244,41 @@ const keywordError = {
         error.params.additionalProperty
       )}`
     );
+    return error;
   },
-  anyOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`);
-    console.log(error);
-  },
-  oneOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`);
-    console.log(error);
-  },
-  enum: (error) => {
+  multipleOf: (error, object) => {
     console.log(
-      `${propertyName(error)} ${error.message} but got ${dangerText(
-        error.data
-      )}.
-    Allowed values: ${successText(error.schema.join(", "))}
-`
+      `${propertyName(error, object)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}`
     );
+    return error;
+  },
+  enum: (error, object) => {
+    console.log(
+      `${propertyName(error, object)} ${error.message} but got ${dangerText(
+        displayType(error)
+      )}
+        Allowed values: ${successText(error.schema.join(", "))}
+    `
+    );
+    return error;
   },
   type: (error, object) => {
     console.log(
       `${propertyName(error, object)} ${error.message.replace(
         "should be",
         "should be of type"
-      )} but got ${dangerText(displayType(error))}
-`
+      )} but got ${dangerText(displayType(error))}`
     );
+    return error;
   },
   if: () => {
     // an error stating should match "then" schema
     // indicates that the conditional schema isn't matched -
     // we should get a more specific error elsewhere so ignore these
     // unless debugging.
+    return false;
   },
 };
 
@@ -166,13 +315,98 @@ const propertyName = (error, object = null) => {
     const property = error.dataPath.replace("." + dataPath, "");
 
     const field = get(object, dataPath);
-    // console.log(field);
-    return `
+    if (field) {
+      return `
 Field with name ${successText(field.name)} of type ${neutralText(
-      field.type
-    )} has an invalid property ${dangerText(property)}
+        fieldTypeLabel(field)
+      )} has an invalid property ${dangerText(property)}
      at ${dataPath}
     `;
+    } else {
+      return `${neutralText(error.dataPath)}`;
+    }
   }
   return neutralText(error.dataPath);
 };
+
+const fieldTypeLabel = (field) => {
+  if (field.type === "select" || field.type === "list") {
+    if (!field.config) {
+      return `${field.type} (text)`;
+    }
+    return `${field.type} (${field.config?.source?.type})`;
+  }
+
+  return field.type;
+};
+
+const anyOfPossibleTypes = (error) => {
+  return error.schema
+    .map((item) => {
+      if (item.const) {
+        return ` - A value equal to ${successText(item.const)}`;
+      }
+
+      if (item.format) {
+        return `     - A value which adheres to the ${
+          jsonSchemaFormats[item.format]
+        } format`;
+      }
+
+      if (item.multipleOf || item.type === "null") {
+        // Ignore, we're handling this better elsewhere
+        return false;
+      }
+      console.log(`Unrecognized oneOf schema key`, item);
+    })
+    .filter(Boolean)
+    .join("\n");
+};
+
+const jsonSchemaFormats = {
+  "date-time": "datetime",
+};
+
+// Some fields have the "required" key in the wrong spot. Put them in the config
+const moveRequiredKeys = (json) => {
+  const string = JSON.stringify(json);
+
+  return JSON.parse(string, (key, value) => {
+    if (key === "fields") {
+      const itemWithRequired = value.find((item) => item.required);
+      if (itemWithRequired) {
+        itemWithRequired.config = {
+          required: itemWithRequired.required,
+          ...itemWithRequired.config,
+        };
+        delete itemWithRequired.required;
+      }
+    }
+    return value;
+  });
+};
+
+function pruneEmpty(obj) {
+  return (function prune(current) {
+    _.forOwn(current, function (value, key) {
+      // Empty values in defaults might be valid
+      // let the schema decide
+      if (key === "default") {
+        return;
+      }
+
+      if (
+        _.isUndefined(value) ||
+        _.isNull(value) ||
+        _.isNaN(value) ||
+        (_.isString(value) && _.isEmpty(value)) ||
+        (_.isObject(value) && _.isEmpty(prune(value)))
+      ) {
+        delete current[key];
+      }
+    });
+    if (_.isArray(current)) _.pull(current, undefined);
+
+    return current;
+  })(_.cloneDeep(obj));
+}

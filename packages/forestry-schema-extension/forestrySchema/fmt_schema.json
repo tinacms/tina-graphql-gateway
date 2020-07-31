@@ -1,0 +1,1695 @@
+{
+  "title": "Forestry FMT Schema",
+  "type": "object",
+  "description": "",
+  "definitions": {
+    "textField": {
+      "$id": "#textField",
+      "label": "Text Field",
+      "description": "Single line text input. Good for page titles, feature headlines etc.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "type": {
+          "const": "text"
+        },
+        "default": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "numberField": {
+      "$id": "#numberField",
+      "label": "Number Field",
+      "description": "A number input. Good for integer values such as page weight, amounts, counters etc. ",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "type": {
+          "const": "number"
+        },
+        "default": {
+          "type": "number",
+          "multipleOf": {
+            "$data": "1/config/step"
+          },
+          "minimum": {
+            "$data": "1/config/min"
+          },
+          "maximum": {
+            "$data": "1/config/max"
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "min": {
+              "type": "number",
+              "multipleOf": {
+                "$data": "1/step"
+              },
+              "maximum": {
+                "$data": "1/max"
+              }
+            },
+            "max": {
+              "type": "number",
+              "multipleOf": {
+                "$data": "1/step"
+              },
+              "minimum": {
+                "$data": "1/min"
+              }
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "colorField": {
+      "$id": "#colorField",
+      "label": "Color Picker Field",
+      "description": "",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "color"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "color_format": {
+              "type": "string",
+              "enum": [
+                "RGB",
+                "Hex"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "color_format"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type",
+        "config"
+      ]
+    },
+    "tagField": {
+      "$id": "#tagField",
+      "label": "Tags Field",
+      "description": "A list of strings to make multiple selections displayed inline. Good for page categories, page tags etc.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "tag_list"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "booleanField": {
+      "$id": "#booleanField",
+      "label": "Toggle Field",
+      "description": "A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "type": {
+          "const": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "textAreaField": {
+      "$id": "#textAreaField",
+      "label": "Textarea",
+      "description": "Multi-line text input. Good for page descriptions, article summaries etc. ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "textarea"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "string"
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "wysiwyg": {
+              "type": "boolean",
+              "title": "WYSIWYG Editor",
+              "description": "Whether or not the editor should present a rich-text editor"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "html",
+                    "markdown"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "dateField": {
+      "$id": "#dateField",
+      "label": "Date Field",
+      "description": "A date and time picker. Good for date values such as page created, page published etc.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "datetime"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "string",
+          "anyOf": [
+            {
+              "type": "string",
+              "const": "now"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "date_format": {
+              "type": "string"
+            },
+            "time_format": {
+              "type": "string"
+            },
+            "export_format": {
+              "type": "string"
+            },
+            "display_utc": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "includeField": {
+      "$id": "#includeField",
+      "label": "Include Template",
+      "description": "Include the fields of another Front Matter Template into the current one. ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "include"
+        },
+        "template": {
+          "type": "string",
+          "label": "Template",
+          "description": "The template you'd like to include"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "blocksField": {
+      "$id": "#blocksField",
+      "label": "Blocks",
+      "description": "A list of unlike Field Groups. Great for allowing a series of different page sections be assembled in a custom way.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "type": {
+          "const": "blocks"
+        },
+        "template_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type",
+        "template_types"
+      ]
+    },
+    "selectField": {
+      "$id": "#selectField",
+      "label": "Select Field",
+      "description": "A dropdown to make a single selection from a set of options. ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "select"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "string",
+          "removeIfFails": true
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": [
+                    "simple",
+                    "pages",
+                    "documents"
+                  ]
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "additionalProperties": false,
+                "required": [
+                  "options",
+                  "source"
+                ],
+                "properties": {
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "simple"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "pages"
+                      },
+                      "section": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "source": {
+                    "properties": {
+                      "type": {
+                        "const": "documents"
+                      },
+                      "section": {
+                        "type": "string"
+                      },
+                      "file": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "section",
+                      "file",
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "fieldGroupField": {
+      "$id": "#fieldGroupField",
+      "label": "Field Group",
+      "description": "A set of fields combined into one field. Good for objects that come in sets (e.g. a site's footer).",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "field_group"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "fields": {
+          "$ref": "#/definitions/allFields"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type",
+        "fields"
+      ]
+    },
+    "fieldGroupListField": {
+      "$id": "#fieldGroupListField",
+      "label": "Field Group List",
+      "description": "A list of repeating Field Groups. Good for an object that can be reused multiple times on the same page (e.g. list of authors).",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "field_group_list"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "use_select": {
+              "type": "boolean"
+            },
+            "labelField": {
+              "type": "string"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "fields": {
+          "$ref": "#/definitions/allFields"
+        }
+      },
+      "required": [
+        "label",
+        "name",
+        "type",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "imageField": {
+      "$id": "#imageField",
+      "label": "Image Field",
+      "description": "A single file input that adds assets to the Media Library. Good for a featured image or a profile picture. ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "file"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "string",
+          "minLength": 1,
+          "removeIfFails": true
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "maxSize": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "galleryField": {
+      "$id": "#galleryField",
+      "label": "Gallery Field",
+      "description": "A list input that adds assets to the Media Library. Good for galleries and components that require multiple files. ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "image_gallery"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "maxSize": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "listField": {
+      "$id": "#listField",
+      "label": "List Field",
+      "description": "A list of strings to make multiple selections. The selection is displayed as a list that can be sorted (e.g. related pages). ",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "list"
+        },
+        "label": {
+          "type": "string",
+          "label": "Label",
+          "description": "The human-friendly label shown above the input field."
+        },
+        "name": {
+          "type": "string",
+          "label": "Name",
+          "description": "The key used in your front matter."
+        },
+        "description": {
+          "type": "string",
+          "label": "Description",
+          "description": "Help text that appears above the field."
+        },
+        "hidden": {
+          "type": "boolean",
+          "label": "Hidden",
+          "description": "Hide this field from the form. Used to create content with hidden default values."
+        },
+        "showOnly": {
+          "type": "object",
+          "label": "Show Only",
+          "description": "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        },
+        "default": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "use_select": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": [
+                    "simple",
+                    "pages",
+                    "documents"
+                  ]
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "use_select": {
+                    "const": false
+                  }
+                }
+              },
+              "then": {
+                "additionalProperties": false,
+                "properties": {
+                  "use_select": {
+                    "type": "boolean"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  }
+                }
+              },
+              "else": {
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "simple"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "additionalProperties": false,
+                      "required": [
+                        "source",
+                        "options"
+                      ],
+                      "properties": {
+                        "use_select": {
+                          "type": "boolean"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "simple"
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "pages"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "use_select": {
+                          "type": "boolean"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "pages"
+                            },
+                            "section": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "section"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "documents"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "use_select": {
+                          "type": "boolean"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "source": {
+                          "properties": {
+                            "type": {
+                              "const": "documents"
+                            },
+                            "section": {
+                              "type": "string"
+                            },
+                            "file": {
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "section",
+                            "file",
+                            "path"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "name",
+        "type"
+      ]
+    },
+    "allFields": {
+      "$id": "#allFields",
+      "type": "array",
+      "title": "Field List",
+      "description": "List of fields for your FMT",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "include",
+              "datetime",
+              "select",
+              "file",
+              "blocks",
+              "color",
+              "boolean",
+              "tag_list",
+              "number",
+              "image_gallery",
+              "list",
+              "field_group",
+              "field_group_list"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "text"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/textField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "blocks"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/blocksField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "number"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/numberField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "include"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/includeField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "color"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/colorField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "tag_list"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/tagField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "datetime"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/dateField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "textarea"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/textAreaField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "select"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/selectField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "file"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/imageField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "boolean"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/booleanField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "image_gallery"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/galleryField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "field_group"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/fieldGroupField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "field_group_list"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/fieldGroupListField"
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "list"
+                }
+              }
+            },
+            "then": {
+              "$ref": "#/definitions/listField"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "properties": {
+    "label": {
+      "title": "Label",
+      "description": "The label used in the sidebar",
+      "type": "string"
+    },
+    "hide_body": {
+      "type": "boolean",
+      "title": "Hide Body?",
+      "description": "Whether to show the body for the markdown file."
+    },
+    "display_field": {
+      "type": "string"
+    },
+    "fields": {
+      "$ref": "#/definitions/allFields"
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "label",
+    "hide_body",
+    "fields"
+  ],
+  "additionalProperties": false
+}

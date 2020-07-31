@@ -28,13 +28,16 @@
     "build": "forestry-build",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
-    "watch": "forestry-watch"
+    "watch": "forestry-watch",
+    "generate:schema": "yarn node scripts/generateSchema.js"
   },
   "dependencies": {
     "@forestryio/graphql": "workspace:packages/graphql",
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.17.0",
     "@graphql-codegen/typescript": "^1.17.0",
     "@graphql-codegen/typescript-operations": "^1.17.0",
+    "@types/lodash": "^4.14.157",
     "@types/lodash.get": "^4.4.6",
     "ajv": "^6.12.3",
     "axios": "0.19.0",
@@ -48,20 +51,27 @@
     "esm": "3.2.25",
     "express": "^4.17.1",
     "express-graphql": "^0.11.0",
+    "fast-glob": "^3.2.4",
     "figlet": "^1.2.3",
+    "fs-extra": "^9.0.1",
+    "generator-code": "^1.2.19",
     "graphql": "^15.1.0",
     "http-proxy": "^1.18.0",
     "inquirer": "^6.5.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "js-yaml": "^3.14.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.0",
     "listr": "0.14.3",
+    "lodash": "^4.17.19",
     "lodash.get": "^4.4.2",
     "ms": "^2.1.2",
     "open": "^6.4.0",
     "ora": "^4.0.2",
     "path": "^0.12.7",
     "simple-git": "1.124.0",
-    "yaml": "^1.10.0"
+    "yaml": "^1.10.0",
+    "yo": "^3.1.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
