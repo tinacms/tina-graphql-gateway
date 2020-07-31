@@ -224,13 +224,11 @@ export type BulletPointsListPriceListPricesConfig = {
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  itemField?: Maybe<BulletPointsListPriceListPricesConfigItem>;
+  field?: Maybe<BulletPointsListPriceListPricesConfigItem>;
 };
 
 export type BulletPointsListPriceListPricesConfigItem = {
   __typename?: 'BulletPointsListPriceListPricesConfigItem';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
 };
 
@@ -430,13 +428,11 @@ export type AnecdotesListAuthorConfig = {
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  itemField?: Maybe<AnecdotesListAuthorConfigItem>;
+  field?: Maybe<AnecdotesListAuthorConfigItem>;
 };
 
 export type AnecdotesListAuthorConfigItem = {
   __typename?: 'AnecdotesListAuthorConfigItem';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
 };
 
@@ -613,6 +609,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   updateDocument?: Maybe<DocumentUnion>;
   addDocument?: Maybe<DocumentUnion>;
+  deleteDocument?: Maybe<DocumentUnion>;
 };
 
 
@@ -626,6 +623,11 @@ export type MutationAddDocumentArgs = {
   path: Scalars['String'];
   template: Scalars['String'];
   params?: Maybe<DocumentInput>;
+};
+
+
+export type MutationDeleteDocumentArgs = {
+  path: Scalars['String'];
 };
 
 export type DocumentInput = {
