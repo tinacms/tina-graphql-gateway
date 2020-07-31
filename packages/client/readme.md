@@ -153,7 +153,11 @@ or
 yarn tina-gql server:start
 ```
 
-_If you want to generate TypeScript types for your schema, you can do so by running the following command:_
+You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
+
+**(Optional) Generate TypeScript types**
+
+We can automatically generate TypeScript types based on your schema by running the following command:
 
 ```bash
 npx tina-gql schema:gen-query --typescript
@@ -165,21 +169,13 @@ or
 yarn tina-gql schema:gen-query --typescript
 ```
 
-You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
-
-**TODO: I think we need to adjust this section after Jeff's changes get merged in.**
-
-You can use the query from your **/.forestry/query.gql**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
-
-[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
-
-Now that we have a working GraphQL server with our local content, let's use it within our site.
-
-_We will want to keep this graphql server running in its own tab to serve content for our local site_
+This will create a file at `.forestry/types.ts`.
 
 ### Using the data within our Next.JS site
 
-Now that we have our data accessible through a GraphQL API we can use it within our site.
+Now that we have a working GraphQL server with our local content, let's use it within our site.
+
+_Make sure you keep your GraphQL server running in a seperate console through this entire process._
 
 First, install the TinaCMS dependencies:
 
