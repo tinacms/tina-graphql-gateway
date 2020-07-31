@@ -262,7 +262,7 @@ import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient({ serverURL: URL });
+  const client = new ForestryClient({ serverURL: config.serverURL });
   const response = await client.getContent({
     path,
   });
