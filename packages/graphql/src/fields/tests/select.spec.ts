@@ -24,6 +24,7 @@ const mockDataSource: DataSource = {
   getTemplate: jest.fn(),
   getTemplateList: jest.fn(),
   writeData: jest.fn(),
+  deleteContent: jest.fn(),
   createContent: jest.fn(),
 };
 
