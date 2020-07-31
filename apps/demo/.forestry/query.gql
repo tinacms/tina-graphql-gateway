@@ -314,7 +314,6 @@ query DocumentQuery($path: String!) {
             text
             image {
               path
-              absolutePath
             }
             cta {
               header
@@ -389,7 +388,6 @@ query DocumentQuery($path: String!) {
               url
               image {
                 path
-                absolutePath
               }
             }
           }
@@ -462,7 +460,6 @@ query DocumentQuery($path: String!) {
         }
         image {
           path
-          absolutePath
         }
         hashtags
       }
@@ -523,11 +520,9 @@ query DocumentQuery($path: String!) {
         name
         image {
           path
-          absolutePath
         }
         gallery {
           path
-          absolutePath
         }
         anecdotes
         accolades {
@@ -583,7 +578,6 @@ query DocumentQuery($path: String!) {
         _template
         logo {
           path
-          absolutePath
         }
         menu_item {
           label
@@ -597,3 +591,4 @@ query DocumentQuery($path: String!) {
     }
   }
 }
+
