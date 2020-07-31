@@ -62,6 +62,7 @@ This CLI performs a few functions:
 For full documentation of the CLI, see [here].(https://github.com/forestryio/graphql-demo/tree/client-documentation/packages/cli)
 
 ## Implementation
+
 We'll show how to use this package in a NextJS site
 
 ### Create Dummy Content
@@ -140,11 +141,19 @@ pages:
 
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
-<<<<<<< HEAD
-**From the CLI in your site root, run:**
-=======
-From the cli in your site root, run:
->>>>>>> master
+**Start your local GraphQL server by running:**
+
+```bash
+npx tina-gql server:start
+```
+
+or
+
+```bash
+yarn tina-gql server:start
+```
+
+_If you want to generate TypeScript types for your schema, you can do so by running the following command:_
 
 ```bash
 npx tina-gql schema:gen-query --typescript
@@ -154,28 +163,6 @@ or
 
 ```bash
 yarn tina-gql schema:gen-query --typescript
-```
-
-<<<<<<< HEAD
-then,
-
-**Start your local GraphQL server by running:**
-
-=======
-This should create two files:
-`.forestry/query.gql` & `.forestry/types.ts`
-
-Now let's start our server, run:
-
->>>>>>> master
-```bash
-npx tina-gql server:start
-```
-
-or
-
-```bash
-yarn tina-gql server:start
 ```
 
 You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
@@ -206,13 +193,9 @@ or
 yarn add tinacms styled-components
 ```
 
-<<<<<<< HEAD
 In your site root, add TinaCMS & register the `ForestryClient` like so:
 
 **\_app.tsx**
-=======
-In your site root, add TinaCMS & register the ForestryClient like so:
->>>>>>> master
 
 ```tsx
 import React from "react";
