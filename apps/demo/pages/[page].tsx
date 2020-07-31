@@ -7,13 +7,8 @@ import {
   DocumentInput,
   Query,
 } from "../.forestry/types";
-import config from "../.forestry/config";
 import { ContentCreatorPlugin } from "../utils/contentCreatorPlugin";
-import query from "../.forestry/query";
-
 const fg = require("fast-glob");
-
-const URL = config.serverURL;
 
 function fileToUrl(filepath: string) {
   filepath = filepath.split(`/pages/`)[1];
@@ -33,7 +28,7 @@ export async function getStaticPaths() {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const path = `content/pages/${params.page}.md`;
-  const client = new ForestryClient({ serverURL: URL, query });
+  const client = new ForestryClient();
   const data = await client.getContent({
     path,
   });
@@ -87,7 +82,7 @@ const Home = (props) => {
 
   usePlugin(createPagePlugin);
 
-  return <PageSwitch document={formData} />; //TODO - fix this cast to any
+  return <PageSwitch document={formData} />;
 };
 
 const PageSwitch = ({ document }: { document: DocumentUnion }) => {

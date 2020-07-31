@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
+    "graphql": "^15.3.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
     "tslib": "^1.11.1"

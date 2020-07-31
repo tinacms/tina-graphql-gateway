@@ -3,4 +3,5 @@ import {
   friendlyName as friendlyFMTName,
   shortFMTName,
 } from "./util";
-export { friendlyFMTName, shortFMTName, arrayToObject };
+import { queryBuilder } from "./queryBuilder";
+export { friendlyFMTName, shortFMTName, arrayToObject, queryBuilder };

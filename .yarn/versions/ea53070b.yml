@@ -1,2 +1,6 @@
+releases:
+  "@forestryio/cli": patch
+  forestry-schema: patch
+
 declined:
-  - "@forestryio/build"
+  - demo
