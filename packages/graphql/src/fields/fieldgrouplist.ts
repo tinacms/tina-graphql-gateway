@@ -1,4 +1,5 @@
 import { ConfigType, FieldData } from "./types";
+import type { GenerateFieldAccessorsFunction } from "../fieldGenerator";
 import { FieldGroupListField, FieldType } from "../datasources/datasource";
 import {
   GraphQLError,
@@ -10,18 +11,19 @@ import {
 } from "graphql";
 
 import { friendlyFMTName } from "@forestryio/graphql-helpers";
-import { generateFieldAccessors } from "../fieldGenerator";
 
 export const field_group_list = ({
   fmt,
   field,
   config,
   fieldData,
+  generateFieldAccessors,
 }: {
   fmt: string;
   field: FieldGroupListField;
   config: ConfigType;
   fieldData: FieldData;
+  generateFieldAccessors: GenerateFieldAccessorsFunction;
 }) => {
   const { getters, setters, mutators } = generateFieldAccessors({
     fmt: `${fmt}_${field.name}`,

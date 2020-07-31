@@ -1,10 +1,10 @@
 ---
-author: content/authors/terrence.md
 title: Welcome
-image: "/uploads/group-run.jpg"
+author: content/authors/eric.md
+image: /uploads/group-run.jpg
 hashtags: []
-
 ---
+
 Hi, this is Terrence Mahon, Co-Founder and Head Coach of Golden Coast Track Club. Thank your for taking the time to visit our new website.
 
 The Golden Coast Track Club, newly established in January 2020 is a rebranding of our former team, The Mission Athletics Club. On a day to day level not a lot has changed. We still call San Diego our home, we still have our core group of elite athletes and still have a goal of being successful in both in sport and life. We just wanted to spice it all up a bit. We hope you like it.
@@ -48,5 +48,6 @@ There is always a call for team merchandise. We know this and definitely appreci
 Thanks so much for riding with us on this journey. We hope you get everything out of your running and we really want to be a part of the process that makes it happen. We also thank you so much for your support over the years. Our athletes come from all over the United States and from around the world. It is important for us to make this place their second home. Your interaction with the team definitely helps make all those miles go by a lot easier.
 
 \-- Terrence Mahon
+
 
 \[Hello\]({{< relref "post/5-raisons-de-tester-la-jamstack" >}})

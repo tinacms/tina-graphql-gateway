@@ -1,6 +1,4 @@
 import { AddContentPlugin, Field, CMS } from "tinacms";
-import config from "../.forestry/config";
-const URL = config.serverURL;
 
 interface CreateContentButtonOptions<FormShape, FrontmatterShape> {
   label: string;
@@ -55,7 +53,6 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
     const fileRelativePath = await this.filename(form);
 
     await cms.api.forestry.addContent({
-      url: URL,
       path: fileRelativePath,
       template: "block-page",
       payload: {
