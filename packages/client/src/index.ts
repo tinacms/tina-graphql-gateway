@@ -1,4 +1,5 @@
-import { friendlyFMTName } from "@forestryio/graphql-helpers";
+import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -34,10 +35,6 @@ const transform = (obj: any) => {
   return meh;
 };
 
-interface GetContentVariables {
-  path: string;
-}
-
 interface AddProps {
   url: string;
   path: string;
@@ -56,17 +53,13 @@ interface AddVariables {
   params?: any;
 }
 
-interface ForestryClientOptions {
-  serverURL: string;
-  query: string;
-}
+const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
 
 export class ForestryClient {
   serverURL: string;
   query: string;
-  constructor({ serverURL, query }: ForestryClientOptions) {
-    this.serverURL = serverURL;
-    this.query = query;
+  constructor() {
+    this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -90,8 +83,28 @@ export class ForestryClient {
     });
   };
 
-  getContent = async ({ path }) => {
-    const data = await this.request(this.query, {
+  getQuery = async () => {
+    if (!this.query) {
+      const data = await this.request(getIntrospectionQuery(), {
+        variables: {},
+      });
+
+      this.query = print(queryBuilder(buildClientSchema(data)));
+    }
+
+    return this.query;
+  };
+
+  getContent = async <T>({
+    path,
+  }: {
+    path: string;
+  }): Promise<{
+    data: T;
+    formConfig: any;
+  }> => {
+    const query = await this.getQuery();
+    const data = await this.request(query, {
       variables: { path },
     });
 

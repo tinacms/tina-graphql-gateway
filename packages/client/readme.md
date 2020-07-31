@@ -140,7 +140,11 @@ pages:
 
 Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
 
+<<<<<<< HEAD
 **From the CLI in your site root, run:**
+=======
+From the cli in your site root, run:
+>>>>>>> master
 
 ```bash
 npx tina-gql schema:gen-query --typescript
@@ -152,10 +156,18 @@ or
 yarn tina-gql schema:gen-query --typescript
 ```
 
+<<<<<<< HEAD
 then,
 
 **Start your local GraphQL server by running:**
 
+=======
+This should create two files:
+`.forestry/query.gql` & `.forestry/types.ts`
+
+Now let's start our server, run:
+
+>>>>>>> master
 ```bash
 npx tina-gql server:start
 ```
@@ -170,9 +182,9 @@ You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/
 
 **TODO: I think we need to adjust this section after Jeff's changes get merged in.**
 
-[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
+You can use the query from your **/.forestry/query.gql**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
 
-You can use the query from your **/.forestry/query.js**, add a **path** query variable, and click the "Run Query" button to verify that your graphql server is configured properly.
+[![Tina Graphql Query](https://res.cloudinary.com/forestry-demo/image/upload/v1595869546/TinaCMS/graphiql.png)](https://tinacms.org/)
 
 Now that we have a working GraphQL server with our local content, let's use it within our site.
 
@@ -194,16 +206,19 @@ or
 yarn add tinacms styled-components
 ```
 
+<<<<<<< HEAD
 In your site root, add TinaCMS & register the `ForestryClient` like so:
 
 **\_app.tsx**
+=======
+In your site root, add TinaCMS & register the ForestryClient like so:
+>>>>>>> master
 
 ```tsx
 import React from "react";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
 import config from "../.forestry/config";
-import query from "../.forestry/query";
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
@@ -213,7 +228,6 @@ export default withTina(MyApp, {
   apis: {
     forestry: new ForestryClient({
       serverURL: config.serverURL,
-      query,
     }),
   },
   sidebar: true,
@@ -269,7 +283,7 @@ import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient({ serverURL: config.serverURL, query });
+  const client = new ForestryClient({ serverURL: config.serverURL });
   const response = await client.getContent({
     path,
   });
