@@ -53,15 +53,13 @@ interface AddVariables {
   params?: any;
 }
 
-interface ForestryClientOptions {
-  serverURL: string;
-}
+const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
 
 export class ForestryClient {
   serverURL: string;
   query: string;
-  constructor({ serverURL }: ForestryClientOptions) {
-    this.serverURL = serverURL;
+  constructor() {
+    this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
