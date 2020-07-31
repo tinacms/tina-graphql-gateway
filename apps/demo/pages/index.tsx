@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { getStaticPropsIndex } from "../../utils/getStatics";
+import { getStaticPropsIndex } from "../utils/getStatics";
 
 const template = "pages";
 
