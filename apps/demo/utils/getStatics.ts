@@ -7,35 +7,20 @@ function fileToUrl(template, filepath: string) {
   return filepath.replace(/ /g, "-").slice(0, -3).trim();
 }
 
-export const getStaticPropsIndex = async ({ template }) => {
+export const getSlugs = async ({ template }) => {
   const items = await fg(`./content/${template}/**/*.md`);
 
-  return {
-    props: {
-      paths: items.map((file) => {
-        return fileToUrl(template, file);
-      }),
-    },
-  };
+  return items.map((file) => {
+    return fileToUrl(template, file);
+  });
 };
 
-export const getStaticPathsUtil = async ({ template }) => {
-  const items = await fg(`./content/${template}/**/*.md`);
-
-  return {
-    paths: items.map((file) => {
-      return { params: { slug: fileToUrl(template, file) } };
-    }),
-    fallback: true,
-  };
-};
-
-export const getStaticPropsUtil = async ({ template, params }) => {
+export const getContent = async ({ template, params }) => {
   const path = `content/${template}/${params.slug}.md`;
   const client = new ForestryClient();
   const response = await client.getContent<DocumentUnion>({
     path,
   });
 
-  return { props: { path, response } };
+  return { path, response };
 };
