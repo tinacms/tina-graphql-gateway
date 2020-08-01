@@ -1,11 +1,19 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { getStaticPropsIndex } from "../../utils/getStatics";
+import { getSlugs } from "../../utils/getStatics";
 
 const template = "pages";
 
 export const getStaticProps: GetStaticProps = async () => {
-  return getStaticPropsIndex({ template });
+  const slugs = await getSlugs({ template });
+
+  return {
+    props: {
+      paths: slugs.map((slug) => {
+        return { params: { slug: slug } };
+      }),
+    },
+  };
 };
 
 const Main = (props) => {
