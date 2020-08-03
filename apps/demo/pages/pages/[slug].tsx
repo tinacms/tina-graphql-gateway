@@ -1,7 +1,7 @@
 import { GetStaticProps, GetStaticPaths } from "next";
 import { usePlugin } from "tinacms";
 import { ForestryClient, useForestryForm } from "@forestryio/client";
-import { DocumentUnion, DocumentInput } from "../../.forestry/types";
+import { DocumentUnion, DocumentInput, Query } from "../../.forestry/types";
 import { ContentCreatorPlugin } from "../../utils/contentCreatorPlugin";
 
 const fg = require("fast-glob");
@@ -38,7 +38,7 @@ const Home = (props) => {
   if (!props.data) {
     return <div />;
   }
-  const [formData, form] = useForestryForm(props.data);
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(props.data);
   usePlugin(form);
 
   const createPagePlugin = new ContentCreatorPlugin<
