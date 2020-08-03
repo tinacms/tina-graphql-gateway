@@ -79,16 +79,7 @@ title: This is my post
 
 ### Configuration
 
-Before we can define the schema of our content, we need set up some configuration. Create a `.forestry` directory and then create the following two files.
-
-**.forestry/config.js**
-
-```js
-// config.js
-module.exports = {
-  serverURL: "http://localhost:4001/api/graphql",
-};
-```
+Before we can define the schema of our content, we need set up some configuration. Create a `.forestry` directory and then create the following files.
 
 **.forestry/settings.yml**
 
@@ -205,9 +196,7 @@ function MyApp({ Component, pageProps }) {
 
 export default withTina(MyApp, {
   apis: {
-    forestry: new ForestryClient({
-      serverURL: config.serverURL,
-    }),
+    forestry: new ForestryClient(),
   },
   sidebar: true,
 });
@@ -262,7 +251,7 @@ import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient({ serverURL: config.serverURL });
+  const client = new ForestryClient();
   const response = await client.getContent({
     path,
   });
