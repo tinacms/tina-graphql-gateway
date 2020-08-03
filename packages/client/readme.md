@@ -260,6 +260,9 @@ import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 
+// These are your generated types from CLI
+import { DocumentUnion, Query } from "../../.forestry/types";
+
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
   const client = new ForestryClient({ serverURL: config.serverURL });
@@ -271,7 +274,7 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Home(props) {
-  const [formData, form] = useForestryForm(props.data, {});
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(props.data);
   usePlugin(form);
 
   return (
