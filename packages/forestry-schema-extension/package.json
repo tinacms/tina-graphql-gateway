@@ -3,7 +3,7 @@
   "displayName": "forestry-schema",
   "publisher": "jeffsee55",
   "description": "Validate .forestry configurations",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "engines": {
     "vscode": "^1.47.0"
   },
