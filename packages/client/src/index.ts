@@ -108,17 +108,7 @@ export class ForestryClient {
       variables: { path },
     });
 
-    const formConfig = {
-      id: path,
-      label: path,
-      initialValues: data.document.data,
-      fields: data.document.form.fields,
-    };
-
-    return {
-      data,
-      formConfig,
-    };
+    return data;
   };
 
   updateContent = async ({ path, payload }: { path: string; payload: any }) => {
