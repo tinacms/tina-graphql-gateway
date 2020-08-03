@@ -1953,7 +1953,7 @@ __metadata:
     tinacms: 0.21.1
     typescript: ^3.9.5
   peerDependencies:
-    tinacms: ">0.21.1"
+    tinacms: ">=0.21.1"
   languageName: unknown
   linkType: soft
 

@@ -38,7 +38,7 @@
     "tinacms": "0.21.1"
   },
   "peerDependencies": {
-    "tinacms": ">0.21.1"
+    "tinacms": ">=0.21.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
