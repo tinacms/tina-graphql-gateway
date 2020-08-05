@@ -407,6 +407,8 @@ query DocumentQuery($path: String!) {
             section
           }
         }
+        _content
+        _excerpt
       }
     }
     ... on Post {
@@ -461,8 +463,8 @@ query DocumentQuery($path: String!) {
           absolutePath
         }
         hashtags
-        content
-        excerpt
+        _content
+        _excerpt
       }
     }
     ... on Author {
@@ -530,8 +532,8 @@ query DocumentQuery($path: String!) {
           figure
           description
         }
-        content
-        excerpt
+        _content
+        _excerpt
       }
     }
     ... on Menu {
