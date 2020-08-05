@@ -17,10 +17,13 @@ export function useForestryForm<
   const cms = useCMS();
 
   const { path } = data.document!;
+
+  const { excerpt, ...initialValues } = data.document!.data;
+
   const formConfig = {
     id: path,
     label: path,
-    initialValues: data.document!.data,
+    initialValues,
     fields: data.document!.form.fields,
     onSubmit: (values) => {
       cms.api.forestry.updateContent({

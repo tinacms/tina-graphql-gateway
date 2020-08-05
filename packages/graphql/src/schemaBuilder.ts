@@ -139,7 +139,6 @@ export const buildSchema = async (
         name: friendlyFMTName(path + "_input"),
         fields: {
           data: { type: templateDataInputObjectType },
-          content: { type: GraphQLString },
         },
       });
 
@@ -289,10 +288,10 @@ export const buildSchema = async (
     path: string;
     params: any;
   }) => {
-    const { content = "", data } = payload.params[
+    const { content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
-    ];
+    ].data;
 
     await dataSource.writeData(
       config.siteLookup,
@@ -307,10 +306,10 @@ export const buildSchema = async (
     template: string;
     params: any;
   }) => {
-    const { content = "", data } = payload.params[
+    const { content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
-    ];
+    ].data;
 
     await dataSource.createContent(
       config.siteLookup,
@@ -438,15 +437,19 @@ const generateTemplateFormObjectType = (
               schema: { format: "markdown" },
             },
           };
-          const setter = setters["content"];
-          const contentResolver = setter.resolve(
-            contentField as any, //TODO - fix this
-            args,
-            context,
-            info
-          );
+          const contentSetter = setters["content"];
+          if (contentSetter) {
+            fieldResolvers.push(
+              contentSetter.resolve(
+                contentField as any, //TODO - fix this
+                args,
+                context,
+                info
+              ) as any
+            );
+          }
 
-          return Promise.all([contentResolver, ...fieldResolvers]);
+          return Promise.all(fieldResolvers);
         },
       },
     },
