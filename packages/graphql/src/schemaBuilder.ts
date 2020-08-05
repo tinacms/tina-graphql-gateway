@@ -133,6 +133,10 @@ export const buildSchema = async (
             resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
           },
           ...getters,
+          content: {
+            type: GraphQLString,
+          },
+          excerpt: { type: GraphQLString },
         },
       });
 
@@ -142,10 +146,6 @@ export const buildSchema = async (
           form: templateFormObjectType,
           absolutePath: { type: GraphQLString },
           path: { type: GraphQLNonNull(GraphQLString) },
-          content: {
-            type: GraphQLNonNull(GraphQLString),
-          },
-          excerpt: { type: GraphQLString },
           data: { type: GraphQLNonNull(templateDataObjectType) },
         },
       });

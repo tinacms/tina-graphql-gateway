@@ -20,8 +20,7 @@ export interface DataSource {
 }
 
 export type Content = {
-  data: any;
-  content: any;
+  data: { content: any } & any;
 };
 
 export type DirectorySection = {
