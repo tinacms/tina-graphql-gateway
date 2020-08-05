@@ -33,6 +33,7 @@ import {
 import camelCase from "lodash.camelcase";
 import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
+import { textInputType } from "./fields/inputTypes";
 
 /**
  * This is the main function in this script, it returns all the types
@@ -107,6 +108,28 @@ export const buildSchema = async (
         fieldData,
       });
 
+      if (!fmt.data.hide_body) {
+        getters.content = {
+          type: GraphQLString,
+        };
+        getters.excerpt = { type: GraphQLString };
+
+        setters.content = {
+          type: textInputType,
+          resolve: () => {
+            return {
+              name: "content",
+              label: "content",
+              component: "textarea",
+            };
+          },
+        };
+
+        mutators.content = {
+          type: GraphQLString,
+        };
+      }
+
       const templateDataInputObjectType = new GraphQLInputObjectType({
         name: friendlyFMTName(path + "_data_input"),
         fields: mutators,
@@ -132,12 +155,6 @@ export const buildSchema = async (
         },
         ...getters,
       };
-      if (!fmt.data.hide_body) {
-        dataFields.content = {
-          type: GraphQLString,
-        };
-        dataFields.excerpt = { type: GraphQLString };
-      }
 
       const templateDataObjectType = new GraphQLObjectType({
         name: friendlyFMTName(path, { suffix: "data" }),
@@ -398,19 +415,38 @@ const generateTemplateFormObjectType = (
           })
         ),
         resolve: async (fmtData, args, context, info) => {
-          return Promise.all(
-            fmt.data.fields.map(async (field) => {
-              const setter = setters[field.name];
+          const fieldResolvers = fmt.data.fields.map(async (field) => {
+            const setter = setters[field.name];
 
-              if (!setter.resolve) {
-                throw new GraphQLError(
-                  `No resolver defined for ${fmtData.label}`
-                );
-              }
+            if (!setter.resolve) {
+              throw new GraphQLError(
+                `No resolver defined for ${fmtData.label}`
+              );
+            }
 
-              return setter.resolve(field, args, context, info);
-            })
+            return setter.resolve(field, args, context, info);
+          });
+
+          const contentField = {
+            label: "Content",
+            name: "content",
+            type: "textarea",
+            description: "Markdown body",
+            config: {
+              required: false,
+              wysiwyg: true,
+              schema: { format: "markdown" },
+            },
+          };
+          const setter = setters["content"];
+          const contentResolver = setter.resolve(
+            contentField as any, //TODO - fix this
+            args,
+            context,
+            info
           );
+
+          return Promise.all([contentResolver, ...fieldResolvers]);
         },
       },
     },

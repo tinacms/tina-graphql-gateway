@@ -775,6 +775,7 @@ export type PostDataInput = {
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  content?: Maybe<Scalars['String']>;
 };
 
 export type AuthorInput = {
@@ -788,6 +789,7 @@ export type AuthorDataInput = {
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthorInput>>>;
+  content?: Maybe<Scalars['String']>;
 };
 
 export type AccoladesFieldsListAuthorInput = {
