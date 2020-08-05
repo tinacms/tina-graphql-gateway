@@ -20,7 +20,7 @@ export interface DataSource {
 }
 
 export type Content = {
-  data: any;
+  frontmatter: any;
   content: any;
 };
 

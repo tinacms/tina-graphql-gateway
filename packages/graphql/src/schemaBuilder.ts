@@ -146,7 +146,7 @@ export const buildSchema = async (
             type: GraphQLNonNull(GraphQLString),
           },
           excerpt: { type: GraphQLString },
-          data: { type: GraphQLNonNull(templateDataObjectType) },
+          frontmatter: { type: GraphQLNonNull(templateDataObjectType) },
         },
       });
 

@@ -16,17 +16,19 @@ export class FileSystemManager implements DataSource {
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
-    return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
+    return this._readMarkdown<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
 
   getSettings = async (_siteLookup: string): Promise<Settings> => {
-    return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
+    return this._readMarkdown<Settings>(_siteLookup, SETTINGS_PATH);
   };
 
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
-    const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
+    const { data, ...result } = matter(
+      await fs.readFileSync(this.getFullPath(relPath))
+    );
     // @ts-ignore
-    return result;
+    return { frontmatter: data, ...result };
   };
 
   writeData = async <ContentType>(
@@ -99,6 +101,15 @@ export class FileSystemManager implements DataSource {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
     return list;
+  };
+
+  private _readMarkdown = async <T>(
+    _siteLookup: string,
+    relPath: string
+  ): Promise<T> => {
+    const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
+    // @ts-ignore
+    return result;
   };
 
   private writeTemplate = async (
