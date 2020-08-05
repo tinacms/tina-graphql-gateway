@@ -635,7 +635,6 @@ export type DocumentInput = {
 
 export type BlockPageInput = {
   data?: Maybe<BlockPageDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type BlockPageDataInput = {
@@ -767,7 +766,6 @@ export enum SectionSelectSectionIndex {
 
 export type PostInput = {
   data?: Maybe<PostDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type PostDataInput = {
@@ -780,7 +778,6 @@ export type PostDataInput = {
 
 export type AuthorInput = {
   data?: Maybe<AuthorDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type AuthorDataInput = {
@@ -799,7 +796,6 @@ export type AccoladesFieldsListAuthorInput = {
 
 export type MenuInput = {
   data?: Maybe<MenuDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type MenuDataInput = {
