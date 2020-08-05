@@ -125,19 +125,23 @@ export const buildSchema = async (
         resolve: () => fmt.data,
       };
 
+      let dataFields: any = {
+        _template: {
+          type: GraphQLString,
+          resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
+        },
+        ...getters,
+      };
+      if (!fmt.data.hide_body) {
+        dataFields.content = {
+          type: GraphQLString,
+        };
+        dataFields.excerpt = { type: GraphQLString };
+      }
+
       const templateDataObjectType = new GraphQLObjectType({
         name: friendlyFMTName(path, { suffix: "data" }),
-        fields: {
-          _template: {
-            type: GraphQLString,
-            resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
-          },
-          ...getters,
-          content: {
-            type: GraphQLString,
-          },
-          excerpt: { type: GraphQLString },
-        },
+        fields: dataFields,
       });
 
       const templateObjectType = new GraphQLObjectType({

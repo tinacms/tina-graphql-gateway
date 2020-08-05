@@ -321,15 +321,11 @@ query DocumentQuery($path: String!) {
               ... on ActionVideoData {
                 _template
                 url
-                content
-                excerpt
               }
               ... on ActionNewsletterData {
                 _template
                 body
                 footer
-                content
-                excerpt
               }
               ... on ActionPageReferenceData {
                 _template
@@ -341,13 +337,9 @@ query DocumentQuery($path: String!) {
                 button_settings {
                   label
                 }
-                content
-                excerpt
               }
             }
             style
-            content
-            excerpt
           }
           ... on ExcerptPostData {
             _template
@@ -358,8 +350,6 @@ query DocumentQuery($path: String!) {
             }
             description
             style
-            content
-            excerpt
           }
           ... on PostListData {
             _template
@@ -370,8 +360,6 @@ query DocumentQuery($path: String!) {
                 }
               }
             }
-            content
-            excerpt
           }
           ... on PriceListData {
             _template
@@ -382,8 +370,6 @@ query DocumentQuery($path: String!) {
               bullet_points
               category
             }
-            content
-            excerpt
           }
           ... on AuthorListData {
             _template
@@ -392,8 +378,6 @@ query DocumentQuery($path: String!) {
                 path
               }
             }
-            content
-            excerpt
           }
           ... on SponsorListData {
             _template
@@ -406,8 +390,6 @@ query DocumentQuery($path: String!) {
                 absolutePath
               }
             }
-            content
-            excerpt
           }
           ... on PageReferenceData {
             _template
@@ -417,20 +399,14 @@ query DocumentQuery($path: String!) {
                 path
               }
             }
-            content
-            excerpt
           }
           ... on SectionIndexData {
             _template
             body
             limit
             section
-            content
-            excerpt
           }
         }
-        content
-        excerpt
       }
     }
     ... on Post {
@@ -613,8 +589,6 @@ query DocumentQuery($path: String!) {
             }
           }
         }
-        content
-        excerpt
       }
     }
   }

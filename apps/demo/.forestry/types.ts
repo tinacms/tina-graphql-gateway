@@ -299,8 +299,6 @@ export type BlockPageData = {
   _template?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksUnion>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type BlocksUnion = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData;
@@ -313,8 +311,6 @@ export type SidecarData = {
   cta?: Maybe<CtaFieldsSidecar>;
   actions?: Maybe<Array<Maybe<ActionsUnion>>>;
   style?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type ImageGallerySidecar = {
@@ -334,8 +330,6 @@ export type ActionVideoData = {
   __typename?: 'ActionVideoData';
   _template?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type ActionNewsletterData = {
@@ -343,8 +337,6 @@ export type ActionNewsletterData = {
   _template?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
   footer?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type ActionPageReferenceData = {
@@ -352,8 +344,6 @@ export type ActionPageReferenceData = {
   _template?: Maybe<Scalars['String']>;
   page?: Maybe<PageSelectActionPageReference>;
   button_settings?: Maybe<ButtonSettingsFieldsActionPageReference>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type PageSelectActionPageReference = BlockPage;
@@ -369,8 +359,6 @@ export type ExcerptPostData = {
   post?: Maybe<PostSelectExcerptPost>;
   description?: Maybe<Scalars['String']>;
   style?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type PostSelectExcerptPost = Post;
@@ -407,7 +395,7 @@ export type PostData = {
   author?: Maybe<AuthorSelectPost>;
   image?: Maybe<ImageGalleryPost>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  content: Scalars['String'];
+  content?: Maybe<Scalars['String']>;
   excerpt?: Maybe<Scalars['String']>;
 };
 
@@ -463,7 +451,7 @@ export type AuthorData = {
   gallery?: Maybe<Array<Maybe<GalleryGalleryAuthor>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthor>>>;
-  content: Scalars['String'];
+  content?: Maybe<Scalars['String']>;
   excerpt?: Maybe<Scalars['String']>;
 };
 
@@ -495,8 +483,6 @@ export type PostListData = {
   __typename?: 'PostListData';
   _template?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<PostsFieldsListPostList>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type PostsFieldsListPostList = {
@@ -511,8 +497,6 @@ export type PriceListData = {
   _template?: Maybe<Scalars['String']>;
   heading: Scalars['String'];
   prices?: Maybe<Array<Maybe<PricesFieldsListPriceList>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type PricesFieldsListPriceList = {
@@ -527,8 +511,6 @@ export type AuthorListData = {
   __typename?: 'AuthorListData';
   _template?: Maybe<Scalars['String']>;
   authors?: Maybe<Array<Maybe<AuthorsListAuthorList>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type AuthorsListAuthorList = Author;
@@ -538,8 +520,6 @@ export type SponsorListData = {
   _template?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   sponsor?: Maybe<Array<Maybe<SponsorFieldsListSponsorList>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type SponsorFieldsListSponsorList = {
@@ -560,8 +540,6 @@ export type PageReferenceData = {
   _template?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   page?: Maybe<PageSelectPageReference>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type PageSelectPageReference = BlockPage;
@@ -572,8 +550,6 @@ export type SectionIndexData = {
   body?: Maybe<Scalars['String']>;
   limit?: Maybe<Scalars['Int']>;
   section?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type Menu = {
@@ -609,8 +585,6 @@ export type MenuData = {
   _template?: Maybe<Scalars['String']>;
   logo?: Maybe<LogoGalleryMenu>;
   menu_item?: Maybe<Array<Maybe<MenuItemFieldsListMenu>>>;
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
 };
 
 export type LogoGalleryMenu = {
