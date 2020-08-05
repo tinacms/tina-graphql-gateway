@@ -299,6 +299,8 @@ export type BlockPageData = {
   _template?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksUnion>>>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type BlocksUnion = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData;
@@ -395,8 +397,8 @@ export type PostData = {
   author?: Maybe<AuthorSelectPost>;
   image?: Maybe<ImageGalleryPost>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  content?: Maybe<Scalars['String']>;
-  excerpt?: Maybe<Scalars['String']>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type AuthorSelectPost = Author;
@@ -451,8 +453,8 @@ export type AuthorData = {
   gallery?: Maybe<Array<Maybe<GalleryGalleryAuthor>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthor>>>;
-  content?: Maybe<Scalars['String']>;
-  excerpt?: Maybe<Scalars['String']>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type ImageGalleryAuthor = {
@@ -640,6 +642,7 @@ export type BlockPageInput = {
 export type BlockPageDataInput = {
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksInput>>>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type BlocksInput = {
@@ -773,7 +776,7 @@ export type PostDataInput = {
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  content?: Maybe<Scalars['String']>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type AuthorInput = {
@@ -786,7 +789,7 @@ export type AuthorDataInput = {
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthorInput>>>;
-  content?: Maybe<Scalars['String']>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type AccoladesFieldsListAuthorInput = {

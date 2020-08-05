@@ -109,23 +109,23 @@ export const buildSchema = async (
       });
 
       if (!fmt.data.hide_body) {
-        getters.content = {
+        getters._content = {
           type: GraphQLString,
         };
-        getters.excerpt = { type: GraphQLString };
+        getters._excerpt = { type: GraphQLString };
 
-        setters.content = {
+        setters._content = {
           type: textInputType,
           resolve: () => {
             return {
-              name: "content",
+              name: "_content",
               label: "content",
               component: "textarea",
             };
           },
         };
 
-        mutators.content = {
+        mutators._content = {
           type: GraphQLString,
         };
       }
@@ -288,7 +288,7 @@ export const buildSchema = async (
     path: string;
     params: any;
   }) => {
-    const { content = "", ...data } = payload.params[
+    const { _content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
     ].data;
@@ -296,7 +296,7 @@ export const buildSchema = async (
     await dataSource.writeData(
       config.siteLookup,
       payload.path,
-      content,
+      _content,
       transform(data)
     );
   };
@@ -306,7 +306,7 @@ export const buildSchema = async (
     template: string;
     params: any;
   }) => {
-    const { content = "", ...data } = payload.params[
+    const { _content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
     ].data;
@@ -314,7 +314,7 @@ export const buildSchema = async (
     await dataSource.createContent(
       config.siteLookup,
       payload.path,
-      content,
+      _content,
       transform(data),
       payload.template
     );
@@ -428,7 +428,7 @@ const generateTemplateFormObjectType = (
 
           const contentField = {
             label: "Content",
-            name: "content",
+            name: "_content",
             type: "textarea",
             description: "Markdown body",
             config: {
@@ -437,7 +437,7 @@ const generateTemplateFormObjectType = (
               schema: { format: "markdown" },
             },
           };
-          const contentSetter = setters["content"];
+          const contentSetter = setters["_content"];
           if (contentSetter) {
             fieldResolvers.push(
               contentSetter.resolve(

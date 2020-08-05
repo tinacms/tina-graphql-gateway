@@ -18,7 +18,7 @@ export function useForestryForm<
 
   const { path } = data.document!;
 
-  const { excerpt, ...initialValues } = data.document!.data;
+  const { _excerpt, ...initialValues } = data.document!.data;
 
   const formConfig = {
     id: path,

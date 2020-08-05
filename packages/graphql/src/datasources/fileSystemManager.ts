@@ -24,13 +24,15 @@ export class FileSystemManager implements DataSource {
   };
 
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
-    const { content, data, ...result } = await this._getMarkdown(
-      _siteLookup,
-      relPath
-    );
+    const {
+      content: _content,
+      excerpt: _excerpt,
+      data,
+      ...result
+    } = await this._getMarkdown(_siteLookup, relPath);
 
     // @ts-ignore
-    return { data: { ...data, content }, ...result };
+    return { data: { ...data, _content, _content }, ...result };
   };
 
   writeData = async <ContentType>(
