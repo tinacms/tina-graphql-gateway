@@ -16,11 +16,11 @@ export class FileSystemManager implements DataSource {
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
-    return this._getMarkdown<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
+    return this._parseMatter<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
 
   getSettings = async (_siteLookup: string): Promise<Settings> => {
-    return this._getMarkdown<Settings>(_siteLookup, SETTINGS_PATH);
+    return this._parseMatter<Settings>(_siteLookup, SETTINGS_PATH);
   };
 
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
@@ -29,7 +29,7 @@ export class FileSystemManager implements DataSource {
       excerpt: _excerpt,
       data,
       ...result
-    } = await this._getMarkdown(_siteLookup, relPath);
+    } = await this._parseMatter(_siteLookup, relPath);
 
     // @ts-ignore
     return { data: { ...data, _content, _excerpt }, ...result };
@@ -46,7 +46,7 @@ export class FileSystemManager implements DataSource {
     const fullPath = this.getFullPath(filepath);
     await fs.writeFileSync(fullPath, string);
 
-    return await this._getMarkdown<ContentType>(_siteLookup, filepath);
+    return await this._parseMatter<ContentType>(_siteLookup, filepath);
   };
 
   fileExists = async (fullPath: string): Promise<boolean> => {
@@ -107,7 +107,7 @@ export class FileSystemManager implements DataSource {
     return list;
   };
 
-  private _getMarkdown = async <T>(
+  private _parseMatter = async <T>(
     _siteLookup: string,
     relPath: string
   ): Promise<T> => {
