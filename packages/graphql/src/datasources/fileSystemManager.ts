@@ -32,7 +32,7 @@ export class FileSystemManager implements DataSource {
     } = await this._getMarkdown(_siteLookup, relPath);
 
     // @ts-ignore
-    return { data: { ...data, _content, _content }, ...result };
+    return { data: { ...data, _content, _excerpt }, ...result };
   };
 
   writeData = async <ContentType>(
