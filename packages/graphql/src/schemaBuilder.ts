@@ -426,19 +426,19 @@ const generateTemplateFormObjectType = (
             return setter.resolve(field, args, context, info);
           });
 
-          const contentField = {
-            label: "Content",
-            name: "_content",
-            type: "textarea",
-            description: "Markdown body",
-            config: {
-              required: false,
-              wysiwyg: true,
-              schema: { format: "markdown" },
-            },
-          };
           const contentSetter = setters["_content"];
           if (contentSetter) {
+            const contentField = {
+              label: "Content",
+              name: "_content",
+              type: "textarea",
+              description: "Markdown body",
+              config: {
+                required: false,
+                wysiwyg: true,
+                schema: { format: "markdown" },
+              },
+            };
             fieldResolvers.push(
               contentSetter.resolve(
                 contentField as any, //TODO - fix this
