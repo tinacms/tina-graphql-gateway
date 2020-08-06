@@ -109,11 +109,6 @@ export const buildSchema = async (
       });
 
       if (!fmt.data.hide_body) {
-        getters._content = {
-          type: GraphQLString,
-        };
-        getters._excerpt = { type: GraphQLString };
-
         setters._content = {
           type: textInputType,
           resolve: () => {
@@ -152,6 +147,12 @@ export const buildSchema = async (
           type: GraphQLString,
           resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
         },
+        ...(!fmt.data.hide_body && {
+          _content: {
+            type: GraphQLString,
+          },
+          _excerpt: { type: GraphQLString },
+        }),
         ...getters,
       };
 
