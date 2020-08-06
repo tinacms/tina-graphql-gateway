@@ -27,8 +27,6 @@ export type BlockPage = {
   form?: Maybe<BlockPageFieldConfig>;
   absolutePath?: Maybe<Scalars['String']>;
   path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
   data: BlockPageData;
 };
 
@@ -224,13 +222,11 @@ export type BulletPointsListPriceListPricesConfig = {
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  itemField?: Maybe<BulletPointsListPriceListPricesConfigItem>;
+  field?: Maybe<BulletPointsListPriceListPricesConfigItem>;
 };
 
 export type BulletPointsListPriceListPricesConfigItem = {
   __typename?: 'BulletPointsListPriceListPricesConfigItem';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
 };
 
@@ -303,6 +299,8 @@ export type BlockPageData = {
   _template?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksUnion>>>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type BlocksUnion = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData;
@@ -372,8 +370,6 @@ export type Post = {
   form?: Maybe<PostFieldConfig>;
   absolutePath?: Maybe<Scalars['String']>;
   path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
   data: PostData;
 };
 
@@ -401,6 +397,8 @@ export type PostData = {
   author?: Maybe<AuthorSelectPost>;
   image?: Maybe<ImageGalleryPost>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type AuthorSelectPost = Author;
@@ -410,8 +408,6 @@ export type Author = {
   form?: Maybe<AuthorFieldConfig>;
   absolutePath?: Maybe<Scalars['String']>;
   path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
   data: AuthorData;
 };
 
@@ -430,13 +426,11 @@ export type AnecdotesListAuthorConfig = {
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-  itemField?: Maybe<AnecdotesListAuthorConfigItem>;
+  field?: Maybe<AnecdotesListAuthorConfigItem>;
 };
 
 export type AnecdotesListAuthorConfigItem = {
   __typename?: 'AnecdotesListAuthorConfigItem';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
 };
 
@@ -459,6 +453,8 @@ export type AuthorData = {
   gallery?: Maybe<Array<Maybe<GalleryGalleryAuthor>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthor>>>;
+  _content?: Maybe<Scalars['String']>;
+  _excerpt?: Maybe<Scalars['String']>;
 };
 
 export type ImageGalleryAuthor = {
@@ -563,8 +559,6 @@ export type Menu = {
   form?: Maybe<MenuFieldConfig>;
   absolutePath?: Maybe<Scalars['String']>;
   path: Scalars['String'];
-  content: Scalars['String'];
-  excerpt?: Maybe<Scalars['String']>;
   data: MenuData;
 };
 
@@ -613,6 +607,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   updateDocument?: Maybe<DocumentUnion>;
   addDocument?: Maybe<DocumentUnion>;
+  deleteDocument?: Maybe<DocumentUnion>;
 };
 
 
@@ -628,6 +623,11 @@ export type MutationAddDocumentArgs = {
   params?: Maybe<DocumentInput>;
 };
 
+
+export type MutationDeleteDocumentArgs = {
+  path: Scalars['String'];
+};
+
 export type DocumentInput = {
   BlockPageInput?: Maybe<BlockPageInput>;
   PostInput?: Maybe<PostInput>;
@@ -637,12 +637,12 @@ export type DocumentInput = {
 
 export type BlockPageInput = {
   data?: Maybe<BlockPageDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type BlockPageDataInput = {
   title?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlocksInput>>>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type BlocksInput = {
@@ -769,7 +769,6 @@ export enum SectionSelectSectionIndex {
 
 export type PostInput = {
   data?: Maybe<PostDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type PostDataInput = {
@@ -777,11 +776,11 @@ export type PostDataInput = {
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type AuthorInput = {
   data?: Maybe<AuthorDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type AuthorDataInput = {
@@ -790,6 +789,7 @@ export type AuthorDataInput = {
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<AccoladesFieldsListAuthorInput>>>;
+  _content?: Maybe<Scalars['String']>;
 };
 
 export type AccoladesFieldsListAuthorInput = {
@@ -799,7 +799,6 @@ export type AccoladesFieldsListAuthorInput = {
 
 export type MenuInput = {
   data?: Maybe<MenuDataInput>;
-  content?: Maybe<Scalars['String']>;
 };
 
 export type MenuDataInput = {

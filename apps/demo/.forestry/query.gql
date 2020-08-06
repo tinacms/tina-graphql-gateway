@@ -303,8 +303,6 @@ query DocumentQuery($path: String!) {
       }
       absolutePath
       path
-      content
-      excerpt
       data {
         _template
         title
@@ -409,6 +407,8 @@ query DocumentQuery($path: String!) {
             section
           }
         }
+        _content
+        _excerpt
       }
     }
     ... on Post {
@@ -450,8 +450,6 @@ query DocumentQuery($path: String!) {
       }
       absolutePath
       path
-      content
-      excerpt
       data {
         _template
         title
@@ -465,6 +463,8 @@ query DocumentQuery($path: String!) {
           absolutePath
         }
         hashtags
+        _content
+        _excerpt
       }
     }
     ... on Author {
@@ -516,8 +516,6 @@ query DocumentQuery($path: String!) {
       }
       absolutePath
       path
-      content
-      excerpt
       data {
         _template
         name
@@ -534,6 +532,8 @@ query DocumentQuery($path: String!) {
           figure
           description
         }
+        _content
+        _excerpt
       }
     }
     ... on Menu {
@@ -577,8 +577,6 @@ query DocumentQuery($path: String!) {
       }
       absolutePath
       path
-      content
-      excerpt
       data {
         _template
         logo {
@@ -597,3 +595,4 @@ query DocumentQuery($path: String!) {
     }
   }
 }
+
