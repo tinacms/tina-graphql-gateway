@@ -2,56 +2,56 @@
 label: Price List
 hide_body: true
 fields:
-- name: heading
-  type: textarea
-  default: ''
-  config:
-    required: true
-    wysiwyg: true
-    schema:
-      format: markdown
-  label: Heading
-- name: prices
-  type: field_group_list
-  fields:
-  - name: title
-    type: text
-    config:
-      required: true
-    label: Title
-  - name: description
+  - name: heading
     type: textarea
-    default: ''
+    default: ""
     config:
       required: true
       wysiwyg: true
       schema:
         format: markdown
-    label: Description
-  - name: bullet_points
-    type: list
+    label: Heading
+  - name: prices
+    type: field_group_list
+    fields:
+      - name: title
+        type: text
+        config:
+          required: true
+        label: Title
+      - name: description
+        type: textarea
+        default: ""
+        config:
+          required: true
+          wysiwyg: true
+          schema:
+            format: markdown
+        label: Description
+      - name: bullet_points
+        type: list
+        config:
+          use_select: false
+          min:
+          max:
+        label: Bullet Points
+      - name: category
+        type: select
+        default: []
+        config:
+          required: false
+          options:
+            - Basic
+            - Free
+            - Pro
+          source:
+            type: simple
+            section:
+            file:
+            path:
+        label: Category
     config:
       use_select: false
-      min: 
-      max: 
+      min:
+      max:
     label: Bullet Points
-  - name: category
-    type: select
-    default: []
-    config:
-      required: false
-      options:
-      - Basic
-      - Free
-      - Pro
-      source:
-        type: simple
-        section: 
-        file: 
-        path: 
-    label: Category
-  config:
-    use_select: false
-    min: 
-    max: 
-  label: Bullet Points
