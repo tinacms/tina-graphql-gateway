@@ -2,35 +2,35 @@
 label: Menu
 hide_body: true
 fields:
-- name: logo
-  type: file
-  config:
-    maxSize: 64
-  label: Logo
-- name: menu_item
-  type: field_group_list
-  fields:
-  - name: label
-    type: text
+  - name: logo
+    type: file
     config:
-      required: false
-    label: Label
-  - name: page
-    type: select
-    default: []
+      maxSize: 64
+    label: Logo
+  - name: menu_item
+    type: field_group_list
+    fields:
+      - name: label
+        type: text
+        config:
+          required: false
+        label: Label
+      - name: page
+        type: select
+        default: []
+        config:
+          required: false
+          options: []
+          source:
+            type: pages
+            section: pages
+            file:
+            path:
+        label: Page
     config:
-      required: false
-      options: []
-      source:
-        type: pages
-        section: pages
-        file: 
-        path: 
-    label: Page
-  config:
-    min: 
-    max: 
-    labelField: 
-  label: Menu Item
+      min:
+      max:
+      labelField:
+    label: Menu Item
 pages:
-- content/menus/top.md
+  - content/menus/top.md
