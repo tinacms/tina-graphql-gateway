@@ -1,6 +1,7 @@
 import { GetStaticProps, GetStaticPaths } from "next";
 import { usePlugin } from "tinacms";
 import { useForestryForm } from "@forestryio/client";
+import { DocumentUnion, Query } from "../../.forestry/types";
 import { getContent, getSlugs } from "../../utils/getStatics";
 
 const template = "posts";
@@ -19,7 +20,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return { props: await getContent({ template, params }) };
 };
 const Home = (props) => {
-  const [formData, form] = useForestryForm(props.response);
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(props.data);
   usePlugin(form);
 
   return (
