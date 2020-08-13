@@ -13,7 +13,7 @@
     "apply:workspaces": "yarn version apply --all",
     "ci:build": "yarn workspaces foreach -pt --exclude demo run build",
     "ci:version-check": "yarn version check",
-    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=demo --verbose npm publish --tolerate-republish",
+    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=demo --exclude=forestry-schema-extension --verbose npm publish --tolerate-republish",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=demo --verbose run test"
   },
   "publishConfig": {

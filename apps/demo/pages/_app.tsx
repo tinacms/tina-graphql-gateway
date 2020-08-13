@@ -8,16 +8,16 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <Link href="/pages/home">
-          <a>Pages - Home</a>
+        <Link href="/pages">
+          <a>Pages</a>
         </Link>
         <div style={{ width: "30px" }} />
-        <Link href="/authors/chris">
-          <a>Authors - Chris</a>
+        <Link href="/authors">
+          <a>Authors</a>
         </Link>
         <div style={{ width: "30px" }} />
-        <Link href="/posts/welcome">
-          <a>Posts - Welcome</a>
+        <Link href="/posts">
+          <a>Posts</a>
         </Link>
       </div>
       <Component {...pageProps} />

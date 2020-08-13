@@ -21,18 +21,20 @@ const transform = (obj: any) => {
     return { [_template.replace("FieldConfig", "Input")]: transform(rest) };
   }
 
-  const meh = {};
-  Object.keys(rest).forEach((key) => {
-    if (Array.isArray(rest[key])) {
-      meh[key] = rest[key].map((item) => {
-        return transform(item);
-      });
-    } else {
-      meh[key] = transform(rest[key]);
-    }
-  });
+  const accumulator = {};
+  Object.keys(rest)
+    .filter((key) => rest[key]) // remove items with null values
+    .forEach((key) => {
+      if (Array.isArray(rest[key])) {
+        accumulator[key] = rest[key].map((item) => {
+          return transform(item);
+        });
+      } else {
+        accumulator[key] = transform(rest[key]);
+      }
+    });
 
-  return meh;
+  return accumulator;
 };
 
 interface AddProps {

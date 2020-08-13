@@ -1,37 +1,24 @@
 import { GetStaticProps, GetStaticPaths } from "next";
 import { usePlugin } from "tinacms";
-import { ForestryClient, useForestryForm } from "@forestryio/client";
+import { useForestryForm } from "@forestryio/client";
 import { DocumentUnion, DocumentInput, Query } from "../../.forestry/types";
 import { ContentCreatorPlugin } from "../../utils/contentCreatorPlugin";
-
-const fg = require("fast-glob");
+import { getContent, getSlugs } from "../../utils/getStatics";
 
 const template = "pages";
 
-function fileToUrl(filepath: string) {
-  filepath = filepath.split(`/${template}/`)[1];
-  return filepath.replace(/ /g, "-").slice(0, -3).trim();
-}
-
 export const getStaticPaths: GetStaticPaths = async () => {
-  const items = await fg(`./content/${template}/**/*.md`);
-
+  const slugs = await getSlugs({ template });
   return {
-    paths: items.map((file) => {
-      return { params: { slug: fileToUrl(file) } };
+    paths: slugs.map((slug) => {
+      return { params: { slug: slug } };
     }),
     fallback: true,
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const path = `content/${template}/${params.slug}.md`;
-  const client = new ForestryClient();
-  const data = await client.getContent<DocumentUnion>({
-    path,
-  });
-
-  return { props: { path, data } };
+  return { props: await getContent({ template, params }) };
 };
 
 const Home = (props) => {
