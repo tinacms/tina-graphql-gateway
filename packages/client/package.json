@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.13",
+  "version": "0.1.16",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -38,7 +38,7 @@
     "tinacms": "0.21.1"
   },
   "peerDependencies": {
-    "tinacms": ">0.21.1"
+    "tinacms": ">=0.21.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
