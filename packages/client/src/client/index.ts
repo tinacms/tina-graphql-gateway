@@ -134,6 +134,14 @@ export class ForestryClient {
     });
   };
 
+  async isAuthorized(): Promise<boolean> {
+    return Promise.resolve(true); //TODO - implement me
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    return Promise.resolve(false); //TODO - implement me
+  }
+
   private async request<VariableType>(
     query: string,
     { variables }: { variables: VariableType }

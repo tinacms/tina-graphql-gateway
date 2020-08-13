@@ -3,25 +3,27 @@ import { AppProps } from "next/app";
 import Link from "next/link";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
-
+import { TinacmsForestryProvider } from "@forestryio/client";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div>
-      <div style={{ display: "flex" }}>
-        <Link href="/pages">
-          <a>Pages</a>
-        </Link>
-        <div style={{ width: "30px" }} />
-        <Link href="/authors">
-          <a>Authors</a>
-        </Link>
-        <div style={{ width: "30px" }} />
-        <Link href="/posts">
-          <a>Posts</a>
-        </Link>
+    <TinacmsForestryProvider>
+      <div>
+        <div style={{ display: "flex" }}>
+          <Link href="/pages">
+            <a>Pages</a>
+          </Link>
+          <div style={{ width: "30px" }} />
+          <Link href="/authors">
+            <a>Authors</a>
+          </Link>
+          <div style={{ width: "30px" }} />
+          <Link href="/posts">
+            <a>Posts</a>
+          </Link>
+        </div>
+        <Component {...pageProps} />
       </div>
-      <Component {...pageProps} />
-    </div>
+    </TinacmsForestryProvider>
   );
 }
 
