@@ -33,6 +33,7 @@ import {
 import camelCase from "lodash.camelcase";
 import { generateFieldAccessors } from "./fieldGenerator";
 import kebabCase from "lodash.kebabcase";
+import { textInputType } from "./fields/inputTypes";
 
 /**
  * This is the main function in this script, it returns all the types
@@ -107,6 +108,23 @@ export const buildSchema = async (
         fieldData,
       });
 
+      if (!fmt.data.hide_body) {
+        setters._content = {
+          type: textInputType,
+          resolve: () => {
+            return {
+              name: "_content",
+              label: "content",
+              component: "textarea",
+            };
+          },
+        };
+
+        mutators._content = {
+          type: GraphQLString,
+        };
+      }
+
       const templateDataInputObjectType = new GraphQLInputObjectType({
         name: friendlyFMTName(path + "_data_input"),
         fields: mutators,
@@ -116,7 +134,6 @@ export const buildSchema = async (
         name: friendlyFMTName(path + "_input"),
         fields: {
           data: { type: templateDataInputObjectType },
-          content: { type: GraphQLString },
         },
       });
 
@@ -125,15 +142,23 @@ export const buildSchema = async (
         resolve: () => fmt.data,
       };
 
+      let dataFields: any = {
+        _template: {
+          type: GraphQLString,
+          resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
+        },
+        ...(!fmt.data.hide_body && {
+          _content: {
+            type: GraphQLString,
+          },
+          _excerpt: { type: GraphQLString },
+        }),
+        ...getters,
+      };
+
       const templateDataObjectType = new GraphQLObjectType({
         name: friendlyFMTName(path, { suffix: "data" }),
-        fields: {
-          _template: {
-            type: GraphQLString,
-            resolve: () => friendlyFMTName(path, { suffix: "field_config" }),
-          },
-          ...getters,
-        },
+        fields: dataFields,
       });
 
       const templateObjectType = new GraphQLObjectType({
@@ -142,10 +167,6 @@ export const buildSchema = async (
           form: templateFormObjectType,
           absolutePath: { type: GraphQLString },
           path: { type: GraphQLNonNull(GraphQLString) },
-          content: {
-            type: GraphQLNonNull(GraphQLString),
-          },
-          excerpt: { type: GraphQLString },
           data: { type: GraphQLNonNull(templateDataObjectType) },
         },
       });
@@ -268,15 +289,15 @@ export const buildSchema = async (
     path: string;
     params: any;
   }) => {
-    const { content = "", data } = payload.params[
+    const { _content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
-    ];
+    ].data;
 
     await dataSource.writeData(
       config.siteLookup,
       payload.path,
-      content,
+      _content,
       transform(data)
     );
   };
@@ -286,15 +307,15 @@ export const buildSchema = async (
     template: string;
     params: any;
   }) => {
-    const { content = "", data } = payload.params[
+    const { _content = "", ...data } = payload.params[
       // Just grabbing the first item since we're following the Tagged Union pattern
       Object.keys(payload.params)[0]
-    ];
+    ].data;
 
     await dataSource.createContent(
       config.siteLookup,
       payload.path,
-      content,
+      _content,
       transform(data),
       payload.template
     );
@@ -394,19 +415,42 @@ const generateTemplateFormObjectType = (
           })
         ),
         resolve: async (fmtData, args, context, info) => {
-          return Promise.all(
-            fmt.data.fields.map(async (field) => {
-              const setter = setters[field.name];
+          const fieldResolvers = fmt.data.fields.map(async (field) => {
+            const setter = setters[field.name];
 
-              if (!setter.resolve) {
-                throw new GraphQLError(
-                  `No resolver defined for ${fmtData.label}`
-                );
-              }
+            if (!setter.resolve) {
+              throw new GraphQLError(
+                `No resolver defined for ${fmtData.label}`
+              );
+            }
 
-              return setter.resolve(field, args, context, info);
-            })
-          );
+            return setter.resolve(field, args, context, info);
+          });
+
+          const contentSetter = setters["_content"];
+          if (contentSetter) {
+            const contentField = {
+              label: "Content",
+              name: "_content",
+              type: "textarea",
+              description: "Markdown body",
+              config: {
+                required: false,
+                wysiwyg: true,
+                schema: { format: "markdown" },
+              },
+            };
+            fieldResolvers.push(
+              contentSetter.resolve(
+                contentField as any, //TODO - fix this
+                args,
+                context,
+                info
+              ) as any
+            );
+          }
+
+          return Promise.all(fieldResolvers);
         },
       },
     },

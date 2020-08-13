@@ -16,17 +16,23 @@ export class FileSystemManager implements DataSource {
     _siteLookup: string,
     templateName: string
   ): Promise<FMT> => {
-    return this.getData<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
+    return this._parseMatter<FMT>(_siteLookup, FMT_BASE + "/" + templateName);
   };
 
   getSettings = async (_siteLookup: string): Promise<Settings> => {
-    return this.getData<Settings>(_siteLookup, SETTINGS_PATH);
+    return this._parseMatter<Settings>(_siteLookup, SETTINGS_PATH);
   };
 
   getData = async <T>(_siteLookup: string, relPath: string): Promise<T> => {
-    const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
+    const {
+      content: _content,
+      excerpt: _excerpt,
+      data,
+      ...result
+    } = await this._parseMatter(_siteLookup, relPath);
+
     // @ts-ignore
-    return result;
+    return { data: { ...data, _content, _excerpt }, ...result };
   };
 
   writeData = async <ContentType>(
@@ -40,7 +46,7 @@ export class FileSystemManager implements DataSource {
     const fullPath = this.getFullPath(filepath);
     await fs.writeFileSync(fullPath, string);
 
-    return await this.getData<ContentType>(_siteLookup, filepath);
+    return await this._parseMatter<ContentType>(_siteLookup, filepath);
   };
 
   fileExists = async (fullPath: string): Promise<boolean> => {
@@ -99,6 +105,15 @@ export class FileSystemManager implements DataSource {
     const list = await fs.readdirSync(this.getFullPath(FMT_BASE));
 
     return list;
+  };
+
+  private _parseMatter = async <T>(
+    _siteLookup: string,
+    relPath: string
+  ): Promise<T> => {
+    const result = matter(await fs.readFileSync(this.getFullPath(relPath)));
+    // @ts-ignore
+    return result;
   };
 
   private writeTemplate = async (

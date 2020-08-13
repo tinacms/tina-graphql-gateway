@@ -8,7 +8,6 @@ import {
 } from "graphql";
 
 export type BaseDocumentType = {
-  content: string;
   isEmpty: boolean;
   excerpt: string;
 };
@@ -17,7 +16,7 @@ export type DocumentData = { [key: string]: unknown };
 export type DocumentType = BaseDocumentType & {
   path: string;
   template: string;
-  data: DocumentData;
+  data: { content: string } & DocumentData;
 };
 
 export type TemplatePage = { name: string; pages: string[] };
