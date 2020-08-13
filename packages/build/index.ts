@@ -208,6 +208,12 @@ export const babelPluginReach = babelPlugin.custom(() => ({
         loose: true,
         exclude: ["transform-async-to-generator", "transform-regenerator"],
       },
+      {
+        name: "@babel/preset-react",
+        targets: customOptions.targets,
+        modules: false,
+        loose: true,
+      },
     ]);
 
     babelOptions.presets = mergeConfigItems(
