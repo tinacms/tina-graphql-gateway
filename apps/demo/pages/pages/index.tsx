@@ -20,13 +20,15 @@ const Main = (props) => {
   return (
     <div>
       <h1>{template}</h1>
-      {props.paths.map((path) => (
-        <div key={path}>
-          <Link href={`/${template}/${path}`}>
-            <a>{path}</a>
-          </Link>
-        </div>
-      ))}
+      {props.paths.map((path) => {
+        return (
+          <div key={path.params.slug}>
+            <Link href={`/${template}/${path.params.slug}`}>
+              <a>{path.params.slug}</a>
+            </Link>
+          </div>
+        );
+      })}
     </div>
   );
 };
