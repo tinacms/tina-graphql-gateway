@@ -2,39 +2,40 @@
 label: Section Index
 hide_body: true
 fields:
-- name: body
-  type: textarea
-  default: ''
-  config:
-    required: false
-    wysiwyg: true
-    schema:
-      format: markdown
-  label: Body
-- name: limit
-  type: number
-  label: Limit
-  description: ''
-  default: 0
-  required: true
-  config:
-    min: 
-    max: 
-    step: 
-- name: section
-  type: select
-  default: []
-  config:
-    required: false
-    options:
-    - posts
-    - pages
-    - authors
-    source:
-      type: simple
-      section: 
-      file: 
-      path: 
-  label: Section
-  description: Choose the section you want to use for indexing. <br><br><em>(Keep
-    this option list up-to-date)</em>
+  - name: body
+    type: textarea
+    default: ""
+    config:
+      required: false
+      wysiwyg: true
+      schema:
+        format: markdown
+    label: Body
+  - name: limit
+    type: number
+    label: Limit
+    description: ""
+    default: 0
+    required: true
+    config:
+      min:
+      max:
+      step:
+  - name: section
+    type: select
+    default: []
+    config:
+      required: false
+      options:
+        - posts
+        - pages
+        - authors
+      source:
+        type: simple
+        section:
+        file:
+        path:
+    label: Section
+    description:
+      Choose the section you want to use for indexing. <br><br><em>(Keep
+      this option list up-to-date)</em>
