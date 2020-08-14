@@ -1,5 +1,6 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
+import { authenticate } from "../auth/authenticate";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -59,9 +60,11 @@ const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
 
 export class ForestryClient {
   serverURL: string;
+  clientId: string;
   query: string;
-  constructor() {
+  constructor(clientId: string) {
     this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
+    this.clientId = clientId;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -140,6 +143,10 @@ export class ForestryClient {
 
   async isAuthenticated(): Promise<boolean> {
     return Promise.resolve(false); //TODO - implement me
+  }
+
+  async authenticate() {
+    return authenticate(this.clientId);
   }
 
   private async request<VariableType>(
