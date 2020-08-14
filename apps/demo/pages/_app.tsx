@@ -4,6 +4,7 @@ import Link from "next/link";
 import { withTina } from "tinacms";
 import { ForestryClient } from "@forestryio/client";
 import { TinacmsForestryProvider } from "@forestryio/client";
+import { EditLink } from "../components/EditLink";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <TinacmsForestryProvider>
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </Link>
         </div>
         <Component {...pageProps} />
+        <EditLink />
       </div>
     </TinacmsForestryProvider>
   );
@@ -32,5 +34,5 @@ export default withTina(MyApp, {
     forestry: new ForestryClient(),
   },
   sidebar: { position: "displace" },
-  enabled: true,
+  enabled: false,
 });
