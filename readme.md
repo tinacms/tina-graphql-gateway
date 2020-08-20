@@ -97,3 +97,29 @@ Since you're now responsible for manually maintaining your package updates that 
 https://yarnpkg.com/features/release-workflow#deferred-versioning
 
 In order to prevent inconsistencies in versioning we'll push changes manually - not relying on Conventional Commits as they are tough to keep track of and don't typically trace very well through a changelog. The hope here is that `yarn version apply --all` will still allow us to version things in a single commit, the difference being the changelog messages need to be hand-written. There's some work being done on this, but I'm not sure the Conventional Commit approach makes things any more clear. Tracking this issue for context (https://github.com/yarnpkg/berry/issues/1510)
+
+### Authentication
+
+The demo project uses the Tina Teams authentication wrapper. To allow logging-in, you will need to add the following to your **.env**
+
+```
+SITE_CLIENT_ID=YOUR-CLIENT-ID-GOES-HERE
+```
+
+The `SITE_CLIENT_ID` can be retrieved by creating a client within Hydra:
+
+Your request may look like:
+
+```
+POST http://localhost:4445/clients
+
+{
+  "client_name": "myapp5",
+  "redirect_uris": [
+    "http://localhost:3002/api/callback"
+  ],
+  "token_endpoint_auth_method": "none"
+}
+```
+
+This should give a response with a `client_id` property.
