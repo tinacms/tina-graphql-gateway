@@ -17,13 +17,24 @@ limitations under the License.
 */
 
 import popupWindow from "./popupWindow";
+
 export const FORESTRY_AUTH_CODE_KEY = "forestry_auth_code";
+const SITE_CLIENT_ID = "67cebad4-7e8c-4c12-9fb1-fe338a8351cd";
+const SITE_REDIRECT_URI = "http://localhost:3002/api/callback";
+
 export const authenticate = (clientId: string): Promise<void> => {
-  const authState = Math.random().toString(36).substring(7);
+  const authState =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
 
-  const url = `http://localhost:4444/oauth2/auth?client_id=${clientId}&redirect_uri=http%3A%2F%2Flocalhost%3A3003%2Fapi%2Fcallback&response_type=code&state=${authState}`;
+  const challenge = "todo-implement-challenge"; // TODO
+  //const url = `http://localhost:3002/signin?client_id=${clientId}&redirect_uri=http%3A%2F%2Flocalhost%3A3003%2Fapi%2Fcallback&response_type=code&state=${authState}&login_challenge=${challenge}`;
 
-  //`http://localhost:3000/login/oauth/authorize?client_id=${clientId}&state=${authState}`;
+  const signInUrl = new URL(`http://localhost:4444/oauth2/auth`);
+  signInUrl.searchParams.append("client_id", SITE_CLIENT_ID);
+  signInUrl.searchParams.append("redirect_uri", SITE_REDIRECT_URI);
+  signInUrl.searchParams.append("response_type", "code");
+  signInUrl.searchParams.append("state", authState); // FIXME
 
   return new Promise((resolve) => {
     // @ts-ignore
@@ -47,6 +58,6 @@ export const authenticate = (clientId: string): Promise<void> => {
         //   });
       }
     });
-    authTab = popupWindow(url, "_blank", window, 1000, 700);
+    authTab = popupWindow(signInUrl.href, "_blank", window, 1000, 700);
   });
 };
