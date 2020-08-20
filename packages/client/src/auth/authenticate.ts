@@ -38,6 +38,8 @@ export const authenticate = (clientId: string): Promise<void> => {
   return new Promise((resolve) => {
     // @ts-ignore
     let authTab: Window | undefined;
+
+    // TODO - Grab this from the URL instead of passing through localstorage
     window.addEventListener("storage", function (e: StorageEvent) {
       if (e.key == FORESTRY_AUTH_CODE_KEY) {
         //TODO - exchange token here
