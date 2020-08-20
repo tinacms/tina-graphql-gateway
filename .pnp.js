@@ -10200,6 +10200,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@urql/core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:1.12.3"],
             ["@xstate/react", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.8.1"],
             ["autoprefixer", "npm:9.8.5"],
+            ["dotenv", "npm:8.2.0"],
             ["fast-glob", "npm:3.2.4"],
             ["formik", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:2.1.5"],
             ["graphql", "npm:15.3.0"],

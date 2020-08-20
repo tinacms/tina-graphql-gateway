@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 export default withTina(MyApp, {
   apis: {
-    forestry: new ForestryClient("abc-def"),
+    forestry: new ForestryClient(process.env.SITE_CLIENT_ID),
   },
   sidebar: { position: "displace" },
   enabled: false,
