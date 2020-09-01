@@ -19,7 +19,7 @@ limitations under the License.
 import popupWindow from "./popupWindow";
 
 export const FORESTRY_AUTH_CODE_KEY = "forestry_auth_code";
-const SITE_REDIRECT_URI = "http://localhost:3002/api/callback";
+const SITE_REDIRECT_URI = "http://localhost:3002/signin/callback";
 
 export const authenticate = (clientId: string): Promise<void> => {
   const authState =
