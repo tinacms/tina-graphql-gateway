@@ -19,21 +19,39 @@ limitations under the License.
 import popupWindow from "./popupWindow";
 
 export const FORESTRY_AUTH_CODE_KEY = "forestry_auth_code";
-const SITE_REDIRECT_URI = "http://localhost:3002/signin/callback";
+const SITE_REDIRECT_URI = "http://localhost:2999/authenticating";
+
+//TODO - generate this dynamically
+const codeVerifier =
+  "80cJ-JMyS0ZAX2ihuBVZ8MbowHJnM8q7WpmN5VshSMfGmYT5m9gS6elXgvjJhHb~Z7U6Ja1yw.6kqwKpmsBoNmx.d3o2G7WLct7fV6vmwrBBuPndQ19dFmSeVw-5t5Aq";
+const codeChallenge = "HV5Z5_1OL6rIGBI0XDwKVbN7PXvOmxRxnf-p5nvwe5s";
+const randomState = () => {
+  let state = "";
+  let possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 40; i++)
+    state += possible.charAt(Math.floor(Math.random() * possible.length));
+  return state;
+};
+
+export const useGenerator = () => {
+  return {
+    state: randomState(),
+    codeChallenge,
+    codeVerifier,
+  };
+};
 
 export const authenticate = (clientId: string): Promise<void> => {
-  const authState =
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
-
-  const challenge = "todo-implement-challenge"; // TODO
-  //const url = `http://localhost:3002/signin?client_id=${clientId}&redirect_uri=http%3A%2F%2Flocalhost%3A3003%2Fapi%2Fcallback&response_type=code&state=${authState}&login_challenge=${challenge}`;
+  const { state, codeChallenge, codeVerifier } = useGenerator();
 
   const signInUrl = new URL(`http://localhost:4444/oauth2/auth`);
   signInUrl.searchParams.append("client_id", clientId);
   signInUrl.searchParams.append("redirect_uri", SITE_REDIRECT_URI);
   signInUrl.searchParams.append("response_type", "code");
-  signInUrl.searchParams.append("state", authState); // FIXME
+  signInUrl.searchParams.append("state", state);
+  signInUrl.searchParams.append("code_challenge", codeChallenge);
+  signInUrl.searchParams.append("code_challenge_method", "S256");
 
   return new Promise((resolve) => {
     // @ts-ignore
@@ -42,23 +60,46 @@ export const authenticate = (clientId: string): Promise<void> => {
     // TODO - Grab this from the URL instead of passing through localstorage
     window.addEventListener("storage", function (e: StorageEvent) {
       if (e.key == FORESTRY_AUTH_CODE_KEY) {
-        //TODO - exchange token here
-        console.warn("Auth token handling not yet implemented");
-        // fetch(`${codeExchangeRoute}?code=${e.newValue}&state=${authState}`)
-        //   .then((response) => response.json())
-        //   .then((data) => {
-        //     const token = data.signedToken || null;
+        const config = JSON.parse(e.newValue);
+        let formData = new FormData();
+        formData.append("grant_type", "authorization_code");
+        formData.append("client_id", process.env.REACT_APP_CLIENT_ID || "");
+        formData.append(
+          "redirect_uri",
+          process.env.REACT_APP_REDIRECT_URI || ""
+        );
+        formData.append("code", config.code);
+        formData.append("code_verifier", codeVerifier);
 
-        //     // for implementations using the csrf mitigation
-        //     localStorage.setItem("tinacms-forestry-token", token);
-
-        //     if (authTab) {
-        //       authTab.close();
-        //     }
-        //     resolve();
-        //   });
+        fetch(
+          `${process.env.REACT_APP_OAUTH_HOST}${process.env.REACT_APP_TOKEN_PATH}`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              // 'Content-Type': 'application/x-www-form-urlencoded', // FOR SOME REASON INCLUDING THIS RUINS EVERYTHING
+            },
+            body: formData,
+          }
+        )
+          .then((response) => response.json())
+          .then((json) => {
+            const token = JSON.stringify(json, null, 2);
+            setCookie("tinacms-auth", token, 7);
+            resolve();
+          });
       }
     });
     authTab = popupWindow(signInUrl.href, "_blank", window, 1000, 700);
   });
 };
+
+function setCookie(name: string, value: string, days: number) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
