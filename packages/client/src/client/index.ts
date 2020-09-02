@@ -1,6 +1,7 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import { authenticate } from "../auth/authenticate";
+import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
+import Cookies from "js-cookie";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -58,15 +59,18 @@ interface AddVariables {
 
 const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
+const DEFAULT_DENTITY_HOST = "http://localhost:3000";
 
 export class ForestryClient {
   serverURL: string;
   oauthHost: string;
+  identityHost: string;
   clientId: string;
   query: string;
   constructor(clientId: string) {
     this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = process.env.TINA_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
+    this.identityHost = process.env.TINA_IDENTITY_HOST || DEFAULT_DENTITY_HOST;
 
     this.clientId = clientId;
   }
@@ -146,11 +150,38 @@ export class ForestryClient {
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return Promise.resolve(false); //TODO - implement me
+    return !!(await this.getUser());
   }
 
   async authenticate() {
     return authenticate(this.clientId, this.oauthHost);
+  }
+
+  async getUser() {
+    const url = `${this.identityHost}/me`;
+
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + this.getCookie(AUTH_COOKIE_NAME),
+          "Content-Type": "application/json",
+        }),
+      });
+      const val = await res.json();
+      if (!res.status.toString().startsWith("2")) {
+        console.error(val.error);
+        return null;
+      }
+      return val;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  private getCookie(cookieName: string): string | undefined {
+    return Cookies.get(cookieName);
   }
 
   private async request<VariableType>(

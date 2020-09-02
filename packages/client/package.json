@@ -30,6 +30,7 @@
     "graphiql-explorer": "^0.6.2",
     "graphql": "^15.1.0",
     "isomorphic-unfetch": "^3.0.0",
+    "js-cookie": "^2.2.1",
     "next": "9.4.2",
     "node-fetch": "^2.6.0",
     "react": "16.13.1",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
     "@types/crypto-js": "^3.1.47",
+    "@types/js-cookie": "^2.2.6",
     "@types/styled-components": "^5.1.2",
     "tinacms": "0.21.1"
   },
