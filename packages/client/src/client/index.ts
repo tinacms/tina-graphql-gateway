@@ -146,7 +146,7 @@ export class ForestryClient {
   };
 
   async isAuthorized(): Promise<boolean> {
-    return Promise.resolve(true); //TODO - implement me
+    return this.isAuthenticated(); // TODO - check access
   }
 
   async isAuthenticated(): Promise<boolean> {
