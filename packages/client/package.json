@@ -24,6 +24,7 @@
     "@types/react": "^16.9.38",
     "codemirror": "^5.55.0",
     "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
     "graphiql": "^1.0.2",
     "graphiql-code-exporter": "^2.0.8",
     "graphiql-explorer": "^0.6.2",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
+    "@types/crypto-js": "^3.1.47",
     "@types/styled-components": "^5.1.2",
     "tinacms": "0.21.1"
   },

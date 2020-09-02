@@ -17,27 +17,42 @@ limitations under the License.
 */
 
 import popupWindow from "./popupWindow";
+import * as crypto from "crypto-js";
 
 const TINA_AUTH_CONFIG = "tina_auth_config";
 const SITE_REDIRECT_URI = "http://localhost:2999/authenticating";
 
-//TODO - generate this dynamically
-const codeVerifier =
-  "80cJ-JMyS0ZAX2ihuBVZ8MbowHJnM8q7WpmN5VshSMfGmYT5m9gS6elXgvjJhHb~Z7U6Ja1yw.6kqwKpmsBoNmx.d3o2G7WLct7fV6vmwrBBuPndQ19dFmSeVw-5t5Aq";
-const codeChallenge = "HV5Z5_1OL6rIGBI0XDwKVbN7PXvOmxRxnf-p5nvwe5s";
-const randomState = () => {
+const randomString = (length: number = 40) => {
   let state = "";
   let possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 40; i++)
+  for (let i = 0; i < length; i++)
     state += possible.charAt(Math.floor(Math.random() * possible.length));
   return state;
 };
 
+function generateCodeVerifier() {
+  return randomString(128);
+}
+
+function base64URL(string) {
+  crypto.enc.Base64.stringify(string);
+  return string
+    .toString(crypto.enc.Base64)
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+}
+
+function generateCodeChallenge(code_verifier) {
+  return base64URL(crypto.SHA256(code_verifier));
+}
+
 export const useGenerator = () => {
+  const codeVerifier = generateCodeVerifier();
   return {
-    state: randomState(),
-    codeChallenge,
+    state: randomString(),
+    codeChallenge: generateCodeChallenge(codeVerifier),
     codeVerifier,
   };
 };
