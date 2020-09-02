@@ -1969,11 +1969,13 @@ __metadata:
     "@graphql-codegen/typescript-operations": ^1.15.4
     "@tinacms/react-forms": ^0.27.1
     "@tinacms/styles": ^0.26.0
+    "@types/crypto-js": ^3.1.47
     "@types/node": ^14.0.13
     "@types/react": ^16.9.38
     "@types/styled-components": ^5.1.2
     codemirror: ^5.55.0
     cors: ^2.8.5
+    crypto-js: ^4.0.0
     graphiql: ^1.0.2
     graphiql-code-exporter: ^2.0.8
     graphiql-explorer: ^0.6.2
@@ -3619,6 +3621,13 @@ __metadata:
   dependencies:
     "@types/express": "*"
   checksum: 911a8696e8a8b26687de5facabe78d9966a9970f7489e3cd42589115173eee0b7fcf7cc8941fe25054fc43f4c81c6977582d84cd52c26b6675a9ddac5776c8ca
+  languageName: node
+  linkType: hard
+
+"@types/crypto-js@npm:^3.1.47":
+  version: 3.1.47
+  resolution: "@types/crypto-js@npm:3.1.47"
+  checksum: 50a491aacb9e1ccbbf75a1da064e97a147cbc1302ee8c7d02d8ccfdb8e89ad1fc603b7b81f656b037d71948b75ec6d34b5952fdecdeda8f7d22771bfbf20cf6f
   languageName: node
   linkType: hard
 
@@ -7294,6 +7303,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: 8b558367b3759652b7c8dfd8fa0dc55a69362ae3efe039ac44d4b010bc63143708f4748ef8efc079945bf61dbc53c829cda968cd2abc1f34fcf43f669a414f73
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "crypto-js@npm:4.0.0"
+  checksum: fdd1415b9e4b317f6ac7f055a00495dabea6aa93ab82ccd63866b0a76d2da9587942764816a8a7976cb23b8bbfd7eea23ccb852b3fef218d166cc5db8c008ab3
   languageName: node
   linkType: hard
 
