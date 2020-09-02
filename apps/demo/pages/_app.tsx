@@ -7,7 +7,10 @@ import { TinacmsForestryProvider } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <TinacmsForestryProvider>
+    <TinacmsForestryProvider
+      onLogin={() => alert("enter edit mode")}
+      onLogout={() => alert("exit edit mode")}
+    >
       <div>
         <div style={{ display: "flex" }}>
           <Link href="/pages">

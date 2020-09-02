@@ -57,13 +57,17 @@ interface AddVariables {
 }
 
 const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
+const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
 
 export class ForestryClient {
   serverURL: string;
+  oauthHost: string;
   clientId: string;
   query: string;
   constructor(clientId: string) {
     this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
+    this.oauthHost = process.env.TINA_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
+
     this.clientId = clientId;
   }
 
@@ -146,7 +150,7 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    return authenticate(this.clientId);
+    return authenticate(this.clientId, this.oauthHost);
   }
 
   private async request<VariableType>(
