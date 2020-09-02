@@ -63,7 +63,7 @@ export const authenticate = (
 ): Promise<void> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
-  const signInUrl = new URL(`http://localhost:4444/oauth2/auth`);
+  const signInUrl = new URL(`${oauthHost}/oauth2/auth`);
   signInUrl.searchParams.append("client_id", clientId);
   signInUrl.searchParams.append("redirect_uri", SITE_REDIRECT_URI);
   signInUrl.searchParams.append("response_type", "code");
