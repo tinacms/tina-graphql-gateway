@@ -18,7 +18,7 @@ limitations under the License.
 
 import popupWindow from "./popupWindow";
 
-export const FORESTRY_AUTH_CODE_KEY = "forestry_auth_code";
+const TINA_AUTH_CONFIG = "tina_auth_config";
 const SITE_REDIRECT_URI = "http://localhost:2999/authenticating";
 
 //TODO - generate this dynamically
@@ -42,7 +42,10 @@ export const useGenerator = () => {
   };
 };
 
-export const authenticate = (clientId: string): Promise<void> => {
+export const authenticate = (
+  clientId: string,
+  oauthHost: string
+): Promise<void> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
   const signInUrl = new URL(`http://localhost:4444/oauth2/auth`);
@@ -59,33 +62,30 @@ export const authenticate = (clientId: string): Promise<void> => {
 
     // TODO - Grab this from the URL instead of passing through localstorage
     window.addEventListener("storage", function (e: StorageEvent) {
-      if (e.key == FORESTRY_AUTH_CODE_KEY) {
+      if (e.key == TINA_AUTH_CONFIG) {
         const config = JSON.parse(e.newValue);
         let formData = new FormData();
         formData.append("grant_type", "authorization_code");
-        formData.append("client_id", process.env.REACT_APP_CLIENT_ID || "");
-        formData.append(
-          "redirect_uri",
-          process.env.REACT_APP_REDIRECT_URI || ""
-        );
+        formData.append("client_id", clientId);
+        formData.append("redirect_uri", SITE_REDIRECT_URI);
         formData.append("code", config.code);
         formData.append("code_verifier", codeVerifier);
 
-        fetch(
-          `${process.env.REACT_APP_OAUTH_HOST}${process.env.REACT_APP_TOKEN_PATH}`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              // 'Content-Type': 'application/x-www-form-urlencoded', // FOR SOME REASON INCLUDING THIS RUINS EVERYTHING
-            },
-            body: formData,
-          }
-        )
+        fetch(`${oauthHost}/oauth2/token`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded', // FOR SOME REASON INCLUDING THIS RUINS EVERYTHING
+          },
+          body: formData,
+        })
           .then((response) => response.json())
           .then((json) => {
-            const token = JSON.stringify(json, null, 2);
-            setCookie("tinacms-auth", token, 7);
+            const token = json.access_token;
+            setCookie("tinacms-auth", token, json.expires_in);
+            if (authTab) {
+              authTab.close();
+            }
             resolve();
           });
       }
@@ -94,11 +94,11 @@ export const authenticate = (clientId: string): Promise<void> => {
   });
 };
 
-function setCookie(name: string, value: string, days: number) {
+function setCookie(name: string, value: string, seconds: number) {
   let expires = "";
-  if (days) {
+  if (seconds) {
     const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    date.setTime(date.getTime() + seconds * 1000);
     expires = "; expires=" + date.toUTCString();
   }
   document.cookie = name + "=" + (value || "") + expires + "; path=/";
