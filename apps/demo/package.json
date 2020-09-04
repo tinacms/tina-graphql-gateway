@@ -9,7 +9,8 @@
     "watch": "next dev"
   },
   "devDependencies": {
-    "@forestryio/cli": "workspace:packages/cli"
+    "@forestryio/cli": "workspace:packages/cli",
+    "@types/styled-components": "^5.1.3"
   },
   "dependencies": {
     "@forestryio/client": "workspace:packages/client",
@@ -30,7 +31,7 @@
     "react-dom": "^16.13.1",
     "react-is": "^16.13.1",
     "react-markdown": "^4.3.1",
-    "styled-components": "^5.1.1",
+    "styled-components": "^5.1.3",
     "styled-jsx": "^3.2.5",
     "tailwindcss": "^1.4.6",
     "tinacms": "0.27.0",
