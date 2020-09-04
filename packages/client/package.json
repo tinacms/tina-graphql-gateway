@@ -18,10 +18,13 @@
     "@graphql-codegen/core": "^1.15.4",
     "@graphql-codegen/typescript": "^1.15.4",
     "@graphql-codegen/typescript-operations": "^1.15.4",
+    "@tinacms/react-forms": "^0.27.1",
+    "@tinacms/styles": "^0.26.0",
     "@types/node": "^14.0.13",
     "@types/react": "^16.9.38",
     "codemirror": "^5.55.0",
     "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
     "graphiql": "^1.0.2",
     "graphiql-code-exporter": "^2.0.8",
     "graphiql-explorer": "^0.6.2",
@@ -35,9 +38,13 @@
   },
   "devDependencies": {
     "@forestryio/build": "workspace:packages/build",
+    "@types/crypto-js": "^3.1.47",
+    "@types/styled-components": "^5.1.3",
+    "styled-components": "^5.2.0",
     "tinacms": "0.21.1"
   },
   "peerDependencies": {
+    "styled-components": ">=5.0.0",
     "tinacms": ">=0.21.1"
   },
   "publishConfig": {

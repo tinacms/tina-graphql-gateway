@@ -1,5 +1,6 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
+import { authenticate } from "../auth/authenticate";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -56,12 +57,24 @@ interface AddVariables {
 }
 
 const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
+const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
+
+interface ServerOptions {
+  gqlServer?: string;
+  oauthHost?: string;
+  identityHost?: string;
+}
 
 export class ForestryClient {
   serverURL: string;
+  oauthHost: string;
+  clientId: string;
   query: string;
-  constructor() {
-    this.serverURL = process.env.TINA_GQL_SERVER || DEFAULT_TINA_GQL_SERVER;
+  constructor(clientId: string, options?: ServerOptions) {
+    this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
+    this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
+
+    this.clientId = clientId;
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -133,6 +146,18 @@ export class ForestryClient {
       variables: { path: path, params: transformedPayload },
     });
   };
+
+  async isAuthorized(): Promise<boolean> {
+    return Promise.resolve(true); //TODO - implement me
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    return Promise.resolve(false); //TODO - implement me
+  }
+
+  async authenticate() {
+    return authenticate(this.clientId, this.oauthHost);
+  }
 
   private async request<VariableType>(
     query: string,
