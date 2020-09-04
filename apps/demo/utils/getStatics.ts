@@ -17,7 +17,7 @@ export const getSlugs = async ({ template }) => {
 
 export const getContent = async ({ template, params }) => {
   const path = `content/${template}/${params.slug}.md`;
-  const client = new ForestryClient();
+  const client = new ForestryClient(process.env.SITE_CLIENT_ID);
   const response = await client.getContent<DocumentUnion>({
     path,
   });
