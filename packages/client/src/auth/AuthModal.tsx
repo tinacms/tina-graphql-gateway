@@ -27,6 +27,7 @@ import {
 import { StyleReset } from "@tinacms/styles";
 import { AsyncButton } from "./AsyncButton";
 import React from "react";
+import styled from "styled-components";
 // import "./auth.css"; // TODO - can't import css with current rollup config
 export interface ForestryAuthenticationModalProps {
   onAuthSuccess(): void;
@@ -77,9 +78,7 @@ export function ModalBuilder(modalProps: ModalBuilderProps) {
           <ModalHeader close={modalProps.close}>{modalProps.title}</ModalHeader>
           <ModalBody padded>
             <p>{modalProps.message}</p>
-            {modalProps.error && (
-              <p className="error-label">{modalProps.error}</p>
-            )}
+            {modalProps.error && <ErrorLabel>{modalProps.error}</ErrorLabel>}
           </ModalBody>
           <ModalActions>
             {modalProps.actions.map((action: any) => (
@@ -91,3 +90,7 @@ export function ModalBuilder(modalProps: ModalBuilderProps) {
     </StyleReset>
   );
 }
+
+export const ErrorLabel = styled.p`
+  color: var(--tina-color-error) !important;
+`;
