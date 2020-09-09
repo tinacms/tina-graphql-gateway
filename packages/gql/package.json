@@ -1,0 +1,46 @@
+{
+  "name": "@forestryio/gql",
+  "version": "0.0.7",
+  "module": "dist",
+  "typings": "dist/index.d.ts",
+  "bin": {
+    "forestry:serve": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "yarn tsup src/**/*.ts",
+    "watch": "yarn tsup src/**/*.ts --watch",
+    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
+    "serve": "yarn node dist/index.cjs",
+    "test": "jest --passWithNoTests",
+    "test-watch": "jest --watch"
+  },
+  "dependencies": {
+    "@graphql-tools/schema": "^6.2.1",
+    "@types/express": "^4.17.8",
+    "@types/lodash": "^4.14.161",
+    "chokidar": "^3.4.2",
+    "chokidar-cli": "^2.1.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.11.0",
+    "graphql": "^15.3.0",
+    "graphql-tools": "^6.2.1",
+    "lodash": "^4.17.20",
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/graphql"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "@types/lodash.camelcase": "^4.3.6",
+    "@types/lodash.upperfirst": "^4.3.6",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.2",
+    "tsup": "^3.6.1"
+  }
+}

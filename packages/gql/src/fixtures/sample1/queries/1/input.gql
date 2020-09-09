@@ -1,0 +1,5 @@
+query($path: String!) {
+  document(path: $path) {
+    __typename
+  }
+}
