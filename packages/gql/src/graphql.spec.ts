@@ -1,73 +1,7 @@
-import {
-  graphql,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLFieldResolver,
-  GraphQLNonNull,
-  GraphQLUnionType,
-  GraphQLTypeResolver,
-  Source,
-} from "graphql";
 import { schemaBuilder } from "./schema-builder";
-import { graphqlInit } from "./graphql";
-import type { ContextT } from "./graphql";
+import { graphqlInit, DocumentTypeResolver, FieldResolver } from "./graphql";
 
-import { isDocumentArgs } from "./datasource";
-import type { DataSource, Field, DocumentSummary } from "./datasource";
-
-const DocumentTypeResolver: GraphQLTypeResolver<DocumentSummary, ContextT> = (
-  value,
-  context,
-  info,
-  abstractType
-) => {
-  return value._template;
-};
-
-type FieldResolverSource = undefined | DocumentSummary;
-type FieldResolverArgs = undefined | { path: string };
-const FieldResolver: GraphQLFieldResolver<
-  FieldResolverSource,
-  ContextT,
-  FieldResolverArgs
-> = (source, args, context, info): unknown => {
-  if (!source) {
-    if (isDocumentArgs(args)) {
-      return context.datasource.getData(args);
-    }
-  } else {
-    const field = source?._fields[info.fieldName];
-    const value = source[info.fieldName];
-
-    if (field?.type === "select") {
-      return context.datasource.getData({ path: value });
-    }
-
-    if (["string", "number"].includes(typeof value)) {
-      return value;
-    }
-    if (Array.isArray(value)) {
-      return value.map((v) => {
-        return {
-          _template: source._template,
-          _fields: {
-            ...field,
-          },
-          ...v,
-        };
-      });
-    }
-
-    return {
-      _template: source._template,
-      _fields: {
-        ...field,
-      },
-      ...value,
-    };
-  }
-};
+import type { Field, DocumentSummary } from "./datasource";
 
 const postTemplate = {
   label: "Post",
@@ -171,8 +105,7 @@ describe("Document Resolver", () => {
             (field) => (fields[field.name] = field)
           );
           return {
-            // _template: authorTemplate.label,
-            _template: "stringg",
+            _template: authorTemplate.label,
             _fields: {
               data: fields,
               content: { type: "textarea", name: "content", label: "Content" },
@@ -212,10 +145,8 @@ describe("Document Resolver", () => {
       source: query,
       contextValue: { datasource: MockDataSource() },
       variableValues: { path: "some-path.md" },
-      fieldResolver: FieldResolver,
-      typeResolver: DocumentTypeResolver,
     });
-    // console.log(res);
+    console.log(res);
 
     expect(mockGetTemplates).toHaveBeenCalled();
     expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
