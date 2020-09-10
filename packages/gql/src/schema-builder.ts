@@ -1,18 +1,13 @@
 import {
-  graphql,
   GraphQLObjectType,
   GraphQLString,
   GraphQLSchema,
-  GraphQLFieldResolver,
   GraphQLNonNull,
   GraphQLUnionType,
   GraphQLList,
-  GraphQLFieldConfigMap,
-  Thunk,
-  GraphQLTypeResolver,
 } from "graphql";
+import type { GraphQLFieldConfigMap, Thunk } from "graphql";
 import type { Template } from "./datasource";
-import { slugify } from "./util";
 
 type schemaSource = {
   getTemplates: () => Template[];
