@@ -24,7 +24,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "es5"
+    "target": "ESNext"
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx"]

@@ -1,7 +1,7 @@
 import { schemaBuilder } from "./schema-builder";
-import { graphqlInit, DocumentTypeResolver, FieldResolver } from "./graphql";
+import { graphqlInit } from "./graphql";
 
-import type { Field, DocumentSummary } from "./datasource";
+import type { Field, DocumentSummary } from "./datasources/datasource";
 
 const postTemplate = {
   label: "Post",

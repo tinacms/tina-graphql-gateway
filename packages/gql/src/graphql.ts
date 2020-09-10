@@ -5,8 +5,8 @@ import type {
   GraphQLTypeResolver,
   Source,
 } from "graphql";
-import { isDocumentArgs } from "./datasource";
-import type { DataSource, DocumentSummary } from "./datasource";
+import { isDocumentArgs } from "./datasources/datasource";
+import type { DataSource, DocumentSummary } from "./datasources/datasource";
 
 export type ContextT = {
   datasource: DataSource;

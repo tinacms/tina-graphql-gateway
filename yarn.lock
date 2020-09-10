@@ -2098,6 +2098,7 @@ __metadata:
     "@types/lodash": ^4.14.161
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
+    "@types/ws": ^7.2.6
     chokidar: ^3.4.2
     chokidar-cli: ^2.1.0
     express: ^4.17.1
@@ -2110,6 +2111,7 @@ __metadata:
     tslib: ^1.11.1
     tsup: ^3.6.1
     typescript: ^3.8.3
+    ws: ^7.3.1
   bin:
     "forestry:serve": ./dist/index.js
   languageName: unknown
@@ -4608,6 +4610,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 93d407970a6487290f8bace3b6de40d6f35f092386e5fba8981c3cb5ee60b155da419ab98007a3991c4a2e27eee948c5f98786a13619359b42a4a04aaf7bdf27
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^7.2.6":
+  version: 7.2.6
+  resolution: "@types/ws@npm:7.2.6"
+  dependencies:
+    "@types/node": "*"
+  checksum: 2f7c358c4b2798f1885c3edecf4b09ecfa35933eff0c37bf8b99eab722032db5c1ab9e26899d13f035a8cf1d92a681578016c8837c5e6725892c24ee10f2f63f
   languageName: node
   linkType: hard
 
@@ -22378,7 +22389,7 @@ resolve@1.15.1:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.2.3":
+"ws@npm:^7.2.3, ws@npm:^7.3.1":
   version: 7.3.1
   resolution: "ws@npm:7.3.1"
   peerDependencies:

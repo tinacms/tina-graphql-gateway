@@ -1,81 +1,180 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
-import {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-  print,
-  parse,
-} from "graphql";
-import { makeExecutableSchema } from "graphql-tools";
+import { schemaBuilder } from "./schema-builder";
+import { graphqlInit } from "./graphql";
+import type { Field, DocumentSummary } from "./datasources/datasource";
+import http from "http";
+import WebSocket from "ws";
+import fs from "fs";
 
-const schema = makeExecutableSchema({
-  typeDefs: `
-    type Query {
-      greeting: String
-    }
-  `,
-  resolvers: {
-    Query: {
-      greeting: () => "Hello World",
+const postTemplate = {
+  label: "Post",
+  hide_body: false,
+  fields: [
+    {
+      type: "textarea" as const,
+      label: "Title",
+      name: "title",
     },
-  },
-});
-
-export const buildSchema = () => {
-  const schema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-      name: "Query",
-      fields: {
-        greeting: { type: GraphQLString },
+    {
+      type: "select" as const,
+      label: "Author",
+      name: "author",
+      config: {
+        source: "documents" as const,
+        section: "authors",
       },
-    }),
-  });
-
-  return print(parse(schema));
+    },
+    {
+      type: "blocks" as const,
+      label: "Sections",
+      name: "sections",
+      template_types: ["section"],
+    },
+  ],
+};
+const authorTemplate = {
+  label: "Author",
+  hide_body: false,
+  fields: [
+    {
+      type: "textarea" as const,
+      label: "Name",
+      name: "name",
+    },
+  ],
+};
+const sectionTemplate = {
+  label: "Section",
+  hide_body: false,
+  fields: [
+    {
+      type: "textarea" as const,
+      label: "Description",
+      name: "description",
+    },
+  ],
 };
 
-const schema2 = makeExecutableSchema({
-  typeDefs: `
-    type Query {
-      greeting: String
-    }
-  `,
-  resolvers: {
-    Query: {
-      greeting: () => "Hi World",
-    },
-  },
-});
+const mockGetData = async ({ path }): DocumentSummary => {
+  if (path === "some-path.md") {
+    const fields: { [key: string]: Field } = {};
+    postTemplate.fields.forEach((field) => (fields[field.name] = field));
+    const data = JSON.parse(
+      await fs
+        .readFileSync(
+          "/Users/jeffsee/code/graphql-demo/packages/gql/src/fixtures/project1/content/post1.json"
+        )
+        .toString()
+    );
+    return {
+      _template: postTemplate.label,
+      _fields: {
+        data: fields,
+        content: { type: "textarea", name: "content", label: "Content" },
+      },
+      ...data,
+      // data: {
+      //   title: "Some Title",
+      //   author: "/path/to/author.md",
+      //   sections: [
+      //     {
+      //       description: "Some textarea description",
+      //     },
+      //   ],
+      // },
+      // content: "Some Content",
+    };
+  }
+  if (path === "/path/to/author.md") {
+    const fields: { [key: string]: Field } = {};
+    authorTemplate.fields.forEach((field) => (fields[field.name] = field));
+    return {
+      _template: authorTemplate.label,
+      _fields: {
+        data: fields,
+        content: { type: "textarea", name: "content", label: "Content" },
+      },
+      data: {
+        name: "Homer Simpson",
+      },
+      content: "Some Content",
+    };
+  }
+
+  throw `No path mock for ${path}`;
+};
+
+const MockDataSource = () => {
+  return { getData: mockGetData };
+};
+
+const mockGetTemplates = () => {
+  return [postTemplate, authorTemplate, sectionTemplate];
+};
+const mockGetTemplate = (slug) => {
+  if (slug === "Sections") {
+    return sectionTemplate;
+  } else {
+    return authorTemplate;
+  }
+};
+
+const MockSchemaSource = () => {
+  return { getTemplates: mockGetTemplates, getTemplate: mockGetTemplate };
+};
 
 const app = express();
-// app.use(
-//   graphqlHTTP({
-//     schema,
-//     graphiql: {
-//       defaultQuery: `
-//         {
-//           greeting
-//         }
-//       `,
-//     },
-//   })
-// );
+//initialize a simple http server
+const server = http.createServer(app);
 
-const schemas: { [key: string]: GraphQLSchema } = {
-  one: schema,
-  two: schema2,
-};
+//initialize the WebSocket server instance
+const wss = new WebSocket.Server({ server });
 
-app.get("/:schema", (req, res) => {
-  let query = `{ greeting }`;
-  const schema = schemas[req.params.schema];
-  graphql(schema, query).then((result) => {
-    res.json(result);
+wss.on("connection", (ws: WebSocket) => {
+  //connection is up, let's add a simple simple event
+  ws.on("message", (message: string) => {
+    //log the received message and send it back to the client
+    console.log("received: %s", message);
+    ws.send(`Hello, you sent -> ${message}`);
   });
+
+  //send immediatly a feedback to the incoming connection
+  ws.send("Hi there, I am a WebSocket server?");
 });
 
-app.listen(4000, () => {
+app.get("/:schema", async (req, res) => {
+  const query = `query($path: String!) {
+      document(path: $path) {
+        __typename
+        ...on Post {
+          content
+          data {
+            title
+            author {
+              data {
+                name
+              }
+            }
+            sections {
+              ...on Section {
+                description
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+  const result = await graphqlInit({
+    schema: schemaBuilder({ schemaSource: MockSchemaSource() }),
+    source: query,
+    contextValue: { datasource: MockDataSource() },
+    variableValues: { path: "some-path.md" },
+  });
+  return res.json(result);
+});
+
+server.listen(4000, () => {
   console.info("Listening on http://localhost:4000");
 });

@@ -3317,6 +3317,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.161"],
             ["@types/lodash.camelcase", "npm:4.3.6"],
             ["@types/lodash.upperfirst", "npm:4.3.6"],
+            ["@types/ws", "npm:7.2.6"],
             ["chokidar", "npm:3.4.2"],
             ["chokidar-cli", "npm:2.1.0"],
             ["express", "npm:4.17.1"],
@@ -3328,7 +3329,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-jest", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:26.1.4"],
             ["tslib", "npm:1.13.0"],
             ["tsup", "npm:3.6.1"],
-            ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"]
+            ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"],
+            ["ws", "virtual:011ff9495da039ed8bc5c08f6192fd52735a209184ec4f3f32093e7d589abb4feac412e88d55fe50ff1f9dc1112eb71484f3c14102803dfd018bd7f34ade9ccd#npm:7.3.1"]
           ],
           "linkType": "SOFT",
         }]
@@ -6462,6 +6464,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-websocket-npm-1.0.1-3e28e1647f-93d407970a.zip/node_modules/@types/websocket/",
           "packageDependencies": [
             ["@types/websocket", "npm:1.0.1"],
+            ["@types/node", "npm:14.0.27"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/ws", [
+        ["npm:7.2.6", {
+          "packageLocation": "./.yarn/cache/@types-ws-npm-7.2.6-274c888b6d-2f7c358c4b.zip/node_modules/@types/ws/",
+          "packageDependencies": [
+            ["@types/ws", "npm:7.2.6"],
             ["@types/node", "npm:14.0.27"]
           ],
           "linkType": "HARD",

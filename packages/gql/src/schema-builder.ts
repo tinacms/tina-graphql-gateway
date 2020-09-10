@@ -7,7 +7,7 @@ import {
   GraphQLList,
 } from "graphql";
 import type { GraphQLFieldConfigMap, Thunk } from "graphql";
-import type { Template } from "./datasource";
+import type { Template } from "./datasources/datasource";
 
 type schemaSource = {
   getTemplates: () => Template[];
