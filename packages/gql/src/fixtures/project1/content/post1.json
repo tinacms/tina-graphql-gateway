@@ -1,0 +1,12 @@
+{
+  "data": {
+    "title": "Some Title",
+    "author": "/path/to/author.md",
+    "sections": [
+      {
+        "description": "Some textarea description"
+      }
+    ]
+  },
+  "content": "Some Content"
+}

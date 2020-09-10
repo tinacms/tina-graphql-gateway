@@ -83,16 +83,3 @@ export type DocumentSummary = {
   _template: string;
   _fields: { [key: string]: Field | { [key: string]: Field } };
 } & Document;
-
-export const FilesystemDataSource = (): DataSource => {
-  return {
-    getData: (args) => {
-      return {
-        _template: "some-real-data",
-        _fields: {},
-        data: { some: "" },
-        content: "",
-      };
-    },
-  };
-};

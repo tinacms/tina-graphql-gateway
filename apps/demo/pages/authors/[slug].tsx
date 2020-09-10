@@ -21,7 +21,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  const [formData, form] = useForestryForm<Query, DocumentUnion>(props.data);
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(
+    props.response
+  );
   usePlugin(form);
 
   return (
