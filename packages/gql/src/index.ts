@@ -3,6 +3,8 @@ import { graphqlHTTP } from "express-graphql";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 import type { Field, DocumentSummary } from "./datasources/datasource";
+import bodyParser from "body-parser";
+import cors from "cors";
 import http from "http";
 import WebSocket from "ws";
 import fs from "fs";
@@ -143,34 +145,17 @@ wss.on("connection", (ws: WebSocket) => {
   ws.send("Hi there, I am a WebSocket server?");
 });
 
-app.get("/:schema", async (req, res) => {
-  const query = `query($path: String!) {
-      document(path: $path) {
-        __typename
-        ...on Post {
-          content
-          data {
-            title
-            author {
-              data {
-                name
-              }
-            }
-            sections {
-              ...on Section {
-                description
-              }
-            }
-          }
-        }
-      }
-    }`;
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post("/:schema", async (req, res) => {
+  const { query, variables } = req.body;
 
   const result = await graphqlInit({
     schema: schemaBuilder({ schemaSource: MockSchemaSource() }),
     source: query,
     contextValue: { datasource: MockDataSource() },
-    variableValues: { path: "some-path.md" },
+    variableValues: variables,
   });
   return res.json(result);
 });

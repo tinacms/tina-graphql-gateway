@@ -146,7 +146,6 @@ describe("Document Resolver", () => {
       contextValue: { datasource: MockDataSource() },
       variableValues: { path: "some-path.md" },
     });
-    console.log(res);
 
     expect(mockGetTemplates).toHaveBeenCalled();
     expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
