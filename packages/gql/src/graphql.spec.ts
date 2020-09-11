@@ -80,7 +80,9 @@ describe("Document Resolver", () => {
       ({ path }): DocumentSummary => {
         if (path === "some-path.md") {
           const fields: { [key: string]: Field } = {};
-          postTemplate.fields.forEach((field) => (fields[field.name] = field));
+          postTemplate.fields.forEach((field) => {
+            fields[field.name] = field;
+          });
           return {
             _template: postTemplate.label,
             _fields: {
@@ -92,6 +94,7 @@ describe("Document Resolver", () => {
               author: "/path/to/author.md",
               sections: [
                 {
+                  template: "section",
                   description: "Some textarea description",
                 },
               ],
@@ -146,10 +149,9 @@ describe("Document Resolver", () => {
       contextValue: { datasource: MockDataSource() },
       variableValues: { path: "some-path.md" },
     });
-
-    expect(mockGetTemplates).toHaveBeenCalled();
-    expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
-    expect(mockGetData).toHaveBeenCalledWith({ path: "/path/to/author.md" });
+    if (res.errors) {
+      res.errors.map((error) => console.log(error.message));
+    }
 
     expect(res).toMatchObject({
       data: {
@@ -168,5 +170,8 @@ describe("Document Resolver", () => {
         },
       },
     });
+    expect(mockGetTemplates).toHaveBeenCalled();
+    expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
+    expect(mockGetData).toHaveBeenCalledWith({ path: "/path/to/author.md" });
   });
 });

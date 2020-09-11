@@ -5,7 +5,7 @@ module.exports = function createJestConfig(pack) {
       ".(ts|tsx)": "ts-jest",
     },
     testRegex: "(\\.spec)\\.(ts|tsx|js)$",
-    modulePaths: ["<rootDir>/src/", "<rootDir>/node_modules/"],
+    modulePaths: ["<rootDir>/dir/", "<rootDir>/node_modules/"],
     moduleFileExtensions: ["ts", "tsx", "js"],
     displayName: pack.name,
     name: pack.name,
