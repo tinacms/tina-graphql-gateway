@@ -6,7 +6,11 @@ import type {
   Source,
 } from "graphql";
 import { isDocumentArgs } from "./datasources/datasource";
-import type { DataSource, DocumentSummary } from "./datasources/datasource";
+import type {
+  DataSource,
+  DocumentSummary,
+  DocumentPartial,
+} from "./datasources/datasource";
 
 export type ContextT = {
   datasource: DataSource;
@@ -24,7 +28,7 @@ export const documentTypeResolver: GraphQLTypeResolver<
   return value._template;
 };
 
-type FieldResolverSource = undefined | DocumentSummary;
+type FieldResolverSource = undefined | DocumentSummary | DocumentPartial;
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
@@ -48,7 +52,6 @@ export const fieldResolver: GraphQLFieldResolver<
     if (Array.isArray(value)) {
       return value.map((v) => {
         return {
-          _template: source._template,
           _fields: {
             ...field,
           },
@@ -58,7 +61,6 @@ export const fieldResolver: GraphQLFieldResolver<
     }
 
     return {
-      _template: source._template,
       _fields: {
         ...field,
       },
