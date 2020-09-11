@@ -81,5 +81,8 @@ type TinaSchema = {
 
 export type DocumentSummary = {
   _template: string;
+} & Document;
+
+export type DocumentPartial = {
   _fields: { [key: string]: Field | { [key: string]: Field } };
 } & Document;

@@ -6,6 +6,9 @@ import type {
   Source,
 } from "graphql";
 import { isDocumentArgs } from "./datasources/datasource";
+import { text } from "./fields/text";
+import { select } from "./fields/select";
+import { blocks } from "./fields/blocks";
 import type {
   DataSource,
   DocumentSummary,
@@ -29,6 +32,11 @@ export const documentTypeResolver: GraphQLTypeResolver<
 };
 
 type FieldResolverSource = undefined | DocumentSummary | DocumentPartial;
+
+const GETTER = "getter";
+const SETTER = "setter";
+const MUTATOR = "mutator";
+
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
@@ -42,25 +50,20 @@ export const fieldResolver: GraphQLFieldResolver<
     const field = source?._fields[info.fieldName];
     const value = source[info.fieldName];
 
-    if (field?.type === "select") {
-      return context.datasource.getData({ path: value });
+    if (field?.type === "textarea") {
+      return text.getter({ value, field });
     }
 
-    if (["string", "number"].includes(typeof value)) {
-      return value;
+    if (field?.type === "select") {
+      return select.getter({ value, field, datasource: context.datasource });
     }
-    if (Array.isArray(value)) {
-      return value.map((v) => {
-        return {
-          _fields: {
-            ...field,
-          },
-          ...v,
-        };
-      });
+
+    if (field?.type === "blocks") {
+      return blocks.getter({ value, field, datasource: context.datasource });
     }
 
     return {
+      _resolveType: GETTER,
       _fields: {
         ...field,
       },
@@ -77,6 +80,7 @@ export const graphqlInit = async (args: {
 }) => {
   return await graphql({
     ...args,
+    // @ts-ignore
     fieldResolver: fieldResolver,
     typeResolver: documentTypeResolver,
   });
