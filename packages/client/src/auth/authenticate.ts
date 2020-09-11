@@ -18,10 +18,11 @@ limitations under the License.
 
 import popupWindow from "./popupWindow";
 import { useGenerator } from "./useGenerator";
+import Cookies from "js-cookie";
 
 const TINA_AUTH_CONFIG = "tina_auth_config";
 const SITE_REDIRECT_URI = "http://localhost:2999/authenticating";
-
+export const AUTH_COOKIE_NAME = "tinacms-auth";
 export const authenticate = (
   clientId: string,
   oauthHost: string
@@ -62,7 +63,7 @@ export const authenticate = (
           .then((response) => response.json())
           .then((json) => {
             const token = json.access_token;
-            setCookie("tinacms-auth", token, json.expires_in);
+            setCookie(AUTH_COOKIE_NAME, token, json.expires_in);
             if (authTab) {
               authTab.close();
             }
@@ -74,12 +75,9 @@ export const authenticate = (
   });
 };
 
-function setCookie(name: string, value: string, seconds: number) {
-  let expires = "";
-  if (seconds) {
-    const date = new Date();
-    date.setTime(date.getTime() + seconds * 1000);
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+function setCookie(cookieName: string, val: string, seconds: number) {
+  Cookies.set(cookieName, val, {
+    sameSite: "strict",
+    expires: seconds * 60 * 60 * 24,
+  });
 }
