@@ -43,7 +43,7 @@ export type DocumentArgs = {
 };
 
 export type DataSource = {
-  getData: ({ path }: DocumentArgs) => Document;
+  getData: ({ path }: DocumentArgs) => TinaDocument;
   getTemplateForDocument: ({ path }: DocumentArgs) => Template;
   getTemplate: ({ slug }: { slug: string }) => Template;
 };
@@ -77,8 +77,8 @@ type Section =
 
 export type DocumentSummary = {
   _template: string;
-} & Document;
+} & TinaDocument;
 
 export type DocumentPartial = {
   _fields: { [key: string]: Field | { [key: string]: Field } };
-} & Document;
+} & TinaDocument;
