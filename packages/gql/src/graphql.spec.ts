@@ -1,8 +1,6 @@
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 
-import type { Field, DocumentSummary } from "./datasources/datasource";
-
 const postTemplate = {
   label: "Post",
   hide_body: false,
@@ -76,60 +74,61 @@ describe("Document Resolver", () => {
       }
     }`;
 
-    const mockGetData = jest.fn(
-      ({ path }): DocumentSummary => {
-        if (path === "some-path.md") {
-          const fields: { [key: string]: Field } = {};
-          postTemplate.fields.forEach((field) => {
-            fields[field.name] = field;
-          });
-          return {
-            _template: postTemplate.label,
-            _fields: {
-              data: fields,
-              content: { type: "textarea", name: "content", label: "Content" },
-            },
-            data: {
-              title: "Some Title",
-              author: "/path/to/author.md",
-              sections: [
-                {
-                  template: "section",
-                  description: "Some textarea description",
-                },
-              ],
-            },
-            content: "Some Content",
-          };
-        }
-        if (path === "/path/to/author.md") {
-          const fields: { [key: string]: Field } = {};
-          authorTemplate.fields.forEach(
-            (field) => (fields[field.name] = field)
-          );
-          return {
-            _template: authorTemplate.label,
-            _fields: {
-              data: fields,
-              content: { type: "textarea", name: "content", label: "Content" },
-            },
-            data: {
-              name: "Homer Simpson",
-            },
-            content: "Some Content",
-          };
-        }
-
-        throw `No path mock for ${path}`;
+    const mockGetData = jest.fn(({ path }) => {
+      if (path === "some-path.md") {
+        return {
+          data: {
+            title: "Some Title",
+            author: "/path/to/author.md",
+            sections: [
+              {
+                template: "section",
+                description: "Some textarea description",
+              },
+            ],
+          },
+          content: "Some Content",
+        };
       }
-    );
+      if (path === "/path/to/author.md") {
+        return {
+          data: {
+            name: "Homer Simpson",
+          },
+          content: "Some Content",
+        };
+      }
+
+      throw `No path mock for ${path}`;
+    });
+
+    const mockGetTemplateForDocument = jest.fn((args) => {
+      if (args.path === "some-path.md") {
+        return postTemplate;
+      }
+
+      if (args.path === "/path/to/author.md") {
+        return authorTemplate;
+      }
+
+      throw `No template mock for ${args}`;
+    });
 
     const MockDataSource = () => {
-      return { getData: mockGetData };
+      return {
+        getData: mockGetData,
+        getTemplateForDocument: mockGetTemplateForDocument,
+        getTemplate: mockGetTemplateBySlug,
+      };
     };
 
     const mockGetTemplates = jest.fn(() => {
       return [postTemplate, authorTemplate, sectionTemplate];
+    });
+    const mockGetTemplateBySlug = jest.fn(({ slug }) => {
+      if (slug === "section") {
+        return sectionTemplate;
+      }
     });
     const mockGetTemplate = jest.fn((slug) => {
       if (slug === "Sections") {
@@ -150,7 +149,7 @@ describe("Document Resolver", () => {
       variableValues: { path: "some-path.md" },
     });
     if (res.errors) {
-      res.errors.map((error) => console.log(error.message));
+      console.log(res.errors);
     }
 
     expect(res).toMatchObject({

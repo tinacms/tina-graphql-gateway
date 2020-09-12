@@ -14,10 +14,20 @@ const getter = ({
   datasource,
 }: {
   value: string;
-  field: SelectField;
+  field?: SelectField;
   datasource: any;
 }) => {
-  return datasource.getData({ path: value });
+  const args = { path: value };
+  const template = datasource.getTemplateForDocument(args);
+
+  return {
+    ...datasource.getData(args),
+    _template: template.label,
+    _fields: {
+      data: { type: "field-group", fields: template.fields },
+      content: { type: "textarea", name: "content", label: "Content" },
+    },
+  };
 };
 
 export const select = {
