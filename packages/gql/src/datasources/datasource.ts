@@ -1,4 +1,4 @@
-type Document = {
+export type TinaDocument = {
   [key: string]: any;
   content?: string;
   data: {
@@ -10,6 +10,7 @@ type Document = {
 export const isDocumentArgs = (args: any): args is DocumentArgs => {
   return args.path;
 };
+
 export type Field =
   | {
       name: string;
@@ -42,7 +43,9 @@ export type DocumentArgs = {
 };
 
 export type DataSource = {
-  getData: ({ path }: DocumentArgs) => DocumentSummary;
+  getData: ({ path }: DocumentArgs) => Document;
+  getTemplateForDocument: ({ path }: DocumentArgs) => Template;
+  getTemplate: ({ slug }: { slug: string }) => Template;
 };
 
 export type Template = {
@@ -71,13 +74,6 @@ type Section =
       new_doc_ext: "md" | "html";
       templates: Template[];
     };
-
-type TinaSchema = {
-  settings: {
-    sections: Section[];
-  };
-  documents: Document[];
-};
 
 export type DocumentSummary = {
   _template: string;

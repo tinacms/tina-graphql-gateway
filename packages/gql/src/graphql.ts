@@ -9,9 +9,10 @@ import { isDocumentArgs } from "./datasources/datasource";
 import { text } from "./fields/text";
 import { select } from "./fields/select";
 import { blocks } from "./fields/blocks";
+import { fieldGroup } from "./fields/field-group";
 import type {
   DataSource,
-  DocumentSummary,
+  TinaDocument,
   DocumentPartial,
 } from "./datasources/datasource";
 
@@ -25,13 +26,13 @@ export type ContextT = {
 
 type FieldResolverArgs = undefined | { path: string };
 export const documentTypeResolver: GraphQLTypeResolver<
-  DocumentSummary,
+  TinaDocument,
   ContextT
 > = (value) => {
   return value._template;
 };
 
-type FieldResolverSource = undefined | DocumentSummary | DocumentPartial;
+type FieldResolverSource = undefined | TinaDocument | DocumentPartial;
 
 const GETTER = "getter";
 const SETTER = "setter";
@@ -42,9 +43,11 @@ export const fieldResolver: GraphQLFieldResolver<
   ContextT,
   FieldResolverArgs
 > = (source, args, context, info): any => {
+  const { datasource } = context;
+
   if (!source) {
     if (isDocumentArgs(args)) {
-      return context.datasource.getData(args);
+      return select.getter({ value: args.path, datasource });
     }
   } else {
     const field = source?._fields[info.fieldName];
@@ -55,20 +58,20 @@ export const fieldResolver: GraphQLFieldResolver<
     }
 
     if (field?.type === "select") {
-      return select.getter({ value, field, datasource: context.datasource });
+      return select.getter({ value, field, datasource });
     }
 
     if (field?.type === "blocks") {
-      return blocks.getter({ value, field, datasource: context.datasource });
+      return blocks.getter({ value, field, datasource });
     }
 
-    return {
-      _resolveType: GETTER,
-      _fields: {
-        ...field,
-      },
-      ...value,
-    };
+    if (field?.type === "field-group") {
+      return fieldGroup.getter({
+        value,
+        field,
+        datasource,
+      });
+    }
   }
 };
 
