@@ -17,14 +17,13 @@ const getter = ({
   field: SelectField;
   datasource: any;
 }) => {
-  const description = {
-    type: "textarea" as const,
-    label: "Description",
-    name: "description",
-  };
   return value.map((value) => {
+    const template = datasource.getTemplate({ slug: value.template });
+    const fields: { [key: string]: any } = {};
+    template.fields.forEach((field: any) => (fields[field.name] = field));
+
     return {
-      _fields: { description },
+      _fields: fields,
       ...value,
     };
   });
