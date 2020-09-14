@@ -1,0 +1,7 @@
+---
+label: Description
+hide_body: false
+fields:
+  - name: description
+    label: Description
+    type: textarea

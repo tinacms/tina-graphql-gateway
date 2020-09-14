@@ -29,6 +29,10 @@ export const documentTypeResolver: GraphQLTypeResolver<
   TinaDocument,
   ContextT
 > = (value) => {
+  // FIXME: for blocks which have a 'template' field
+  if (value.template === "section") {
+    return "SectionData";
+  }
   return value._template;
 };
 

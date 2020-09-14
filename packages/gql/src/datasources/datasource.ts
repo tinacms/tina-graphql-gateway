@@ -1,3 +1,5 @@
+import type { Field } from "../fields";
+
 export type TinaDocument = {
   [key: string]: any;
   content?: string;
@@ -6,46 +8,17 @@ export type TinaDocument = {
   };
 };
 
+export type DocumentArgs = {
+  path: string;
+};
 // FIXME: use unknown here
 export const isDocumentArgs = (args: any): args is DocumentArgs => {
   return args.path;
 };
-
-export type Field =
-  | {
-      name: string;
-      type: "textarea";
-      default?: string;
-      label: string;
-      config?: {
-        required: boolean;
-        wysiwyg: boolean;
-        schema: {
-          format: "markdown";
-        };
-      };
-    }
-  | {
-      name: string;
-      type: "blocks";
-      default?: string;
-      label: string;
-      template_types: string[];
-    }
-  | {
-      name: string;
-      type: "select";
-      default?: string;
-      label: string;
-    };
-export type DocumentArgs = {
-  path: string;
-};
-
 export type DataSource = {
-  getData: ({ path }: DocumentArgs) => TinaDocument;
-  getTemplateForDocument: ({ path }: DocumentArgs) => Template;
-  getTemplate: ({ slug }: { slug: string }) => Template;
+  getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
+  getTemplateForDocument: ({ path }: DocumentArgs) => Promise<Template>;
+  getTemplate: ({ slug }: { slug: string }) => Promise<Template>;
 };
 
 export type Template = {
@@ -54,27 +27,6 @@ export type Template = {
   fields: Field[];
 };
 
-type Section =
-  | {
-      type: "heading";
-      label: string;
-    }
-  | {
-      type: "document";
-      path: string;
-      label: string;
-      readonly: boolean;
-    }
-  | {
-      type: "directory";
-      path: string;
-      label: string;
-      create: "documents";
-      match: string;
-      new_doc_ext: "md" | "html";
-      templates: Template[];
-    };
-
 export type DocumentSummary = {
   _template: string;
 } & TinaDocument;
@@ -82,3 +34,37 @@ export type DocumentSummary = {
 export type DocumentPartial = {
   _fields: { [key: string]: Field | { [key: string]: Field } };
 } & TinaDocument;
+
+export const DataManager = (dataService: any): DataSource => {
+  return {
+    getData: async ({ path }) => {
+      return dataService.getData(path);
+    },
+    getTemplateForDocument: async () => {
+      return {
+        label: "Author",
+        hide_body: false,
+        fields: [
+          {
+            type: "textarea" as const,
+            label: "Name",
+            name: "name",
+          },
+        ],
+      };
+    },
+    getTemplate: async (slug) => {
+      return {
+        label: "Author",
+        hide_body: false,
+        fields: [
+          {
+            type: "textarea" as const,
+            label: "Name",
+            name: "name",
+          },
+        ],
+      };
+    },
+  };
+};

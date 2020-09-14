@@ -1,0 +1,38 @@
+type Query {
+  document(path: String!): DocumentUnion
+}
+
+union DocumentUnion = Post | Author | Section
+
+type Post {
+  content: String
+  data: PostData
+}
+
+type PostData {
+  title: String
+  author: AuthorUnion
+  sections: [SectionDataUnion]
+}
+
+union AuthorUnion = Author
+
+type Author {
+  content: String
+  data: AuthorData
+}
+
+type AuthorData {
+  name: String
+}
+
+union SectionDataUnion = SectionData
+
+type SectionData {
+  description: String
+}
+
+type Section {
+  content: String
+  data: SectionData
+}
