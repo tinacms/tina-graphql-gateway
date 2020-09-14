@@ -1,4 +1,8 @@
-import type { DataSource } from "./datasource";
+import p from "path";
+import fs from "fs";
+import _ from "lodash";
+import matter from "gray-matter";
+
 const postTemplate = {
   label: "Post",
   hide_body: false,
@@ -50,63 +54,77 @@ const sectionTemplate = {
 
 export const FilesystemDataSource = (projectRoot: string) => {
   return {
-    getTemplates: async (section: string) => {
+    getTemplatesForSection: async (section: string) => {
+      const fullPath = p.join(projectRoot, ".tina/settings.yml");
+      const res = await fs.readFileSync(fullPath).toString();
+      const { data } = matter(res);
+
       if (section) {
-        if (section === "Author") {
+        if (section === "author") {
           return [authorTemplate];
         }
-        if (section === "Section") {
+        if (section === "section") {
           return [sectionTemplate];
         }
         throw new Error("Gotta define the right section temlpate");
       } else {
-        return [postTemplate, authorTemplate, sectionTemplate];
+        const templates = _.flatten(
+          data.sections.map(({ templates }) => templates)
+        );
+        return Promise.all(
+          templates.map(async (templateBasename) => {
+            const fullPath = p.join(
+              projectRoot,
+              ".tina/front_matter/templates",
+              `${templateBasename}.yml`
+            );
+            const res = await fs.readFileSync(fullPath).toString();
+            const { data } = matter(res);
+            return data;
+          })
+        );
       }
     },
     getData: async ({ path }: { path: string }) => {
-      if (path === "some-path.md") {
-        return {
-          data: {
-            title: "Some Title",
-            author: "/path/to/author.md",
-            sections: [
-              {
-                template: "section",
-                description: "Some textarea description",
-              },
-            ],
-          },
-          content: "Some Content",
-        };
-      }
-      if (path === "/path/to/author.md") {
-        return {
-          data: {
-            name: "Homer Simpson",
-          },
-          content: "Some Content",
-        };
-      }
+      const fullPath = p.join(projectRoot, path);
+      const res = await fs.readFileSync(fullPath).toString();
+      const { content, data } = matter(res);
 
-      throw `No path mock for ${path}`;
+      return {
+        content,
+        data,
+      };
     },
     getTemplateForDocument: async (args: { path: string }) => {
-      if (args.path === "some-path.md") {
-        return postTemplate;
-      }
+      const fullPath = p.join(projectRoot, ".tina/front_matter/templates");
+      const templates = await fs.readdirSync(fullPath);
+      const template = (
+        await Promise.all(
+          templates.map(async (template) => {
+            const res = await fs
+              .readFileSync(p.join(fullPath, template))
+              .toString();
+            const { data } = matter(res);
 
-      if (args.path === "/path/to/author.md") {
-        return authorTemplate;
-      }
+            if (data.pages?.includes(args.path)) {
+              return data;
+            }
+          })
+        )
+      ).filter(Boolean)[0];
 
-      throw `No template mock for ${args}`;
+      return template;
     },
     getTemplate: async ({ slug }: { slug: string }) => {
-      if (slug === "section") {
-        return sectionTemplate;
-      }
+      const fullPath = p.join(projectRoot, ".tina/front_matter/templates");
+      const templates = await fs.readdirSync(fullPath);
+      const template = templates.find((templateBasename) => {
+        return templateBasename === `${slug}.yml`;
+      });
+      const res = await fs.readFileSync(p.join(fullPath, template)).toString();
+      const { data } = matter(res);
 
-      throw new Error(`no template for ${slug}`);
+      return data;
     },
   };
 };

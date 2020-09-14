@@ -29,6 +29,13 @@ const buildSectionTemplate = async ({
   field: any;
 }) => {
   if (field.type === "blocks") {
+    // const templateSlugs = await schemaSource.getTemplate({ slug: "section" });
+    // console.log(templateSlugs);
+    const templates = await Promise.all(
+      field.template_types.map(
+        async (slug: string) => await schemaSource.getTemplate({ slug })
+      )
+    );
     return {
       type: GraphQLList(
         new GraphQLUnionType({
@@ -36,7 +43,8 @@ const buildSectionTemplate = async ({
           types: await buildSectionTemplates({
             schemaSource,
             cache,
-            sectionSlug: "Section",
+            templates,
+            sectionSlug: "section",
             dataOnly: true,
           }),
         })
@@ -49,7 +57,7 @@ const buildSectionTemplate = async ({
         types: await buildSectionTemplates({
           schemaSource,
           cache,
-          sectionSlug: "Author",
+          sectionSlug: "author",
         }),
       }),
     };
@@ -63,16 +71,19 @@ const buildSectionTemplate = async ({
 const buildSectionTemplates = async ({
   schemaSource,
   cache,
+  templates,
   sectionSlug,
   dataOnly,
 }: {
   schemaSource: schemaSource;
   cache: { [key: string]: any };
+  templates?: Template[];
   sectionSlug?: string;
   dataOnly?: boolean;
 }) => {
   // @ts-ignore
-  const sectionTemplates = await schemaSource.getTemplates(sectionSlug);
+  const sectionTemplates =
+    templates || (await schemaSource.getTemplatesForSection(sectionSlug));
 
   return Promise.all(
     sectionTemplates.map(async (sectionTemplate) => {

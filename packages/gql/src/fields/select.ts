@@ -1,12 +1,3 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLNonNull,
-  GraphQLUnionType,
-  GraphQLList,
-} from "graphql";
-
 export type SelectField = {
   label: string;
   name: string;

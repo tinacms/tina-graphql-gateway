@@ -4442,6 +4442,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express-graphql", "virtual:6a9a6f8f48a81df3d75f943eeddff643a390ae520fc1723f33040cdbb239753ea90c5e6f807c22a77e0ca0ffe91f6137dee62074d771b445d42ae994cd492299#npm:0.11.0"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tools", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:6.2.1"],
+            ["gray-matter", "npm:4.0.2"],
             ["jest", "npm:26.1.0"],
             ["lodash", "npm:4.17.20"],
             ["ts-jest", "virtual:f26109617ed9aba90e9c9ff0145ec99be7ebf23c6e0c5010650eb38969945b4bfa54c16ff30bdcad148921f18179f9f5d55be1780e1f54648c7313b812d88386#npm:26.1.4"],

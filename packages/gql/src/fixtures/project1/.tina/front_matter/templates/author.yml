@@ -5,3 +5,5 @@ fields:
   - name: name
     label: Name
     type: textarea
+pages:
+  - authors/homer.md

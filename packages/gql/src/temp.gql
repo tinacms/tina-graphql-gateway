@@ -2,7 +2,7 @@ type Query {
   document(path: String!): DocumentUnion
 }
 
-union DocumentUnion = Post | Author | Section
+union DocumentUnion = Post | Author
 
 type Post {
   content: String
@@ -30,9 +30,4 @@ union SectionDataUnion = SectionData
 
 type SectionData {
   description: String
-}
-
-type Section {
-  content: String
-  data: SectionData
 }

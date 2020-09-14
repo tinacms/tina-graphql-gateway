@@ -30,7 +30,7 @@ describe("Document Resolver", () => {
       }
     }`;
 
-    const projectRoot = path.join(process.cwd(), "fixtures/project1");
+    const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
 
     const datasource = FilesystemDataSource(projectRoot);
 
@@ -38,7 +38,7 @@ describe("Document Resolver", () => {
       schema: await schemaBuilder({ schemaSource: datasource }),
       source: query,
       contextValue: { datasource: datasource },
-      variableValues: { path: "some-path.md" },
+      variableValues: { path: "posts/1.md" },
     });
     if (res.errors) {
       console.log(res.errors);
@@ -48,7 +48,9 @@ describe("Document Resolver", () => {
       data: {
         document: {
           __typename: "Post",
-          content: "Some Content",
+          content: `
+Some content
+`,
           data: {
             title: "Some Title",
             author: {
@@ -61,8 +63,5 @@ describe("Document Resolver", () => {
         },
       },
     });
-    // expect(mockGetTemplates).toHaveBeenCalled();
-    // expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
-    // expect(mockGetData).toHaveBeenCalledWith({ path: "/path/to/author.md" });
   });
 });
