@@ -1,27 +1,12 @@
+import { TextField } from "./text";
+import { TextareaField } from "./textarea";
+import { SelectField } from "./select";
+import { BlocksField } from "./blocks";
+import { FieldGroupField } from "./field-group";
+
 export type Field =
-  | {
-      name: string;
-      type: "textarea";
-      default?: string;
-      label: string;
-      config?: {
-        required: boolean;
-        wysiwyg: boolean;
-        schema: {
-          format: "markdown";
-        };
-      };
-    }
-  | {
-      name: string;
-      type: "blocks";
-      default?: string;
-      label: string;
-      template_types: string[];
-    }
-  | {
-      name: string;
-      type: "select";
-      default?: string;
-      label: string;
-    };
+  | TextField
+  | TextareaField
+  | SelectField
+  | BlocksField
+  | FieldGroupField;

@@ -1,14 +1,18 @@
+import type { Field } from "./index";
+import type { DataSource } from "../datasources/datasource";
+
 export type FieldGroupField = {
   label: string;
   name: string;
   type: "field-group";
   default: string;
-  fields: any[];
+  fields: Field[];
   config?: {
     required?: boolean;
   };
 };
 
+type FieldMap = { [key: string]: Field };
 const getter = ({
   value,
   field,
@@ -16,10 +20,11 @@ const getter = ({
 }: {
   value: { [key: string]: any }[];
   field: FieldGroupField;
-  datasource: any;
-}) => {
-  const fields: { [key: string]: any } = {};
-  field.fields.forEach((field: any) => (fields[field.name] = field));
+  datasource: DataSource;
+}): { _fields: FieldMap; [key: string]: unknown } => {
+  const fields: FieldMap = {};
+  field.fields.forEach((field) => (fields[field.name] = field));
+
   return {
     _fields: fields,
     ...value,

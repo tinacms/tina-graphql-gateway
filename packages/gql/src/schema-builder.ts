@@ -9,34 +9,39 @@ import {
 } from "graphql";
 import type { GraphQLFieldConfigMap, Thunk } from "graphql";
 import { text } from "./fields/text";
+import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
 import fs from "fs";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
-import type { Template } from "./datasources/datasource";
-
-type schemaSource = {
-  getTemplates: (slug: string | undefined) => Template[];
-};
+import type { Template, TemplateData } from "./types";
+import type { Field } from "./fields";
+import type { DataSource } from "./datasources/datasource";
 
 const buildSectionTemplate = async ({
-  schemaSource,
+  datasource,
   cache,
   field,
 }: {
-  schemaSource: schemaSource;
+  datasource: DataSource;
   cache: { [key: string]: any };
-  field: any;
+  field: Field;
 }) => {
   if (field.type === "blocks") {
+    const templates = await Promise.all(
+      field.template_types.map(
+        async (slug) => await datasource.getTemplate({ slug })
+      )
+    );
     return {
       type: GraphQLList(
         new GraphQLUnionType({
           name: "SectionDataUnion",
           types: await buildSectionTemplates({
-            schemaSource,
+            datasource,
             cache,
-            sectionSlug: "Section",
+            templates,
+            sectionSlug: "section",
             dataOnly: true,
           }),
         })
@@ -47,40 +52,50 @@ const buildSectionTemplate = async ({
       type: new GraphQLUnionType({
         name: "AuthorUnion",
         types: await buildSectionTemplates({
-          schemaSource,
+          datasource,
           cache,
-          sectionSlug: "Author",
+          sectionSlug: "author",
         }),
       }),
     };
   } else if (field.type === "textarea") {
+    return textarea.builder({ field });
+  } else if (field.type === "text") {
     return text.builder({ field });
   }
-
-  throw new Error(`Unable to find field type ${field.type}`);
+  throw new Error(
+    `Tried assigning with ${field.type}, This might not be implemented yet`
+  );
 };
 
 const buildSectionTemplates = async ({
-  schemaSource,
+  datasource,
   cache,
+  templates,
   sectionSlug,
   dataOnly,
 }: {
-  schemaSource: schemaSource;
+  datasource: DataSource;
   cache: { [key: string]: any };
+  templates?: TemplateData[];
   sectionSlug?: string;
   dataOnly?: boolean;
 }) => {
-  // @ts-ignore
-  const sectionTemplates = await schemaSource.getTemplates(sectionSlug);
+  const sectionTemplates = !templates
+    ? await datasource.getTemplatesForSection(sectionSlug)
+    : templates;
+
+  if (!sectionTemplates) {
+    throw new Error(`No section templates found for section ${sectionSlug}`);
+  }
 
   return Promise.all(
     sectionTemplates.map(async (sectionTemplate) => {
-      const fields: { [key: string]: { type: any } } = {};
+      const fields: { [key: string]: any } = {};
       await Promise.all(
         sectionTemplate.fields.map(async (field) => {
           fields[field.name] = await buildSectionTemplate({
-            schemaSource,
+            datasource,
             cache,
             field,
           });
@@ -110,9 +125,9 @@ const buildSectionTemplates = async ({
 };
 
 export const schemaBuilder = async ({
-  schemaSource,
+  datasource,
 }: {
-  schemaSource: schemaSource;
+  datasource: DataSource;
 }) => {
   const storage: { [key: string]: any } = {};
   const cache = {
@@ -146,7 +161,7 @@ export const schemaBuilder = async ({
           },
           type: new GraphQLUnionType({
             name: "DocumentUnion",
-            types: await buildSectionTemplates({ schemaSource, cache }),
+            types: await buildSectionTemplates({ datasource, cache }),
           }),
         },
       },

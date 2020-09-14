@@ -1,112 +1,116 @@
+import p from "path";
+import fs from "fs";
+import _ from "lodash";
+import matter from "gray-matter";
+import { byTypeWorks } from "../types";
+import type { Settings, Template, TemplateData } from "../types";
 import type { DataSource } from "./datasource";
-const postTemplate = {
-  label: "Post",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Title",
-      name: "title",
-    },
-    {
-      type: "select" as const,
-      label: "Author",
-      name: "author",
-      config: {
-        source: "documents" as const,
-        section: "authors",
-      },
-    },
-    {
-      type: "blocks" as const,
-      label: "Sections",
-      name: "sections",
-      template_types: ["section"],
-    },
-  ],
-};
-const authorTemplate = {
-  label: "Author",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Name",
-      name: "name",
-    },
-  ],
-};
-const sectionTemplate = {
-  label: "Section",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Description",
-      name: "description",
-    },
-  ],
-};
 
-export const FilesystemDataSource = (projectRoot: string) => {
+export const FilesystemDataSource = (projectRoot: string): DataSource => {
   return {
-    getTemplates: async (section: string) => {
-      if (section) {
-        if (section === "Author") {
-          return [authorTemplate];
-        }
-        if (section === "Section") {
-          return [sectionTemplate];
-        }
-        throw new Error("Gotta define the right section temlpate");
-      } else {
-        return [postTemplate, authorTemplate, sectionTemplate];
+    getTemplatesForSection: async (section) => {
+      const { data } = await readFile<Settings>(
+        p.join(projectRoot, ".tina/settings.yml")
+      );
+
+      const templates = section
+        ? data.sections
+            .filter(byTypeWorks("directory"))
+            .find((templateSection) => {
+              return (
+                _.lowerCase(_.kebabCase(templateSection.label)) === section
+              );
+            })?.templates
+        : _.flatten(
+            data.sections
+              .filter(byTypeWorks("directory"))
+              .map(({ templates }) => templates)
+          );
+
+      if (!templates) {
+        throw new Error(`No templates found for section`);
       }
+
+      return Promise.all(
+        templates.map(async (templateBasename) => {
+          const fullPath = p.join(
+            projectRoot,
+            ".tina/front_matter/templates",
+            `${templateBasename}.yml`
+          );
+          const { data } = await readFile<Template>(fullPath);
+          return data;
+        })
+      );
     },
-    getData: async ({ path }: { path: string }) => {
-      if (path === "some-path.md") {
-        return {
-          data: {
-            title: "Some Title",
-            author: "/path/to/author.md",
-            sections: [
-              {
-                template: "section",
-                description: "Some textarea description",
-              },
-            ],
-          },
-          content: "Some Content",
-        };
-      }
-      if (path === "/path/to/author.md") {
-        return {
-          data: {
-            name: "Homer Simpson",
-          },
-          content: "Some Content",
-        };
-      }
+    getData: async ({ path }) => {
+      const fullPath = p.join(projectRoot, path);
+      const res = await fs.readFileSync(fullPath).toString();
+      const { content, data } = matter(res);
 
-      throw `No path mock for ${path}`;
+      return {
+        content,
+        data,
+      };
     },
-    getTemplateForDocument: async (args: { path: string }) => {
-      if (args.path === "some-path.md") {
-        return postTemplate;
+    getTemplateForDocument: async (args) => {
+      const fullPath = p.join(projectRoot, ".tina/front_matter/templates");
+      const templates = await fs.readdirSync(fullPath);
+      const template = (
+        await Promise.all(
+          templates.map(async (template) => {
+            const { data } = await readFile<Template>(
+              p.join(fullPath, template)
+            );
+
+            if (data.pages?.includes(args.path)) {
+              return data;
+            } else {
+              return false;
+            }
+          })
+        )
+      ).filter(Boolean)[0];
+
+      if (!template) {
+        throw new Error(`Unable to find template for document ${args.path}`);
       }
 
-      if (args.path === "/path/to/author.md") {
-        return authorTemplate;
-      }
-
-      throw `No template mock for ${args}`;
+      return template;
     },
-    getTemplate: async ({ slug }: { slug: string }) => {
-      if (slug === "section") {
-        return sectionTemplate;
+    getTemplate: async ({ slug }) => {
+      const fullPath = p.join(projectRoot, ".tina/front_matter/templates");
+      const templates = await fs.readdirSync(fullPath);
+      const template = templates.find((templateBasename) => {
+        return templateBasename === `${slug}.yml`;
+      });
+      if (!template) {
+        throw new Error(`No template found for slug ${slug}`);
       }
+      const { data } = await readFile<Template>(p.join(fullPath, template));
 
-      throw new Error(`no template for ${slug}`);
+      return data;
     },
   };
+};
+
+const readFile = async <T>(path: string): Promise<T> => {
+  const extension = p.extname(path);
+
+  switch (extension) {
+    case ".yml":
+      const res = await fs.readFileSync(path);
+      return parseMatter(res);
+    default:
+      throw new Error(`Unable to parse file, unknown extension ${extension}`);
+  }
+};
+
+export const FMT_BASE = ".forestry/front_matter/templates";
+export const parseMatter = async <T>(data: Buffer): Promise<T> => {
+  let res;
+  res = matter(data, { excerpt_separator: "<!-- excerpt -->" });
+
+  // @ts-ignore
+  return res;
 };

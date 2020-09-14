@@ -1,11 +1,5 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLNonNull,
-  GraphQLUnionType,
-  GraphQLList,
-} from "graphql";
+import type { Field } from "./index";
+import type { DataSource } from "../datasources/datasource";
 
 export type SelectField = {
   label: string;
@@ -24,7 +18,7 @@ const getter = async ({
 }: {
   value: string;
   field?: SelectField;
-  datasource: any;
+  datasource: DataSource;
 }) => {
   const args = { path: value };
   const template = await datasource.getTemplateForDocument(args);
