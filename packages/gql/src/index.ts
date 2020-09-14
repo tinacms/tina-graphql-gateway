@@ -2,7 +2,8 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
-import type { Field, TinaDocument } from "./datasources/datasource";
+import type { TinaDocument } from "./datasources/datasource";
+import type { Field } from "./fields";
 import bodyParser from "body-parser";
 import cors from "cors";
 import http from "http";
@@ -58,7 +59,11 @@ const sectionTemplate = {
   ],
 };
 
-const mockGetData = async ({ path }): Promise<TinaDocument> => {
+const mockGetData = async ({
+  path,
+}: {
+  path: string;
+}): Promise<TinaDocument> => {
   if (path === "some-path.md") {
     const fields: { [key: string]: Field } = {};
     postTemplate.fields.forEach((field) => (fields[field.name] = field));
@@ -104,7 +109,7 @@ const mockGetData = async ({ path }): Promise<TinaDocument> => {
     };
   }
 
-  throw `No path mock for ${path}`;
+  throw new Error(`No path mock for ${path}`);
 };
 
 const MockDataSource = () => {
@@ -114,7 +119,7 @@ const MockDataSource = () => {
 const mockGetTemplates = () => {
   return [postTemplate, authorTemplate, sectionTemplate];
 };
-const mockGetTemplate = (slug) => {
+const mockGetTemplate = (slug: string) => {
   if (slug === "Sections") {
     return sectionTemplate;
   } else {

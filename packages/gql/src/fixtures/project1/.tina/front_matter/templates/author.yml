@@ -1,0 +1,7 @@
+---
+label: Author
+hide_body: false
+fields:
+  - name: name
+    label: Name
+    type: textarea
