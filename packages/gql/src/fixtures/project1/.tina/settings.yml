@@ -1,0 +1,20 @@
+---
+new_page_extension: md
+upload_dir: ""
+sections:
+  - type: directory
+    path: content/posts
+    label: Post
+    create: documents
+    match: "**/*.md"
+    new_doc_ext: md
+    templates:
+      - post
+  - type: directory
+    path: content/authors
+    label: Post
+    create: documents
+    match: "**/*.md"
+    new_doc_ext: md
+    templates:
+      - author

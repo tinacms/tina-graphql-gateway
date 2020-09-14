@@ -1,3 +1,13 @@
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLNonNull,
+  GraphQLUnionType,
+  GraphQLList,
+  printSchema,
+} from "graphql";
+
 export type SelectField = {
   label: string;
   name: string;
@@ -29,6 +39,22 @@ const getter = ({
   });
 };
 
+const builder = ({ schemaSource, cache, field }) => {
+  const template = schemaSource.getTemplate(field.label);
+  console.log(template);
+  return {
+    type: GraphQLList(
+      cache.findOrBuildObjectType({
+        name: template.label,
+        fields: {
+          description: { type: GraphQLString },
+        },
+      })
+    ),
+  };
+};
+
 export const blocks = {
   getter,
+  builder,
 };

@@ -1,3 +1,5 @@
+import { GraphQLString } from "graphql";
+
 export type TextField = {
   label: string;
   name: string;
@@ -11,7 +13,11 @@ export type TextField = {
 const getter = ({ value, field }: { value: string; field: TextField }) => {
   return value;
 };
+const builder = ({ field }: { field: TextField }) => {
+  return { type: GraphQLString };
+};
 
 export const text = {
   getter,
+  builder,
 };
