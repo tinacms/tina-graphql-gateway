@@ -1,5 +1,4 @@
 import path from "path";
-import fs from "fs";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 import { FilesystemDataSource } from "./datasources/filesystem-manager";
@@ -30,15 +29,16 @@ describe("Document Resolver", () => {
       }
     }`;
 
-    const projectRoot = path.join(process.cwd(), "fixtures/project1");
+    const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
 
     const datasource = FilesystemDataSource(projectRoot);
+    const schema = await schemaBuilder({ datasource });
 
     const res = await graphqlInit({
-      schema: await schemaBuilder({ schemaSource: datasource }),
+      schema,
       source: query,
-      contextValue: { datasource: datasource },
-      variableValues: { path: "some-path.md" },
+      contextValue: { datasource },
+      variableValues: { path: "posts/1.md" },
     });
     if (res.errors) {
       console.log(res.errors);
@@ -48,7 +48,9 @@ describe("Document Resolver", () => {
       data: {
         document: {
           __typename: "Post",
-          content: "Some Content",
+          content: `
+Some content
+`,
           data: {
             title: "Some Title",
             author: {
@@ -61,8 +63,5 @@ describe("Document Resolver", () => {
         },
       },
     });
-    // expect(mockGetTemplates).toHaveBeenCalled();
-    // expect(mockGetData).toHaveBeenCalledWith({ path: "some-path.md" });
-    // expect(mockGetData).toHaveBeenCalledWith({ path: "/path/to/author.md" });
   });
 });

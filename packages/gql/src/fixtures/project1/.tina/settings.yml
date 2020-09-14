@@ -3,7 +3,7 @@ new_page_extension: md
 upload_dir: ""
 sections:
   - type: directory
-    path: content/posts
+    path: posts
     label: Post
     create: documents
     match: "**/*.md"
@@ -11,8 +11,8 @@ sections:
     templates:
       - post
   - type: directory
-    path: content/authors
-    label: Post
+    path: authors
+    label: Author
     create: documents
     match: "**/*.md"
     new_doc_ext: md

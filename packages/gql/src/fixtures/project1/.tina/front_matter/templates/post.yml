@@ -21,3 +21,5 @@ fields:
     label: Sections
     template_types:
       - section
+pages:
+  - posts/1.md

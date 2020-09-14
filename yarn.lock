@@ -2332,6 +2332,7 @@ __metadata:
     express-graphql: ^0.11.0
     graphql: ^15.3.0
     graphql-tools: ^6.2.1
+    gray-matter: ^4.0.2
     jest: ^26.1.0
     lodash: ^4.17.20
     ts-jest: ^26.1.2
