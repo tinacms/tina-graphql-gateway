@@ -1,13 +1,3 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLNonNull,
-  GraphQLUnionType,
-  GraphQLList,
-  printSchema,
-} from "graphql";
-
 export type SelectField = {
   label: string;
   name: string;
@@ -18,7 +8,7 @@ export type SelectField = {
   };
 };
 
-const getter = ({
+const getter = async ({
   value,
   field,
   datasource,
@@ -27,34 +17,19 @@ const getter = ({
   field: SelectField;
   datasource: any;
 }) => {
-  return value.map((value) => {
-    const template = datasource.getTemplate({ slug: value.template });
-    const fields: { [key: string]: any } = {};
-    template.fields.forEach((field: any) => (fields[field.name] = field));
+  return Promise.all(
+    value.map(async (value) => {
+      const template = await datasource.getTemplate({ slug: value.template });
+      const fields: { [key: string]: any } = {};
+      template.fields.forEach((field: any) => (fields[field.name] = field));
 
-    return {
-      _fields: fields,
-      ...value,
-    };
-  });
+      return {
+        _fields: fields,
+        ...value,
+      };
+    })
+  );
 };
-
-const builder = ({ schemaSource, cache, field }) => {
-  const template = schemaSource.getTemplate(field.label);
-  console.log(template);
-  return {
-    type: GraphQLList(
-      cache.findOrBuildObjectType({
-        name: template.label,
-        fields: {
-          description: { type: GraphQLString },
-        },
-      })
-    ),
-  };
-};
-
 export const blocks = {
   getter,
-  builder,
 };

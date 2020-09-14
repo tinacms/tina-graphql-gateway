@@ -48,71 +48,65 @@ const sectionTemplate = {
   ],
 };
 
-const mockGetData = jest.fn(({ path }) => {
-  if (path === "some-path.md") {
-    return {
-      data: {
-        title: "Some Title",
-        author: "/path/to/author.md",
-        sections: [
-          {
-            template: "section",
-            description: "Some textarea description",
-          },
-        ],
-      },
-      content: "Some Content",
-    };
-  }
-  if (path === "/path/to/author.md") {
-    return {
-      data: {
-        name: "Homer Simpson",
-      },
-      content: "Some Content",
-    };
-  }
-
-  throw `No path mock for ${path}`;
-});
-
-const mockGetTemplateForDocument = jest.fn((args) => {
-  if (args.path === "some-path.md") {
-    return postTemplate;
-  }
-
-  if (args.path === "/path/to/author.md") {
-    return authorTemplate;
-  }
-
-  throw `No template mock for ${args}`;
-});
-
-const mockGetTemplateBySlug = jest.fn(({ slug }) => {
-  if (slug === "section") {
-    return sectionTemplate;
-  }
-});
-const mockGetTemplates = jest.fn((section) => {
-  if (section) {
-    if (section === "Author") {
-      return [authorTemplate];
-    }
-    if (section === "Section") {
-      return [sectionTemplate];
-    }
-    throw new Error("Gotta define the right section temlpate");
-  } else {
-    return [postTemplate, authorTemplate, sectionTemplate];
-    // return [postTemplate, sectionTemplate];
-  }
-});
-
 export const FilesystemDataSource = (projectRoot: string) => {
   return {
-    getTemplates: mockGetTemplates,
-    getData: mockGetData,
-    getTemplateForDocument: mockGetTemplateForDocument,
-    getTemplate: mockGetTemplateBySlug,
+    getTemplates: async (section: string) => {
+      if (section) {
+        if (section === "Author") {
+          return [authorTemplate];
+        }
+        if (section === "Section") {
+          return [sectionTemplate];
+        }
+        throw new Error("Gotta define the right section temlpate");
+      } else {
+        return [postTemplate, authorTemplate, sectionTemplate];
+      }
+    },
+    getData: async ({ path }: { path: string }) => {
+      if (path === "some-path.md") {
+        return {
+          data: {
+            title: "Some Title",
+            author: "/path/to/author.md",
+            sections: [
+              {
+                template: "section",
+                description: "Some textarea description",
+              },
+            ],
+          },
+          content: "Some Content",
+        };
+      }
+      if (path === "/path/to/author.md") {
+        return {
+          data: {
+            name: "Homer Simpson",
+          },
+          content: "Some Content",
+        };
+      }
+
+      throw `No path mock for ${path}`;
+    },
+    getTemplateForDocument: async (args: { path: string }) => {
+      if (args.path === "some-path.md") {
+        return postTemplate;
+      }
+
+      if (args.path === "/path/to/author.md") {
+        return authorTemplate;
+      }
+
+      throw `No template mock for ${args}`;
+    },
+    getTemplate: async ({ slug }: { slug: string }) => {
+      if (slug === "section") {
+        return sectionTemplate;
+      }
+
+      throw new Error(`no template for ${slug}`);
+    },
   };
 };
