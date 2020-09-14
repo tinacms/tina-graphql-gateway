@@ -19,7 +19,7 @@ type schemaSource = {
   getTemplates: (slug: string | undefined) => Template[];
 };
 
-const buildSectionTemplate = ({
+const buildSectionTemplate = async ({
   schemaSource,
   cache,
   field,
@@ -29,12 +29,11 @@ const buildSectionTemplate = ({
   field: any;
 }) => {
   if (field.type === "blocks") {
-    console.log(field);
     return {
       type: GraphQLList(
         new GraphQLUnionType({
           name: "SectionDataUnion",
-          types: buildSectionTemplates({
+          types: await buildSectionTemplates({
             schemaSource,
             cache,
             sectionSlug: "Section",
@@ -47,7 +46,7 @@ const buildSectionTemplate = ({
     return {
       type: new GraphQLUnionType({
         name: "AuthorUnion",
-        types: buildSectionTemplates({
+        types: await buildSectionTemplates({
           schemaSource,
           cache,
           sectionSlug: "Author",
@@ -61,7 +60,7 @@ const buildSectionTemplate = ({
   throw new Error(`Unable to find field type ${field.type}`);
 };
 
-const buildSectionTemplates = ({
+const buildSectionTemplates = async ({
   schemaSource,
   cache,
   sectionSlug,
@@ -73,40 +72,44 @@ const buildSectionTemplates = ({
   dataOnly?: boolean;
 }) => {
   // @ts-ignore
-  const sectionTemplates = schemaSource.getTemplates(sectionSlug);
+  const sectionTemplates = await schemaSource.getTemplates(sectionSlug);
 
-  return sectionTemplates.map((sectionTemplate) => {
-    const fields: { [key: string]: { type: any } } = {};
-    sectionTemplate.fields.forEach((field) => {
-      fields[field.name] = buildSectionTemplate({
-        schemaSource,
-        cache,
-        field,
+  return Promise.all(
+    sectionTemplates.map(async (sectionTemplate) => {
+      const fields: { [key: string]: { type: any } } = {};
+      await Promise.all(
+        sectionTemplate.fields.map(async (field) => {
+          fields[field.name] = await buildSectionTemplate({
+            schemaSource,
+            cache,
+            field,
+          });
+        })
+      );
+      const dataType = cache.findOrBuildObjectType({
+        name: `${sectionTemplate.label}Data`,
+        fields,
       });
-    });
-    const dataType = cache.findOrBuildObjectType({
-      name: `${sectionTemplate.label}Data`,
-      fields,
-    });
-    if (dataOnly) {
-      return dataType;
-    } else {
-      return cache.findOrBuildObjectType({
-        name: sectionTemplate.label,
-        fields: {
-          // Every document has this shape
-          // https://www.notion.so/Content-Data-defaults-f08b05f147c240858880546e660125c3
-          content: { type: GraphQLString },
-          data: {
-            type: dataType,
+      if (dataOnly) {
+        return dataType;
+      } else {
+        return cache.findOrBuildObjectType({
+          name: sectionTemplate.label,
+          fields: {
+            // Every document has this shape
+            // https://www.notion.so/Content-Data-defaults-f08b05f147c240858880546e660125c3
+            content: { type: GraphQLString },
+            data: {
+              type: dataType,
+            },
           },
-        },
-      });
-    }
-  });
+        });
+      }
+    })
+  );
 };
 
-export const schemaBuilder = ({
+export const schemaBuilder = async ({
   schemaSource,
 }: {
   schemaSource: schemaSource;
@@ -143,7 +146,7 @@ export const schemaBuilder = ({
           },
           type: new GraphQLUnionType({
             name: "DocumentUnion",
-            types: buildSectionTemplates({ schemaSource, cache }),
+            types: await buildSectionTemplates({ schemaSource, cache }),
           }),
         },
       },

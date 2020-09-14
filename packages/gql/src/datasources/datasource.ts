@@ -34,37 +34,3 @@ export type DocumentSummary = {
 export type DocumentPartial = {
   _fields: { [key: string]: Field | { [key: string]: Field } };
 } & TinaDocument;
-
-export const DataManager = (dataService: any): DataSource => {
-  return {
-    getData: async ({ path }) => {
-      return dataService.getData(path);
-    },
-    getTemplateForDocument: async () => {
-      return {
-        label: "Author",
-        hide_body: false,
-        fields: [
-          {
-            type: "textarea" as const,
-            label: "Name",
-            name: "name",
-          },
-        ],
-      };
-    },
-    getTemplate: async (slug) => {
-      return {
-        label: "Author",
-        hide_body: false,
-        fields: [
-          {
-            type: "textarea" as const,
-            label: "Name",
-            name: "name",
-          },
-        ],
-      };
-    },
-  };
-};

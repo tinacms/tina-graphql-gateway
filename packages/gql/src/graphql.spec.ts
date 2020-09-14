@@ -35,7 +35,7 @@ describe("Document Resolver", () => {
     const datasource = FilesystemDataSource(projectRoot);
 
     const res = await graphqlInit({
-      schema: schemaBuilder({ schemaSource: datasource }),
+      schema: await schemaBuilder({ schemaSource: datasource }),
       source: query,
       contextValue: { datasource: datasource },
       variableValues: { path: "some-path.md" },
