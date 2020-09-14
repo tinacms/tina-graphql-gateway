@@ -17,7 +17,7 @@ export type SelectField = {
   };
 };
 
-const getter = ({
+const getter = async ({
   value,
   field,
   datasource,
@@ -27,10 +27,10 @@ const getter = ({
   datasource: any;
 }) => {
   const args = { path: value };
-  const template = datasource.getTemplateForDocument(args);
+  const template = await datasource.getTemplateForDocument(args);
 
   return {
-    ...datasource.getData(args),
+    ...(await datasource.getData(args)),
     _template: template.label,
     _fields: {
       data: { type: "field-group", fields: template.fields },
@@ -39,36 +39,6 @@ const getter = ({
   };
 };
 
-// @ts-ignore
-const builder = ({
-  schemaSource,
-  cache,
-  field,
-}: {
-  schemaSource: any;
-  cache: any;
-  field: SelectField;
-}) => {
-  const t = schemaSource.getTemplate(field.label);
-  return {
-    type: cache.findOrBuildObjectType({
-      name: t.label,
-      fields: {
-        content: { type: GraphQLString },
-        data: {
-          type: cache.findOrBuildObjectType({
-            name: `${t.label}data`,
-            fields: {
-              name: { type: GraphQLString },
-            },
-          }),
-        },
-      },
-    }),
-  };
-};
-
 export const select = {
   getter,
-  builder,
 };
