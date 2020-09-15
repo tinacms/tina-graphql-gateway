@@ -5,8 +5,22 @@ type Query {
 union DocumentUnion = Post | Author
 
 type Post {
+  form: Form
   content: String
   data: PostData
+}
+
+type Form {
+  fields: [FieldsUnionAuthor]
+}
+
+union FieldsUnionAuthor = textarea
+
+type textarea {
+  name: String
+  label: String
+  description: String
+  component: String
 }
 
 type PostData {
@@ -24,6 +38,7 @@ type SectionData {
 union AuthorUnion = Author
 
 type Author {
+  form: Form
   content: String
   data: AuthorData
 }

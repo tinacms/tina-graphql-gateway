@@ -25,7 +25,10 @@ type FieldResolverArgs = undefined | { path: string };
 export const documentTypeResolver: GraphQLTypeResolver<
   TinaDocument,
   ContextT
-> = (value) => {
+> = (value, context, info) => {
+  if (info.fieldName === "fields") {
+    return value.component;
+  }
   // FIXME: for blocks which have a 'template' field
   if (value.template === "section") {
     return "SectionData";
@@ -49,31 +52,52 @@ export const fieldResolver: GraphQLFieldResolver<
       throw new Error(`Unknown args for query ${args}`);
     }
   } else {
-    const field = source?._fields[info.fieldName];
-    const value = source[info.fieldName];
-
-    if (field?.type === "textarea") {
-      return text.getter({ value, field });
+    if (source.component) {
+      return source[info.fieldName];
     }
+    if (source._resolverKind === "setter") {
+      // console.log(source, info.fieldName);
+      return source[info.fieldName];
+    } else {
+      const field = source?._fields[info.fieldName];
+      const value = source[info.fieldName];
 
-    if (field?.type === "textarea") {
-      return textarea.getter({ value, field });
-    }
+      if (field?.type === "textarea") {
+        return text.getter({ value, field });
+      }
 
-    if (field?.type === "select") {
-      return select.getter({ value, field, datasource });
-    }
+      if (field?.type === "textarea") {
+        return textarea.getter({ value, field });
+      }
 
-    if (field?.type === "blocks") {
-      return blocks.getter({ value, field, datasource });
-    }
+      if (field?.type === "select") {
+        return select.getter({ value, field, datasource });
+      }
 
-    if (field?.type === "field-group") {
-      return fieldGroup.getter({
-        value,
-        field,
-        datasource,
-      });
+      if (field?.type === "blocks") {
+        return blocks.getter({ value, field, datasource });
+      }
+
+      if (field?.type === "field-group") {
+        return fieldGroup.getter({
+          value,
+          field,
+          datasource,
+        });
+      }
+      if (info.fieldName === "form") {
+        return {
+          _resolverKind: "setter",
+          fields: [
+            {
+              name: "title",
+              label: "Title",
+              description: "",
+              component: "textarea",
+            },
+          ],
+        };
+      }
     }
 
     throw new Error(`Unknown field ${info.fieldName}`);
