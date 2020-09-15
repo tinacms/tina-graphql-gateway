@@ -9,6 +9,16 @@ describe("Document Resolver", () => {
       document(path: $path) {
         __typename
         ...on Post {
+          form {
+            fields {
+              ...on textarea {
+                name
+                label
+                description
+                component
+              }
+            }
+          }
           content
           data {
             title
@@ -48,6 +58,16 @@ describe("Document Resolver", () => {
       data: {
         document: {
           __typename: "Post",
+          form: {
+            fields: [
+              {
+                name: "title",
+                label: "Title",
+                description: "",
+                component: "textarea",
+              },
+            ],
+          },
           content: `
 Some content
 `,
