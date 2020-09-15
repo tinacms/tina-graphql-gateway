@@ -29,7 +29,13 @@ type PostData {
   author: AuthorUnion
 }
 
-union SectionDataUnion = SectionData
+union SectionDataUnion = Section
+
+type Section {
+  form: Form
+  content: String
+  data: SectionData
+}
 
 type SectionData {
   description: String
