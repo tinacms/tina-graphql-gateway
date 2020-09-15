@@ -5,43 +5,50 @@ type Query {
 union DocumentUnion = Post | Author
 
 type Post {
-  form: Form
-  content: String
+  form: PostForm
   data: PostData
 }
 
-type Form {
-  fields: [FieldsUnionAuthor]
+type PostForm {
+  fields: [PostFormFields]
 }
 
-union FieldsUnionAuthor = textarea
+union PostFormFields = textarea | select | blocks
 
 type textarea {
   name: String
-  label: String
-  description: String
   component: String
+  gibberish: String
+}
+
+type select {
+  name: String
+  component: String
+  gibberish: String
+}
+
+type blocks {
+  name: String
+  component: String
+  gibberish: String
 }
 
 type PostData {
   title: String
-  sections: [SectionDataUnion]
-  author: AuthorUnion
+  author: String
+  sections: String
 }
-
-union SectionDataUnion = SectionData
-
-type SectionData {
-  description: String
-}
-
-union AuthorUnion = Author
 
 type Author {
-  form: Form
-  content: String
+  form: AuthorForm
   data: AuthorData
 }
+
+type AuthorForm {
+  fields: [AuthorFormFields]
+}
+
+union AuthorFormFields = textarea
 
 type AuthorData {
   name: String
