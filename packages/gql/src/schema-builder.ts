@@ -5,10 +5,12 @@ import {
   GraphQLNonNull,
   GraphQLUnionType,
   GraphQLList,
+  getNamedType,
   printSchema,
   GraphQLType,
   GraphQLField,
   GraphQLFieldConfig,
+  GraphQLObjectTypeConfig,
   GraphQLUnionTypeConfig,
 } from "graphql";
 import type { GraphQLOutputType, GraphQLFieldConfigMap, Thunk } from "graphql";
@@ -25,7 +27,6 @@ import type { ContextT } from "./graphql";
 
 const buildField = async (cache: Cache, field: Field) => {
   return cache.build(
-    field.type,
     new GraphQLObjectType<Field, ContextT>({
       name: field.type,
       fields: {
@@ -37,18 +38,21 @@ const buildField = async (cache: Cache, field: Field) => {
   );
 };
 
+const buildFields = async (cache: Cache, template: TemplateData) => {
+  return Promise.all(
+    template.fields.map(async (field) => await buildField(cache, field))
+  );
+};
+
 const buildTemplateFormFields = async (
   cache: Cache,
   template: TemplateData
 ) => {
   return cache.build(
-    `${template.label}FormFields`,
     GraphQLList(
       new GraphQLUnionType({
         name: `${template.label}FormFields`,
-        types: await Promise.all(
-          template.fields.map(async (field) => await buildField(cache, field))
-        ),
+        types: await buildFields(cache, template),
       })
     )
   );
@@ -56,7 +60,6 @@ const buildTemplateFormFields = async (
 
 const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
   return cache.build(
-    `${template.label}Form`,
     new GraphQLObjectType({
       name: `${template.label}Form`,
       fields: {
@@ -95,7 +98,6 @@ const buildTemplateDataFields = async (
  */
 const buildTemplateData = async (cache: Cache, template: TemplateData) => {
   return cache.build(
-    `${template.label}Data`,
     new GraphQLObjectType({
       name: `${template.label}Data`,
       fields: await buildTemplateDataFields(cache, template),
@@ -117,7 +119,6 @@ const buildTemplateData = async (cache: Cache, template: TemplateData) => {
  */
 const buildTemplate = async (cache: Cache, template: TemplateData) => {
   return cache.build(
-    template.label,
     new GraphQLObjectType({
       name: template.label,
       fields: {
@@ -125,6 +126,16 @@ const buildTemplate = async (cache: Cache, template: TemplateData) => {
         data: { type: await buildTemplateData(cache, template) },
       },
     })
+  );
+};
+
+const buildDocumentTypes = async (
+  cache: Cache
+): Promise<GraphQLObjectType<any, any>[]> => {
+  return Promise.all(
+    (await cache.datasource.getTemplatesForSection()).map(
+      async (template) => await buildTemplate(cache, template)
+    )
   );
 };
 
@@ -137,18 +148,17 @@ const buildTemplate = async (cache: Cache, template: TemplateData) => {
  * ```
  */
 const buildDocumentUnion = async (cache: Cache): Promise<GraphQLUnionType> => {
-  return new GraphQLUnionType({
-    name: "DocumentUnion",
-    types: await Promise.all(
-      (await cache.datasource.getTemplatesForSection()).map(
-        async (template) => await buildTemplate(cache, template)
-      )
-    ),
-  });
+  return cache.build(
+    new GraphQLUnionType({
+      name: "DocumentUnion",
+      types: await buildDocumentTypes(cache),
+    })
+  );
 };
 
 type Cache = {
-  build: (name: string, gqlType: GraphQLType) => GraphQLType;
+  /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
+  build: <T extends GraphQLType>(gqlType: T) => T;
   datasource: DataSource;
 };
 
@@ -161,13 +171,15 @@ export const schemaBuilder = async ({
     [key: string]: GraphQLType;
   } = {};
   const cache: Cache = {
-    build: (name, gqlType) => {
+    build: (gqlType) => {
+      const name = getNamedType(gqlType).toString();
       if (storage[name]) {
         return storage[name];
       } else {
         storage[name] = gqlType;
-        return storage[name];
       }
+
+      return gqlType as any; // FIXME: not sure if it's possible, but want to just assert its a GraphQL union item
     },
     datasource: datasource,
   };
