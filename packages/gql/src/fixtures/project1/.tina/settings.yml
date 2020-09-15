@@ -12,7 +12,7 @@ sections:
       - post
   - type: directory
     path: authors
-    label: Post
+    label: Author
     create: documents
     match: "**/*.md"
     new_doc_ext: md

@@ -1,5 +1,4 @@
 import path from "path";
-import fs from "fs";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 import { FilesystemDataSource } from "./datasources/filesystem-manager";
