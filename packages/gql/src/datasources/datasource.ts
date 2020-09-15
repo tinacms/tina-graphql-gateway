@@ -1,4 +1,5 @@
 import type { Field } from "../fields";
+import type { Template, TemplateData } from "../types";
 
 export type TinaDocument = {
   [key: string]: any;
@@ -17,14 +18,11 @@ export const isDocumentArgs = (args: any): args is DocumentArgs => {
 };
 export type DataSource = {
   getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
-  getTemplateForDocument: ({ path }: DocumentArgs) => Promise<Template>;
-  getTemplate: ({ slug }: { slug: string }) => Promise<Template>;
-};
-
-export type Template = {
-  label: string;
-  hide_body: boolean;
-  fields: Field[];
+  getTemplateForDocument: ({ path }: DocumentArgs) => Promise<TemplateData>;
+  getTemplate: ({ slug }: { slug: string }) => Promise<TemplateData>;
+  getTemplatesForSection: (
+    section: string | undefined
+  ) => Promise<TemplateData[]>;
 };
 
 export type DocumentSummary = {

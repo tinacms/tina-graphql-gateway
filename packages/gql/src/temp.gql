@@ -11,8 +11,14 @@ type Post {
 
 type PostData {
   title: String
-  author: AuthorUnion
   sections: [SectionDataUnion]
+  author: AuthorUnion
+}
+
+union SectionDataUnion = SectionData
+
+type SectionData {
+  description: String
 }
 
 union AuthorUnion = Author
@@ -24,10 +30,4 @@ type Author {
 
 type AuthorData {
   name: String
-}
-
-union SectionDataUnion = SectionData
-
-type SectionData {
-  description: String
 }

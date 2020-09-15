@@ -7,6 +7,7 @@ import type {
 } from "graphql";
 import { isDocumentArgs } from "./datasources/datasource";
 import { text } from "./fields/text";
+import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
@@ -18,10 +19,6 @@ import type {
 
 export type ContextT = {
   datasource: DataSource;
-  nextOperation?: {
-    name: "getData" | "getSettings";
-    args: undefined | { path: string }; // use conditional types here
-  };
 };
 
 type FieldResolverArgs = undefined | { path: string };
@@ -38,20 +35,18 @@ export const documentTypeResolver: GraphQLTypeResolver<
 
 type FieldResolverSource = undefined | TinaDocument | DocumentPartial;
 
-const GETTER = "getter";
-const SETTER = "setter";
-const MUTATOR = "mutator";
-
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
   FieldResolverArgs
-> = (source, args, context, info): any => {
+> = (source, args, context, info) => {
   const { datasource } = context;
 
   if (!source) {
     if (isDocumentArgs(args)) {
       return select.getter({ value: args.path, datasource });
+    } else {
+      throw new Error(`Unknown args for query ${args}`);
     }
   } else {
     const field = source?._fields[info.fieldName];
@@ -59,6 +54,10 @@ export const fieldResolver: GraphQLFieldResolver<
 
     if (field?.type === "textarea") {
       return text.getter({ value, field });
+    }
+
+    if (field?.type === "textarea") {
+      return textarea.getter({ value, field });
     }
 
     if (field?.type === "select") {
@@ -76,6 +75,8 @@ export const fieldResolver: GraphQLFieldResolver<
         datasource,
       });
     }
+
+    throw new Error(`Unknown field ${info.fieldName}`);
   }
 };
 

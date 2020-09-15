@@ -32,11 +32,12 @@ describe("Document Resolver", () => {
     const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
 
     const datasource = FilesystemDataSource(projectRoot);
+    const schema = await schemaBuilder({ datasource });
 
     const res = await graphqlInit({
-      schema: await schemaBuilder({ schemaSource: datasource }),
+      schema,
       source: query,
-      contextValue: { datasource: datasource },
+      contextValue: { datasource },
       variableValues: { path: "posts/1.md" },
     });
     if (res.errors) {
