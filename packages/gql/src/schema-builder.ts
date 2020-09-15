@@ -111,6 +111,31 @@ const buildSectionTemplates = async ({
         return cache.findOrBuildObjectType({
           name: sectionTemplate.label,
           fields: {
+            form: {
+              type: cache.findOrBuildObjectType({
+                name: "Form",
+                fields: {
+                  fields: {
+                    type: GraphQLList(
+                      new GraphQLUnionType({
+                        name: "FieldsUnion" + sectionTemplate.label,
+                        types: [
+                          cache.findOrBuildObjectType({
+                            name: "textarea",
+                            fields: {
+                              name: { type: GraphQLString },
+                              label: { type: GraphQLString },
+                              description: { type: GraphQLString },
+                              component: { type: GraphQLString },
+                            },
+                          }),
+                        ],
+                      })
+                    ),
+                  },
+                },
+              }),
+            },
             // Every document has this shape
             // https://www.notion.so/Content-Data-defaults-f08b05f147c240858880546e660125c3
             content: { type: GraphQLString },
