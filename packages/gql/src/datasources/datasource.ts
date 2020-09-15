@@ -17,12 +17,24 @@ export const isDocumentArgs = (args: any): args is DocumentArgs => {
   return args.path;
 };
 export type DataSource = {
+  /**
+   * `getData`
+   *
+   * Returns the parsed content from a specified path
+   *
+   * ```js
+   * // Example
+   * {
+   *   data: {
+   *     title: "Hello, World"
+   *   }
+   * }
+   * ```
+   */
   getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
   getTemplateForDocument: ({ path }: DocumentArgs) => Promise<TemplateData>;
   getTemplate: ({ slug }: { slug: string }) => Promise<TemplateData>;
-  getTemplatesForSection: (
-    section: string | undefined
-  ) => Promise<TemplateData[]>;
+  getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
 };
 
 export type DocumentSummary = {
