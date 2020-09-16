@@ -168,6 +168,10 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
  * }
  * ```
  */
+type BuildTemplateData = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLObjectType<any, ContextT>>;
 const buildTemplateData = async (cache: Cache, template: TemplateData) => {
   return cache.build(
     new GraphQLObjectType({
@@ -310,7 +314,7 @@ export type Cache = {
     buildDataUnion: BuildDataUnion;
     buildFormUnion: BuildFormUnion;
     buildTemplateForm: BuildTemplateForm;
-    buildTemplateDataFields: BuildTemplateDataFields;
+    buildTemplateData: BuildTemplateData;
     buildTemplateFormFields: BuildTemplateFormFields;
   };
 };
@@ -338,8 +342,8 @@ export const schemaBuilder = async ({
     builder: {
       buildDocumentUnion,
       buildDataUnion,
-      buildTemplateDataFields,
       buildFormUnion,
+      buildTemplateData,
       buildTemplateForm,
       buildTemplateFormFields,
     },

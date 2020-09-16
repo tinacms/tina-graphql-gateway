@@ -69,13 +69,7 @@ const builder = {
     cache: Cache;
     field: FieldGroupField;
   }) => {
-    const fields = await cache.builder.buildTemplateDataFields(cache, field);
-    return {
-      type: new GraphQLObjectType({
-        name: field.name,
-        fields,
-      }),
-    };
+    return { type: await cache.builder.buildTemplateData(cache, field) };
   },
 };
 

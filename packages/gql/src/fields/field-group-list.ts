@@ -70,12 +70,8 @@ const builder = {
     cache: Cache;
     field: FieldGroupListField;
   }) => {
-    const fields = await cache.builder.buildTemplateDataFields(cache, field);
     return {
-      type: new GraphQLObjectType({
-        name: field.name,
-        fields,
-      }),
+      type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
     };
   },
 };

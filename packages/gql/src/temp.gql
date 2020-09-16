@@ -70,10 +70,10 @@ union sectionDataUnion = SectionData
 
 type SectionData {
   description: String
-  cta: cta
+  cta: CtaData
 }
 
-type cta {
+type CtaData {
   header: String
 }
 
@@ -93,10 +93,10 @@ union AuthorFormFields = TextareaFormField | SelectFormField | FieldGroupListFor
 type AuthorData {
   name: String
   role: String
-  accolades: accolades
+  accolades: [AccoladesData]
 }
 
-type accolades {
+type AccoladesData {
   figure: String
   description: String
 }
