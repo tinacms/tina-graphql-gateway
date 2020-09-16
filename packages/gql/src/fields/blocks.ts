@@ -45,8 +45,14 @@ const getter = async ({
   );
 };
 
-const builder = {
-  setter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+const builders = {
+  formFieldBuilder: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => {
     const templateForms: { [key: string]: any } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
@@ -76,7 +82,13 @@ const builder = {
       })
     );
   },
-  getter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+  dataFieldBuilder: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => {
     return {
       type: await cache.builder.buildDataUnion({
         cache,
@@ -88,5 +100,5 @@ const builder = {
 
 export const blocks = {
   getter,
-  builder,
+  builders,
 };

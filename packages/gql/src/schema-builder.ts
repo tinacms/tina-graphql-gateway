@@ -33,17 +33,17 @@ import type { ContextT } from "./graphql";
 const buildTemplateFormField = async (cache: Cache, field: Field) => {
   switch (field.type) {
     case "textarea":
-      return textarea.builder.setter({ cache, field });
+      return textarea.builders.formFieldBuilder({ cache, field });
     case "select":
-      return select.builder.setter({ cache, field });
+      return select.builders.formFieldBuilder({ cache, field });
     case "blocks":
-      return blocks.builder.setter({ cache, field });
+      return blocks.builders.formFieldBuilder({ cache, field });
     case "field_group_list":
-      return await fieldGroupList.builder.setter({ cache, field });
+      return await fieldGroupList.builders.formFieldBuilder({ cache, field });
     case "field_group":
-      return await fieldGroup.builder.setter({ cache, field });
+      return await fieldGroup.builders.formFieldBuilder({ cache, field });
     case "list":
-      return await list.builder.setter({ cache, field });
+      return await list.builders.formFieldBuilder({ cache, field });
     default:
       break;
   }
@@ -125,34 +125,37 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
     template.fields.map(async (field) => {
       switch (field.type) {
         case "textarea":
-          fields[field.name] = textarea.builder.getter({ cache, field });
+          fields[field.name] = textarea.builders.dataFieldBuilder({
+            cache,
+            field,
+          });
           break;
         case "select":
-          fields[field.name] = await select.builder.getter({
+          fields[field.name] = await select.builders.dataFieldBuilder({
             cache,
             field,
           });
           break;
         case "blocks":
-          fields[field.name] = await blocks.builder.getter({
+          fields[field.name] = await blocks.builders.dataFieldBuilder({
             cache,
             field,
           });
           break;
         case "field_group":
-          fields[field.name] = await fieldGroup.builder.getter({
+          fields[field.name] = await fieldGroup.builders.dataFieldBuilder({
             cache,
             field,
           });
           break;
         case "field_group_list":
-          fields[field.name] = await fieldGroupList.builder.getter({
+          fields[field.name] = await fieldGroupList.builders.dataFieldBuilder({
             cache,
             field,
           });
           break;
         case "list":
-          fields[field.name] = await list.builder.getter({
+          fields[field.name] = await list.builders.dataFieldBuilder({
             cache,
             field,
           });

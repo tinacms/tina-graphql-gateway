@@ -14,8 +14,14 @@ export type TextareaField = {
 const getter = ({ value, field }: { value: string; field: TextareaField }) => {
   return value;
 };
-const builder = {
-  setter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+const builders = {
+  formFieldBuilder: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: TextareaField;
+  }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "TextareaFormField",
@@ -35,12 +41,18 @@ const builder = {
       })
     );
   },
-  getter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+  dataFieldBuilder: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: TextareaField;
+  }) => {
     return { type: GraphQLString };
   },
 };
 
 export const textarea = {
   getter,
-  builder,
+  builders,
 };

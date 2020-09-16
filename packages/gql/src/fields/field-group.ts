@@ -38,8 +38,8 @@ const getter = ({
     ...value,
   };
 };
-const builder = {
-  setter: async ({
+const builders = {
+  formFieldBuilder: async ({
     cache,
     field,
   }: {
@@ -65,7 +65,7 @@ const builder = {
       })
     );
   },
-  getter: async ({
+  dataFieldBuilder: async ({
     cache,
     field,
   }: {
@@ -77,6 +77,6 @@ const builder = {
 };
 
 export const fieldGroup = {
-  builder,
+  builders,
   getter,
 };
