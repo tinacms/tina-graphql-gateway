@@ -4,6 +4,7 @@ import { SelectField } from "./select";
 import { BlocksField } from "./blocks";
 import { FieldGroupField } from "./field-group";
 import { FieldGroupListField } from "./field-group-list";
+import { ListField } from "./list";
 
 export type Field =
   | TextField
@@ -11,4 +12,5 @@ export type Field =
   | SelectField
   | BlocksField
   | FieldGroupField
-  | FieldGroupListField;
+  | FieldGroupListField
+  | ListField;
