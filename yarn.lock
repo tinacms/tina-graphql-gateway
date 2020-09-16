@@ -2316,6 +2316,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@forestryio/gql@workspace:packages/gql"
   dependencies:
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-tools/schema": ^6.2.1
     "@types/cors": ^2.8.7
     "@types/express": ^4.17.8

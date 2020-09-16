@@ -4426,6 +4426,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/gql/",
           "packageDependencies": [
             ["@forestryio/gql", "workspace:packages/gql"],
+            ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@graphql-tools/schema", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:6.2.1"],
             ["@types/cors", "npm:2.8.7"],
             ["@types/express", "npm:4.17.8"],
