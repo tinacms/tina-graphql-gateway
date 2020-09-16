@@ -38,8 +38,8 @@ export type Settings = {
 
 export type TemplateData = {
   label: string;
-  hide_body: boolean;
-  display_field: string;
+  hide_body?: boolean;
+  display_field?: string;
   fields: Field[];
   pages?: string[];
 };

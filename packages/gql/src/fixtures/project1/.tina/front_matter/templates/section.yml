@@ -5,3 +5,12 @@ fields:
   - name: description
     label: Description
     type: textarea
+  - name: cta
+    label: Cta
+    type: field_group
+    fields:
+      - name: header
+        label: Header
+        type: text
+        config:
+          required: false

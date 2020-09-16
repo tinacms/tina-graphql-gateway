@@ -16,6 +16,21 @@ fields:
         - CTO
         - COO
         - CFO
+  - name: accolades
+    label: Accolades
+    type: field_group_list
+    fields:
+      - name: figure
+        type: textarea
+        config:
+          required: false
+        label: Figure
+        description: A single number or word to emphasize
+      - name: description
+        type: textarea
+        config:
+          required: false
+        label: Description
 
 pages:
   - authors/homer.md

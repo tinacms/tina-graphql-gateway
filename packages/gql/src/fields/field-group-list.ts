@@ -9,10 +9,10 @@ import {
 } from "graphql";
 import type { Cache } from "../schema-builder";
 
-export type FieldGroupField = {
+export type FieldGroupListField = {
   label: string;
   name: string;
-  type: "field_group";
+  type: "field_group_list";
   default: string;
   fields: Field[];
   config?: {
@@ -27,7 +27,7 @@ const getter = ({
   datasource,
 }: {
   value: { [key: string]: any }[];
-  field: FieldGroupField;
+  field: FieldGroupListField;
   datasource: DataSource;
 }): { _fields: FieldMap; [key: string]: unknown } => {
   const fields: FieldMap = {};
@@ -38,13 +38,14 @@ const getter = ({
     ...value,
   };
 };
+
 const builder = {
   setter: async ({
     cache,
     field,
   }: {
     cache: Cache;
-    field: FieldGroupField;
+    field: FieldGroupListField;
   }) => {
     return cache.build(
       new GraphQLObjectType({
@@ -67,7 +68,7 @@ const builder = {
     field,
   }: {
     cache: Cache;
-    field: FieldGroupField;
+    field: FieldGroupListField;
   }) => {
     const fields = await cache.builder.buildTemplateDataFields(cache, field);
     return {
@@ -79,7 +80,7 @@ const builder = {
   },
 };
 
-export const fieldGroup = {
-  builder,
+export const fieldGroupList = {
   getter,
+  builder,
 };

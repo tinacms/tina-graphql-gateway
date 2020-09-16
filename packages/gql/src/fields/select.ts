@@ -57,7 +57,7 @@ const builder = {
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
+          component: { type: GraphQLString },
           options: { type: GraphQLList(GraphQLString) },
         },
       })
