@@ -13,7 +13,7 @@ type PostForm {
   fields: [PostFormFields]
 }
 
-union PostFormFields = TextareaFormField | SelectFormField | blocks
+union PostFormFields = TextareaFormField | SelectFormField | BlocksFormField
 
 type TextareaFormField {
   name: String
@@ -33,10 +33,17 @@ type SelectFormField {
   options: [String]
 }
 
-type blocks {
+type BlocksFormField {
   name: String
+  label: String
   component: String
-  gibberish: String
+  templates: sectionDataUnion
+}
+
+union sectionDataUnion = SectionData
+
+type SectionData {
+  description: String
 }
 
 type PostData {
