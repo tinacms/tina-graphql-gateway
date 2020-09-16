@@ -16,6 +16,12 @@ fields:
         - CTO
         - COO
         - CFO
+  - name: anecdotes
+    type: list
+    config:
+      use_select: false
+    label: Anecdotes
+    description: Something simple about their high-level achievements
   - name: accolades
     label: Accolades
     type: field_group_list

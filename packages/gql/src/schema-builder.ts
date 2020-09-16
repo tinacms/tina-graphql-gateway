@@ -24,6 +24,7 @@ import fs from "fs";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
+import { list } from "./fields/list";
 import type { Template, TemplateData } from "./types";
 import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
@@ -41,6 +42,8 @@ const buildField = async (cache: Cache, field: Field) => {
       return await fieldGroupList.builder.setter({ cache, field });
     case "field_group":
       return await fieldGroup.builder.setter({ cache, field });
+    case "list":
+      return await list.builder.setter({ cache, field });
     default:
       break;
   }
@@ -141,6 +144,12 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
           break;
         case "field_group_list":
           fields[field.name] = await fieldGroupList.builder.getter({
+            cache,
+            field,
+          });
+          break;
+        case "list":
+          fields[field.name] = await list.builder.getter({
             cache,
             field,
           });

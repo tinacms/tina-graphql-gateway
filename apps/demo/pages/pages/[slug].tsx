@@ -22,10 +22,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  if (!props.data) {
+  console.log(props);
+  if (!props.response) {
     return <div />;
   }
-  const [formData, form] = useForestryForm<Query, DocumentUnion>(props.data);
+  const [formData, form] = useForestryForm<Query, DocumentUnion>(
+    props.response
+  );
   usePlugin(form);
 
   const createPagePlugin = new ContentCreatorPlugin<

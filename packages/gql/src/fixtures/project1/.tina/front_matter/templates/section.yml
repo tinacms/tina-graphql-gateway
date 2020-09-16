@@ -14,3 +14,11 @@ fields:
         type: text
         config:
           required: false
+  - name: authors
+    label: Authors
+    type: list
+    config:
+      use_select: true
+      source:
+        type: pages
+        section: authors
