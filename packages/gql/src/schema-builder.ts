@@ -31,6 +31,8 @@ const buildField = async (cache: Cache, field: Field) => {
       return textarea.builder.setter({ cache, field });
     case "select":
       return select.builder.setter({ cache, field });
+    case "blocks":
+      return blocks.builder.setter({ cache, field });
     default:
       break;
   }
@@ -166,6 +168,41 @@ const buildDocumentTypes = async ({
 };
 
 /**
+ * Same as BuildDocumentUnion except that it only builds the `data` portion, used
+ * for block children
+ *
+ * ```graphql
+ * # Example
+ * union PostAuthorDataUnion = PostData | AuthorData
+ * ```
+ */
+type BuildDataUnion = ({
+  cache,
+  templates,
+}: {
+  cache: Cache;
+  templates: string[];
+}) => Promise<GraphQLUnionType>;
+const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
+  const templateObjects = await Promise.all(
+    templates.map(
+      async (template) => await cache.datasource.getTemplate({ slug: template })
+    )
+  );
+  const types = await Promise.all(
+    templateObjects.map(
+      async (template) => await buildTemplateData(cache, template)
+    )
+  );
+  return cache.build(
+    new GraphQLUnionType({
+      name: `${templates.join("")}DataUnion`,
+      types,
+    })
+  );
+};
+
+/**
  * Builds the union which can be any one of multiple templates.
  *
  * ```graphql
@@ -196,6 +233,7 @@ export type Cache = {
   datasource: DataSource;
   builder: {
     buildDocumentUnion: BuildDocumentUnion;
+    buildDataUnion: BuildDataUnion;
   };
 };
 
@@ -221,6 +259,7 @@ export const schemaBuilder = async ({
     datasource: datasource,
     builder: {
       buildDocumentUnion,
+      buildDataUnion,
     },
   };
 
