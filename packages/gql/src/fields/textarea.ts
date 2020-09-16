@@ -1,4 +1,5 @@
-import { GraphQLString } from "graphql";
+import { GraphQLString, GraphQLObjectType } from "graphql";
+import type { Cache } from "../schema-builder";
 
 export type TextareaField = {
   label: string;
@@ -13,8 +14,30 @@ export type TextareaField = {
 const getter = ({ value, field }: { value: string; field: TextareaField }) => {
   return value;
 };
-const builder = ({ field }: { field: TextareaField }) => {
-  return { type: GraphQLString };
+const builder = {
+  setter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+    return cache.build(
+      new GraphQLObjectType({
+        name: "TextareaFormField",
+        fields: {
+          name: { type: GraphQLString },
+          label: { type: GraphQLString },
+          type: { type: GraphQLString },
+          config: {
+            type: cache.build(
+              new GraphQLObjectType({
+                name: "Config",
+                fields: { required: { type: GraphQLString } },
+              })
+            ),
+          },
+        },
+      })
+    );
+  },
+  getter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+    return { type: GraphQLString };
+  },
 };
 
 export const textarea = {
