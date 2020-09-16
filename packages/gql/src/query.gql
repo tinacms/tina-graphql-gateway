@@ -1,0 +1,102 @@
+query DocumentQuery($path: String!) {
+  document(path: $path) {
+    __typename
+    ... on Post {
+      form {
+        fields {
+          ... on TextareaFormField {
+            name
+            label
+            type
+            config {
+              required
+            }
+          }
+          ... on SelectFormField {
+            name
+            label
+            type
+            options
+          }
+          ... on BlocksFormField {
+            name
+            label
+            component
+            templates {
+              sectionTemplateFields {
+                fields {
+                  ... on TextareaFormField {
+                    name
+                    label
+                    type
+                    config {
+                      required
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      data {
+        title
+        sections {
+          ... on SectionData {
+            description
+          }
+        }
+        author {
+          ... on Author {
+            form {
+              fields {
+                ... on TextareaFormField {
+                  name
+                  label
+                  type
+                  config {
+                    required
+                  }
+                }
+                ... on SelectFormField {
+                  name
+                  label
+                  type
+                  options
+                }
+              }
+            }
+            data {
+              name
+              role
+            }
+          }
+        }
+      }
+    }
+    ... on Author {
+      form {
+        fields {
+          ... on TextareaFormField {
+            name
+            label
+            type
+            config {
+              required
+            }
+          }
+          ... on SelectFormField {
+            name
+            label
+            type
+            options
+          }
+        }
+      }
+      data {
+        name
+        role
+      }
+    }
+  }
+}

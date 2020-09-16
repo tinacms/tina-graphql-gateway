@@ -5,6 +5,8 @@ import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLUnionType,
+  GraphQLNonNull,
+  FieldsOnCorrectTypeRule,
 } from "graphql";
 import type { Cache } from "../schema-builder";
 
@@ -44,9 +46,19 @@ const getter = async ({
 };
 
 const builder = {
-  /** Returns one of 3 possible types of select options */
   setter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-    // return GraphQLString;
+    const templateForms: { [key: string]: any } = {};
+    await Promise.all(
+      field.template_types.map(async (templateSlug) => {
+        const template = await cache.datasource.getTemplate({
+          slug: templateSlug,
+        });
+        templateForms[`${templateSlug}TemplateFields`] = {
+          type: await cache.builder.buildTemplateForm(cache, template),
+        };
+      })
+    );
+
     return cache.build(
       new GraphQLObjectType({
         name: "BlocksFormField",
@@ -55,16 +67,23 @@ const builder = {
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           templates: {
-            type: await cache.builder.buildDataUnion({
-              cache,
-              templates: field.template_types,
+            type: new GraphQLObjectType({
+              name: "BlocksTemplates",
+              fields: templateForms,
             }),
           },
         },
       })
     );
   },
-  getter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {},
+  getter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+    return {
+      type: await cache.builder.buildDataUnion({
+        cache,
+        templates: field.template_types,
+      }),
+    };
+  },
 };
 
 export const blocks = {
