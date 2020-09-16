@@ -1,8 +1,8 @@
 type Query {
-  document(path: String!): DocumentUnion
+  document(path: String!): undefinedDocumentUnion
 }
 
-union DocumentUnion = Post | Author
+union undefinedDocumentUnion = Post | Author
 
 type Post {
   form: PostForm
@@ -13,18 +13,24 @@ type PostForm {
   fields: [PostFormFields]
 }
 
-union PostFormFields = textarea | select | blocks
+union PostFormFields = TextareaFormField | SelectFormField | blocks
 
-type textarea {
+type TextareaFormField {
   name: String
-  component: String
-  gibberish: String
+  label: String
+  type: String
+  config: Config
 }
 
-type select {
+type Config {
+  required: String
+}
+
+type SelectFormField {
   name: String
-  component: String
-  gibberish: String
+  label: String
+  type: String
+  options: [String]
 }
 
 type blocks {
@@ -35,9 +41,11 @@ type blocks {
 
 type PostData {
   title: String
-  author: String
   sections: String
+  author: authorsDocumentUnion
 }
+
+union authorsDocumentUnion = Author
 
 type Author {
   form: AuthorForm
@@ -48,8 +56,9 @@ type AuthorForm {
   fields: [AuthorFormFields]
 }
 
-union AuthorFormFields = textarea
+union AuthorFormFields = TextareaFormField | SelectFormField
 
 type AuthorData {
   name: String
+  role: String
 }

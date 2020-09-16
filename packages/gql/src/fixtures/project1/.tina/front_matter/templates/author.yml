@@ -5,5 +5,17 @@ fields:
   - name: name
     label: Name
     type: textarea
+  - name: role
+    label: role
+    type: select
+    config:
+      source:
+        type: simple
+      options:
+        - CEO
+        - CTO
+        - COO
+        - CFO
+
 pages:
   - authors/homer.md

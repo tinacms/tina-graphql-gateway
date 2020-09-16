@@ -26,6 +26,14 @@ import type { DataSource } from "./datasources/datasource";
 import type { ContextT } from "./graphql";
 
 const buildField = async (cache: Cache, field: Field) => {
+  switch (field.type) {
+    case "textarea":
+      return textarea.builder.setter({ cache, field });
+    case "select":
+      return select.builder.setter({ cache, field });
+    default:
+      break;
+  }
   return cache.build(
     new GraphQLObjectType<Field, ContextT>({
       name: field.type,
@@ -72,12 +80,26 @@ const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
 const buildTemplateDataFields = async (
   cache: Cache,
   template: TemplateData
-): Promise<GraphQLFieldConfigMap<any, ContextT>> => {
-  const fields: { [key: string]: GraphQLFieldConfig<any, ContextT> } = {};
+) => {
+  const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
   await Promise.all(
     template.fields.map(async (field) => {
-      fields[field.name] = { type: GraphQLString };
+      switch (field.type) {
+        case "textarea":
+          fields[field.name] = textarea.builder.getter({ cache, field });
+          break;
+        case "select":
+          fields[field.name] = await select.builder.getter({
+            cache,
+            field,
+          });
+          break;
+
+        default:
+          fields[field.name] = { type: GraphQLString };
+          break;
+      }
     })
   );
 
@@ -129,11 +151,15 @@ const buildTemplate = async (cache: Cache, template: TemplateData) => {
   );
 };
 
-const buildDocumentTypes = async (
-  cache: Cache
-): Promise<GraphQLObjectType<any, any>[]> => {
+const buildDocumentTypes = async ({
+  cache,
+  section,
+}: {
+  cache: Cache;
+  section?: string;
+}): Promise<GraphQLObjectType<any, any>[]> => {
   return Promise.all(
-    (await cache.datasource.getTemplatesForSection()).map(
+    (await cache.datasource.getTemplatesForSection(section)).map(
       async (template) => await buildTemplate(cache, template)
     )
   );
@@ -147,19 +173,30 @@ const buildDocumentTypes = async (
  * union DocumentUnion = Post | Author
  * ```
  */
-const buildDocumentUnion = async (cache: Cache): Promise<GraphQLUnionType> => {
+type BuildDocumentUnion = ({
+  cache,
+  section,
+}: {
+  cache: Cache;
+  section?: string;
+}) => Promise<GraphQLUnionType>;
+
+const buildDocumentUnion: BuildDocumentUnion = async ({ cache, section }) => {
   return cache.build(
     new GraphQLUnionType({
-      name: "DocumentUnion",
-      types: await buildDocumentTypes(cache),
+      name: `${section}DocumentUnion`,
+      types: await buildDocumentTypes({ cache, section }),
     })
   );
 };
 
-type Cache = {
+export type Cache = {
   /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
   build: <T extends GraphQLType>(gqlType: T) => T;
   datasource: DataSource;
+  builder: {
+    buildDocumentUnion: BuildDocumentUnion;
+  };
 };
 
 export const schemaBuilder = async ({
@@ -182,6 +219,9 @@ export const schemaBuilder = async ({
       return gqlType as any; // FIXME: not sure if it's possible, but want to just assert its a GraphQL union item
     },
     datasource: datasource,
+    builder: {
+      buildDocumentUnion,
+    },
   };
 
   const schema = new GraphQLSchema({
@@ -192,7 +232,7 @@ export const schemaBuilder = async ({
           args: {
             path: { type: GraphQLNonNull(GraphQLString) },
           },
-          type: await buildDocumentUnion(cache),
+          type: await buildDocumentUnion({ cache }),
         },
       },
     }),
