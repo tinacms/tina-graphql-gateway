@@ -1,8 +1,8 @@
 type Query {
-  document(path: String!): undefinedDocumentUnion
+  document(path: String!): DocumentUnion
 }
 
-union undefinedDocumentUnion = Post | Author
+union DocumentUnion = Post | Author
 
 type Post {
   form: PostForm
@@ -37,19 +37,29 @@ type BlocksFormField {
   name: String
   label: String
   component: String
-  templates: sectionDataUnion
+  templates: BlocksTemplates
+}
+
+type BlocksTemplates {
+  sectionTemplateFields: SectionForm
+}
+
+type SectionForm {
+  fields: [SectionFormFields]
+}
+
+union SectionFormFields = TextareaFormField
+
+type PostData {
+  title: String
+  sections: sectionDataUnion
+  author: authorsDocumentUnion
 }
 
 union sectionDataUnion = SectionData
 
 type SectionData {
   description: String
-}
-
-type PostData {
-  title: String
-  sections: String
-  author: authorsDocumentUnion
 }
 
 union authorsDocumentUnion = Author

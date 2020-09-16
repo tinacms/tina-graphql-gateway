@@ -11,8 +11,10 @@ import {
   GraphQLField,
   GraphQLFieldConfig,
   GraphQLObjectTypeConfig,
+  print,
   GraphQLUnionTypeConfig,
 } from "graphql";
+import { queryBuilder } from "@forestryio/graphql-helpers";
 import type { GraphQLOutputType, GraphQLFieldConfigMap, Thunk } from "graphql";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
@@ -97,6 +99,12 @@ const buildTemplateDataFields = async (
             field,
           });
           break;
+        case "blocks":
+          fields[field.name] = await blocks.builder.getter({
+            cache,
+            field,
+          });
+          break;
 
         default:
           fields[field.name] = { type: GraphQLString };
@@ -167,6 +175,32 @@ const buildDocumentTypes = async ({
   );
 };
 
+type BuildFormUnion = ({
+  cache,
+  templates,
+}: {
+  cache: Cache;
+  templates: string[];
+}) => Promise<GraphQLUnionType>;
+const buildFormUnion: BuildFormUnion = async ({ cache, templates }) => {
+  const templateObjects = await Promise.all(
+    templates.map(
+      async (template) => await cache.datasource.getTemplate({ slug: template })
+    )
+  );
+  const types = await Promise.all(
+    templateObjects.map(
+      async (template) => await buildTemplateForm(cache, template)
+    )
+  );
+  return cache.build(
+    new GraphQLUnionType({
+      name: `${templates.join("")}FormUnion`,
+      types,
+    })
+  );
+};
+
 /**
  * Same as BuildDocumentUnion except that it only builds the `data` portion, used
  * for block children
@@ -221,7 +255,7 @@ type BuildDocumentUnion = ({
 const buildDocumentUnion: BuildDocumentUnion = async ({ cache, section }) => {
   return cache.build(
     new GraphQLUnionType({
-      name: `${section}DocumentUnion`,
+      name: `${section ? section : ""}DocumentUnion`,
       types: await buildDocumentTypes({ cache, section }),
     })
   );
@@ -234,6 +268,8 @@ export type Cache = {
   builder: {
     buildDocumentUnion: BuildDocumentUnion;
     buildDataUnion: BuildDataUnion;
+    buildFormUnion: BuildFormUnion;
+    buildTemplateForm: any;
   };
 };
 
@@ -260,6 +296,8 @@ export const schemaBuilder = async ({
     builder: {
       buildDocumentUnion,
       buildDataUnion,
+      buildFormUnion,
+      buildTemplateForm,
     },
   };
 
@@ -280,6 +318,10 @@ export const schemaBuilder = async ({
   await fs.writeFileSync(
     "/Users/jeffsee/code/graphql-demo/packages/gql/src/temp.gql",
     printSchema(schema)
+  );
+  await fs.writeFileSync(
+    "/Users/jeffsee/code/graphql-demo/packages/gql/src/query.gql",
+    print(queryBuilder(schema))
   );
 
   return schema;
