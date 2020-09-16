@@ -27,9 +27,11 @@ const Home = (props) => {
   usePlugin(form);
 
   return (
-    <pre>
-      <code>{JSON.stringify(formData, null, 2)}</code>
-    </pre>
+    <>
+      <pre>
+        <code>{JSON.stringify(formData, null, 2)}</code>
+      </pre>
+    </>
   );
 };
 

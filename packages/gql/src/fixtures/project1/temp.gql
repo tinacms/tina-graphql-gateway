@@ -74,7 +74,7 @@ type ListFormFieldItemField {
 type PostData {
   title: String
   author: authorsDocumentUnion
-  sections: sectionDataUnion
+  sections: [sectionDataUnion]
 }
 
 union authorsDocumentUnion = Author
@@ -102,12 +102,13 @@ type AccoladesData {
   description: String
 }
 
+"""This is a test"""
 union sectionDataUnion = SectionData
 
 type SectionData {
   description: String
   cta: CtaData
-  authors: authorsDocumentUnion
+  authors: [authorsDocumentUnion]
 }
 
 type CtaData {

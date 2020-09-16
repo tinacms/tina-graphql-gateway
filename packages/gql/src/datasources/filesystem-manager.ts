@@ -8,6 +8,13 @@ import type { DataSource } from "./datasource";
 
 export const FilesystemDataSource = (projectRoot: string): DataSource => {
   return {
+    getDocumentsForSection: async (section) => {
+      const templates = await FilesystemDataSource(
+        projectRoot
+      ).getTemplatesForSection(section);
+      const pages = templates.map((template) => template.pages || []);
+      return _.flatten(pages);
+    },
     getTemplatesForSection: async (section) => {
       const { data } = await readFile<Settings>(
         p.join(projectRoot, ".tina/settings.yml")

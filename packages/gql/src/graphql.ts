@@ -1,106 +1,149 @@
-import { graphql } from "graphql";
-import type {
+import {
+  graphql,
+  getNamedType,
+  TypeInfo,
+  visitWithTypeInfo,
+  getDescription,
+  GraphQLString,
+} from "graphql";
+import {
   GraphQLSchema,
   GraphQLFieldResolver,
   GraphQLTypeResolver,
   Source,
+  parse,
+  printSchema,
+  visit,
+  Visitor,
+  ASTKindToNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  ASTNode,
+  SelectionNode,
+  NamedTypeNode,
 } from "graphql";
+import _ from "lodash";
+import type { TemplateData } from "./types";
 import { isDocumentArgs } from "./datasources/datasource";
+import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
+import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import type {
   DataSource,
-  TinaDocument,
+  // TinaDocument,
   DocumentPartial,
 } from "./datasources/datasource";
 
+type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 export type ContextT = {
   datasource: DataSource;
 };
 
 type FieldResolverArgs = undefined | { path: string };
+
+export type InitialSource = {
+  _resolver: "_initial_source";
+};
+export type TinaDocument = {
+  _resolver: "_tina_document";
+  content?: string;
+  data: {
+    [key: string]: object | string[] | string | object[];
+  };
+};
+export type TinaFormField = {
+  _resolver: "_tina_form_field";
+  [key: string]: object | string[] | string | object[];
+};
+export type TinaForm = {
+  _resolver: "_tina_form";
+  [key: string]: object | string[] | string | object[];
+};
+export type TinaData = {
+  _resolver: "_tina_data";
+  [key: string]: object | string[] | string | object[];
+};
+export type TinaDataField = {
+  _resolver: "_tina_data_field";
+  [key: string]: object | string[] | string | object[];
+};
+
+type FieldResolverSource =
+  | InitialSource
+  // | TinaDocument
+  | TinaFormField
+  | TinaDataField;
+
 export const documentTypeResolver: GraphQLTypeResolver<
   TinaDocument,
   ContextT
 > = (value, context, info) => {
-  if (info.fieldName === "fields") {
-    return value.component;
+  // console.log(value);
+  if (value === "authors/homer.md") {
+    return "Author";
   }
-  // FIXME: for blocks which have a 'template' field
-  if (value.template === "section") {
-    return "SectionData";
-  }
-  return value._template;
+
+  return value.__typename;
 };
-
-type FieldResolverSource = undefined | TinaDocument | DocumentPartial;
-
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
   FieldResolverArgs
-> = (source, args, context, info) => {
+> = async (source, args, context, info) => {
+  const value = source[info.fieldName];
   const { datasource } = context;
 
-  if (!source) {
-    if (isDocumentArgs(args)) {
-      return select.getter({ value: args.path, datasource });
-    } else {
-      throw new Error(`Unknown args for query ${args}`);
-    }
-  } else {
-    if (source.component) {
-      return source[info.fieldName];
-    }
-    if (source._resolverKind === "setter") {
-      // console.log(source, info.fieldName);
-      return source[info.fieldName];
-    } else {
-      const field = source?._fields[info.fieldName];
-      const value = source[info.fieldName];
+  if (!value) {
+    // console.log(info.fieldName);
+    // console.log(source);
+    return;
+  }
 
-      if (field?.type === "textarea") {
-        return text.getter({ value, field });
+  switch (value._resolver) {
+    case "_initial_source":
+      if (!args) {
+        throw new Error(
+          `Expected {path: string} as an argument but got undefined`
+        );
       }
+      const document = await datasource.getData(args);
+      const template = await datasource.getTemplateForDocument(args);
 
-      if (field?.type === "textarea") {
-        return textarea.getter({ value, field });
-      }
+      const resolvedTemplate = await resolveTemplate(datasource, template);
+      const resolvedData = await resolveData(
+        datasource,
+        resolvedTemplate,
+        document.data
+      );
+      console.log("rd", resolvedData);
 
-      if (field?.type === "select") {
-        return select.getter({ value, field, datasource });
-      }
-
-      if (field?.type === "blocks") {
-        return blocks.getter({ value, field, datasource });
-      }
-
-      if (field?.type === "field-group") {
-        return fieldGroup.getter({
-          value,
-          field,
-          datasource,
-        });
-      }
-      if (info.fieldName === "form") {
-        return {
-          _resolverKind: "setter",
-          fields: [
-            {
-              name: "title",
-              label: "Title",
-              description: "",
-              component: "textarea",
-            },
-          ],
-        };
-      }
-    }
-
-    throw new Error(`Unknown field ${info.fieldName}`);
+      return {
+        __typename: template.label,
+        content: "\nSome content\n",
+        form: resolvedTemplate,
+        data: {
+          ...resolvedData,
+          // title: "Some Title",
+          author: "authors/homer.md",
+          // sections: [
+          //   {
+          //     __typename: "SectionData",
+          //     template: "section",
+          //     description: "Some textarea description",
+          //     cta: {
+          //       header: "Some CTA",
+          //     },
+          //     authors: ["authors/homer.md"],
+          //   },
+          // ],
+        },
+      };
+    default:
+      return value;
   }
 };
 
@@ -115,5 +158,108 @@ export const graphqlInit = async (args: {
     // @ts-ignore
     fieldResolver: fieldResolver,
     typeResolver: documentTypeResolver,
+    rootValue: { document: { _resolver: "_initial_source" } },
   });
+};
+
+const resolveTemplate = async (
+  datasource: DataSource,
+  template: TemplateData
+) => {
+  const accum = {
+    __typename: template.label,
+    ...template,
+    fields: [],
+  };
+
+  await Promise.all(
+    template.fields.map(async (field) =>
+      accum.fields.push(await resolveField(datasource, field))
+    )
+  );
+
+  return accum;
+};
+
+const resolveField = async (datasource: DataSource, field: Field) => {
+  switch (field.type) {
+    case "textarea":
+      return await textarea.resolvers.formFieldBuilder(field);
+    case "blocks":
+      return await blocks.resolvers.formFieldBuilder(
+        datasource,
+        field,
+        resolveTemplate
+      );
+    case "select":
+      return await select.resolvers.formFieldBuilder(datasource, field);
+    case "list":
+      return await list.resolvers.formFieldBuilder(datasource, field);
+    case "field_group":
+      return await fieldGroup.resolvers.formFieldBuilder(
+        datasource,
+        field,
+        resolveField
+      );
+    default:
+      console.log(field);
+      return field;
+  }
+};
+
+const resolveData = async (
+  datasource: DataSource,
+  resolvedTemplate: TemplateData,
+  data
+) => {
+  const fields = {};
+  const dataKeys = Object.keys(data);
+
+  await Promise.all(
+    dataKeys.map(async (key) => {
+      const field = resolvedTemplate.fields.find((f) => f.name === key);
+      const value = data[key];
+      return (fields[key] = await resolveDataField(datasource, field, value));
+    })
+  );
+  return {
+    __typename: `${resolvedTemplate.label}Data`,
+    ...fields,
+  };
+};
+
+const resolveDataField = async (
+  datasource: DataSource,
+  field: Field,
+  value
+) => {
+  switch (field.component) {
+    case "textarea":
+      return await textarea.resolvers.dataFieldBuilder(
+        datasource,
+        field,
+        value
+      );
+    case "blocks":
+      return await blocks.resolvers.dataFieldBuilder(
+        datasource,
+        field,
+        value,
+        resolveData
+      );
+    case "select":
+      return await select.resolvers.dataFieldBuilder(datasource, field, value);
+    case "list":
+      return await list.resolvers.dataFieldBuilder(datasource, field, value);
+    case "group":
+      return await fieldGroup.resolvers.dataFieldBuilder(
+        datasource,
+        field,
+        value,
+        resolveData
+      );
+    default:
+      console.warn(field.component, value);
+      return value;
+  }
 };
