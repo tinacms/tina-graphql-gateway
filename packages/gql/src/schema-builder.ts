@@ -30,7 +30,7 @@ import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
 import type { ContextT } from "./graphql";
 
-const buildField = async (cache: Cache, field: Field) => {
+const buildTemplateFormField = async (cache: Cache, field: Field) => {
   switch (field.type) {
     case "textarea":
       return textarea.builder.setter({ cache, field });
@@ -59,15 +59,18 @@ const buildField = async (cache: Cache, field: Field) => {
   );
 };
 
-const buildFields = async (cache: Cache, template: TemplateData) => {
+const buildTemplateFormFields = async (
+  cache: Cache,
+  template: TemplateData
+) => {
   // Unique by field.type
   const fields = _.uniqBy(template.fields, (field) => field.type);
   return Promise.all(
-    fields.map(async (field) => await buildField(cache, field))
+    fields.map(async (field) => await buildTemplateFormField(cache, field))
   );
 };
 
-type BuildTemplateFormFields = (
+type BuildTemplateFormFieldsUnion = (
   cache: Cache,
   template: TemplateData
 ) => Promise<GraphQLList<GraphQLType>>;
@@ -79,7 +82,7 @@ type BuildTemplateFormFields = (
  * union AuthorFormFields = TextareaFormField | SelectFormField
  * ```
  */
-const buildTemplateFormFields: BuildTemplateFormFields = async (
+const buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion = async (
   cache,
   template
 ) => {
@@ -87,7 +90,7 @@ const buildTemplateFormFields: BuildTemplateFormFields = async (
     GraphQLList(
       new GraphQLUnionType({
         name: `${template.label}FormFields`,
-        types: await buildFields(cache, template),
+        types: await buildTemplateFormFields(cache, template),
       })
     )
   );
@@ -102,7 +105,7 @@ const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
     new GraphQLObjectType({
       name: `${template.label}Form`,
       fields: {
-        fields: { type: await buildTemplateFormFields(cache, template) },
+        fields: { type: await buildTemplateFormFieldsUnion(cache, template) },
       },
     })
   );
@@ -228,32 +231,6 @@ const buildDocumentTypes = async ({
   );
 };
 
-type BuildFormUnion = ({
-  cache,
-  templates,
-}: {
-  cache: Cache;
-  templates: string[];
-}) => Promise<GraphQLUnionType>;
-const buildFormUnion: BuildFormUnion = async ({ cache, templates }) => {
-  const templateObjects = await Promise.all(
-    templates.map(
-      async (template) => await cache.datasource.getTemplate({ slug: template })
-    )
-  );
-  const types = await Promise.all(
-    templateObjects.map(
-      async (template) => await buildTemplateForm(cache, template)
-    )
-  );
-  return cache.build(
-    new GraphQLUnionType({
-      name: `${templates.join("")}FormUnion`,
-      types,
-    })
-  );
-};
-
 /**
  * Same as BuildDocumentUnion except that it only builds the `data` portion, used
  * for block children
@@ -321,10 +298,9 @@ export type Cache = {
   builder: {
     buildDocumentUnion: BuildDocumentUnion;
     buildDataUnion: BuildDataUnion;
-    buildFormUnion: BuildFormUnion;
     buildTemplateForm: BuildTemplateForm;
     buildTemplateData: BuildTemplateData;
-    buildTemplateFormFields: BuildTemplateFormFields;
+    buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion;
   };
 };
 
@@ -351,10 +327,9 @@ export const schemaBuilder = async ({
     builder: {
       buildDocumentUnion,
       buildDataUnion,
-      buildFormUnion,
       buildTemplateData,
       buildTemplateForm,
-      buildTemplateFormFields,
+      buildTemplateFormFieldsUnion,
     },
   };
 
