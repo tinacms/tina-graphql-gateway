@@ -60,6 +60,7 @@ export type DataSource = {
    * ```
    */
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
+  getDocumentsForSection: (section?: string) => Promise<string[]>;
 };
 
 export type DocumentSummary = {

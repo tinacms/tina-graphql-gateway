@@ -1,5 +1,6 @@
 import type { Field } from "./index";
 import type { DataSource } from "../datasources/datasource";
+import type { TemplateData } from "../types";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -45,8 +46,14 @@ const getter = async ({
   );
 };
 
-const builder = {
-  setter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+const builders = {
+  formFieldBuilder: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => {
     const templateForms: { [key: string]: any } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
@@ -76,17 +83,67 @@ const builder = {
       })
     );
   },
-  getter: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+  dataFieldBuilder: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => {
     return {
-      type: await cache.builder.buildDataUnion({
-        cache,
-        templates: field.template_types,
-      }),
+      type: GraphQLList(
+        await cache.builder.buildDataUnion({
+          cache,
+          templates: field.template_types,
+        })
+      ),
     };
+  },
+};
+
+const resolvers = {
+  formFieldBuilder: async (
+    datasource: DataSource,
+    field: BlocksField,
+    resolveTemplate
+  ) => {
+    const templates: { [key: string]: TemplateData } = {};
+    await Promise.all(
+      field.template_types.map(async (templateSlug) => {
+        const template = await datasource.getTemplate({
+          slug: templateSlug,
+        });
+        templates[templateSlug] = await resolveTemplate(datasource, template);
+      })
+    );
+
+    const { type, ...rest } = field;
+    return {
+      ...rest,
+      component: "blocks",
+      templates,
+      __typename: "BlocksFormField",
+    };
+  },
+
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: BlocksField,
+    value,
+    resolveData
+  ) => {
+    return await Promise.all(
+      value.map(async (item) => {
+        const t = field.templates[item.template];
+        const { template, ...rest } = item;
+        return await resolveData(datasource, t, rest);
+      })
+    );
   },
 };
 
 export const blocks = {
   getter,
-  builder,
+  resolvers,
+  builders,
 };

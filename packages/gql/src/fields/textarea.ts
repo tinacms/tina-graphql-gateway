@@ -10,12 +10,24 @@ export type TextareaField = {
     required?: boolean;
   };
 };
+export type TinaTextareaField = {
+  __typename: "TextareaFormField";
+  label: string;
+  name: string;
+  component: "textarea";
+};
 
 const getter = ({ value, field }: { value: string; field: TextareaField }) => {
   return value;
 };
-const builder = {
-  setter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+const builders = {
+  formFieldBuilder: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: TextareaField;
+  }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "TextareaFormField",
@@ -35,12 +47,33 @@ const builder = {
       })
     );
   },
-  getter: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+  dataFieldBuilder: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: TextareaField;
+  }) => {
     return { type: GraphQLString };
+  },
+};
+
+const resolvers = {
+  formFieldBuilder: (field: TextareaField): TinaTextareaField => {
+    const { type, ...rest } = field;
+    return {
+      ...rest,
+      component: "textarea",
+      __typename: "TextareaFormField",
+    };
+  },
+  dataFieldBuilder: async (datasource, field, value) => {
+    return value;
   },
 };
 
 export const textarea = {
   getter,
-  builder,
+  resolvers,
+  builders,
 };

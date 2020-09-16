@@ -1,48 +1,23 @@
 import path from "path";
+import fs from "fs";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 import { FilesystemDataSource } from "./datasources/filesystem-manager";
+import { parse, buildSchema } from "graphql";
 
 describe("Document Resolver", () => {
   test("Receives a path and returns the request document object", async () => {
-    const query = `query($path: String!) {
-      document(path: $path) {
-        __typename
-        ...on Post {
-          form {
-            fields {
-              ...on textarea {
-                name
-                label
-                description
-                component
-              }
-            }
-          }
-          content
-          data {
-            title
-            author {
-              ...on Author {
-                data {
-                  name
-                }
-              }
-            }
-            sections {
-              ...on SectionData {
-                description
-              }
-            }
-          }
-        }
-      }
-    }`;
-
     const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
+    // Don't rely on these, they're built by the schema builder test
+    const query = await fs
+      .readFileSync(path.join(projectRoot, "query.gql"))
+      .toString();
 
     const datasource = FilesystemDataSource(projectRoot);
-    const schema = await schemaBuilder({ datasource });
+    // const schema2 = await schemaBuilder({ datasource });
+    const schema = buildSchema(
+      await fs.readFileSync(path.join(projectRoot, "temp.gql")).toString()
+    );
 
     const res = await graphqlInit({
       schema,
@@ -51,37 +26,16 @@ describe("Document Resolver", () => {
       variableValues: { path: "posts/1.md" },
     });
     if (res.errors) {
-      console.log(res.errors);
+      res.errors.map((error) =>
+        console.error({
+          name: error.name,
+          message: error.message,
+        })
+      );
     }
-
-    expect(res).toMatchObject({
-      data: {
-        document: {
-          __typename: "Post",
-          form: {
-            fields: [
-              {
-                name: "title",
-                label: "Title",
-                description: "",
-                component: "textarea",
-              },
-            ],
-          },
-          content: `
-Some content
-`,
-          data: {
-            title: "Some Title",
-            author: {
-              data: {
-                name: "Homer Simpson",
-              },
-            },
-            sections: [{ description: "Some textarea description" }],
-          },
-        },
-      },
-    });
+    await fs.writeFileSync(
+      path.join(projectRoot, "result.json"),
+      JSON.stringify(res, null, 2)
+    );
   });
 });
