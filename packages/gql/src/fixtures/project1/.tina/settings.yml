@@ -4,7 +4,7 @@ upload_dir: ""
 sections:
   - type: directory
     path: posts
-    label: Post
+    label: Posts
     create: documents
     match: "**/*.md"
     new_doc_ext: md
@@ -12,7 +12,7 @@ sections:
       - post
   - type: directory
     path: authors
-    label: Author
+    label: Authors
     create: documents
     match: "**/*.md"
     new_doc_ext: md

@@ -17,9 +17,10 @@ export const FilesystemDataSource = (projectRoot: string): DataSource => {
         ? data.sections
             .filter(byTypeWorks("directory"))
             .find((templateSection) => {
-              return (
-                _.lowerCase(_.kebabCase(templateSection.label)) === section
+              const sectionSlug = _.lowerCase(
+                _.kebabCase(templateSection.label)
               );
+              return sectionSlug === section;
             })?.templates
         : _.flatten(
             data.sections
