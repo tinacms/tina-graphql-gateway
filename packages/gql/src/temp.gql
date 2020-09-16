@@ -48,7 +48,7 @@ type SectionForm {
   fields: [SectionFormFields]
 }
 
-union SectionFormFields = TextareaFormField | FieldGroupListFormField
+union SectionFormFields = TextareaFormField | FieldGroupListFormField | ListFormField
 
 type FieldGroupListFormField {
   name: String
@@ -60,21 +60,21 @@ type FieldGroupListFormField {
 
 union AccoladesFormFields = TextareaFormField
 
+type ListFormField {
+  name: String
+  label: String
+  component: String
+  field: ListFormFieldItemField
+}
+
+type ListFormFieldItemField {
+  component: String
+}
+
 type PostData {
   title: String
-  sections: sectionDataUnion
   author: authorsDocumentUnion
-}
-
-union sectionDataUnion = SectionData
-
-type SectionData {
-  description: String
-  cta: CtaData
-}
-
-type CtaData {
-  header: String
+  sections: sectionDataUnion
 }
 
 union authorsDocumentUnion = Author
@@ -88,15 +88,28 @@ type AuthorForm {
   fields: [AuthorFormFields]
 }
 
-union AuthorFormFields = TextareaFormField | SelectFormField | FieldGroupListFormField
+union AuthorFormFields = TextareaFormField | SelectFormField | ListFormField | FieldGroupListFormField
 
 type AuthorData {
   name: String
   role: String
+  anecdotes: [String]
   accolades: [AccoladesData]
 }
 
 type AccoladesData {
   figure: String
   description: String
+}
+
+union sectionDataUnion = SectionData
+
+type SectionData {
+  description: String
+  cta: CtaData
+  authors: authorsDocumentUnion
+}
+
+type CtaData {
+  header: String
 }
