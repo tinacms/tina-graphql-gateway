@@ -29,7 +29,7 @@ type Config {
 type SelectFormField {
   name: String
   label: String
-  type: String
+  component: String
   options: [String]
 }
 
@@ -48,7 +48,17 @@ type SectionForm {
   fields: [SectionFormFields]
 }
 
-union SectionFormFields = TextareaFormField
+union SectionFormFields = TextareaFormField | FieldGroupListFormField
+
+type FieldGroupListFormField {
+  name: String
+  label: String
+  type: String
+  component: String
+  fields: [AccoladesFormFields]
+}
+
+union AccoladesFormFields = TextareaFormField
 
 type PostData {
   title: String
@@ -60,6 +70,11 @@ union sectionDataUnion = SectionData
 
 type SectionData {
   description: String
+  cta: CtaData
+}
+
+type CtaData {
+  header: String
 }
 
 union authorsDocumentUnion = Author
@@ -73,9 +88,15 @@ type AuthorForm {
   fields: [AuthorFormFields]
 }
 
-union AuthorFormFields = TextareaFormField | SelectFormField
+union AuthorFormFields = TextareaFormField | SelectFormField | FieldGroupListFormField
 
 type AuthorData {
   name: String
   role: String
+  accolades: [AccoladesData]
+}
+
+type AccoladesData {
+  figure: String
+  description: String
 }

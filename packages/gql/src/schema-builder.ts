@@ -14,6 +14,7 @@ import {
   print,
   GraphQLUnionTypeConfig,
 } from "graphql";
+import _ from "lodash";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import type { GraphQLOutputType, GraphQLFieldConfigMap, Thunk } from "graphql";
 import { text } from "./fields/text";
@@ -22,6 +23,7 @@ import { select } from "./fields/select";
 import fs from "fs";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
+import { fieldGroupList } from "./fields/field-group-list";
 import type { Template, TemplateData } from "./types";
 import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
@@ -35,6 +37,10 @@ const buildField = async (cache: Cache, field: Field) => {
       return select.builder.setter({ cache, field });
     case "blocks":
       return blocks.builder.setter({ cache, field });
+    case "field_group_list":
+      return await fieldGroupList.builder.setter({ cache, field });
+    case "field_group":
+      return await fieldGroup.builder.setter({ cache, field });
     default:
       break;
   }
@@ -51,14 +57,28 @@ const buildField = async (cache: Cache, field: Field) => {
 };
 
 const buildFields = async (cache: Cache, template: TemplateData) => {
+  // Unique by field.type
+  const fields = _.uniqBy(template.fields, (field) => field.type);
   return Promise.all(
-    template.fields.map(async (field) => await buildField(cache, field))
+    fields.map(async (field) => await buildField(cache, field))
   );
 };
 
-const buildTemplateFormFields = async (
+type BuildTemplateFormFields = (
   cache: Cache,
   template: TemplateData
+) => Promise<GraphQLList<GraphQLType>>;
+
+/**
+ * Builds a union of fields for a form's field property
+ *
+ * ```graphql
+ * union AuthorFormFields = TextareaFormField | SelectFormField
+ * ```
+ */
+const buildTemplateFormFields: BuildTemplateFormFields = async (
+  cache,
+  template
 ) => {
   return cache.build(
     GraphQLList(
@@ -70,7 +90,11 @@ const buildTemplateFormFields = async (
   );
 };
 
-const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
+type BuildTemplateForm = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLObjectType<any, any>>;
+const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
   return cache.build(
     new GraphQLObjectType({
       name: `${template.label}Form`,
@@ -81,9 +105,13 @@ const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
   );
 };
 
-const buildTemplateDataFields = async (
+type BuildTemplateDataFields = (
   cache: Cache,
   template: TemplateData
+) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
+const buildTemplateDataFields: BuildTemplateDataFields = async (
+  cache,
+  template
 ) => {
   const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
@@ -101,6 +129,18 @@ const buildTemplateDataFields = async (
           break;
         case "blocks":
           fields[field.name] = await blocks.builder.getter({
+            cache,
+            field,
+          });
+          break;
+        case "field_group":
+          fields[field.name] = await fieldGroup.builder.getter({
+            cache,
+            field,
+          });
+          break;
+        case "field_group_list":
+          fields[field.name] = await fieldGroupList.builder.getter({
             cache,
             field,
           });
@@ -128,6 +168,10 @@ const buildTemplateDataFields = async (
  * }
  * ```
  */
+type BuildTemplateData = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLObjectType<any, ContextT>>;
 const buildTemplateData = async (cache: Cache, template: TemplateData) => {
   return cache.build(
     new GraphQLObjectType({
@@ -269,7 +313,9 @@ export type Cache = {
     buildDocumentUnion: BuildDocumentUnion;
     buildDataUnion: BuildDataUnion;
     buildFormUnion: BuildFormUnion;
-    buildTemplateForm: any;
+    buildTemplateForm: BuildTemplateForm;
+    buildTemplateData: BuildTemplateData;
+    buildTemplateFormFields: BuildTemplateFormFields;
   };
 };
 
@@ -297,7 +343,9 @@ export const schemaBuilder = async ({
       buildDocumentUnion,
       buildDataUnion,
       buildFormUnion,
+      buildTemplateData,
       buildTemplateForm,
+      buildTemplateFormFields,
     },
   };
 

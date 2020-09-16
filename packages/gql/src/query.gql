@@ -15,7 +15,7 @@ query DocumentQuery($path: String!) {
           ... on SelectFormField {
             name
             label
-            type
+            component
             options
           }
           ... on BlocksFormField {
@@ -33,6 +33,22 @@ query DocumentQuery($path: String!) {
                       required
                     }
                   }
+                  ... on FieldGroupListFormField {
+                    name
+                    label
+                    type
+                    component
+                    fields {
+                      ... on TextareaFormField {
+                        name
+                        label
+                        type
+                        config {
+                          required
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -44,6 +60,9 @@ query DocumentQuery($path: String!) {
         sections {
           ... on SectionData {
             description
+            cta {
+              header
+            }
           }
         }
         author {
@@ -61,14 +80,34 @@ query DocumentQuery($path: String!) {
                 ... on SelectFormField {
                   name
                   label
-                  type
+                  component
                   options
+                }
+                ... on FieldGroupListFormField {
+                  name
+                  label
+                  type
+                  component
+                  fields {
+                    ... on TextareaFormField {
+                      name
+                      label
+                      type
+                      config {
+                        required
+                      }
+                    }
+                  }
                 }
               }
             }
             data {
               name
               role
+              accolades {
+                figure
+                description
+              }
             }
           }
         }
@@ -88,14 +127,34 @@ query DocumentQuery($path: String!) {
           ... on SelectFormField {
             name
             label
-            type
+            component
             options
+          }
+          ... on FieldGroupListFormField {
+            name
+            label
+            type
+            component
+            fields {
+              ... on TextareaFormField {
+                name
+                label
+                type
+                config {
+                  required
+                }
+              }
+            }
           }
         }
       }
       data {
         name
         role
+        accolades {
+          figure
+          description
+        }
       }
     }
   }
