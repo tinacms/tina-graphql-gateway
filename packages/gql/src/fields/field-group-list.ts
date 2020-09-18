@@ -78,8 +78,39 @@ const builders = {
     };
   },
 };
+const resolvers = {
+  formFieldBuilder: async (
+    datasource: DataSource,
+    field: FieldGroupListField,
+    resolveField
+  ) => {
+    const { ...rest } = field;
+
+    const fields = await Promise.all(
+      field.fields.map(async (f) => await resolveField(datasource, f))
+    );
+
+    return {
+      ...rest,
+      component: "group",
+      fields,
+      __typename: "FieldGroupListFormField",
+    };
+  },
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: FieldGroupListField,
+    value,
+    resolveData
+  ) => {
+    return await Promise.all(
+      value.map(async (v) => await resolveData(datasource, field, v))
+    );
+  },
+};
 
 export const fieldGroupList = {
   getter,
+  resolvers,
   builders,
 };

@@ -32,6 +32,7 @@ import { select } from "./fields/select";
 import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
+import { fieldGroupList } from "./fields/field-group-list";
 import type {
   DataSource,
   // TinaDocument,
@@ -97,6 +98,14 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
+  if (value === "select") {
+    // console.log(source);
+  }
+  if (source._resolver) {
+    // console.log(info.fieldName);
+    // console.log(source);
+  }
+
   if (!value) {
     // console.log(info.fieldName);
     // console.log(source);
@@ -104,6 +113,14 @@ export const fieldResolver: GraphQLFieldResolver<
   }
 
   switch (value._resolver) {
+    case "select_form":
+      return await select.resolvers.optionsFetcher(datasource, value.field);
+    case "select_data":
+      return await select.resolvers.dataFieldBuilder(
+        datasource,
+        value.field,
+        value.value
+      );
     case "_initial_source":
       if (!args) {
         throw new Error(
@@ -119,7 +136,7 @@ export const fieldResolver: GraphQLFieldResolver<
         resolvedTemplate,
         document.data
       );
-      // console.log(JSON.stringify(resolvedData, null, 2));
+      // console.log(JSON.stringify(template, null, 2));
 
       return {
         __typename: template.label,
@@ -186,6 +203,12 @@ const resolveField = async (datasource: DataSource, field: Field) => {
         field,
         resolveField
       );
+    case "field_group_list":
+      return await fieldGroupList.resolvers.formFieldBuilder(
+        datasource,
+        field,
+        resolveField
+      );
     default:
       console.log(field);
       return field;
@@ -233,11 +256,23 @@ const resolveDataField = async (
         resolveData
       );
     case "select":
-      return await select.resolvers.dataFieldBuilder(datasource, field, value);
+      return {
+        __typename: field.label,
+        _resolver: "select_data",
+        field,
+        value,
+      };
     case "list":
       return await list.resolvers.dataFieldBuilder(datasource, field, value);
     case "field_group":
       return await fieldGroup.resolvers.dataFieldBuilder(
+        datasource,
+        field,
+        value,
+        resolveData
+      );
+    case "field_group_list":
+      return await fieldGroupList.resolvers.dataFieldBuilder(
         datasource,
         field,
         value,

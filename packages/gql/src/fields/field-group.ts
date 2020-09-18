@@ -48,7 +48,7 @@ const builders = {
   }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "FieldGroupListFormField",
+        name: "FieldGroupFormField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -92,7 +92,7 @@ const resolvers = {
       ...rest,
       component: "group",
       fields,
-      __typename: "FieldGroupListFormField",
+      __typename: "FieldGroupFormField",
     };
   },
   dataFieldBuilder: async (

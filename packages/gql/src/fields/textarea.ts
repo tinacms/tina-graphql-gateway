@@ -35,6 +35,7 @@ const builders = {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
           type: { type: GraphQLString },
+          component: { type: GraphQLString },
           config: {
             type: cache.build(
               new GraphQLObjectType({
