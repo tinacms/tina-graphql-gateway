@@ -208,6 +208,7 @@ const buildTemplate = async (cache: Cache, template: TemplateData) => {
       name: template.label,
       fields: {
         form: { type: await buildTemplateForm(cache, template) },
+        path: { type: GraphQLString },
         data: { type: await buildTemplateData(cache, template) },
       },
     })

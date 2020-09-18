@@ -64,6 +64,7 @@ const resolvers = {
     const { ...rest } = field;
     return {
       ...rest,
+      config: rest.config || {},
       component: "textarea",
       __typename: "TextareaFormField",
     };

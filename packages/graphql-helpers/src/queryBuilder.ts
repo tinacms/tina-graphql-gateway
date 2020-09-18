@@ -177,7 +177,7 @@ const buildInlineFragment = (
            * (post.__connection.author.name)
            */
           if (
-            fields.map((f) => f.name.value).includes("absolutePath") &&
+            fields.map((f) => f.name.value).includes("form") &&
             fields.map((f) => f.name.value).includes("data") &&
             depth > 1
           ) {
