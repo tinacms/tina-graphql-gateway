@@ -5,27 +5,21 @@ import {
   GraphQLNonNull,
   GraphQLUnionType,
   GraphQLList,
+  GraphQLResolveInfo,
+  GraphQLObjectTypeExtensions,
   getNamedType,
-  printSchema,
   GraphQLType,
-  GraphQLField,
-  GraphQLFieldConfig,
-  GraphQLObjectTypeConfig,
-  print,
-  GraphQLUnionTypeConfig,
 } from "graphql";
 import _ from "lodash";
-import { queryBuilder } from "@forestryio/graphql-helpers";
-import type { GraphQLOutputType, GraphQLFieldConfigMap, Thunk } from "graphql";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
-import fs from "fs";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
 import { list } from "./fields/list";
-import type { Template, TemplateData } from "./types";
+import type { GraphQLFieldConfigMap } from "graphql";
+import type { TemplateData } from "./types";
 import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
 import type { ContextT } from "./graphql";
@@ -264,6 +258,7 @@ const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
   return cache.build(
     new GraphQLUnionType({
       name: `${templates.join("")}DataUnion`,
+      description: "This is a test",
       types,
     })
   );
@@ -349,15 +344,6 @@ export const schemaBuilder = async ({
       },
     }),
   });
-
-  await fs.writeFileSync(
-    "/Users/jeffsee/code/graphql-demo/packages/gql/src/temp.gql",
-    printSchema(schema)
-  );
-  await fs.writeFileSync(
-    "/Users/jeffsee/code/graphql-demo/packages/gql/src/query.gql",
-    print(queryBuilder(schema))
-  );
 
   return schema;
 };

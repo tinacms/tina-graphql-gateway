@@ -37,6 +37,7 @@ export type SectionSelect = BaseSelectField & {
 };
 export type SimpleSelect = BaseSelectField & {
   default: string;
+  options: string[];
   config: {
     options: string[];
     required: boolean;
@@ -118,7 +119,58 @@ const getter = async ({
   };
 };
 
+const resolvers = {
+  formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
+    // This could show the display name of other pages if provided: {value: string, label: string}
+    let options: string[] = [];
+    let select;
+    switch (field.config.source.type) {
+      case "documents":
+        select = field as DocumentSelect;
+        throw new Error(`document select not implemented`);
+      case "pages":
+        select = field as SectionSelect;
+        const pages = await datasource.getDocumentsForSection(
+          select.config.source.section
+        );
+        options = pages;
+        break;
+      case "simple":
+        select = field as SimpleSelect;
+        options = select.options;
+        break;
+    }
+
+    const { type, ...rest } = field;
+    return {
+      ...rest,
+      component: "select",
+      options,
+      __typename: "SelectFormField",
+    };
+  },
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: SelectField,
+    value
+  ) => {
+    let select;
+    switch (field.config.source.type) {
+      case "documents":
+        select = field as DocumentSelect;
+        throw new Error(`document select not implemented`);
+      case "pages":
+        select = field as SectionSelect;
+        return await datasource.getData({ path: value });
+      case "simple":
+        select = field as SimpleSelect;
+        return value;
+    }
+  },
+};
+
 export const select = {
   getter,
+  resolvers,
   builders,
 };

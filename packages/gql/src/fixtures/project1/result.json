@@ -1,0 +1,66 @@
+{
+  "data": {
+    "document": {
+      "__typename": "Post",
+      "form": {
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "type": null,
+            "config": {
+              "required": null
+            }
+          },
+          {
+            "name": "author",
+            "label": "Author",
+            "component": "select",
+            "options": [
+              "authors/homer.md"
+            ]
+          },
+          {
+            "name": "sections",
+            "label": "Sections",
+            "component": "blocks",
+            "templates": {
+              "sectionTemplateFields": null
+            }
+          }
+        ]
+      },
+      "data": {
+        "title": "Some Title",
+        "author": {
+          "form": null,
+          "data": null
+        },
+        "sections": [
+          {
+            "description": "Some textarea description",
+            "cta": {
+              "header": "Some CTA"
+            },
+            "authors": [
+              {
+                "form": null,
+                "data": {
+                  "name": "Homer Simpson",
+                  "role": "CEO",
+                  "anecdotes": null,
+                  "accolades": [
+                    {
+                      "figure": "20+",
+                      "description": "years experience"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

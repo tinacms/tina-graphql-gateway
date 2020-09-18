@@ -11,7 +11,7 @@ fields:
     fields:
       - name: header
         label: Header
-        type: text
+        type: textarea
         config:
           required: false
   - name: authors

@@ -14,7 +14,6 @@ const getter = ({ value, field }: { value: string; field: TextField }) => {
   return value;
 };
 const builder = ({ field }: { field: TextField }) => {
-  console.log(field);
   return {
     name: { type: GraphQLString },
     label: { type: GraphQLString },

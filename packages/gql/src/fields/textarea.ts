@@ -10,6 +10,12 @@ export type TextareaField = {
     required?: boolean;
   };
 };
+export type TinaTextareaField = {
+  __typename: "TextareaFormField";
+  label: string;
+  name: string;
+  component: "textarea";
+};
 
 const getter = ({ value, field }: { value: string; field: TextareaField }) => {
   return value;
@@ -52,7 +58,22 @@ const builders = {
   },
 };
 
+const resolvers = {
+  formFieldBuilder: (field: TextareaField): TinaTextareaField => {
+    const { type, ...rest } = field;
+    return {
+      ...rest,
+      component: "textarea",
+      __typename: "TextareaFormField",
+    };
+  },
+  dataFieldBuilder: async (datasource, field, value) => {
+    return value;
+  },
+};
+
 export const textarea = {
   getter,
+  resolvers,
   builders,
 };

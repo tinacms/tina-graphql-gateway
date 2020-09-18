@@ -7,6 +7,7 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import type { Cache } from "../schema-builder";
+import { select } from "./select";
 
 export type BaseListField = {
   label: string;
@@ -99,7 +100,9 @@ const builders = {
         list = field as SectionList;
         const section = list.config.source.section;
         return {
-          type: await cache.builder.buildDocumentUnion({ cache, section }),
+          type: GraphQLList(
+            await cache.builder.buildDocumentUnion({ cache, section })
+          ),
         };
       case "simple":
         list = field as SimpleList;
@@ -107,7 +110,98 @@ const builders = {
     }
   },
 };
+const resolvers = {
+  formFieldBuilder: async (datasource: DataSource, field: ListField) => {
+    const { type, ...rest } = field;
+
+    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+    const isSimple = field.config.use_select ? false : true;
+    if (!isSimple) {
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
+    }
+
+    let fieldComponent: {
+      component: "text" | "textarea" | "number" | "select";
+      options?: string[];
+    } = {
+      component: "text",
+    };
+    let list;
+    switch (listTypeIdentifier) {
+      case "documents":
+        list = field as DocumentList;
+        throw new Error(`document list not implemented`);
+      case "pages":
+        list = field as SectionList;
+        fieldComponent = await select.resolvers.formFieldBuilder(
+          datasource,
+          field
+        );
+        break;
+      case "simple":
+        list = field as SimpleList;
+        break;
+      // Do nothing, this is the default
+    }
+
+    return {
+      ...rest,
+      component: "list",
+      field: fieldComponent,
+      __typename: "ListFormField",
+    };
+  },
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: ListField,
+    value,
+    resolveData
+  ) => {
+    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+    const isSimple = field.config.use_select ? false : true;
+    if (!isSimple) {
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
+    }
+    let list;
+    switch (listTypeIdentifier) {
+      case "documents":
+        list = field as DocumentList;
+        throw new Error(`document list not implemented`);
+      case "pages":
+        list = field as SectionList;
+        const meh = await Promise.all(
+          value.map(async (item) => {
+            console.log(field);
+            const d = await datasource.getData({ path: item });
+            return {
+              // __typename: `${field.label}Data`,
+              __typename: 'Author'
+              ...d,
+            };
+          })
+        );
+        console.log(meh);
+        return meh;
+      case "simple":
+        list = field as SimpleList;
+        break;
+      // Do nothing, this is the default
+    }
+    // console.log(value, field);
+  },
+};
 
 export const list = {
+  resolvers,
   builders,
 };
