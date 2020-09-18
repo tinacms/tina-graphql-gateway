@@ -25,7 +25,40 @@
             "label": "Sections",
             "component": "blocks",
             "templates": {
-              "sectionTemplateFields": null
+              "sectionTemplateFields": {
+                "fields": [
+                  {
+                    "name": "description",
+                    "label": "Description",
+                    "type": "textarea",
+                    "config": null
+                  },
+                  {
+                    "name": "cta",
+                    "label": "Cta",
+                    "type": "field_group",
+                    "component": "group",
+                    "fields": [
+                      {
+                        "name": "header",
+                        "label": "Header",
+                        "type": "textarea",
+                        "config": {
+                          "required": null
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "authors",
+                    "label": "Authors",
+                    "component": "list",
+                    "field": {
+                      "component": "select"
+                    }
+                  }
+                ]
+              }
             }
           }
         ]

@@ -119,28 +119,13 @@ export const fieldResolver: GraphQLFieldResolver<
         resolvedTemplate,
         document.data
       );
-      console.log(JSON.stringify(resolvedData, null, 2));
+      // console.log(JSON.stringify(resolvedData, null, 2));
 
       return {
         __typename: template.label,
         content: "\nSome content\n",
         form: resolvedTemplate,
-        data: {
-          ...resolvedData,
-          // title: "Some Title",
-          // author: "authors/homer.md",
-          // sections: [
-          //   {
-          //     __typename: "SectionData",
-          //     template: "section",
-          //     description: "Some textarea description",
-          //     cta: {
-          //       header: "Some CTA",
-          //     },
-          //     authors: ["authors/homer.md"],
-          //   },
-          // ],
-        },
+        data: resolvedData,
       };
     default:
       return value;
