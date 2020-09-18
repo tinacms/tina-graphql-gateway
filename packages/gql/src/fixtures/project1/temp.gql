@@ -19,6 +19,7 @@ type TextareaFormField {
   name: String
   label: String
   type: String
+  component: String
   config: Config
 }
 
@@ -48,17 +49,17 @@ type SectionForm {
   fields: [SectionFormFields]
 }
 
-union SectionFormFields = TextareaFormField | FieldGroupListFormField | ListFormField
+union SectionFormFields = TextareaFormField | FieldGroupFormField | ListFormField
 
-type FieldGroupListFormField {
+type FieldGroupFormField {
   name: String
   label: String
   type: String
   component: String
-  fields: [AccoladesFormFields]
+  fields: [CtaFormFields]
 }
 
-union AccoladesFormFields = TextareaFormField
+union CtaFormFields = TextareaFormField
 
 type ListFormField {
   name: String
@@ -67,9 +68,7 @@ type ListFormField {
   field: ListFormFieldItemField
 }
 
-type ListFormFieldItemField {
-  component: String
-}
+union ListFormFieldItemField = SelectFormField | TextareaFormField
 
 type PostData {
   title: String
@@ -89,6 +88,16 @@ type AuthorForm {
 }
 
 union AuthorFormFields = TextareaFormField | SelectFormField | ListFormField | FieldGroupListFormField
+
+type FieldGroupListFormField {
+  name: String
+  label: String
+  type: String
+  component: String
+  fields: [AccoladesFormFields]
+}
+
+union AccoladesFormFields = TextareaFormField
 
 type AuthorData {
   name: String

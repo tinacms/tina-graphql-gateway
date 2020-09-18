@@ -8,6 +8,7 @@ query DocumentQuery($path: String!) {
             name
             label
             type
+            component
             config {
               required
             }
@@ -29,11 +30,12 @@ query DocumentQuery($path: String!) {
                     name
                     label
                     type
+                    component
                     config {
                       required
                     }
                   }
-                  ... on FieldGroupListFormField {
+                  ... on FieldGroupFormField {
                     name
                     label
                     type
@@ -43,6 +45,7 @@ query DocumentQuery($path: String!) {
                         name
                         label
                         type
+                        component
                         config {
                           required
                         }
@@ -54,7 +57,21 @@ query DocumentQuery($path: String!) {
                     label
                     component
                     field {
-                      component
+                      ... on SelectFormField {
+                        name
+                        label
+                        component
+                        options
+                      }
+                      ... on TextareaFormField {
+                        name
+                        label
+                        type
+                        component
+                        config {
+                          required
+                        }
+                      }
                     }
                   }
                 }
@@ -73,6 +90,7 @@ query DocumentQuery($path: String!) {
                   name
                   label
                   type
+                  component
                   config {
                     required
                   }
@@ -88,7 +106,21 @@ query DocumentQuery($path: String!) {
                   label
                   component
                   field {
-                    component
+                    ... on SelectFormField {
+                      name
+                      label
+                      component
+                      options
+                    }
+                    ... on TextareaFormField {
+                      name
+                      label
+                      type
+                      component
+                      config {
+                        required
+                      }
+                    }
                   }
                 }
                 ... on FieldGroupListFormField {
@@ -101,6 +133,7 @@ query DocumentQuery($path: String!) {
                       name
                       label
                       type
+                      component
                       config {
                         required
                       }
@@ -134,6 +167,7 @@ query DocumentQuery($path: String!) {
                       name
                       label
                       type
+                      component
                       config {
                         required
                       }
@@ -149,7 +183,21 @@ query DocumentQuery($path: String!) {
                       label
                       component
                       field {
-                        component
+                        ... on SelectFormField {
+                          name
+                          label
+                          component
+                          options
+                        }
+                        ... on TextareaFormField {
+                          name
+                          label
+                          type
+                          component
+                          config {
+                            required
+                          }
+                        }
                       }
                     }
                     ... on FieldGroupListFormField {
@@ -162,6 +210,7 @@ query DocumentQuery($path: String!) {
                           name
                           label
                           type
+                          component
                           config {
                             required
                           }
@@ -192,6 +241,7 @@ query DocumentQuery($path: String!) {
             name
             label
             type
+            component
             config {
               required
             }
@@ -207,7 +257,21 @@ query DocumentQuery($path: String!) {
             label
             component
             field {
-              component
+              ... on SelectFormField {
+                name
+                label
+                component
+                options
+              }
+              ... on TextareaFormField {
+                name
+                label
+                type
+                component
+                config {
+                  required
+                }
+              }
             }
           }
           ... on FieldGroupListFormField {
@@ -220,6 +284,7 @@ query DocumentQuery($path: String!) {
                 name
                 label
                 type
+                component
                 config {
                   required
                 }

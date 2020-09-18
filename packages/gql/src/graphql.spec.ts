@@ -24,6 +24,7 @@ describe("Document Resolver", () => {
       source: query,
       contextValue: { datasource },
       variableValues: { path: "posts/1.md" },
+      // variableValues: { path: "authors/homer.md" },
     });
     if (res.errors) {
       res.errors.map((error) =>
