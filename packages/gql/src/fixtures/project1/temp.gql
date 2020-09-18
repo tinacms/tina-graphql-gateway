@@ -6,6 +6,7 @@ union DocumentUnion = Post | Author
 
 type Post {
   form: PostForm
+  path: String
   data: PostData
 }
 
@@ -80,6 +81,7 @@ union authorsDocumentUnion = Author
 
 type Author {
   form: AuthorForm
+  path: String
   data: AuthorData
 }
 

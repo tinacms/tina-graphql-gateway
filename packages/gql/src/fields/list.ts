@@ -198,6 +198,7 @@ const resolvers = {
             const d = await datasource.getData({ path: item });
             return {
               __typename: t.label,
+              path: item,
               ...d,
             };
           })
@@ -207,7 +208,6 @@ const resolvers = {
         break;
       // Do nothing, this is the default
     }
-    // console.log(value, field);
   },
 };
 

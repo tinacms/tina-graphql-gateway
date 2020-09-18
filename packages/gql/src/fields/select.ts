@@ -193,6 +193,7 @@ const resolvers = {
         const d = await datasource.getData({ path: value });
         return {
           __typename: t.label,
+          path: value,
           ...d,
         };
       case "simple":
