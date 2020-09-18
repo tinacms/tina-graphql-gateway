@@ -33,9 +33,7 @@
                     "label": "Description",
                     "type": "textarea",
                     "component": "textarea",
-                    "config": {
-                      "required": null
-                    }
+                    "config": null
                   },
                   {
                     "name": "cta",

@@ -1,4 +1,11 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
+import type { Field } from "./index";
+import type { DataSource, DocumentArgs } from "../datasources/datasource";
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLUnionType,
+} from "graphql";
 import type { Cache } from "../schema-builder";
 
 export type TextareaField = {
@@ -64,12 +71,15 @@ const resolvers = {
     const { ...rest } = field;
     return {
       ...rest,
-      config: rest.config || {},
       component: "textarea",
       __typename: "TextareaFormField",
     };
   },
-  dataFieldBuilder: async (datasource, field, value) => {
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: TextareaField,
+    value: any
+  ) => {
     return value;
   },
 };

@@ -28,7 +28,7 @@ import { isDocumentArgs } from "./datasources/datasource";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
-import { select } from "./fields/select";
+import { select, SelectField } from "./fields/select";
 import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
@@ -47,37 +47,33 @@ export type ContextT = {
 type FieldResolverArgs = undefined | { path: string };
 
 export type InitialSource = {
-  _resolver: "_initial_source";
-};
-export type TinaDocument = {
-  _resolver: "_tina_document";
-  content?: string;
-  data: {
-    [key: string]: object | string[] | string | object[];
+  [key: string]: {
+    _resolver: "_initial_source";
   };
 };
-export type TinaFormField = {
-  _resolver: "_tina_form_field";
-  [key: string]: object | string[] | string | object[];
+export type TinaDocument = {
+  [key: string]: {
+    _resolver: "select_data";
+  };
 };
-export type TinaForm = {
-  _resolver: "_tina_form";
-  [key: string]: object | string[] | string | object[];
+export type TinaSelectFormField = {
+  [key: string]: {
+    _resolver: "select_form";
+    field: SelectField;
+  };
 };
-export type TinaData = {
-  _resolver: "_tina_data";
-  [key: string]: object | string[] | string | object[];
-};
-export type TinaDataField = {
-  _resolver: "_tina_data_field";
-  [key: string]: object | string[] | string | object[];
+export type TinaDataFormField = {
+  [key: string]: {
+    _resolver: "select_data";
+    field: SelectField;
+    value: string;
+  };
 };
 
 type FieldResolverSource =
   | InitialSource
-  // | TinaDocument
-  | TinaFormField
-  | TinaDataField;
+  | TinaDataFormField
+  | TinaSelectFormField;
 
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
@@ -88,8 +84,8 @@ export const fieldResolver: GraphQLFieldResolver<
   const { datasource } = context;
 
   if (!value) {
-    console.log(info.fieldName);
-    console.log(source);
+    // console.log(info.fieldName);
+    // console.log(source);
     return;
   }
 
@@ -146,11 +142,15 @@ export const graphqlInit = async (args: {
   });
 };
 
-const resolveTemplate = async (
+export type resolveTemplateType = (
   datasource: DataSource,
   template: TemplateData
-) => {
-  const accum = {
+) => Promise<any>;
+const resolveTemplate: resolveTemplateType = async (datasource, template) => {
+  const accum: TemplateData & {
+    __typename: string;
+    fields: Field[];
+  } = {
     __typename: template.label,
     ...template,
     fields: [],
@@ -165,7 +165,11 @@ const resolveTemplate = async (
   return accum;
 };
 
-const resolveField = async (datasource: DataSource, field: Field) => {
+export type resolveFieldType = (
+  datasource: DataSource,
+  field: Field
+) => Promise<any>;
+const resolveField: resolveFieldType = async (datasource, field) => {
   switch (field.type) {
     case "textarea":
       return await textarea.resolvers.formFieldBuilder(field);
@@ -197,18 +201,29 @@ const resolveField = async (datasource: DataSource, field: Field) => {
   }
 };
 
-const resolveData = async (
+export type resolveDataType = (
   datasource: DataSource,
-  resolvedTemplate: TemplateData,
+  field: TemplateData,
+  data: {
+    [key: string]: string | object | string[] | object[];
+  }
+) => Promise<any>;
+const resolveData: resolveDataType = async (
+  datasource,
+  resolvedTemplate,
   data
 ) => {
-  const fields = {};
+  const accum: { [key: string]: any } = data;
+  const fields: { [key: string]: Field } = {};
   const dataKeys = Object.keys(data);
 
   await Promise.all(
     dataKeys.map(async (key) => {
       const field = resolvedTemplate.fields.find((f) => f.name === key);
-      const value = data[key];
+      if (!field) {
+        throw new Error(`Unable to find field for item with name: ${key}`);
+      }
+      const value = accum[key];
       return (fields[key] = await resolveDataField(datasource, field, value));
     })
   );
@@ -221,7 +236,7 @@ const resolveData = async (
 const resolveDataField = async (
   datasource: DataSource,
   field: Field,
-  value
+  value: any
 ) => {
   switch (field.type) {
     case "textarea":

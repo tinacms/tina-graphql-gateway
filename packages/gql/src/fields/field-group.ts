@@ -7,6 +7,7 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
+import type { resolveFieldType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
 
 export type FieldGroupField = {
@@ -80,7 +81,7 @@ const resolvers = {
   formFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupField,
-    resolveField
+    resolveField: resolveFieldType
   ) => {
     const { ...rest } = field;
 
@@ -98,8 +99,8 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupField,
-    value,
-    resolveData
+    value: any,
+    resolveData: resolveDataType
   ) => {
     return await resolveData(datasource, field, value);
   },

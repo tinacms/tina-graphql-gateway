@@ -19,12 +19,13 @@ describe("Document Resolver", () => {
       await fs.readFileSync(path.join(projectRoot, "temp.gql")).toString()
     );
 
+    const contentPath = "posts/1.md";
+    // const contentPath = 'authors/homer.md'
     const res = await graphqlInit({
       schema,
       source: query,
       contextValue: { datasource },
-      variableValues: { path: "posts/1.md" },
-      // variableValues: { path: "authors/homer.md" },
+      variableValues: { path: contentPath },
     });
     if (res.errors) {
       res.errors.map((error) =>

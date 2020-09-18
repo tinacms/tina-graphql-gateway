@@ -9,6 +9,7 @@ import {
   GraphQLNonNull,
   FieldsOnCorrectTypeRule,
 } from "graphql";
+import type { resolveTemplateType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
 
 export type BlocksField = {
@@ -20,6 +21,7 @@ export type BlocksField = {
   config?: {
     required?: boolean;
   };
+  templates: { [key: string]: TemplateData };
 };
 
 type FieldMap = { [key: string]: Field };
@@ -105,7 +107,7 @@ const resolvers = {
   formFieldBuilder: async (
     datasource: DataSource,
     field: BlocksField,
-    resolveTemplate
+    resolveTemplate: resolveTemplateType
   ) => {
     const templates: { [key: string]: TemplateData } = {};
     await Promise.all(
@@ -132,11 +134,11 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: BlocksField,
-    value,
-    resolveData
+    value: any,
+    resolveData: resolveDataType
   ) => {
     return await Promise.all(
-      value.map(async (item) => {
+      value.map(async (item: any) => {
         const t = field.templates[`${item.template}TemplateFields`];
         const { template, ...rest } = item;
         return await resolveData(datasource, t, rest);

@@ -30,8 +30,6 @@ export type SectionSelect = BaseSelectField & {
     source: {
       type: "pages";
       section: string;
-      file: string;
-      path: string;
     };
   };
 };
@@ -180,7 +178,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: SelectField,
-    value
+    value: string
   ) => {
     let select;
     switch (field.config.source.type) {
