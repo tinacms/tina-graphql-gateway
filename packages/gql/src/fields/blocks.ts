@@ -113,7 +113,10 @@ const resolvers = {
         const template = await datasource.getTemplate({
           slug: templateSlug,
         });
-        templates[templateSlug] = await resolveTemplate(datasource, template);
+        templates[`${templateSlug}TemplateFields`] = await resolveTemplate(
+          datasource,
+          template
+        );
       })
     );
 
@@ -134,7 +137,7 @@ const resolvers = {
   ) => {
     return await Promise.all(
       value.map(async (item) => {
-        const t = field.templates[item.template];
+        const t = field.templates[`${item.template}TemplateFields`];
         const { template, ...rest } = item;
         return await resolveData(datasource, t, rest);
       })
