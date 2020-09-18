@@ -80,77 +80,12 @@ query DocumentQuery($path: String!) {
           }
         }
       }
+      path
       data {
         title
         author {
           ... on Author {
-            form {
-              fields {
-                ... on TextareaFormField {
-                  name
-                  label
-                  type
-                  component
-                  config {
-                    required
-                  }
-                }
-                ... on SelectFormField {
-                  name
-                  label
-                  component
-                  options
-                }
-                ... on ListFormField {
-                  name
-                  label
-                  component
-                  field {
-                    ... on SelectFormField {
-                      name
-                      label
-                      component
-                      options
-                    }
-                    ... on TextareaFormField {
-                      name
-                      label
-                      type
-                      component
-                      config {
-                        required
-                      }
-                    }
-                  }
-                }
-                ... on FieldGroupListFormField {
-                  name
-                  label
-                  type
-                  component
-                  fields {
-                    ... on TextareaFormField {
-                      name
-                      label
-                      type
-                      component
-                      config {
-                        required
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            data {
-              name
-              role
-              anecdotes
-              accolades {
-                figure
-                description
-              }
-            }
+            path
           }
         }
         sections {
@@ -161,73 +96,7 @@ query DocumentQuery($path: String!) {
             }
             authors {
               ... on Author {
-                form {
-                  fields {
-                    ... on TextareaFormField {
-                      name
-                      label
-                      type
-                      component
-                      config {
-                        required
-                      }
-                    }
-                    ... on SelectFormField {
-                      name
-                      label
-                      component
-                      options
-                    }
-                    ... on ListFormField {
-                      name
-                      label
-                      component
-                      field {
-                        ... on SelectFormField {
-                          name
-                          label
-                          component
-                          options
-                        }
-                        ... on TextareaFormField {
-                          name
-                          label
-                          type
-                          component
-                          config {
-                            required
-                          }
-                        }
-                      }
-                    }
-                    ... on FieldGroupListFormField {
-                      name
-                      label
-                      type
-                      component
-                      fields {
-                        ... on TextareaFormField {
-                          name
-                          label
-                          type
-                          component
-                          config {
-                            required
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                data {
-                  name
-                  role
-                  anecdotes
-                  accolades {
-                    figure
-                    description
-                  }
-                }
+                path
               }
             }
           }
@@ -293,6 +162,7 @@ query DocumentQuery($path: String!) {
           }
         }
       }
+      path
       data {
         name
         role

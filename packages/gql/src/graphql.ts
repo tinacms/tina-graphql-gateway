@@ -79,17 +79,6 @@ type FieldResolverSource =
   | TinaFormField
   | TinaDataField;
 
-export const documentTypeResolver: GraphQLTypeResolver<
-  TinaDocument,
-  ContextT
-> = (value, context, info) => {
-  // console.log(value);
-  if (value === "authors/homer.md") {
-    return "Author";
-  }
-
-  return value.__typename;
-};
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
@@ -98,17 +87,9 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
-  if (value === "select") {
-    // console.log(source);
-  }
-  if (source._resolver) {
-    // console.log(info.fieldName);
-    // console.log(source);
-  }
-
   if (!value) {
-    // console.log(info.fieldName);
-    // console.log(source);
+    console.log(info.fieldName);
+    console.log(source);
     return;
   }
 
@@ -142,6 +123,7 @@ export const fieldResolver: GraphQLFieldResolver<
         __typename: template.label,
         content: "\nSome content\n",
         form: resolvedTemplate,
+        path: "some-path",
         data: resolvedData,
       };
     default:
@@ -159,7 +141,7 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
-    typeResolver: documentTypeResolver,
+    // typeResolver: documentTypeResolver,
     rootValue: { document: { _resolver: "_initial_source" } },
   });
 };
