@@ -17,9 +17,7 @@
             "name": "author",
             "label": "Author",
             "component": "select",
-            "options": [
-              "authors/homer.md"
-            ]
+            "options": ["authors/homer.md"]
           },
           {
             "name": "sections",
@@ -33,9 +31,7 @@
                     "label": "Description",
                     "type": "textarea",
                     "component": "textarea",
-                    "config": {
-                      "required": null
-                    }
+                    "config": null
                   },
                   {
                     "name": "cta",
@@ -62,9 +58,7 @@
                       "name": "authors",
                       "label": "Authors",
                       "component": "select",
-                      "options": [
-                        "authors/homer.md"
-                      ]
+                      "options": ["authors/homer.md"]
                     }
                   }
                 ]
@@ -73,7 +67,7 @@
           }
         ]
       },
-      "path": "some-path",
+      "path": "posts/1.md",
       "data": {
         "title": "Some Title",
         "author": {

@@ -1,11 +1,5 @@
-import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLUnionType,
-} from "graphql";
+import type { DataSource } from "../datasources/datasource";
+import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { Cache } from "../schema-builder";
 
 export type BaseSelectField = {
@@ -30,8 +24,6 @@ export type SectionSelect = BaseSelectField & {
     source: {
       type: "pages";
       section: string;
-      file: string;
-      path: string;
     };
   };
 };
@@ -97,28 +89,6 @@ const builders = {
   },
 };
 
-const getter = async ({
-  value,
-  field,
-  datasource,
-}: {
-  value: string;
-  field?: SelectField;
-  datasource: DataSource;
-}) => {
-  const args = { path: value };
-  const template = await datasource.getTemplateForDocument(args);
-
-  return {
-    ...(await datasource.getData(args)),
-    _template: template.label,
-    _fields: {
-      data: { type: "field-group", fields: template.fields },
-      content: { type: "textarea", name: "content", label: "Content" },
-    },
-  };
-};
-
 const resolvers = {
   optionsFetcher: async (datasource: DataSource, field: SelectField) => {
     // This could show the display name of other pages if provided: {value: string, label: string}
@@ -180,7 +150,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: SelectField,
-    value
+    value: string
   ) => {
     let select;
     switch (field.config.source.type) {
@@ -204,7 +174,6 @@ const resolvers = {
 };
 
 export const select = {
-  getter,
   resolvers,
   builders,
 };

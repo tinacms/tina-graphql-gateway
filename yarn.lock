@@ -2318,6 +2318,7 @@ __metadata:
   dependencies:
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-tools/schema": ^6.2.1
+    "@tinacms/fields": ^0.29.0
     "@types/cors": ^2.8.7
     "@types/express": ^4.17.8
     "@types/jest": ^26.0.4
@@ -4236,6 +4237,24 @@ __metadata:
     react-dom: ">=16.8"
     styled-components: ">=4.1"
   checksum: f5d7c00b2fb221f5284aa82009db5f0558433960a9fffbc0b59435305660755d83685de55d00176ea0aba7b71aa92255a72bfd62bd1c5fbf7d3d0d34017c1711
+  languageName: node
+  linkType: hard
+
+"@tinacms/fields@npm:^0.29.0":
+  version: 0.29.0
+  resolution: "@tinacms/fields@npm:0.29.0"
+  dependencies:
+    "@sambego/storybook-styles": ^1.0.0
+    "@types/react-select": ^2.0.11
+    color-string: ^1.5.3
+    react-color: ^2.17.3
+    react-dismissible: ^1.3.0
+    react-dropzone: 10.1.8
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+    styled-components: ">=4.1"
+  checksum: 5b1c223934f0886b96d9c6e2e0e6ede318ef26d1e5824c4a1a19d3266f1fd7bcaaa1c8caa38338cf7cccb237371014a854760c676cdfde4d91124a634b10f97e
   languageName: node
   linkType: hard
 

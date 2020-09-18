@@ -1,45 +1,17 @@
-import {
-  graphql,
-  getNamedType,
-  TypeInfo,
-  visitWithTypeInfo,
-  getDescription,
-  GraphQLString,
-} from "graphql";
-import {
-  GraphQLSchema,
-  GraphQLFieldResolver,
-  GraphQLTypeResolver,
-  Source,
-  parse,
-  printSchema,
-  visit,
-  Visitor,
-  ASTKindToNode,
-  DocumentNode,
-  FieldDefinitionNode,
-  ASTNode,
-  SelectionNode,
-  NamedTypeNode,
-} from "graphql";
+import { graphql } from "graphql";
+import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
 import _ from "lodash";
 import type { TemplateData } from "./types";
-import { isDocumentArgs } from "./datasources/datasource";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
-import { select } from "./fields/select";
+import { select, SelectField } from "./fields/select";
 import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
-import type {
-  DataSource,
-  // TinaDocument,
-  DocumentPartial,
-} from "./datasources/datasource";
+import type { DataSource } from "./datasources/datasource";
 
-type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 export type ContextT = {
   datasource: DataSource;
 };
@@ -47,37 +19,33 @@ export type ContextT = {
 type FieldResolverArgs = undefined | { path: string };
 
 export type InitialSource = {
-  _resolver: "_initial_source";
-};
-export type TinaDocument = {
-  _resolver: "_tina_document";
-  content?: string;
-  data: {
-    [key: string]: object | string[] | string | object[];
+  [key: string]: {
+    _resolver: "_initial_source";
   };
 };
-export type TinaFormField = {
-  _resolver: "_tina_form_field";
-  [key: string]: object | string[] | string | object[];
+export type TinaDocument = {
+  [key: string]: {
+    _resolver: "select_data";
+  };
 };
-export type TinaForm = {
-  _resolver: "_tina_form";
-  [key: string]: object | string[] | string | object[];
+export type TinaSelectFormField = {
+  [key: string]: {
+    _resolver: "select_form";
+    field: SelectField;
+  };
 };
-export type TinaData = {
-  _resolver: "_tina_data";
-  [key: string]: object | string[] | string | object[];
-};
-export type TinaDataField = {
-  _resolver: "_tina_data_field";
-  [key: string]: object | string[] | string | object[];
+export type TinaDataFormField = {
+  [key: string]: {
+    _resolver: "select_data";
+    field: SelectField;
+    value: string;
+  };
 };
 
 type FieldResolverSource =
   | InitialSource
-  // | TinaDocument
-  | TinaFormField
-  | TinaDataField;
+  | TinaDataFormField
+  | TinaSelectFormField;
 
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
@@ -87,9 +55,8 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
+  // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
-    console.log(info.fieldName);
-    console.log(source);
     return;
   }
 
@@ -108,27 +75,45 @@ export const fieldResolver: GraphQLFieldResolver<
           `Expected {path: string} as an argument but got undefined`
         );
       }
-      const document = await datasource.getData(args);
-      const template = await datasource.getTemplateForDocument(args);
+      return await resolveDocument({ args, datasource });
 
-      const resolvedTemplate = await resolveTemplate(datasource, template);
-      const resolvedData = await resolveData(
-        datasource,
-        resolvedTemplate,
-        document.data
-      );
-      // console.log(JSON.stringify(template, null, 2));
-
-      return {
-        __typename: template.label,
-        content: "\nSome content\n",
-        form: resolvedTemplate,
-        path: "some-path",
-        data: resolvedData,
-      };
     default:
       return value;
   }
+};
+
+type ResolveDocument = {
+  __typename: string;
+  content: string;
+  form: ResolvedTemplate;
+  path: string;
+  data: ResolvedData;
+};
+const resolveDocument = async ({
+  args,
+  datasource,
+}: {
+  args: { path: string };
+  datasource: DataSource;
+}): Promise<ResolveDocument> => {
+  const document = await datasource.getData(args);
+  const template = await datasource.getTemplateForDocument(args);
+
+  const resolvedTemplate = await resolveTemplate(datasource, template);
+  const resolvedData = await resolveData(
+    datasource,
+    resolvedTemplate,
+    document.data
+  );
+  // console.log(JSON.stringify(template, null, 2));
+
+  return {
+    __typename: template.label,
+    content: "\nSome content\n",
+    form: resolvedTemplate,
+    path: args.path,
+    data: resolvedData,
+  };
 };
 
 export const graphqlInit = async (args: {
@@ -141,16 +126,24 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
-    // typeResolver: documentTypeResolver,
     rootValue: { document: { _resolver: "_initial_source" } },
   });
 };
 
-const resolveTemplate = async (
+type ResolvedTemplate = TemplateData & {
+  __typename: string;
+  fields: Field[];
+};
+
+export type resolveTemplateType = (
   datasource: DataSource,
   template: TemplateData
-) => {
-  const accum = {
+) => Promise<ResolvedTemplate>;
+const resolveTemplate: resolveTemplateType = async (datasource, template) => {
+  const accum: TemplateData & {
+    __typename: string;
+    fields: Field[];
+  } = {
     __typename: template.label,
     ...template,
     fields: [],
@@ -165,7 +158,11 @@ const resolveTemplate = async (
   return accum;
 };
 
-const resolveField = async (datasource: DataSource, field: Field) => {
+export type resolveFieldType = (
+  datasource: DataSource,
+  field: Field
+) => Promise<any>;
+const resolveField: resolveFieldType = async (datasource, field) => {
   switch (field.type) {
     case "textarea":
       return await textarea.resolvers.formFieldBuilder(field);
@@ -197,18 +194,33 @@ const resolveField = async (datasource: DataSource, field: Field) => {
   }
 };
 
-const resolveData = async (
+type ResolvedData = {
+  __typename: string;
+  [key: string]: Field;
+};
+export type resolveDataType = (
   datasource: DataSource,
-  resolvedTemplate: TemplateData,
+  field: TemplateData,
+  data: {
+    [key: string]: string | object | string[] | object[];
+  }
+) => Promise<ResolvedData>;
+const resolveData: resolveDataType = async (
+  datasource,
+  resolvedTemplate,
   data
 ) => {
-  const fields = {};
+  const accum: { [key: string]: any } = data;
+  const fields: { [key: string]: Field } = {};
   const dataKeys = Object.keys(data);
 
   await Promise.all(
     dataKeys.map(async (key) => {
       const field = resolvedTemplate.fields.find((f) => f.name === key);
-      const value = data[key];
+      if (!field) {
+        throw new Error(`Unable to find field for item with name: ${key}`);
+      }
+      const value = accum[key];
       return (fields[key] = await resolveDataField(datasource, field, value));
     })
   );
@@ -221,7 +233,7 @@ const resolveData = async (
 const resolveDataField = async (
   datasource: DataSource,
   field: Field,
-  value
+  value: any
 ) => {
   switch (field.type) {
     case "textarea":
