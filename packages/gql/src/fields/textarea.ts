@@ -60,7 +60,7 @@ const builders = {
 
 const resolvers = {
   formFieldBuilder: (field: TextareaField): TinaTextareaField => {
-    const { type, ...rest } = field;
+    const { ...rest } = field;
     return {
       ...rest,
       component: "textarea",

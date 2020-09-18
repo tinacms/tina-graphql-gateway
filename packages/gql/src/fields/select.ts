@@ -141,7 +141,7 @@ const resolvers = {
         break;
     }
 
-    const { type, ...rest } = field;
+    const { ...rest } = field;
     return {
       ...rest,
       component: "select",
@@ -161,7 +161,12 @@ const resolvers = {
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
-        return await datasource.getData({ path: value });
+        const t = await datasource.getTemplateForDocument({ path: value });
+        const d = await datasource.getData({ path: value });
+        return {
+          __typename: t.label,
+          ...d,
+        };
       case "simple":
         select = field as SimpleSelect;
         return value;

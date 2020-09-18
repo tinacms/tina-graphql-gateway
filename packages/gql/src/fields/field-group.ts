@@ -82,7 +82,7 @@ const resolvers = {
     field: FieldGroupField,
     resolveField
   ) => {
-    const { type, config, ...rest } = field;
+    const { ...rest } = field;
 
     const fields = await Promise.all(
       field.fields.map(async (f) => await resolveField(datasource, f))
