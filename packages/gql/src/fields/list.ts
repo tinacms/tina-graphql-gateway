@@ -112,7 +112,7 @@ const builders = {
 };
 const resolvers = {
   formFieldBuilder: async (datasource: DataSource, field: ListField) => {
-    const { type, ...rest } = field;
+    const { ...rest } = field;
 
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
@@ -156,12 +156,7 @@ const resolvers = {
       __typename: "ListFormField",
     };
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: ListField,
-    value,
-    resolveData
-  ) => {
+  dataFieldBuilder: async (datasource: DataSource, field: ListField, value) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -179,19 +174,16 @@ const resolvers = {
         throw new Error(`document list not implemented`);
       case "pages":
         list = field as SectionList;
-        const meh = await Promise.all(
+        return await Promise.all(
           value.map(async (item) => {
-            console.log(field);
+            const t = await datasource.getTemplateForDocument({ path: item });
             const d = await datasource.getData({ path: item });
             return {
-              // __typename: `${field.label}Data`,
-              __typename: 'Author'
+              __typename: t.label,
               ...d,
             };
           })
         );
-        console.log(meh);
-        return meh;
       case "simple":
         list = field as SimpleList;
         break;

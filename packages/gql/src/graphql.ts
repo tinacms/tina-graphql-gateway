@@ -119,7 +119,7 @@ export const fieldResolver: GraphQLFieldResolver<
         resolvedTemplate,
         document.data
       );
-      console.log("rd", resolvedData);
+      console.log(JSON.stringify(resolvedData, null, 2));
 
       return {
         __typename: template.label,
@@ -128,7 +128,7 @@ export const fieldResolver: GraphQLFieldResolver<
         data: {
           ...resolvedData,
           // title: "Some Title",
-          author: "authors/homer.md",
+          // author: "authors/homer.md",
           // sections: [
           //   {
           //     __typename: "SectionData",
@@ -233,7 +233,7 @@ const resolveDataField = async (
   field: Field,
   value
 ) => {
-  switch (field.component) {
+  switch (field.type) {
     case "textarea":
       return await textarea.resolvers.dataFieldBuilder(
         datasource,
@@ -251,7 +251,7 @@ const resolveDataField = async (
       return await select.resolvers.dataFieldBuilder(datasource, field, value);
     case "list":
       return await list.resolvers.dataFieldBuilder(datasource, field, value);
-    case "group":
+    case "field_group":
       return await fieldGroup.resolvers.dataFieldBuilder(
         datasource,
         field,
@@ -259,7 +259,7 @@ const resolveDataField = async (
         resolveData
       );
     default:
-      console.warn(field.component, value);
+      console.warn(field.type, value);
       return value;
   }
 };
