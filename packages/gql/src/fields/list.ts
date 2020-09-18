@@ -1,5 +1,5 @@
 import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
+import type { DataSource } from "../datasources/datasource";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -143,8 +143,14 @@ const resolvers = {
     }
 
     let fieldComponent: {
-      component: "text" | "textarea" | "number" | "select";
-      options?: string[];
+      component: string;
+      __typename: string;
+      options?:
+        | string[]
+        | {
+            field: Field;
+            _resolver: string;
+          };
     } = {
       component: "textarea",
       __typename: "TextareaFormField",
@@ -156,9 +162,18 @@ const resolvers = {
         throw new Error(`document list not implemented`);
       case "pages":
         list = field as SectionList;
+        const selectField = {
+          ...list,
+          component: "select" as const,
+          type: "select" as const,
+          config: {
+            ...list.config,
+            required: true,
+          },
+        };
         fieldComponent = await select.resolvers.formFieldBuilder(
           datasource,
-          field
+          selectField
         );
         break;
       case "simple":
@@ -174,7 +189,11 @@ const resolvers = {
       __typename: "ListFormField",
     };
   },
-  dataFieldBuilder: async (datasource: DataSource, field: ListField, value) => {
+  dataFieldBuilder: async (
+    datasource: DataSource,
+    field: ListField,
+    value: any
+  ) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -193,7 +212,7 @@ const resolvers = {
       case "pages":
         list = field as SectionList;
         return await Promise.all(
-          value.map(async (item) => {
+          value.map(async (item: any) => {
             const t = await datasource.getTemplateForDocument({ path: item });
             const d = await datasource.getData({ path: item });
             return {
@@ -205,8 +224,7 @@ const resolvers = {
         );
       case "simple":
         list = field as SimpleList;
-        break;
-      // Do nothing, this is the default
+        return value;
     }
   },
 };

@@ -1,12 +1,7 @@
 import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  getNamedType,
-  GraphQLList,
-  GraphQLUnionType,
-} from "graphql";
+import type { DataSource } from "../datasources/datasource";
+import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+import type { resolveFieldType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
 
 export type FieldGroupListField = {
@@ -17,25 +12,6 @@ export type FieldGroupListField = {
   fields: Field[];
   config?: {
     required?: boolean;
-  };
-};
-
-type FieldMap = { [key: string]: Field };
-const getter = ({
-  value,
-  field,
-  datasource,
-}: {
-  value: { [key: string]: any }[];
-  field: FieldGroupListField;
-  datasource: DataSource;
-}): { _fields: FieldMap; [key: string]: unknown } => {
-  const fields: FieldMap = {};
-  field.fields.forEach((field) => (fields[field.name] = field));
-
-  return {
-    _fields: fields,
-    ...value,
   };
 };
 
@@ -82,7 +58,7 @@ const resolvers = {
   formFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupListField,
-    resolveField
+    resolveField: resolveFieldType
   ) => {
     const { ...rest } = field;
 
@@ -100,17 +76,16 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupListField,
-    value,
-    resolveData
+    value: any,
+    resolveData: resolveDataType
   ) => {
     return await Promise.all(
-      value.map(async (v) => await resolveData(datasource, field, v))
+      value.map(async (v: any) => await resolveData(datasource, field, v))
     );
   },
 };
 
 export const fieldGroupList = {
-  getter,
   resolvers,
   builders,
 };
