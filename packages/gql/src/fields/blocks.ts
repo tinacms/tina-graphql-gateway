@@ -117,7 +117,7 @@ const resolvers = {
       })
     );
 
-    const { type, ...rest } = field;
+    const { ...rest } = field;
     return {
       ...rest,
       component: "blocks",
