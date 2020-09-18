@@ -8,6 +8,7 @@
             "name": "title",
             "label": "Title",
             "type": "textarea",
+            "component": "textarea",
             "config": {
               "required": null
             }
@@ -31,6 +32,7 @@
                     "name": "description",
                     "label": "Description",
                     "type": "textarea",
+                    "component": "textarea",
                     "config": null
                   },
                   {
@@ -43,6 +45,7 @@
                         "name": "header",
                         "label": "Header",
                         "type": "textarea",
+                        "component": "textarea",
                         "config": {
                           "required": null
                         }
@@ -54,7 +57,12 @@
                     "label": "Authors",
                     "component": "list",
                     "field": {
-                      "component": "select"
+                      "name": "authors",
+                      "label": "Authors",
+                      "component": "select",
+                      "options": [
+                        "authors/homer.md"
+                      ]
                     }
                   }
                 ]

@@ -120,7 +120,7 @@ const getter = async ({
 };
 
 const resolvers = {
-  formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
+  optionsFetcher: async (datasource: DataSource, field: SelectField) => {
     // This could show the display name of other pages if provided: {value: string, label: string}
     let options: string[] = [];
     let select;
@@ -141,13 +141,41 @@ const resolvers = {
         break;
     }
 
-    const { ...rest } = field;
-    return {
-      ...rest,
-      component: "select",
-      options,
-      __typename: "SelectFormField",
-    };
+    return options;
+  },
+  formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
+    // This could show the display name of other pages if provided: {value: string, label: string}
+    let options: string[] = [];
+    let select;
+    switch (field.config.source.type) {
+      case "documents":
+        select = field as DocumentSelect;
+        throw new Error(`document select not implemented`);
+      case "pages":
+        select = field as SectionSelect;
+        const pages = await datasource.getDocumentsForSection(
+          select.config.source.section
+        );
+        options = pages;
+        return {
+          ...field,
+          component: "select",
+          options: {
+            field,
+            _resolver: "select_form",
+          },
+          __typename: "SelectFormField",
+        };
+      case "simple":
+        select = field as SimpleSelect;
+        options = select.config.options;
+        return {
+          ...field,
+          component: "select",
+          options,
+          __typename: "SelectFormField",
+        };
+    }
   },
   dataFieldBuilder: async (
     datasource: DataSource,

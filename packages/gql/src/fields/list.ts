@@ -62,11 +62,28 @@ const builders = {
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           field: {
-            type: new GraphQLObjectType({
+            type: new GraphQLUnionType({
               name: "ListFormFieldItemField",
-              fields: {
-                component: { type: GraphQLString }, // 'text' | 'textarea' | 'number' | 'select'
-              },
+              types: [
+                // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
+                cache.build(
+                  new GraphQLObjectType({
+                    name: "SelectFormField",
+                    fields: {
+                      component: { type: GraphQLString },
+                      options: { type: GraphQLList(GraphQLString) },
+                    },
+                  })
+                ),
+                cache.build(
+                  new GraphQLObjectType({
+                    name: "TextareaFormField",
+                    fields: {
+                      component: { type: GraphQLString },
+                    },
+                  })
+                ),
+              ],
             }),
           },
         },
@@ -129,7 +146,8 @@ const resolvers = {
       component: "text" | "textarea" | "number" | "select";
       options?: string[];
     } = {
-      component: "text",
+      component: "textarea",
+      __typename: "TextareaFormField",
     };
     let list;
     switch (listTypeIdentifier) {
