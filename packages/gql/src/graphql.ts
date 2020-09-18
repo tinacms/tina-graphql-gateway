@@ -57,8 +57,6 @@ export const fieldResolver: GraphQLFieldResolver<
 
   // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
-    // console.log(info.fieldName);
-    // console.log(source);
     return;
   }
 

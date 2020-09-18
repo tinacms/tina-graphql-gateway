@@ -37,18 +37,10 @@ const buildTemplateFormField = async (cache: Cache, field: Field) => {
     case "list":
       return await list.builders.formFieldBuilder({ cache, field });
     default:
-      break;
+      throw new Error(
+        `[buildTemplateFormField]: Unknown field type ${field.type}`
+      );
   }
-  return cache.build(
-    new GraphQLObjectType<Field, ContextT>({
-      name: field.type,
-      fields: {
-        name: { type: GraphQLString, resolve: (item) => item },
-        component: { type: GraphQLString },
-        gibberish: { type: GraphQLString },
-      },
-    })
-  );
 };
 
 const buildTemplateFormFields = async (
