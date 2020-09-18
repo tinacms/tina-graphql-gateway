@@ -10,9 +10,6 @@ export type TextField = {
   };
 };
 
-const getter = ({ value, field }: { value: string; field: TextField }) => {
-  return value;
-};
 const builder = ({ field }: { field: TextField }) => {
   return {
     name: { type: GraphQLString },
@@ -28,6 +25,5 @@ const builder = ({ field }: { field: TextField }) => {
 };
 
 export const text = {
-  getter,
   builder,
 };

@@ -1,32 +1,19 @@
-import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLUnionType,
-} from "graphql";
+import type { DataSource } from "../datasources/datasource";
+import { GraphQLString, GraphQLObjectType } from "graphql";
 import type { Cache } from "../schema-builder";
 
 export type TextareaField = {
   label: string;
   name: string;
   type: "textarea";
+  component: "textarea";
   default: string;
   config?: {
     required?: boolean;
   };
-};
-export type TinaTextareaField = {
   __typename: "TextareaFormField";
-  label: string;
-  name: string;
-  component: "textarea";
 };
 
-const getter = ({ value, field }: { value: string; field: TextareaField }) => {
-  return value;
-};
 const builders = {
   formFieldBuilder: ({
     cache,
@@ -67,7 +54,7 @@ const builders = {
 };
 
 const resolvers = {
-  formFieldBuilder: (field: TextareaField): TinaTextareaField => {
+  formFieldBuilder: (field: TextareaField) => {
     const { ...rest } = field;
     return {
       ...rest,
@@ -85,7 +72,6 @@ const resolvers = {
 };
 
 export const textarea = {
-  getter,
   resolvers,
   builders,
 };

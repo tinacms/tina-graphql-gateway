@@ -5,8 +5,6 @@ import {
   GraphQLNonNull,
   GraphQLUnionType,
   GraphQLList,
-  GraphQLResolveInfo,
-  GraphQLObjectTypeExtensions,
   getNamedType,
   GraphQLType,
 } from "graphql";

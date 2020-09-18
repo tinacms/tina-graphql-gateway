@@ -1,30 +1,7 @@
-import {
-  graphql,
-  getNamedType,
-  TypeInfo,
-  visitWithTypeInfo,
-  getDescription,
-  GraphQLString,
-} from "graphql";
-import {
-  GraphQLSchema,
-  GraphQLFieldResolver,
-  GraphQLTypeResolver,
-  Source,
-  parse,
-  printSchema,
-  visit,
-  Visitor,
-  ASTKindToNode,
-  DocumentNode,
-  FieldDefinitionNode,
-  ASTNode,
-  SelectionNode,
-  NamedTypeNode,
-} from "graphql";
+import { graphql } from "graphql";
+import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
 import _ from "lodash";
 import type { TemplateData } from "./types";
-import { isDocumentArgs } from "./datasources/datasource";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
@@ -33,13 +10,8 @@ import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
-import type {
-  DataSource,
-  // TinaDocument,
-  DocumentPartial,
-} from "./datasources/datasource";
+import type { DataSource } from "./datasources/datasource";
 
-type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 export type ContextT = {
   datasource: DataSource;
 };
@@ -83,6 +55,7 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
+  // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
     // console.log(info.fieldName);
     // console.log(source);
@@ -119,7 +92,7 @@ export const fieldResolver: GraphQLFieldResolver<
         __typename: template.label,
         content: "\nSome content\n",
         form: resolvedTemplate,
-        path: "some-path",
+        path: args.path,
         data: resolvedData,
       };
     default:
@@ -137,7 +110,6 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
-    // typeResolver: documentTypeResolver,
     rootValue: { document: { _resolver: "_initial_source" } },
   });
 };

@@ -17,6 +17,7 @@
   "dependencies": {
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-tools/schema": "^6.2.1",
+    "@tinacms/fields": "^0.29.0",
     "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",
     "@types/lodash": "^4.14.161",

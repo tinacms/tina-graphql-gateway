@@ -1,16 +1,9 @@
-import type { Field } from "./index";
 import type { DataSource } from "../datasources/datasource";
 import type { TemplateData } from "../types";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLUnionType,
-  GraphQLNonNull,
-  FieldsOnCorrectTypeRule,
-} from "graphql";
+import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveTemplateType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
+import type { BlocksFieldDefinititon } from "@tinacms/fields";
 
 export type BlocksField = {
   label: string;
@@ -23,29 +16,9 @@ export type BlocksField = {
   };
   templates: { [key: string]: TemplateData };
 };
-
-type FieldMap = { [key: string]: Field };
-const getter = async ({
-  value,
-  field,
-  datasource,
-}: {
-  value: { template: string; [key: string]: unknown }[];
-  field: BlocksField;
-  datasource: DataSource;
-}): Promise<{ _fields: FieldMap; [key: string]: unknown }[]> => {
-  return Promise.all(
-    value.map(async (value) => {
-      const template = await datasource.getTemplate({ slug: value.template });
-      const fields: { [key: string]: Field } = {};
-      template.fields.forEach((field) => (fields[field.name] = field));
-
-      return {
-        _fields: fields,
-        ...value,
-      };
-    })
-  );
+type TinaBlocksField = BlocksFieldDefinititon & {
+  template_types: string[];
+  __typename: "BlocksFormField";
 };
 
 const builders = {
@@ -69,7 +42,7 @@ const builders = {
     );
 
     return cache.build(
-      new GraphQLObjectType({
+      new GraphQLObjectType<BlocksField>({
         name: "BlocksFormField",
         fields: {
           name: { type: GraphQLString },
@@ -108,7 +81,7 @@ const resolvers = {
     datasource: DataSource,
     field: BlocksField,
     resolveTemplate: resolveTemplateType
-  ) => {
+  ): Promise<TinaBlocksField> => {
     const templates: { [key: string]: TemplateData } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
@@ -125,9 +98,9 @@ const resolvers = {
     const { ...rest } = field;
     return {
       ...rest,
-      component: "blocks",
+      component: "blocks" as const,
       templates,
-      __typename: "BlocksFormField",
+      __typename: "BlocksFormField" as const,
     };
   },
 
@@ -148,7 +121,6 @@ const resolvers = {
 };
 
 export const blocks = {
-  getter,
   resolvers,
   builders,
 };

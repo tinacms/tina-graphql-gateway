@@ -71,7 +71,7 @@
           }
         ]
       },
-      "path": "some-path",
+      "path": "posts/1.md",
       "data": {
         "title": "Some Title",
         "author": {

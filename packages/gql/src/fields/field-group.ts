@@ -1,12 +1,6 @@
 import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  getNamedType,
-  GraphQLList,
-  GraphQLUnionType,
-} from "graphql";
+import type { DataSource } from "../datasources/datasource";
+import { GraphQLString, GraphQLObjectType } from "graphql";
 import type { resolveFieldType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
 
@@ -21,24 +15,6 @@ export type FieldGroupField = {
   };
 };
 
-type FieldMap = { [key: string]: Field };
-const getter = ({
-  value,
-  field,
-  datasource,
-}: {
-  value: { [key: string]: any }[];
-  field: FieldGroupField;
-  datasource: DataSource;
-}): { _fields: FieldMap; [key: string]: unknown } => {
-  const fields: FieldMap = {};
-  field.fields.forEach((field) => (fields[field.name] = field));
-
-  return {
-    _fields: fields,
-    ...value,
-  };
-};
 const builders = {
   formFieldBuilder: async ({
     cache,
@@ -109,5 +85,4 @@ const resolvers = {
 export const fieldGroup = {
   builders,
   resolvers,
-  getter,
 };

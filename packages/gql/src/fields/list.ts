@@ -1,5 +1,5 @@
 import type { Field } from "./index";
-import type { DataSource, DocumentArgs } from "../datasources/datasource";
+import type { DataSource } from "../datasources/datasource";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -225,8 +225,6 @@ const resolvers = {
       case "simple":
         list = field as SimpleList;
         return value;
-        break;
-      // Do nothing, this is the default
     }
   },
 };
