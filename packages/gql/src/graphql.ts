@@ -75,27 +75,45 @@ export const fieldResolver: GraphQLFieldResolver<
           `Expected {path: string} as an argument but got undefined`
         );
       }
-      const document = await datasource.getData(args);
-      const template = await datasource.getTemplateForDocument(args);
+      return await resolveDocument({ args, datasource });
 
-      const resolvedTemplate = await resolveTemplate(datasource, template);
-      const resolvedData = await resolveData(
-        datasource,
-        resolvedTemplate,
-        document.data
-      );
-      // console.log(JSON.stringify(template, null, 2));
-
-      return {
-        __typename: template.label,
-        content: "\nSome content\n",
-        form: resolvedTemplate,
-        path: args.path,
-        data: resolvedData,
-      };
     default:
       return value;
   }
+};
+
+type ResolveDocument = {
+  __typename: string;
+  content: string;
+  form: ResolvedTemplate;
+  path: string;
+  data: ResolvedData;
+};
+const resolveDocument = async ({
+  args,
+  datasource,
+}: {
+  args: { path: string };
+  datasource: DataSource;
+}): Promise<ResolveDocument> => {
+  const document = await datasource.getData(args);
+  const template = await datasource.getTemplateForDocument(args);
+
+  const resolvedTemplate = await resolveTemplate(datasource, template);
+  const resolvedData = await resolveData(
+    datasource,
+    resolvedTemplate,
+    document.data
+  );
+  // console.log(JSON.stringify(template, null, 2));
+
+  return {
+    __typename: template.label,
+    content: "\nSome content\n",
+    form: resolvedTemplate,
+    path: args.path,
+    data: resolvedData,
+  };
 };
 
 export const graphqlInit = async (args: {
@@ -112,10 +130,15 @@ export const graphqlInit = async (args: {
   });
 };
 
+type ResolvedTemplate = TemplateData & {
+  __typename: string;
+  fields: Field[];
+};
+
 export type resolveTemplateType = (
   datasource: DataSource,
   template: TemplateData
-) => Promise<any>;
+) => Promise<ResolvedTemplate>;
 const resolveTemplate: resolveTemplateType = async (datasource, template) => {
   const accum: TemplateData & {
     __typename: string;
@@ -171,13 +194,17 @@ const resolveField: resolveFieldType = async (datasource, field) => {
   }
 };
 
+type ResolvedData = {
+  __typename: string;
+  [key: string]: Field;
+};
 export type resolveDataType = (
   datasource: DataSource,
   field: TemplateData,
   data: {
     [key: string]: string | object | string[] | object[];
   }
-) => Promise<any>;
+) => Promise<ResolvedData>;
 const resolveData: resolveDataType = async (
   datasource,
   resolvedTemplate,

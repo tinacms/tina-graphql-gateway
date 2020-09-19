@@ -14,10 +14,10 @@ describe("Document Resolver", () => {
       .toString();
 
     const datasource = FilesystemDataSource(projectRoot);
-    // const schema2 = await schemaBuilder({ datasource });
-    const schema = buildSchema(
-      await fs.readFileSync(path.join(projectRoot, "temp.gql")).toString()
-    );
+    const schema = await schemaBuilder({ datasource });
+    // const schema = buildSchema(
+    //   await fs.readFileSync(path.join(projectRoot, "temp.gql")).toString()
+    // );
 
     const contentPath = "posts/1.md";
     // const contentPath = 'authors/homer.md'
@@ -35,9 +35,11 @@ describe("Document Resolver", () => {
         })
       );
     }
-    await fs.writeFileSync(
-      path.join(projectRoot, "result.json"),
-      JSON.stringify(res, null, 2)
-    );
+    const json = await fs.readFileSync(path.join(projectRoot, "result.json"));
+    expect(res).toMatchObject(JSON.parse(json));
+    // await fs.writeFileSync(
+    //   path.join(projectRoot, "result.json"),
+    //   JSON.stringify(res, null, 2)
+    // );
   });
 });

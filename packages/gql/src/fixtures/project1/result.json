@@ -17,9 +17,7 @@
             "name": "author",
             "label": "Author",
             "component": "select",
-            "options": [
-              "authors/homer.md"
-            ]
+            "options": ["authors/homer.md"]
           },
           {
             "name": "sections",
@@ -60,9 +58,7 @@
                       "name": "authors",
                       "label": "Authors",
                       "component": "select",
-                      "options": [
-                        "authors/homer.md"
-                      ]
+                      "options": ["authors/homer.md"]
                     }
                   }
                 ]
