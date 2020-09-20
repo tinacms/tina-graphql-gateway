@@ -25,22 +25,82 @@ import type { ContextT } from "./graphql";
 const buildTemplateFormField = async (cache: Cache, field: Field) => {
   switch (field.type) {
     case "textarea":
-      return textarea.builders.formFieldBuilder({ cache, field });
+      return textarea.build.field({ cache, field });
     case "select":
-      return select.builders.formFieldBuilder({ cache, field });
+      return select.build.field({ cache, field });
     case "blocks":
-      return blocks.builders.formFieldBuilder({ cache, field });
+      return blocks.build.field({ cache, field });
     case "field_group_list":
-      return await fieldGroupList.builders.formFieldBuilder({ cache, field });
+      return await fieldGroupList.build.field({ cache, field });
     case "field_group":
-      return await fieldGroup.builders.formFieldBuilder({ cache, field });
+      return await fieldGroup.build.field({ cache, field });
     case "list":
-      return await list.builders.formFieldBuilder({ cache, field });
+      return await list.build.field({ cache, field });
     default:
       throw new Error(
         `[buildTemplateFormField]: Unknown field type ${field.type}`
       );
   }
+};
+
+type BuildTemplateDataFields = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
+const buildTemplateDataFields: BuildTemplateDataFields = async (
+  cache,
+  template
+) => {
+  const fields: GraphQLFieldConfigMap<any, ContextT> = {};
+
+  await Promise.all(
+    template.fields.map(async (field) => {
+      switch (field.type) {
+        case "textarea":
+          fields[field.name] = textarea.build.value({
+            cache,
+            field,
+          });
+          break;
+        case "select":
+          fields[field.name] = await select.build.value({
+            cache,
+            field,
+          });
+          break;
+        case "blocks":
+          fields[field.name] = await blocks.build.value({
+            cache,
+            field,
+          });
+          break;
+        case "field_group":
+          fields[field.name] = await fieldGroup.build.value({
+            cache,
+            field,
+          });
+          break;
+        case "field_group_list":
+          fields[field.name] = await fieldGroupList.build.value({
+            cache,
+            field,
+          });
+          break;
+        case "list":
+          fields[field.name] = await list.build.value({
+            cache,
+            field,
+          });
+          break;
+
+        default:
+          fields[field.name] = { type: GraphQLString };
+          break;
+      }
+    })
+  );
+
+  return fields;
 };
 
 const buildTemplateFormFields = async (
@@ -93,66 +153,6 @@ const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
       },
     })
   );
-};
-
-type BuildTemplateDataFields = (
-  cache: Cache,
-  template: TemplateData
-) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
-const buildTemplateDataFields: BuildTemplateDataFields = async (
-  cache,
-  template
-) => {
-  const fields: GraphQLFieldConfigMap<any, ContextT> = {};
-
-  await Promise.all(
-    template.fields.map(async (field) => {
-      switch (field.type) {
-        case "textarea":
-          fields[field.name] = textarea.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-        case "select":
-          fields[field.name] = await select.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-        case "blocks":
-          fields[field.name] = await blocks.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-        case "field_group":
-          fields[field.name] = await fieldGroup.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-        case "field_group_list":
-          fields[field.name] = await fieldGroupList.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-        case "list":
-          fields[field.name] = await list.builders.dataFieldBuilder({
-            cache,
-            field,
-          });
-          break;
-
-        default:
-          fields[field.name] = { type: GraphQLString };
-          break;
-      }
-    })
-  );
-
-  return fields;
 };
 
 /**

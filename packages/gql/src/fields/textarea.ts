@@ -14,22 +14,12 @@ export type TextareaField = {
   __typename: "TextareaFormField";
 };
 
-const builders = {
-  formFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: TextareaField;
-  }) => {
+const build = {
+  field: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "TextareaFormField",
         fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          type: { type: GraphQLString },
-          component: { type: GraphQLString },
           config: {
             type: cache.build(
               new GraphQLObjectType({
@@ -42,19 +32,13 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: TextareaField;
-  }) => {
+  value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return { type: GraphQLString };
   },
 };
 
-const resolvers = {
-  formFieldBuilder: (field: TextareaField) => {
+const resolve = {
+  field: ({ field }: { field: TextareaField }) => {
     const { ...rest } = field;
     return {
       ...rest,
@@ -65,16 +49,20 @@ const resolvers = {
       __typename: "TextareaFormField",
     };
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: TextareaField,
-    value: any
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: TextareaField;
+    value: string;
+  }) => {
     return value;
   },
 };
 
 export const textarea = {
-  resolvers,
-  builders,
+  resolve,
+  build,
 };
