@@ -117,8 +117,17 @@ const builders = {
         list = field as SectionList;
         const section = list.config.source.section;
         return {
-          type: GraphQLList(
-            await cache.builder.buildDocumentUnion({ cache, section })
+          type: await cache.build(
+            new GraphQLObjectType({
+              name: `${list.label}Documents`,
+              fields: {
+                documents: {
+                  type: GraphQLList(
+                    await cache.builder.buildDocumentUnion({ cache, section })
+                  ),
+                },
+              },
+            })
           ),
         };
       case "simple":
@@ -210,18 +219,10 @@ const resolvers = {
         list = field as DocumentList;
         throw new Error(`document list not implemented`);
       case "pages":
-        list = field as SectionList;
-        return await Promise.all(
-          value.map(async (item: any) => {
-            const t = await datasource.getTemplateForDocument({ path: item });
-            const d = await datasource.getData({ path: item });
-            return {
-              __typename: t.label,
-              path: item,
-              ...d,
-            };
-          })
-        );
+        return {
+          _resolver: "_initial_source",
+          _margs: { paths: value },
+        };
       case "simple":
         list = field as SimpleList;
         return value;
