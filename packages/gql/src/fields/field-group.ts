@@ -18,14 +18,8 @@ export type FieldGroupValue = {
   [key: string]: unknown;
 };
 
-const builders = {
-  formFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupField;
-  }) => {
+const build = {
+  field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "FieldGroupFormField",
@@ -45,13 +39,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return { type: await cache.builder.buildTemplateData(cache, field) };
   },
 };
@@ -95,6 +83,6 @@ const resolve = {
 };
 
 export const fieldGroup = {
-  builders,
+  build,
   resolve,
 };

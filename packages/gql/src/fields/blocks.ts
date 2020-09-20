@@ -25,14 +25,8 @@ type BlockValue = {
   [key: string]: unknown;
 };
 
-const builders = {
-  formFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-  }) => {
+const build = {
+  field: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
     const templateForms: { [key: string]: any } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
@@ -62,13 +56,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
     return {
       type: GraphQLList(
         await cache.builder.buildDataUnion({
@@ -138,5 +126,5 @@ const resolve = {
 
 export const blocks = {
   resolve,
-  builders,
+  build,
 };

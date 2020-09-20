@@ -51,9 +51,9 @@ export type SectionList = BaseListField & {
 };
 export type ListField = SectionList | SimpleList | DocumentList;
 
-const builders = {
+const build = {
   /** Returns one of 3 possible types of select options */
-  formFieldBuilder: ({ cache, field }: { cache: Cache; field: ListField }) => {
+  field: ({ cache, field }: { cache: Cache; field: ListField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "ListFormField",
@@ -90,13 +90,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: ListField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -243,5 +237,5 @@ const resolve = {
 
 export const list = {
   resolve,
-  builders,
+  build,
 };

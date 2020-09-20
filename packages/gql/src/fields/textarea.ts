@@ -14,22 +14,12 @@ export type TextareaField = {
   __typename: "TextareaFormField";
 };
 
-const builders = {
-  formFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: TextareaField;
-  }) => {
+const build = {
+  field: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "TextareaFormField",
         fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          type: { type: GraphQLString },
-          component: { type: GraphQLString },
           config: {
             type: cache.build(
               new GraphQLObjectType({
@@ -42,13 +32,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: TextareaField;
-  }) => {
+  value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return { type: GraphQLString };
   },
 };
@@ -80,5 +64,5 @@ const resolve = {
 
 export const textarea = {
   resolve,
-  builders,
+  build,
 };

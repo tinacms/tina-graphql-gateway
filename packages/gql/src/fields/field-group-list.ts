@@ -16,8 +16,8 @@ export type FieldGroupListField = {
   };
 };
 
-const builders = {
-  formFieldBuilder: async ({
+const build = {
+  field: async ({
     cache,
     field,
   }: {
@@ -43,7 +43,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
+  value: async ({
     cache,
     field,
   }: {
@@ -97,5 +97,5 @@ const resolve = {
 
 export const fieldGroupList = {
   resolve,
-  builders,
+  build,
 };

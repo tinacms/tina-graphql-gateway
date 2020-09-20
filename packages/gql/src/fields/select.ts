@@ -41,15 +41,9 @@ export type SimpleSelect = BaseSelectField & {
 
 export type SelectField = SimpleSelect | SectionSelect | DocumentSelect;
 
-const builders = {
+const build = {
   /** Returns one of 3 possible types of select options */
-  formFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: SelectField;
-  }) => {
+  field: ({ cache, field }: { cache: Cache; field: SelectField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "SelectFormField",
@@ -62,13 +56,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: SelectField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
     let select;
     switch (field.config.source.type) {
       case "documents":
@@ -155,5 +143,5 @@ const resolve = {
 
 export const select = {
   resolve,
-  builders,
+  build,
 };
