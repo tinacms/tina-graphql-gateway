@@ -77,10 +77,19 @@ const builders = {
       case "pages":
         select = field as SectionSelect;
         return {
-          type: await cache.builder.buildDocumentUnion({
-            cache,
-            section: select.config.source.section,
-          }),
+          type: await cache.build(
+            new GraphQLObjectType({
+              name: `${select.label}Document`,
+              fields: {
+                document: {
+                  type: await cache.builder.buildDocumentUnion({
+                    cache,
+                    section: select.config.source.section,
+                  }),
+                },
+              },
+            })
+          ),
         };
       case "simple":
         select = field as SimpleSelect;
@@ -90,60 +99,30 @@ const builders = {
 };
 
 const resolvers = {
-  optionsFetcher: async (datasource: DataSource, field: SelectField) => {
-    // This could show the display name of other pages if provided: {value: string, label: string}
-    let options: string[] = [];
-    let select;
-    switch (field.config.source.type) {
-      case "documents":
-        select = field as DocumentSelect;
-        throw new Error(`document select not implemented`);
-      case "pages":
-        select = field as SectionSelect;
-        const pages = await datasource.getDocumentsForSection(
-          select.config.source.section
-        );
-        options = pages;
-        break;
-      case "simple":
-        select = field as SimpleSelect;
-        options = select.options;
-        break;
-    }
-
-    return options;
-  },
   formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
-    // This could show the display name of other pages if provided: {value: string, label: string}
-    let options: string[] = [];
     let select;
+    const f = {
+      ...field,
+      component: "select",
+      __typename: "SelectFormField",
+    };
     switch (field.config.source.type) {
       case "documents":
         select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
-        const pages = await datasource.getDocumentsForSection(
-          select.config.source.section
-        );
-        options = pages;
         return {
-          ...field,
-          component: "select",
-          options: {
-            field,
-            _resolver: "select_form",
-          },
-          __typename: "SelectFormField",
+          ...f,
+          options: await datasource.getDocumentsForSection(
+            select.config.source.section
+          ),
         };
       case "simple":
         select = field as SimpleSelect;
-        options = select.config.options;
         return {
-          ...field,
-          component: "select",
-          options,
-          __typename: "SelectFormField",
+          ...f,
+          options: select.config.options,
         };
     }
   },
@@ -158,13 +137,9 @@ const resolvers = {
         select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
-        select = field as SectionSelect;
-        const t = await datasource.getTemplateForDocument({ path: value });
-        const d = await datasource.getData({ path: value });
         return {
-          __typename: t.label,
-          path: value,
-          ...d,
+          _resolver: "_initial_source",
+          _args: { path: value },
         };
       case "simple":
         select = field as SimpleSelect;

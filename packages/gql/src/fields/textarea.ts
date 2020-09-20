@@ -59,6 +59,9 @@ const resolvers = {
     return {
       ...rest,
       component: "textarea",
+      config: rest.config || {
+        required: false,
+      },
       __typename: "TextareaFormField",
     };
   },

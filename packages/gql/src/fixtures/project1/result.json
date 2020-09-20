@@ -17,7 +17,9 @@
             "name": "author",
             "label": "Author",
             "component": "select",
-            "options": ["authors/homer.md"]
+            "options": [
+              "authors/homer.md"
+            ]
           },
           {
             "name": "sections",
@@ -31,7 +33,9 @@
                     "label": "Description",
                     "type": "textarea",
                     "component": "textarea",
-                    "config": null
+                    "config": {
+                      "required": null
+                    }
                   },
                   {
                     "name": "cta",
@@ -58,7 +62,9 @@
                       "name": "authors",
                       "label": "Authors",
                       "component": "select",
-                      "options": ["authors/homer.md"]
+                      "options": [
+                        "authors/homer.md"
+                      ]
                     }
                   }
                 ]
@@ -71,7 +77,12 @@
       "data": {
         "title": "Some Title",
         "author": {
-          "path": "authors/homer.md"
+          "document": {
+            "path": "authors/homer.md",
+            "data": {
+              "name": "Homer Simpson"
+            }
+          }
         },
         "sections": [
           {
@@ -79,11 +90,16 @@
             "cta": {
               "header": "Some CTA"
             },
-            "authors": [
-              {
-                "path": "authors/homer.md"
-              }
-            ]
+            "authors": {
+              "documents": [
+                {
+                  "path": "authors/homer.md",
+                  "data": {
+                    "name": "Homer Simpson"
+                  }
+                }
+              ]
+            }
           }
         ]
       }

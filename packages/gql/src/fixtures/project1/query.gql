@@ -84,8 +84,13 @@ query DocumentQuery($path: String!) {
       data {
         title
         author {
-          ... on Author {
-            path
+          document {
+            ... on Author {
+              path
+              data {
+                name
+              }
+            }
           }
         }
         sections {
@@ -95,8 +100,13 @@ query DocumentQuery($path: String!) {
               header
             }
             authors {
-              ... on Author {
-                path
+              documents {
+                ... on Author {
+                  path
+                  data {
+                    name
+                  }
+                }
               }
             }
           }
