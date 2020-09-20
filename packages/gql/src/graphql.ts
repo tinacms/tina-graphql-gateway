@@ -57,26 +57,29 @@ export const fieldResolver: GraphQLFieldResolver<
 
   // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
+    // console.log(info.fieldName);
+    // console.log(source);
     return;
   }
 
   switch (value._resolver) {
-    case "select_form":
-      return await select.resolvers.optionsFetcher(datasource, value.field);
-    case "select_data":
-      return await select.resolvers.dataFieldBuilder(
-        datasource,
-        value.field,
-        value.value
-      );
     case "_initial_source":
-      if (!args) {
-        throw new Error(
-          `Expected {path: string} as an argument but got undefined`
-        );
+      const realArgs = Object.keys(args).length === 0 ? value._args : args;
+      if (value._args) {
+        return {
+          document: await resolveDocument({ args: realArgs, datasource }),
+        };
+      } else if (value._margs) {
+        return {
+          documents: await Promise.all(
+            value._margs.paths.map(async (p) => {
+              return await resolveDocument({ args: { path: p }, datasource });
+            })
+          ),
+        };
+      } else {
+        return await resolveDocument({ args: realArgs, datasource });
       }
-      return await resolveDocument({ args, datasource });
-
     default:
       return value;
   }
@@ -126,6 +129,10 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
+    // typeResolver: (args) => {
+    //   console.log(args);
+    //   return args.__typename;
+    // },
     rootValue: { document: { _resolver: "_initial_source" } },
   });
 };
@@ -221,6 +228,7 @@ const resolveData: resolveDataType = async (
         throw new Error(`Unable to find field for item with name: ${key}`);
       }
       const value = accum[key];
+
       return (fields[key] = await resolveDataField(datasource, field, value));
     })
   );
@@ -250,12 +258,7 @@ const resolveDataField = async (
         resolveData
       );
     case "select":
-      return {
-        __typename: field.label,
-        _resolver: "select_data",
-        field,
-        value,
-      };
+      return await select.resolvers.dataFieldBuilder(datasource, field, value);
     case "list":
       return await list.resolvers.dataFieldBuilder(datasource, field, value);
     case "field_group":

@@ -73,8 +73,12 @@ union ListFormFieldItemField = SelectFormField | TextareaFormField
 
 type PostData {
   title: String
-  author: authorsDocumentUnion
+  author: AuthorDocument
   sections: [sectionDataUnion]
+}
+
+type AuthorDocument {
+  document: authorsDocumentUnion
 }
 
 union authorsDocumentUnion = Author
@@ -119,9 +123,13 @@ union sectionDataUnion = SectionData
 type SectionData {
   description: String
   cta: CtaData
-  authors: [authorsDocumentUnion]
+  authors: AuthorsDocuments
 }
 
 type CtaData {
   header: String
+}
+
+type AuthorsDocuments {
+  documents: [authorsDocumentUnion]
 }
