@@ -201,7 +201,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: ListField,
-    value: any
+    value: string[]
   ) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
@@ -220,8 +220,9 @@ const resolvers = {
         throw new Error(`document list not implemented`);
       case "pages":
         return {
-          _resolver: "_initial_source",
-          _margs: { paths: value },
+          _resolver: "_resource",
+          _resolver_kind: "_nested_sources",
+          _args: { paths: value },
         };
       case "simple":
         list = field as SimpleList;

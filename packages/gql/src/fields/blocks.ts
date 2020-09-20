@@ -20,6 +20,10 @@ type TinaBlocksField = BlocksFieldDefinititon & {
   template_types: string[];
   __typename: "BlocksFormField";
 };
+type BlockValue = {
+  template: string;
+  [key: string]: unknown;
+};
 
 const builders = {
   formFieldBuilder: async ({
@@ -107,11 +111,11 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: BlocksField,
-    value: any,
+    value: BlockValue[],
     resolveData: resolveDataType
   ) => {
     return await Promise.all(
-      value.map(async (item: any) => {
+      value.map(async (item) => {
         const t = field.templates[`${item.template}TemplateFields`];
         const { template, ...rest } = item;
         return await resolveData(datasource, t, rest);

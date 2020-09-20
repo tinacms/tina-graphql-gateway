@@ -72,7 +72,6 @@ const builders = {
     let select;
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
@@ -92,7 +91,6 @@ const builders = {
           ),
         };
       case "simple":
-        select = field as SimpleSelect;
         return { type: GraphQLString };
     }
   },
@@ -108,7 +106,6 @@ const resolvers = {
     };
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
@@ -131,18 +128,16 @@ const resolvers = {
     field: SelectField,
     value: string
   ) => {
-    let select;
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         return {
-          _resolver: "_initial_source",
+          _resolver: "_resource",
+          _resolver_kind: "_nested_source",
           _args: { path: value },
         };
       case "simple":
-        select = field as SimpleSelect;
         return value;
     }
   },

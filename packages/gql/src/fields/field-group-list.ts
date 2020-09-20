@@ -3,6 +3,7 @@ import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveFieldType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
+import type { FieldGroupValue } from "./field-group";
 
 export type FieldGroupListField = {
   label: string;
@@ -76,7 +77,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupListField,
-    value: any,
+    value: FieldGroupValue[],
     resolveData: resolveDataType
   ) => {
     return await Promise.all(

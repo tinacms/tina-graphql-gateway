@@ -14,6 +14,9 @@ export type FieldGroupField = {
     required?: boolean;
   };
 };
+export type FieldGroupValue = {
+  [key: string]: unknown;
+};
 
 const builders = {
   formFieldBuilder: async ({
@@ -75,7 +78,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: FieldGroupField,
-    value: any,
+    value: FieldGroupValue,
     resolveData: resolveDataType
   ) => {
     return await resolveData(datasource, field, value);

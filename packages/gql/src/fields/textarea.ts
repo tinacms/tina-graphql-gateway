@@ -68,7 +68,7 @@ const resolvers = {
   dataFieldBuilder: async (
     datasource: DataSource,
     field: TextareaField,
-    value: any
+    value: string
   ) => {
     return value;
   },

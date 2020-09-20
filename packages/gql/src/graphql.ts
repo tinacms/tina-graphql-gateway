@@ -18,34 +18,29 @@ export type ContextT = {
 
 type FieldResolverArgs = undefined | { path: string };
 
-export type InitialSource = {
-  [key: string]: {
-    _resolver: "_initial_source";
-  };
-};
-export type TinaDocument = {
-  [key: string]: {
-    _resolver: "select_data";
-  };
-};
-export type TinaSelectFormField = {
-  [key: string]: {
-    _resolver: "select_form";
-    field: SelectField;
-  };
-};
-export type TinaDataFormField = {
-  [key: string]: {
-    _resolver: "select_data";
-    field: SelectField;
-    value: string;
-  };
+export type InitialSource =
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_initial";
+    }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_source";
+      _args: { path: string };
+    }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_sources";
+      _args: { paths: string[] };
+    };
+
+type FieldResolverSource = {
+  [key: string]: InitialSource | unknown;
 };
 
-type FieldResolverSource =
-  | InitialSource
-  | TinaDataFormField
-  | TinaSelectFormField;
+function isResource(item: unknown): item is InitialSource {
+  return typeof item._resolver === "string";
+}
 
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
@@ -59,29 +54,30 @@ export const fieldResolver: GraphQLFieldResolver<
   if (!value) {
     // console.log(info.fieldName);
     // console.log(source);
-    return;
+    return null;
   }
-
-  switch (value._resolver) {
-    case "_initial_source":
-      const realArgs = Object.keys(args).length === 0 ? value._args : args;
-      if (value._args) {
+  if (isResource(value)) {
+    switch (value._resolver_kind) {
+      case "_initial":
+        if (!args) {
+          throw new Error(`Expected args for initial document request`);
+        }
+        return resolveDocument({ args: args, datasource });
+      case "_nested_source":
         return {
-          document: await resolveDocument({ args: realArgs, datasource }),
+          document: await resolveDocument({ args: value._args, datasource }),
         };
-      } else if (value._margs) {
+      case "_nested_sources":
         return {
           documents: await Promise.all(
-            value._margs.paths.map(async (p) => {
+            value._args.paths.map(async (p) => {
               return await resolveDocument({ args: { path: p }, datasource });
             })
           ),
         };
-      } else {
-        return await resolveDocument({ args: realArgs, datasource });
-      }
-    default:
-      return value;
+    }
+  } else {
+    return value;
   }
 };
 
@@ -133,7 +129,12 @@ export const graphqlInit = async (args: {
     //   console.log(args);
     //   return args.__typename;
     // },
-    rootValue: { document: { _resolver: "_initial_source" } },
+    rootValue: {
+      document: {
+        _resolver: "_resource",
+        _resolver_kind: "_initial",
+      },
+    },
   });
 };
 
@@ -209,7 +210,7 @@ export type resolveDataType = (
   datasource: DataSource,
   field: TemplateData,
   data: {
-    [key: string]: string | object | string[] | object[];
+    [key: string]: unknown;
   }
 ) => Promise<ResolvedData>;
 const resolveData: resolveDataType = async (
@@ -217,8 +218,6 @@ const resolveData: resolveDataType = async (
   resolvedTemplate,
   data
 ) => {
-  const accum: { [key: string]: any } = data;
-  const fields: { [key: string]: Field } = {};
   const dataKeys = Object.keys(data);
 
   await Promise.all(
@@ -227,21 +226,21 @@ const resolveData: resolveDataType = async (
       if (!field) {
         throw new Error(`Unable to find field for item with name: ${key}`);
       }
-      const value = accum[key];
+      const value = data[key];
 
-      return (fields[key] = await resolveDataField(datasource, field, value));
+      return (data[key] = await resolveDataField(datasource, field, value));
     })
   );
   return {
     __typename: `${resolvedTemplate.label}Data`,
-    ...fields,
+    ...data,
   };
 };
 
 const resolveDataField = async (
   datasource: DataSource,
   field: Field,
-  value: any
+  value: unknown
 ) => {
   switch (field.type) {
     case "textarea":
@@ -276,7 +275,8 @@ const resolveDataField = async (
         resolveData
       );
     default:
-      console.warn(field.type, value);
-      return value;
+      throw new Error(
+        `Unexpected type for data field resolver - ${field.type}`
+      );
   }
 };
