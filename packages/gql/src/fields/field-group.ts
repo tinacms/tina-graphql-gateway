@@ -56,8 +56,8 @@ const builders = {
   },
 };
 
-const resolvers = {
-  formFieldBuilder: async (
+const resolve = {
+  field: async (
     datasource: DataSource,
     field: FieldGroupField,
     resolveField: resolveFieldType
@@ -75,7 +75,7 @@ const resolvers = {
       __typename: "FieldGroupFormField",
     };
   },
-  dataFieldBuilder: async (
+  value: async (
     datasource: DataSource,
     field: FieldGroupField,
     value: FieldGroupValue,
@@ -87,5 +87,5 @@ const resolvers = {
 
 export const fieldGroup = {
   builders,
-  resolvers,
+  resolve,
 };

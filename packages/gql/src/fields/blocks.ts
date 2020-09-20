@@ -80,8 +80,8 @@ const builders = {
   },
 };
 
-const resolvers = {
-  formFieldBuilder: async (
+const resolve = {
+  field: async (
     datasource: DataSource,
     field: BlocksField,
     resolveTemplate: resolveTemplateType
@@ -108,7 +108,7 @@ const resolvers = {
     };
   },
 
-  dataFieldBuilder: async (
+  value: async (
     datasource: DataSource,
     field: BlocksField,
     value: BlockValue[],
@@ -125,6 +125,6 @@ const resolvers = {
 };
 
 export const blocks = {
-  resolvers,
+  resolve,
   builders,
 };

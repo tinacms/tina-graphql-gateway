@@ -5,7 +5,7 @@ import type { TemplateData } from "./types";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
-import { select, SelectField } from "./fields/select";
+import { select } from "./fields/select";
 import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
@@ -50,10 +50,7 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
-  // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
-    // console.log(info.fieldName);
-    // console.log(source);
     return null;
   }
   if (isResource(value)) {
@@ -95,22 +92,16 @@ const resolveDocument = async ({
   args: { path: string };
   datasource: DataSource;
 }): Promise<ResolveDocument> => {
-  const document = await datasource.getData(args);
+  const { data } = await datasource.getData(args);
   const template = await datasource.getTemplateForDocument(args);
-
   const resolvedTemplate = await resolveTemplate(datasource, template);
-  const resolvedData = await resolveData(
-    datasource,
-    resolvedTemplate,
-    document.data
-  );
-  // console.log(JSON.stringify(template, null, 2));
+  const resolvedData = await resolveData(datasource, resolvedTemplate, data);
 
   return {
     __typename: template.label,
+    path: args.path,
     content: "\nSome content\n",
     form: resolvedTemplate,
-    path: args.path,
     data: resolvedData,
   };
 };
@@ -125,10 +116,6 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
-    // typeResolver: (args) => {
-    //   console.log(args);
-    //   return args.__typename;
-    // },
     rootValue: {
       document: {
         _resolver: "_resource",
@@ -148,22 +135,13 @@ export type resolveTemplateType = (
   template: TemplateData
 ) => Promise<ResolvedTemplate>;
 const resolveTemplate: resolveTemplateType = async (datasource, template) => {
-  const accum: TemplateData & {
-    __typename: string;
-    fields: Field[];
-  } = {
+  return {
     __typename: template.label,
     ...template,
-    fields: [],
+    fields: await Promise.all(
+      template.fields.map(async (field) => resolveField(datasource, field))
+    ),
   };
-
-  await Promise.all(
-    template.fields.map(async (field) =>
-      accum.fields.push(await resolveField(datasource, field))
-    )
-  );
-
-  return accum;
 };
 
 export type resolveFieldType = (
@@ -173,29 +151,17 @@ export type resolveFieldType = (
 const resolveField: resolveFieldType = async (datasource, field) => {
   switch (field.type) {
     case "textarea":
-      return await textarea.resolvers.formFieldBuilder(field);
+      return textarea.resolve.field(field);
     case "blocks":
-      return await blocks.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveTemplate
-      );
+      return blocks.resolve.field(datasource, field, resolveTemplate);
     case "select":
-      return await select.resolvers.formFieldBuilder(datasource, field);
+      return select.resolvers.formFieldBuilder(datasource, field);
     case "list":
-      return await list.resolvers.formFieldBuilder(datasource, field);
+      return list.resolvers.formFieldBuilder(datasource, field);
     case "field_group":
-      return await fieldGroup.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveField
-      );
+      return fieldGroup.resolve.field(datasource, field, resolveField);
     case "field_group_list":
-      return await fieldGroupList.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveField
-      );
+      return fieldGroupList.resolve.field(datasource, field, resolveField);
     default:
       console.log(field);
       return field;
@@ -218,17 +184,10 @@ const resolveData: resolveDataType = async (
   resolvedTemplate,
   data
 ) => {
-  const dataKeys = Object.keys(data);
-
   await Promise.all(
-    dataKeys.map(async (key) => {
-      const field = resolvedTemplate.fields.find((f) => f.name === key);
-      if (!field) {
-        throw new Error(`Unable to find field for item with name: ${key}`);
-      }
-      const value = data[key];
-
-      return (data[key] = await resolveDataField(datasource, field, value));
+    Object.keys(data).map(async (key) => {
+      const field = findField(resolvedTemplate.fields, key);
+      return (data[key] = await resolveDataField(datasource, field, data[key]));
     })
   );
   return {
@@ -244,31 +203,17 @@ const resolveDataField = async (
 ) => {
   switch (field.type) {
     case "textarea":
-      return await textarea.resolvers.dataFieldBuilder(
-        datasource,
-        field,
-        value
-      );
+      return textarea.resolve.value(datasource, field, value);
     case "blocks":
-      return await blocks.resolvers.dataFieldBuilder(
-        datasource,
-        field,
-        value,
-        resolveData
-      );
+      return blocks.resolve.value(datasource, field, value, resolveData);
     case "select":
-      return await select.resolvers.dataFieldBuilder(datasource, field, value);
+      return select.resolvers.dataFieldBuilder(datasource, field, value);
     case "list":
-      return await list.resolvers.dataFieldBuilder(datasource, field, value);
+      return list.resolvers.dataFieldBuilder(datasource, field, value);
     case "field_group":
-      return await fieldGroup.resolvers.dataFieldBuilder(
-        datasource,
-        field,
-        value,
-        resolveData
-      );
+      return fieldGroup.resolve.value(datasource, field, value, resolveData);
     case "field_group_list":
-      return await fieldGroupList.resolvers.dataFieldBuilder(
+      return fieldGroupList.resolve.value(
         datasource,
         field,
         value,
@@ -279,4 +224,12 @@ const resolveDataField = async (
         `Unexpected type for data field resolver - ${field.type}`
       );
   }
+};
+
+const findField = (fields: Field[], fieldName: string) => {
+  const field = fields.find((f) => f.name === fieldName);
+  if (!field) {
+    throw new Error(`Unable to find field for item with name: ${name}`);
+  }
+  return field;
 };
