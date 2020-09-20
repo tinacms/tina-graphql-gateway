@@ -14,15 +14,12 @@ export type FieldGroupField = {
     required?: boolean;
   };
 };
+export type FieldGroupValue = {
+  [key: string]: unknown;
+};
 
-const builders = {
-  formFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupField;
-  }) => {
+const build = {
+  field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "FieldGroupFormField",
@@ -42,23 +39,21 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return { type: await cache.builder.buildTemplateData(cache, field) };
   },
 };
 
-const resolvers = {
-  formFieldBuilder: async (
-    datasource: DataSource,
-    field: FieldGroupField,
-    resolveField: resolveFieldType
-  ) => {
+const resolve = {
+  field: async ({
+    datasource,
+    field,
+    resolveField,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    resolveField: resolveFieldType;
+  }) => {
     const { ...rest } = field;
 
     const fields = await Promise.all(
@@ -72,17 +67,22 @@ const resolvers = {
       __typename: "FieldGroupFormField",
     };
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: FieldGroupField,
-    value: any,
-    resolveData: resolveDataType
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    value: FieldGroupValue;
+    resolveData: resolveDataType;
+  }) => {
     return await resolveData(datasource, field, value);
   },
 };
 
 export const fieldGroup = {
-  builders,
-  resolvers,
+  build,
+  resolve,
 };

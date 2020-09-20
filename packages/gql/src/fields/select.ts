@@ -41,15 +41,9 @@ export type SimpleSelect = BaseSelectField & {
 
 export type SelectField = SimpleSelect | SectionSelect | DocumentSelect;
 
-const builders = {
+const build = {
   /** Returns one of 3 possible types of select options */
-  formFieldBuilder: ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: SelectField;
-  }) => {
+  field: ({ cache, field }: { cache: Cache; field: SelectField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "SelectFormField",
@@ -62,17 +56,10 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: SelectField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
     let select;
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
@@ -92,14 +79,19 @@ const builders = {
           ),
         };
       case "simple":
-        select = field as SimpleSelect;
         return { type: GraphQLString };
     }
   },
 };
 
-const resolvers = {
-  formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
+const resolve = {
+  field: async ({
+    datasource,
+    field,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+  }) => {
     let select;
     const f = {
       ...field,
@@ -108,7 +100,6 @@ const resolvers = {
     };
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         select = field as SectionSelect;
@@ -126,29 +117,31 @@ const resolvers = {
         };
     }
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: SelectField,
-    value: string
-  ) => {
-    let select;
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+    value: string;
+  }) => {
     switch (field.config.source.type) {
       case "documents":
-        select = field as DocumentSelect;
         throw new Error(`document select not implemented`);
       case "pages":
         return {
-          _resolver: "_initial_source",
+          _resolver: "_resource",
+          _resolver_kind: "_nested_source",
           _args: { path: value },
         };
       case "simple":
-        select = field as SimpleSelect;
         return value;
     }
   },
 };
 
 export const select = {
-  resolvers,
-  builders,
+  resolve,
+  build,
 };

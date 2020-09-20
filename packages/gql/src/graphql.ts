@@ -1,11 +1,11 @@
 import { graphql } from "graphql";
 import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
-import _ from "lodash";
+import _, { isString } from "lodash";
 import type { TemplateData } from "./types";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
-import { select, SelectField } from "./fields/select";
+import { select } from "./fields/select";
 import { list } from "./fields/list";
 import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
@@ -18,34 +18,29 @@ export type ContextT = {
 
 type FieldResolverArgs = undefined | { path: string };
 
-export type InitialSource = {
-  [key: string]: {
-    _resolver: "_initial_source";
-  };
-};
-export type TinaDocument = {
-  [key: string]: {
-    _resolver: "select_data";
-  };
-};
-export type TinaSelectFormField = {
-  [key: string]: {
-    _resolver: "select_form";
-    field: SelectField;
-  };
-};
-export type TinaDataFormField = {
-  [key: string]: {
-    _resolver: "select_data";
-    field: SelectField;
-    value: string;
-  };
+export type InitialSource =
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_initial";
+    }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_source";
+      _args: { path: string };
+    }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_sources";
+      _args: { paths: string[] };
+    };
+
+type FieldResolverSource = {
+  [key: string]: InitialSource | unknown;
 };
 
-type FieldResolverSource =
-  | InitialSource
-  | TinaDataFormField
-  | TinaSelectFormField;
+function isResource(item: unknown): item is InitialSource {
+  return typeof item._resolver === "string";
+}
 
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
@@ -55,33 +50,31 @@ export const fieldResolver: GraphQLFieldResolver<
   const value = source[info.fieldName];
   const { datasource } = context;
 
-  // FIXME: these scenarios are valid in some cases but need to assert that
   if (!value) {
-    // console.log(info.fieldName);
-    // console.log(source);
-    return;
+    return null;
   }
-
-  switch (value._resolver) {
-    case "_initial_source":
-      const realArgs = Object.keys(args).length === 0 ? value._args : args;
-      if (value._args) {
+  if (isResource(value)) {
+    switch (value._resolver_kind) {
+      case "_initial":
+        if (!args) {
+          throw new Error(`Expected args for initial document request`);
+        }
+        return resolveDocument({ args: args, datasource });
+      case "_nested_source":
         return {
-          document: await resolveDocument({ args: realArgs, datasource }),
+          document: await resolveDocument({ args: value._args, datasource }),
         };
-      } else if (value._margs) {
+      case "_nested_sources":
         return {
           documents: await Promise.all(
-            value._margs.paths.map(async (p) => {
+            value._args.paths.map(async (p) => {
               return await resolveDocument({ args: { path: p }, datasource });
             })
           ),
         };
-      } else {
-        return await resolveDocument({ args: realArgs, datasource });
-      }
-    default:
-      return value;
+    }
+  } else {
+    return value;
   }
 };
 
@@ -99,22 +92,16 @@ const resolveDocument = async ({
   args: { path: string };
   datasource: DataSource;
 }): Promise<ResolveDocument> => {
-  const document = await datasource.getData(args);
+  const { data } = await datasource.getData(args);
   const template = await datasource.getTemplateForDocument(args);
-
   const resolvedTemplate = await resolveTemplate(datasource, template);
-  const resolvedData = await resolveData(
-    datasource,
-    resolvedTemplate,
-    document.data
-  );
-  // console.log(JSON.stringify(template, null, 2));
+  const resolvedData = await resolveData(datasource, resolvedTemplate, data);
 
   return {
     __typename: template.label,
+    path: args.path,
     content: "\nSome content\n",
     form: resolvedTemplate,
-    path: args.path,
     data: resolvedData,
   };
 };
@@ -129,11 +116,12 @@ export const graphqlInit = async (args: {
     ...args,
     // @ts-ignore
     fieldResolver: fieldResolver,
-    // typeResolver: (args) => {
-    //   console.log(args);
-    //   return args.__typename;
-    // },
-    rootValue: { document: { _resolver: "_initial_source" } },
+    rootValue: {
+      document: {
+        _resolver: "_resource",
+        _resolver_kind: "_initial",
+      },
+    },
   });
 };
 
@@ -147,54 +135,33 @@ export type resolveTemplateType = (
   template: TemplateData
 ) => Promise<ResolvedTemplate>;
 const resolveTemplate: resolveTemplateType = async (datasource, template) => {
-  const accum: TemplateData & {
-    __typename: string;
-    fields: Field[];
-  } = {
+  return {
     __typename: template.label,
     ...template,
-    fields: [],
+    fields: await Promise.all(
+      template.fields.map(async (field) => resolveField(datasource, field))
+    ),
   };
-
-  await Promise.all(
-    template.fields.map(async (field) =>
-      accum.fields.push(await resolveField(datasource, field))
-    )
-  );
-
-  return accum;
 };
 
 export type resolveFieldType = (
   datasource: DataSource,
   field: Field
-) => Promise<any>;
+) => Promise<unknown>;
 const resolveField: resolveFieldType = async (datasource, field) => {
   switch (field.type) {
     case "textarea":
-      return await textarea.resolvers.formFieldBuilder(field);
+      return textarea.resolve.field({ field });
     case "blocks":
-      return await blocks.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveTemplate
-      );
+      return blocks.resolve.field({ datasource, field, resolveTemplate });
     case "select":
-      return await select.resolvers.formFieldBuilder(datasource, field);
+      return select.resolve.field({ datasource, field });
     case "list":
-      return await list.resolvers.formFieldBuilder(datasource, field);
+      return list.resolve.field({ datasource, field });
     case "field_group":
-      return await fieldGroup.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveField
-      );
+      return fieldGroup.resolve.field({ datasource, field, resolveField });
     case "field_group_list":
-      return await fieldGroupList.resolvers.formFieldBuilder(
-        datasource,
-        field,
-        resolveField
-      );
+      return fieldGroupList.resolve.field({ datasource, field, resolveField });
     default:
       console.log(field);
       return field;
@@ -209,7 +176,7 @@ export type resolveDataType = (
   datasource: DataSource,
   field: TemplateData,
   data: {
-    [key: string]: string | object | string[] | object[];
+    [key: string]: unknown;
   }
 ) => Promise<ResolvedData>;
 const resolveData: resolveDataType = async (
@@ -217,66 +184,57 @@ const resolveData: resolveDataType = async (
   resolvedTemplate,
   data
 ) => {
-  const accum: { [key: string]: any } = data;
-  const fields: { [key: string]: Field } = {};
-  const dataKeys = Object.keys(data);
-
   await Promise.all(
-    dataKeys.map(async (key) => {
-      const field = resolvedTemplate.fields.find((f) => f.name === key);
-      if (!field) {
-        throw new Error(`Unable to find field for item with name: ${key}`);
-      }
-      const value = accum[key];
-
-      return (fields[key] = await resolveDataField(datasource, field, value));
+    Object.keys(data).map(async (key) => {
+      const field = findField(resolvedTemplate.fields, key);
+      return (data[key] = await resolveDataField(datasource, field, data[key]));
     })
   );
   return {
     __typename: `${resolvedTemplate.label}Data`,
-    ...fields,
+    ...data,
   };
 };
 
 const resolveDataField = async (
   datasource: DataSource,
   field: Field,
-  value: any
+  value: unknown
 ) => {
   switch (field.type) {
     case "textarea":
-      return await textarea.resolvers.dataFieldBuilder(
-        datasource,
-        field,
-        value
-      );
+      return textarea.resolve.value({ datasource, field, value });
     case "blocks":
-      return await blocks.resolvers.dataFieldBuilder(
-        datasource,
-        field,
-        value,
-        resolveData
-      );
+      return blocks.resolve.value({ datasource, field, value, resolveData });
     case "select":
-      return await select.resolvers.dataFieldBuilder(datasource, field, value);
+      return select.resolve.value({ datasource, field, value });
     case "list":
-      return await list.resolvers.dataFieldBuilder(datasource, field, value);
+      return list.resolve.value({ datasource, field, value });
     case "field_group":
-      return await fieldGroup.resolvers.dataFieldBuilder(
+      return fieldGroup.resolve.value({
         datasource,
         field,
         value,
-        resolveData
-      );
+        resolveData,
+      });
     case "field_group_list":
-      return await fieldGroupList.resolvers.dataFieldBuilder(
+      return fieldGroupList.resolve.value({
         datasource,
         field,
         value,
-        resolveData
-      );
+        resolveData,
+      });
     default:
-      console.warn(field.type, value);
-      return value;
+      throw new Error(
+        `Unexpected type for data field resolver - ${field.type}`
+      );
   }
+};
+
+const findField = (fields: Field[], fieldName: string) => {
+  const field = fields.find((f) => f.name === fieldName);
+  if (!field) {
+    throw new Error(`Unable to find field for item with name: ${name}`);
+  }
+  return field;
 };

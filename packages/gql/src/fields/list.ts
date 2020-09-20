@@ -51,9 +51,9 @@ export type SectionList = BaseListField & {
 };
 export type ListField = SectionList | SimpleList | DocumentList;
 
-const builders = {
+const build = {
   /** Returns one of 3 possible types of select options */
-  formFieldBuilder: ({ cache, field }: { cache: Cache; field: ListField }) => {
+  field: ({ cache, field }: { cache: Cache; field: ListField }) => {
     return cache.build(
       new GraphQLObjectType({
         name: "ListFormField",
@@ -90,13 +90,7 @@ const builders = {
       })
     );
   },
-  dataFieldBuilder: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: ListField;
-  }) => {
+  value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -136,8 +130,14 @@ const builders = {
     }
   },
 };
-const resolvers = {
-  formFieldBuilder: async (datasource: DataSource, field: ListField) => {
+const resolve = {
+  field: async ({
+    datasource,
+    field,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+  }) => {
     const { ...rest } = field;
 
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -180,10 +180,10 @@ const resolvers = {
             required: true,
           },
         };
-        fieldComponent = await select.resolvers.formFieldBuilder(
+        fieldComponent = await select.resolve.field({
           datasource,
-          selectField
-        );
+          field: selectField,
+        });
         break;
       case "simple":
         list = field as SimpleList;
@@ -198,11 +198,15 @@ const resolvers = {
       __typename: "ListFormField",
     };
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: ListField,
-    value: any
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+    value: string[];
+  }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -220,8 +224,9 @@ const resolvers = {
         throw new Error(`document list not implemented`);
       case "pages":
         return {
-          _resolver: "_initial_source",
-          _margs: { paths: value },
+          _resolver: "_resource",
+          _resolver_kind: "_nested_sources",
+          _args: { paths: value },
         };
       case "simple":
         list = field as SimpleList;
@@ -231,6 +236,6 @@ const resolvers = {
 };
 
 export const list = {
-  resolvers,
-  builders,
+  resolve,
+  build,
 };
