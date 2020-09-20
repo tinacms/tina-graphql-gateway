@@ -136,8 +136,14 @@ const builders = {
     }
   },
 };
-const resolvers = {
-  formFieldBuilder: async (datasource: DataSource, field: ListField) => {
+const resolve = {
+  field: async ({
+    datasource,
+    field,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+  }) => {
     const { ...rest } = field;
 
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -180,10 +186,10 @@ const resolvers = {
             required: true,
           },
         };
-        fieldComponent = await select.resolvers.formFieldBuilder(
+        fieldComponent = await select.resolve.field({
           datasource,
-          selectField
-        );
+          field: selectField,
+        });
         break;
       case "simple":
         list = field as SimpleList;
@@ -198,11 +204,15 @@ const resolvers = {
       __typename: "ListFormField",
     };
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: ListField,
-    value: string[]
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+    value: string[];
+  }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -232,6 +242,6 @@ const resolvers = {
 };
 
 export const list = {
-  resolvers,
+  resolve,
   builders,
 };

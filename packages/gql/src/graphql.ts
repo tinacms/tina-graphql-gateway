@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
-import _ from "lodash";
+import _, { isString } from "lodash";
 import type { TemplateData } from "./types";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
@@ -147,21 +147,21 @@ const resolveTemplate: resolveTemplateType = async (datasource, template) => {
 export type resolveFieldType = (
   datasource: DataSource,
   field: Field
-) => Promise<any>;
+) => Promise<unknown>;
 const resolveField: resolveFieldType = async (datasource, field) => {
   switch (field.type) {
     case "textarea":
-      return textarea.resolve.field(field);
+      return textarea.resolve.field({ field });
     case "blocks":
-      return blocks.resolve.field(datasource, field, resolveTemplate);
+      return blocks.resolve.field({ datasource, field, resolveTemplate });
     case "select":
-      return select.resolvers.formFieldBuilder(datasource, field);
+      return select.resolve.field({ datasource, field });
     case "list":
-      return list.resolvers.formFieldBuilder(datasource, field);
+      return list.resolve.field({ datasource, field });
     case "field_group":
-      return fieldGroup.resolve.field(datasource, field, resolveField);
+      return fieldGroup.resolve.field({ datasource, field, resolveField });
     case "field_group_list":
-      return fieldGroupList.resolve.field(datasource, field, resolveField);
+      return fieldGroupList.resolve.field({ datasource, field, resolveField });
     default:
       console.log(field);
       return field;
@@ -203,22 +203,27 @@ const resolveDataField = async (
 ) => {
   switch (field.type) {
     case "textarea":
-      return textarea.resolve.value(datasource, field, value);
+      return textarea.resolve.value({ datasource, field, value });
     case "blocks":
-      return blocks.resolve.value(datasource, field, value, resolveData);
+      return blocks.resolve.value({ datasource, field, value, resolveData });
     case "select":
-      return select.resolvers.dataFieldBuilder(datasource, field, value);
+      return select.resolve.value({ datasource, field, value });
     case "list":
-      return list.resolvers.dataFieldBuilder(datasource, field, value);
+      return list.resolve.value({ datasource, field, value });
     case "field_group":
-      return fieldGroup.resolve.value(datasource, field, value, resolveData);
-    case "field_group_list":
-      return fieldGroupList.resolve.value(
+      return fieldGroup.resolve.value({
         datasource,
         field,
         value,
-        resolveData
-      );
+        resolveData,
+      });
+    case "field_group_list":
+      return fieldGroupList.resolve.value({
+        datasource,
+        field,
+        value,
+        resolveData,
+      });
     default:
       throw new Error(
         `Unexpected type for data field resolver - ${field.type}`

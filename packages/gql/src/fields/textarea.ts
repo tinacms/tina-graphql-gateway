@@ -54,7 +54,7 @@ const builders = {
 };
 
 const resolve = {
-  field: (field: TextareaField) => {
+  field: ({ field }: { field: TextareaField }) => {
     const { ...rest } = field;
     return {
       ...rest,
@@ -65,11 +65,15 @@ const resolve = {
       __typename: "TextareaFormField",
     };
   },
-  value: async (
-    datasource: DataSource,
-    field: TextareaField,
-    value: string
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: TextareaField;
+    value: string;
+  }) => {
     return value;
   },
 };

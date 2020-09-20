@@ -81,11 +81,15 @@ const builders = {
 };
 
 const resolve = {
-  field: async (
-    datasource: DataSource,
-    field: BlocksField,
-    resolveTemplate: resolveTemplateType
-  ): Promise<TinaBlocksField> => {
+  field: async ({
+    datasource,
+    field,
+    resolveTemplate,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    resolveTemplate: resolveTemplateType;
+  }): Promise<TinaBlocksField> => {
     const templates: { [key: string]: TemplateData } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
@@ -108,17 +112,25 @@ const resolve = {
     };
   },
 
-  value: async (
-    datasource: DataSource,
-    field: BlocksField,
-    value: BlockValue[],
-    resolveData: resolveDataType
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: BlockValue[];
+    resolveData: resolveDataType;
+  }) => {
     return await Promise.all(
       value.map(async (item) => {
-        const t = field.templates[`${item.template}TemplateFields`];
         const { template, ...rest } = item;
-        return await resolveData(datasource, t, rest);
+        return await resolveData(
+          datasource,
+          field.templates[`${item.template}TemplateFields`],
+          rest
+        );
       })
     );
   },

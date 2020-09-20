@@ -57,11 +57,15 @@ const builders = {
 };
 
 const resolve = {
-  field: async (
-    datasource: DataSource,
-    field: FieldGroupField,
-    resolveField: resolveFieldType
-  ) => {
+  field: async ({
+    datasource,
+    field,
+    resolveField,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    resolveField: resolveFieldType;
+  }) => {
     const { ...rest } = field;
 
     const fields = await Promise.all(
@@ -75,12 +79,17 @@ const resolve = {
       __typename: "FieldGroupFormField",
     };
   },
-  value: async (
-    datasource: DataSource,
-    field: FieldGroupField,
-    value: FieldGroupValue,
-    resolveData: resolveDataType
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    value: FieldGroupValue;
+    resolveData: resolveDataType;
+  }) => {
     return await resolveData(datasource, field, value);
   },
 };

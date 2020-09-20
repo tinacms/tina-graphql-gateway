@@ -96,8 +96,14 @@ const builders = {
   },
 };
 
-const resolvers = {
-  formFieldBuilder: async (datasource: DataSource, field: SelectField) => {
+const resolve = {
+  field: async ({
+    datasource,
+    field,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+  }) => {
     let select;
     const f = {
       ...field,
@@ -123,11 +129,15 @@ const resolvers = {
         };
     }
   },
-  dataFieldBuilder: async (
-    datasource: DataSource,
-    field: SelectField,
-    value: string
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+    value: string;
+  }) => {
     switch (field.config.source.type) {
       case "documents":
         throw new Error(`document select not implemented`);
@@ -144,6 +154,6 @@ const resolvers = {
 };
 
 export const select = {
-  resolvers,
+  resolve,
   builders,
 };

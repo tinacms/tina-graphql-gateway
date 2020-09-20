@@ -56,11 +56,15 @@ const builders = {
   },
 };
 const resolve = {
-  field: async (
-    datasource: DataSource,
-    field: FieldGroupListField,
-    resolveField: resolveFieldType
-  ) => {
+  field: async ({
+    datasource,
+    field,
+    resolveField,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupListField;
+    resolveField: resolveFieldType;
+  }) => {
     const { ...rest } = field;
 
     const fields = await Promise.all(
@@ -74,12 +78,17 @@ const resolve = {
       __typename: "FieldGroupListFormField",
     };
   },
-  value: async (
-    datasource: DataSource,
-    field: FieldGroupListField,
-    value: FieldGroupValue[],
-    resolveData: resolveDataType
-  ) => {
+  value: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupListField;
+    value: FieldGroupValue[];
+    resolveData: resolveDataType;
+  }) => {
     return await Promise.all(
       value.map(async (v: any) => await resolveData(datasource, field, v))
     );
