@@ -3,7 +3,7 @@ import type { TemplateData } from "../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveTemplateType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
-import type { BlocksFieldDefinititon } from "@tinacms/fields";
+// import type { BlocksFieldDefinititon } from "@tinacms/fields";
 
 export type BlocksField = {
   label: string;
@@ -14,12 +14,21 @@ export type BlocksField = {
   config?: {
     required?: boolean;
   };
-  templates: { [key: string]: TemplateData };
 };
-type TinaBlocksField = BlocksFieldDefinititon & {
+export type TinaBlocksField = {
+  label: string;
+  name: string;
+  type: "blocks";
+  default: string;
   template_types: string[];
+  component: "blocks";
+  config?: {
+    required?: boolean;
+  };
+  templates: { [key: string]: TemplateData };
   __typename: "BlocksFormField";
 };
+
 type BlockValue = {
   template: string;
   [key: string]: unknown;
@@ -139,7 +148,7 @@ const resolve = {
     resolveData,
   }: {
     datasource: DataSource;
-    field: BlocksField;
+    field: TinaBlocksField;
     value: BlockValue[];
     resolveData: resolveDataType;
   }) => {
