@@ -1,65 +1,35 @@
-import type { TinaField } from "./index";
-import type { DataSource } from "../datasources/datasource";
+import type { TinaField } from "../index";
+import type { DataSource } from "../../datasources/datasource";
+import Joi from "joi";
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
-import type { Cache } from "../schema-builder";
-import { select } from "./select";
+import type { Cache } from "../../schema-builder";
+import { select } from "../select";
 
 export type BaseListField = {
   label: string;
   name: string;
   type: "list";
 };
-export type TinaBaseListField = {
-  label: string;
-  name: string;
-  type: "list";
-  component: "list";
-  field: TinaField;
-  __typename: "ListFormField";
+
+type BaseConfig = {
+  use_select: boolean;
+  required?: boolean;
+  min?: number;
+  max?: number;
 };
 export type SimpleList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: undefined;
-  };
-};
-export type TinaSimpleList = TinaBaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: undefined;
+  // FIXME: this isn't required at all for simple lists
+  config: BaseConfig & {
+    source?: undefined;
   };
 };
 export type DocumentList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: {
-      type: "documents";
-      section: string;
-      file: string;
-      path: string;
-    };
-  };
-};
-export type TinaDocumentList = TinaBaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
+  config: BaseConfig & {
     source: {
       type: "documents";
       section: string;
@@ -69,11 +39,7 @@ export type TinaDocumentList = TinaBaseListField & {
   };
 };
 export type SectionList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
+  config: BaseConfig & {
     source: {
       type: "pages";
       section: string;
@@ -81,20 +47,14 @@ export type SectionList = BaseListField & {
   };
 };
 
-export type TinaSectionList = TinaBaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: {
-      type: "pages";
-      section: string;
-    };
-  };
-};
 export type ListField = SectionList | SimpleList | DocumentList;
-export type TinaListField = TinaSectionList | TinaSimpleList | TinaDocumentList;
+export type TinaListField = {
+  label: string;
+  name: string;
+  component: "list";
+  field: TinaField;
+  __typename: "ListFormField";
+};
 
 const build = {
   /** Returns one of 3 possible types of select options */
@@ -202,7 +162,6 @@ const resolve = {
       default: "",
       name: "",
       label: "Text",
-      type: "text",
       component: "text",
       __typename: "TextFormField" as const,
     };
@@ -213,14 +172,12 @@ const resolve = {
         throw new Error(`document list not implemented`);
       case "pages":
         list = field as SectionList;
+
         const selectField = {
           ...list,
           component: "select" as const,
           type: "select" as const,
-          config: {
-            ...list.config,
-            required: true,
-          },
+          __typename: "SelectFormField",
         };
         fieldComponent = await select.resolve.field({
           datasource,
@@ -246,9 +203,17 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TinaListField;
-    value: string[];
-  }) => {
+    field: ListField;
+    value: unknown;
+  }): Promise<
+    | {
+        _resolver: "_resource";
+        _resolver_kind: "_nested_sources";
+        _args: { paths: string[] };
+      }
+    | string[]
+  > => {
+    assertIsStringArray(value);
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -276,6 +241,14 @@ const resolve = {
     }
   },
 };
+
+function assertIsStringArray(value: unknown): asserts value is string[] {
+  const schema = Joi.array().items(Joi.string());
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const list = {
   resolve,

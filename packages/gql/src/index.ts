@@ -1,135 +1,13 @@
 import express from "express";
-import { graphqlHTTP } from "express-graphql";
+import path from "path";
+import { FilesystemDataSource } from "./datasources/filesystem-manager";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
-import type { TinaDocument } from "./datasources/datasource";
-import type { Field } from "./fields";
+// @ts-ignore
 import bodyParser from "body-parser";
 import cors from "cors";
 import http from "http";
 import WebSocket from "ws";
-import fs from "fs";
-
-const postTemplate = {
-  label: "Post",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Title",
-      name: "title",
-    },
-    {
-      type: "select" as const,
-      label: "Author",
-      name: "author",
-      config: {
-        source: "documents" as const,
-        section: "authors",
-      },
-    },
-    {
-      type: "blocks" as const,
-      label: "Sections",
-      name: "sections",
-      template_types: ["section"],
-    },
-  ],
-};
-const authorTemplate = {
-  label: "Author",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Name",
-      name: "name",
-    },
-  ],
-};
-const sectionTemplate = {
-  label: "Section",
-  hide_body: false,
-  fields: [
-    {
-      type: "textarea" as const,
-      label: "Description",
-      name: "description",
-    },
-  ],
-};
-
-const mockGetData = async ({
-  path,
-}: {
-  path: string;
-}): Promise<TinaDocument> => {
-  if (path === "some-path.md") {
-    const fields: { [key: string]: Field } = {};
-    postTemplate.fields.forEach((field) => (fields[field.name] = field));
-    const data = JSON.parse(
-      await fs
-        .readFileSync(
-          "/Users/jeffsee/code/graphql-demo/packages/gql/src/fixtures/project1/content/post1.json"
-        )
-        .toString()
-    );
-    return {
-      _template: postTemplate.label,
-      _fields: {
-        data: fields,
-        content: { type: "textarea", name: "content", label: "Content" },
-      },
-      ...data,
-      // data: {
-      //   title: "Some Title",
-      //   author: "/path/to/author.md",
-      //   sections: [
-      //     {
-      //       description: "Some textarea description",
-      //     },
-      //   ],
-      // },
-      // content: "Some Content",
-    };
-  }
-  if (path === "/path/to/author.md") {
-    const fields: { [key: string]: Field } = {};
-    authorTemplate.fields.forEach((field) => (fields[field.name] = field));
-    return {
-      _template: authorTemplate.label,
-      _fields: {
-        data: fields,
-        content: { type: "textarea", name: "content", label: "Content" },
-      },
-      data: {
-        name: "Homer Simpson",
-      },
-      content: "Some Content",
-    };
-  }
-
-  throw new Error(`No path mock for ${path}`);
-};
-
-const MockDataSource = () => {
-  return { getData: mockGetData };
-};
-
-const mockGetTemplates = () => {
-  return [postTemplate, authorTemplate, sectionTemplate];
-};
-const mockGetTemplate = (slug: string) => {
-  if (slug === "Sections") {
-    return sectionTemplate;
-  } else {
-    return authorTemplate;
-  }
-};
-
-const MockSchemaSource = () => {
-  return { getTemplates: mockGetTemplates, getTemplate: mockGetTemplate };
-};
 
 const app = express();
 //initialize a simple http server
@@ -156,10 +34,13 @@ app.use(bodyParser.json());
 app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;
 
+  const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
+  const datasource = FilesystemDataSource(projectRoot);
+  const schema = await schemaBuilder({ datasource });
   const result = await graphqlInit({
-    schema: schemaBuilder({ schemaSource: MockSchemaSource() }),
+    schema,
     source: query,
-    contextValue: { datasource: MockDataSource() },
+    contextValue: { datasource },
     variableValues: variables,
   });
   return res.json(result);

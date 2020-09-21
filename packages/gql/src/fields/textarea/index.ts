@@ -1,12 +1,12 @@
-import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { Cache } from "../schema-builder";
+import type { DataSource } from "../../datasources/datasource";
+import type { Cache } from "../../schema-builder";
 
 export type TextareaField = {
   label: string;
   name: string;
   type: "textarea";
-  default: string;
+  default?: string;
   config?: {
     required?: boolean;
   };
@@ -15,9 +15,8 @@ export type TextareaField = {
 export type TinaTextareaField = {
   label: string;
   name: string;
-  type: "textarea";
   component: "textarea";
-  default: string;
+  default?: string;
   config?: {
     required?: boolean;
   };
@@ -32,7 +31,6 @@ const build = {
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
           component: { type: GraphQLString },
           config: {
             type: cache.build(
@@ -53,7 +51,7 @@ const build = {
 
 const resolve = {
   field: ({ field }: { field: TextareaField }): TinaTextareaField => {
-    const { ...rest } = field;
+    const { type, ...rest } = field;
     return {
       ...rest,
       component: "textarea",
@@ -69,9 +67,14 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TinaTextareaField;
-    value: string;
-  }) => {
+    field: TextareaField;
+    value: unknown;
+  }): Promise<string> => {
+    if (typeof value !== "string") {
+      throw new Error(
+        `Unexpected value of type ${typeof value} for resolved textarea value`
+      );
+    }
     return value;
   },
 };

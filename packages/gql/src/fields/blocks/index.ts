@@ -1,15 +1,19 @@
-import type { DataSource } from "../datasources/datasource";
-import type { TemplateData } from "../types";
+import type { DataSource } from "../../datasources/datasource";
+import type { TinaTemplateData } from "../../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import type { resolveTemplateType, resolveDataType } from "../graphql";
-import type { Cache } from "../schema-builder";
-// import type { BlocksFieldDefinititon } from "@tinacms/fields";
+import Joi from "joi";
+import type {
+  resolveTemplateType,
+  resolveDataType,
+  ResolvedData,
+} from "../../graphql";
+import type { Cache } from "../../schema-builder";
 
 export type BlocksField = {
   label: string;
   name: string;
   type: "blocks";
-  default: string;
+  default?: string;
   template_types: string[];
   config?: {
     required?: boolean;
@@ -19,13 +23,12 @@ export type TinaBlocksField = {
   label: string;
   name: string;
   type: "blocks";
-  default: string;
-  template_types: string[];
+  default?: string;
   component: "blocks";
   config?: {
     required?: boolean;
   };
-  templates: { [key: string]: TemplateData };
+  templates: { [key: string]: TinaTemplateData };
   __typename: "BlocksFormField";
 };
 
@@ -120,7 +123,7 @@ const resolve = {
     field: BlocksField;
     resolveTemplate: resolveTemplateType;
   }): Promise<TinaBlocksField> => {
-    const templates: { [key: string]: TemplateData } = {};
+    const templates: { [key: string]: TinaTemplateData } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
         const template = await datasource.getTemplate({
@@ -146,24 +149,37 @@ const resolve = {
     field,
     value,
     resolveData,
+    resolveTemplate,
   }: {
     datasource: DataSource;
-    field: TinaBlocksField;
-    value: BlockValue[];
+    field: BlocksField;
+    value: unknown;
     resolveData: resolveDataType;
-  }) => {
+    resolveTemplate: resolveTemplateType;
+  }): Promise<ResolvedData[]> => {
+    assertIsBlock(value);
+
     return await Promise.all(
       value.map(async (item) => {
         const { template, ...rest } = item;
-        return await resolveData(
-          datasource,
-          field.templates[`${item.template}TemplateFields`],
-          rest
-        );
+        const templateData = await datasource.getTemplate({ slug: template });
+        return await resolveData(datasource, templateData, rest);
       })
     );
   },
 };
+
+function assertIsBlock(value: unknown): asserts value is BlockValue[] {
+  const schema = Joi.array().items(
+    Joi.object({
+      template: Joi.string(),
+    }).unknown()
+  );
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const blocks = {
   resolve,

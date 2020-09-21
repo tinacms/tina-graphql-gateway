@@ -1,16 +1,16 @@
-import type { TinaField } from "./index";
-import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import type { resolveFieldType, resolveDataType } from "../graphql";
-import type { Cache } from "../schema-builder";
-import type { FieldGroupValue } from "./field-group";
+import Joi from "joi";
+import type { TinaField, Field } from "../index";
+import type { DataSource } from "../../datasources/datasource";
+import type { resolveFieldType, resolveDataType } from "../../graphql";
+import type { Cache } from "../../schema-builder";
 
 export type FieldGroupListField = {
   label: string;
   name: string;
   type: "field_group_list";
-  default: string;
-  fields: TinaField[];
+  default?: string;
+  fields: Field[];
   config?: {
     required?: boolean;
   };
@@ -18,10 +18,9 @@ export type FieldGroupListField = {
 export type TinaFieldGroupListField = {
   label: string;
   name: string;
-  type: "field_group_list";
   component: "group-list";
   __typename: "FieldGroupListFormField";
-  default: string;
+  default?: string;
   fields: TinaField[];
   config?: {
     required?: boolean;
@@ -42,7 +41,6 @@ const build = {
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
           component: { type: GraphQLString },
           fields: {
             // field is structural subtyping TemplateData shape
@@ -77,7 +75,7 @@ const resolve = {
     field: FieldGroupListField;
     resolveField: resolveFieldType;
   }): Promise<TinaFieldGroupListField> => {
-    const { ...rest } = field;
+    const { type, ...rest } = field;
 
     const fields = await Promise.all(
       field.fields.map(async (f) => await resolveField(datasource, f))
@@ -97,15 +95,28 @@ const resolve = {
     resolveData,
   }: {
     datasource: DataSource;
-    field: TinaFieldGroupListField;
-    value: FieldGroupValue[];
+    field: FieldGroupListField;
+    value: unknown;
     resolveData: resolveDataType;
   }) => {
+    assertIsDataArray(value);
     return await Promise.all(
       value.map(async (v: any) => await resolveData(datasource, field, v))
     );
   },
 };
+
+function assertIsDataArray(
+  value: unknown
+): asserts value is {
+  [key: string]: unknown;
+}[] {
+  const schema = Joi.array().items(Joi.object({}).unknown());
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const fieldGroupList = {
   resolve,
