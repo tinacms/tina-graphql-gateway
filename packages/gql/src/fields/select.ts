@@ -7,6 +7,12 @@ export type BaseSelectField = {
   name: string;
   type: "select";
 };
+export type TinaBaseSelectField = {
+  label: string;
+  name: string;
+  type: "select";
+  component: "select";
+};
 export type DocumentSelect = BaseSelectField & {
   config: {
     required: boolean;
@@ -18,7 +24,27 @@ export type DocumentSelect = BaseSelectField & {
     };
   };
 };
+export type TinaDocumentSelect = TinaBaseSelectField & {
+  config: {
+    required: boolean;
+    source: {
+      type: "documents";
+      section: string;
+      file: string;
+      path: string;
+    };
+  };
+};
 export type SectionSelect = BaseSelectField & {
+  config: {
+    required: boolean;
+    source: {
+      type: "pages";
+      section: string;
+    };
+  };
+};
+export type TinaSectionSelect = TinaBaseSelectField & {
   config: {
     required: boolean;
     source: {
@@ -39,7 +65,23 @@ export type SimpleSelect = BaseSelectField & {
   };
 };
 
+export type TinaSimpleSelect = TinaBaseSelectField & {
+  default: string;
+  options: string[];
+  config: {
+    options: string[];
+    required: boolean;
+    source: {
+      type: "simple";
+    };
+  };
+};
+
 export type SelectField = SimpleSelect | SectionSelect | DocumentSelect;
+export type TinaSelectField =
+  | TinaSimpleSelect
+  | TinaSectionSelect
+  | TinaDocumentSelect;
 
 const build = {
   /** Returns one of 3 possible types of select options */
@@ -91,11 +133,11 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: SelectField;
-  }) => {
+  }): Promise<TinaSelectField> => {
     let select;
     const f = {
       ...field,
-      component: "select",
+      component: "select" as const,
       __typename: "SelectFormField",
     };
     switch (field.config.source.type) {
@@ -123,7 +165,7 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: SelectField;
+    field: TinaSelectField;
     value: string;
   }) => {
     switch (field.config.source.type) {

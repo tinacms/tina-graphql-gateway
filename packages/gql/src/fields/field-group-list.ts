@@ -1,4 +1,4 @@
-import type { Field } from "./index";
+import type { TinaField } from "./index";
 import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveFieldType, resolveDataType } from "../graphql";
@@ -10,7 +10,19 @@ export type FieldGroupListField = {
   name: string;
   type: "field_group_list";
   default: string;
-  fields: Field[];
+  fields: TinaField[];
+  config?: {
+    required?: boolean;
+  };
+};
+export type TinaFieldGroupListField = {
+  label: string;
+  name: string;
+  type: "field_group_list";
+  component: "group-list";
+  __typename: "FieldGroupListFormField";
+  default: string;
+  fields: TinaField[];
   config?: {
     required?: boolean;
   };
@@ -64,7 +76,7 @@ const resolve = {
     datasource: DataSource;
     field: FieldGroupListField;
     resolveField: resolveFieldType;
-  }) => {
+  }): Promise<TinaFieldGroupListField> => {
     const { ...rest } = field;
 
     const fields = await Promise.all(
@@ -73,7 +85,7 @@ const resolve = {
 
     return {
       ...rest,
-      component: "group",
+      component: "group-list",
       fields,
       __typename: "FieldGroupListFormField",
     };
@@ -85,7 +97,7 @@ const resolve = {
     resolveData,
   }: {
     datasource: DataSource;
-    field: FieldGroupListField;
+    field: TinaFieldGroupListField;
     value: FieldGroupValue[];
     resolveData: resolveDataType;
   }) => {

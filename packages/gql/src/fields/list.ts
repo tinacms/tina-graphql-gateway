@@ -1,4 +1,4 @@
-import type { Field } from "./index";
+import type { TinaField } from "./index";
 import type { DataSource } from "../datasources/datasource";
 import {
   GraphQLString,
@@ -14,6 +14,14 @@ export type BaseListField = {
   name: string;
   type: "list";
 };
+export type TinaBaseListField = {
+  label: string;
+  name: string;
+  type: "list";
+  component: "list";
+  field: TinaField;
+  __typename: "ListFormField";
+};
 export type SimpleList = BaseListField & {
   config: {
     required?: boolean;
@@ -23,7 +31,30 @@ export type SimpleList = BaseListField & {
     source: undefined;
   };
 };
+export type TinaSimpleList = TinaBaseListField & {
+  config: {
+    required?: boolean;
+    use_select: boolean;
+    min: undefined | number;
+    max: undefined | number;
+    source: undefined;
+  };
+};
 export type DocumentList = BaseListField & {
+  config: {
+    required?: boolean;
+    use_select: boolean;
+    min: undefined | number;
+    max: undefined | number;
+    source: {
+      type: "documents";
+      section: string;
+      file: string;
+      path: string;
+    };
+  };
+};
+export type TinaDocumentList = TinaBaseListField & {
   config: {
     required?: boolean;
     use_select: boolean;
@@ -49,7 +80,21 @@ export type SectionList = BaseListField & {
     };
   };
 };
+
+export type TinaSectionList = TinaBaseListField & {
+  config: {
+    required?: boolean;
+    use_select: boolean;
+    min: undefined | number;
+    max: undefined | number;
+    source: {
+      type: "pages";
+      section: string;
+    };
+  };
+};
 export type ListField = SectionList | SimpleList | DocumentList;
+export type TinaListField = TinaSectionList | TinaSimpleList | TinaDocumentList;
 
 const build = {
   /** Returns one of 3 possible types of select options */
@@ -137,7 +182,7 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: ListField;
-  }) => {
+  }): Promise<TinaListField> => {
     const { ...rest } = field;
 
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -151,18 +196,15 @@ const resolve = {
           : "simple";
     }
 
-    let fieldComponent: {
-      component: string;
-      __typename: string;
-      options?:
-        | string[]
-        | {
-            field: Field;
-            _resolver: string;
-          };
-    } = {
-      component: "textarea",
-      __typename: "TextareaFormField",
+    // FIXME this should be a subset type of TinaField,
+    // this property doesn't need most of these fields
+    let fieldComponent: TinaField = {
+      default: "",
+      name: "",
+      label: "Text",
+      type: "text",
+      component: "text",
+      __typename: "TextFormField" as const,
     };
     let list;
     switch (listTypeIdentifier) {
@@ -204,7 +246,7 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: ListField;
+    field: TinaListField;
     value: string[];
   }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
