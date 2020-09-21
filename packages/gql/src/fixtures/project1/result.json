@@ -7,7 +7,6 @@
           {
             "name": "title",
             "label": "Title",
-            "type": "textarea",
             "component": "textarea",
             "config": {
               "required": null
@@ -31,7 +30,6 @@
                   {
                     "name": "description",
                     "label": "Description",
-                    "type": "textarea",
                     "component": "textarea",
                     "config": {
                       "required": null
@@ -40,13 +38,11 @@
                   {
                     "name": "cta",
                     "label": "Cta",
-                    "type": "field_group",
                     "component": "group",
                     "fields": [
                       {
                         "name": "header",
                         "label": "Header",
-                        "type": "textarea",
                         "component": "textarea",
                         "config": {
                           "required": null

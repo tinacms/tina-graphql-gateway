@@ -28,12 +28,7 @@ describe("Document Resolver", () => {
       variableValues: { path: contentPath },
     });
     if (res.errors) {
-      res.errors.map((error) =>
-        console.error({
-          name: error.name,
-          message: error.message,
-        })
-      );
+      res.errors.map((error) => console.error({ ...error }));
     }
     // console.log(res);
     // const json = await fs.readFileSync(path.join(projectRoot, "result.json"));

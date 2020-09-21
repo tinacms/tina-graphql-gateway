@@ -1,8 +1,8 @@
 import { graphql } from "graphql";
 import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
 import type { TinaField } from "./fields";
-import _, { isString } from "lodash";
-import type { TemplateData } from "./types";
+import _ from "lodash";
+import type { TemplateData, TinaTemplateData, WithFields } from "./types";
 import type { Field } from "./fields";
 import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
@@ -95,7 +95,7 @@ export const fieldResolver: GraphQLFieldResolver<
 type ResolveDocument = {
   __typename: string;
   content: string;
-  form: ResolvedTemplate;
+  form: TinaTemplateData;
   path: string;
   data: ResolvedData;
 };
@@ -109,7 +109,7 @@ const resolveDocument = async ({
   const { data } = await datasource.getData(args);
   const template = await datasource.getTemplateForDocument(args);
   const resolvedTemplate = await resolveTemplate(datasource, template);
-  const resolvedData = await resolveData(datasource, resolvedTemplate, data);
+  const resolvedData = await resolveData(datasource, template, data);
 
   return {
     __typename: template.label,
@@ -138,15 +138,10 @@ export const graphqlInit = async (args: {
   });
 };
 
-type ResolvedTemplate = TemplateData & {
-  __typename: string;
-  fields: Field[];
-};
-
 export type resolveTemplateType = (
   datasource: DataSource,
   template: TemplateData
-) => Promise<ResolvedTemplate>;
+) => Promise<TinaTemplateData>;
 const resolveTemplate: resolveTemplateType = async (datasource, template) => {
   return {
     __typename: template.label,
@@ -191,7 +186,7 @@ const resolveField: resolveFieldType = async (datasource, field) => {
 };
 const resolveDataField = async (
   datasource: DataSource,
-  field: TinaField,
+  field: Field,
   value: unknown
 ) => {
   switch (field.type) {
@@ -200,7 +195,13 @@ const resolveDataField = async (
     case "textarea":
       return textarea.resolve.value({ datasource, field, value });
     case "blocks":
-      return blocks.resolve.value({ datasource, field, value, resolveData });
+      return blocks.resolve.value({
+        datasource,
+        field,
+        value,
+        resolveData,
+        resolveTemplate,
+      });
     case "select":
       return select.resolve.value({ datasource, field, value });
     case "list":
@@ -227,7 +228,7 @@ export interface ResolvedData {
 }
 export type resolveDataType = (
   datasource: DataSource,
-  field: TemplateData,
+  field: WithFields,
   data: {
     [key: string]: unknown;
   }
@@ -249,7 +250,7 @@ const resolveData: resolveDataType = async (
   };
 };
 
-const findField = (fields: TinaField[], fieldName: string) => {
+const findField = (fields: Field[], fieldName: string) => {
   const field = fields.find((f) => f.name === fieldName);
   if (!field) {
     throw new Error(`Unable to find field for item with name: ${name}`);

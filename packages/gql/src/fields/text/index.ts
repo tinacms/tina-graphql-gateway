@@ -1,12 +1,12 @@
-import type { DataSource } from "../datasources/datasource";
+import type { DataSource } from "../../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { Cache } from "../schema-builder";
+import type { Cache } from "../../schema-builder";
 
 export type TextField = {
   label: string;
   name: string;
   type: "text";
-  default: string;
+  default?: string;
   config?: {
     required?: boolean;
   };
@@ -15,9 +15,8 @@ export type TextField = {
 export type TinaTextField = {
   label: string;
   name: string;
-  type: "text";
   component: "text";
-  default: string;
+  default?: string;
   config?: {
     required?: boolean;
   };
@@ -28,11 +27,10 @@ const build = {
   field: ({ cache, field }: { cache: Cache; field: TextField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "TextareaFormField",
+        name: "TextFormField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
           component: { type: GraphQLString },
           config: {
             type: cache.build(
@@ -53,7 +51,7 @@ const build = {
 
 const resolve = {
   field: ({ field }: { field: TextField }): TinaTextField => {
-    const { ...rest } = field;
+    const { type, ...rest } = field;
     return {
       ...rest,
       component: "text",
@@ -69,9 +67,14 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TinaTextField;
-    value: string;
-  }) => {
+    field: TextField;
+    value: unknown;
+  }): Promise<string> => {
+    if (typeof value !== "string") {
+      throw new Error(
+        `Unexpected value of type ${typeof value} for resolved text value`
+      );
+    }
     return value;
   },
 };
