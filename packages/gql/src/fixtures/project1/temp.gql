@@ -17,6 +17,10 @@ type PostForm {
 union PostFormFields = TextareaFormField | SelectFormField | BlocksFormField
 
 type TextareaFormField {
+  name: String
+  label: String
+  type: String
+  component: String
   config: Config
 }
 

@@ -20,6 +20,10 @@ const build = {
       new GraphQLObjectType({
         name: "TextareaFormField",
         fields: {
+          name: { type: GraphQLString },
+          label: { type: GraphQLString },
+          type: { type: GraphQLString },
+          component: { type: GraphQLString },
           config: {
             type: cache.build(
               new GraphQLObjectType({

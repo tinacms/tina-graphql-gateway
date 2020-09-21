@@ -16,7 +16,7 @@ export type ContextT = {
   datasource: DataSource;
 };
 
-type FieldResolverArgs = undefined | { path: string };
+type FieldResolverArgs = { [argName: string]: unknown };
 
 export type InitialSource =
   | {
@@ -38,8 +38,14 @@ type FieldResolverSource = {
   [key: string]: InitialSource | unknown;
 };
 
-function isResource(item: unknown): item is InitialSource {
-  return typeof item._resolver === "string";
+function isResource(
+  item: unknown | FieldResolverSource
+): item is InitialSource {
+  if (typeof item === "object") {
+    return !!item && item.hasOwnProperty("_resolver");
+  } else {
+    return false;
+  }
 }
 
 export const fieldResolver: GraphQLFieldResolver<
@@ -56,10 +62,10 @@ export const fieldResolver: GraphQLFieldResolver<
   if (isResource(value)) {
     switch (value._resolver_kind) {
       case "_initial":
-        if (!args) {
+        if (!args.path || typeof args.path !== "string") {
           throw new Error(`Expected args for initial document request`);
         }
-        return resolveDocument({ args: args, datasource });
+        return resolveDocument({ args: { path: args.path }, datasource });
       case "_nested_source":
         return {
           document: await resolveDocument({ args: value._args, datasource }),
@@ -114,7 +120,6 @@ export const graphqlInit = async (args: {
 }) => {
   return await graphql({
     ...args,
-    // @ts-ignore
     fieldResolver: fieldResolver,
     rootValue: {
       document: {
@@ -167,35 +172,6 @@ const resolveField: resolveFieldType = async (datasource, field) => {
       return field;
   }
 };
-
-type ResolvedData = {
-  __typename: string;
-  [key: string]: Field;
-};
-export type resolveDataType = (
-  datasource: DataSource,
-  field: TemplateData,
-  data: {
-    [key: string]: unknown;
-  }
-) => Promise<ResolvedData>;
-const resolveData: resolveDataType = async (
-  datasource,
-  resolvedTemplate,
-  data
-) => {
-  await Promise.all(
-    Object.keys(data).map(async (key) => {
-      const field = findField(resolvedTemplate.fields, key);
-      return (data[key] = await resolveDataField(datasource, field, data[key]));
-    })
-  );
-  return {
-    __typename: `${resolvedTemplate.label}Data`,
-    ...data,
-  };
-};
-
 const resolveDataField = async (
   datasource: DataSource,
   field: Field,
@@ -229,6 +205,33 @@ const resolveDataField = async (
         `Unexpected type for data field resolver - ${field.type}`
       );
   }
+};
+
+export interface ResolvedData {
+  [key: string]: Field | string;
+}
+export type resolveDataType = (
+  datasource: DataSource,
+  field: TemplateData,
+  data: {
+    [key: string]: unknown;
+  }
+) => Promise<ResolvedData>;
+const resolveData: resolveDataType = async (
+  datasource,
+  resolvedTemplate,
+  data
+) => {
+  await Promise.all(
+    Object.keys(data).map(async (key) => {
+      const field = findField(resolvedTemplate.fields, key);
+      return (data[key] = await resolveDataField(datasource, field, data[key]));
+    })
+  );
+  return {
+    __typename: `${resolvedTemplate.label}Data`,
+    ...data,
+  };
 };
 
 const findField = (fields: Field[], fieldName: string) => {
