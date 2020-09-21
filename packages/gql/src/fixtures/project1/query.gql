@@ -5,6 +5,10 @@ query DocumentQuery($path: String!) {
       form {
         fields {
           ... on TextareaFormField {
+            name
+            label
+            type
+            component
             config {
               required
             }
@@ -23,6 +27,10 @@ query DocumentQuery($path: String!) {
               sectionTemplateFields {
                 fields {
                   ... on TextareaFormField {
+                    name
+                    label
+                    type
+                    component
                     config {
                       required
                     }
@@ -34,6 +42,10 @@ query DocumentQuery($path: String!) {
                     component
                     fields {
                       ... on TextareaFormField {
+                        name
+                        label
+                        type
+                        component
                         config {
                           required
                         }
@@ -52,6 +64,10 @@ query DocumentQuery($path: String!) {
                         options
                       }
                       ... on TextareaFormField {
+                        name
+                        label
+                        type
+                        component
                         config {
                           required
                         }
@@ -95,6 +111,10 @@ query DocumentQuery($path: String!) {
       form {
         fields {
           ... on TextareaFormField {
+            name
+            label
+            type
+            component
             config {
               required
             }
@@ -117,6 +137,10 @@ query DocumentQuery($path: String!) {
                 options
               }
               ... on TextareaFormField {
+                name
+                label
+                type
+                component
                 config {
                   required
                 }
@@ -130,6 +154,10 @@ query DocumentQuery($path: String!) {
             component
             fields {
               ... on TextareaFormField {
+                name
+                label
+                type
+                component
                 config {
                   required
                 }
