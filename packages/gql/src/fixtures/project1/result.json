@@ -78,10 +78,7 @@
         "title": "Some Title",
         "author": {
           "document": {
-            "path": "authors/homer.md",
-            "data": {
-              "name": "Homer Simpson"
-            }
+            "path": "authors/homer.md"
           }
         },
         "sections": [
@@ -93,10 +90,7 @@
             "authors": {
               "documents": [
                 {
-                  "path": "authors/homer.md",
-                  "data": {
-                    "name": "Homer Simpson"
-                  }
+                  "path": "authors/homer.md"
                 }
               ]
             }

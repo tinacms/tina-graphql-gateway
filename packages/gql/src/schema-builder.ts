@@ -31,11 +31,11 @@ const buildTemplateFormField = async (cache: Cache, field: Field) => {
     case "blocks":
       return blocks.build.field({ cache, field });
     case "field_group_list":
-      return await fieldGroupList.build.field({ cache, field });
+      return fieldGroupList.build.field({ cache, field });
     case "field_group":
-      return await fieldGroup.build.field({ cache, field });
+      return fieldGroup.build.field({ cache, field });
     case "list":
-      return await list.build.field({ cache, field });
+      return list.build.field({ cache, field });
     default:
       throw new Error(
         `[buildTemplateFormField]: Unknown field type ${field.type}`
@@ -94,8 +94,7 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
           break;
 
         default:
-          fields[field.name] = { type: GraphQLString };
-          break;
+          throw new Error(`Unexpected field type for builder ${field.type}`);
       }
     })
   );

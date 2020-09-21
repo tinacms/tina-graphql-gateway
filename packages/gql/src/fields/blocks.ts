@@ -69,6 +69,39 @@ const build = {
 };
 
 const resolve = {
+  /**
+   * Resolves the values with their respective templates, specified by
+   * the template key.
+   *
+   * ```js
+   * // given
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ]
+   * }
+   *
+   * // expect
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ],
+   *   component: 'blocks',
+   *   templates: {
+   *     sectionTemplateFields: {
+   *       __typename: 'Section',
+   *       label: 'Section',
+   *       hide_body: false,
+   *       fields: [Array]
+   *     }
+   *   },
+   *   __typename: 'BlocksFormField'
+   * }
+   *
+   * ```
+   */
   field: async ({
     datasource,
     field,
@@ -91,9 +124,8 @@ const resolve = {
       })
     );
 
-    const { ...rest } = field;
     return {
-      ...rest,
+      ...field,
       component: "blocks" as const,
       templates,
       __typename: "BlocksFormField" as const,
