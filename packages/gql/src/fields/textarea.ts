@@ -70,8 +70,13 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: TinaTextareaField;
-    value: string;
-  }) => {
+    value: unknown;
+  }): Promise<string> => {
+    if (typeof value !== "string") {
+      throw new Error(
+        `Unexpected value of type ${typeof value} for resolved textarea value`
+      );
+    }
     return value;
   },
 };
