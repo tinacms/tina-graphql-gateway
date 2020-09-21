@@ -16,21 +16,19 @@ export type BaseListField = {
   type: "list";
 };
 
+type BaseConfig = {
+  use_select: boolean;
+  required?: boolean;
+  min?: number;
+  max?: number;
+};
 export type SimpleList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
+  config: BaseConfig & {
     source: undefined;
   };
 };
 export type DocumentList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
+  config: BaseConfig & {
     source: {
       type: "documents";
       section: string;
@@ -40,11 +38,7 @@ export type DocumentList = BaseListField & {
   };
 };
 export type SectionList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
+  config: BaseConfig & {
     source: {
       type: "pages";
       section: string;
