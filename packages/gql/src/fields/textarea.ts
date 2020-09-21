@@ -6,6 +6,16 @@ export type TextareaField = {
   label: string;
   name: string;
   type: "textarea";
+  default: string;
+  config?: {
+    required?: boolean;
+  };
+};
+
+export type TinaTextareaField = {
+  label: string;
+  name: string;
+  type: "textarea";
   component: "textarea";
   default: string;
   config?: {
@@ -42,7 +52,7 @@ const build = {
 };
 
 const resolve = {
-  field: ({ field }: { field: TextareaField }) => {
+  field: ({ field }: { field: TextareaField }): TinaTextareaField => {
     const { ...rest } = field;
     return {
       ...rest,
@@ -59,7 +69,7 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TextareaField;
+    field: TinaTextareaField;
     value: string;
   }) => {
     return value;
