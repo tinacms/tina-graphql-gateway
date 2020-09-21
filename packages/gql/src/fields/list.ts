@@ -15,14 +15,7 @@ export type BaseListField = {
   name: string;
   type: "list";
 };
-export type TinaBaseListField = {
-  label: string;
-  name: string;
-  type: "list";
-  component: "list";
-  field: TinaField;
-  __typename: "ListFormField";
-};
+
 export type SimpleList = BaseListField & {
   config: {
     required?: boolean;
@@ -32,30 +25,7 @@ export type SimpleList = BaseListField & {
     source: undefined;
   };
 };
-export type TinaSimpleList = TinaBaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: undefined;
-  };
-};
 export type DocumentList = BaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: {
-      type: "documents";
-      section: string;
-      file: string;
-      path: string;
-    };
-  };
-};
-export type TinaDocumentList = TinaBaseListField & {
   config: {
     required?: boolean;
     use_select: boolean;
@@ -82,20 +52,14 @@ export type SectionList = BaseListField & {
   };
 };
 
-export type TinaSectionList = TinaBaseListField & {
-  config: {
-    required?: boolean;
-    use_select: boolean;
-    min: undefined | number;
-    max: undefined | number;
-    source: {
-      type: "pages";
-      section: string;
-    };
-  };
-};
 export type ListField = SectionList | SimpleList | DocumentList;
-export type TinaListField = TinaSectionList | TinaSimpleList | TinaDocumentList;
+export type TinaListField = {
+  label: string;
+  name: string;
+  component: "list";
+  field: TinaField;
+  __typename: "ListFormField";
+};
 
 const build = {
   /** Returns one of 3 possible types of select options */
@@ -203,7 +167,6 @@ const resolve = {
       default: "",
       name: "",
       label: "Text",
-      type: "text",
       component: "text",
       __typename: "TextFormField" as const,
     };
@@ -214,14 +177,12 @@ const resolve = {
         throw new Error(`document list not implemented`);
       case "pages":
         list = field as SectionList;
+
         const selectField = {
           ...list,
           component: "select" as const,
           type: "select" as const,
-          config: {
-            ...list.config,
-            required: true,
-          },
+          __typename: "SelectFormField",
         };
         fieldComponent = await select.resolve.field({
           datasource,
@@ -247,7 +208,7 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TinaListField;
+    field: ListField;
     value: unknown;
   }): Promise<
     | {

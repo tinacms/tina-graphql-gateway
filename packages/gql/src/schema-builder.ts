@@ -24,6 +24,8 @@ import type { ContextT } from "./graphql";
 
 const buildTemplateFormField = async (cache: Cache, field: Field) => {
   switch (field.type) {
+    case "text":
+      return text.build.field({ cache, field });
     case "textarea":
       return textarea.build.field({ cache, field });
     case "select":
@@ -36,10 +38,6 @@ const buildTemplateFormField = async (cache: Cache, field: Field) => {
       return fieldGroup.build.field({ cache, field });
     case "list":
       return list.build.field({ cache, field });
-    default:
-      throw new Error(
-        `[buildTemplateFormField]: Unknown field type ${field.type}`
-      );
   }
 };
 
@@ -56,6 +54,12 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
   await Promise.all(
     template.fields.map(async (field) => {
       switch (field.type) {
+        case "text":
+          fields[field.name] = text.build.value({
+            cache,
+            field,
+          });
+          break;
         case "textarea":
           fields[field.name] = textarea.build.value({
             cache,
@@ -92,9 +96,6 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
             field,
           });
           break;
-
-        default:
-          throw new Error(`Unexpected field type for builder ${field.type}`);
       }
     })
   );

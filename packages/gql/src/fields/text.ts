@@ -15,7 +15,6 @@ export type TextField = {
 export type TinaTextField = {
   label: string;
   name: string;
-  type: "text";
   component: "text";
   default: string;
   config?: {
@@ -32,7 +31,6 @@ const build = {
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
           component: { type: GraphQLString },
           config: {
             type: cache.build(
@@ -53,7 +51,7 @@ const build = {
 
 const resolve = {
   field: ({ field }: { field: TextField }): TinaTextField => {
-    const { ...rest } = field;
+    const { type, ...rest } = field;
     return {
       ...rest,
       component: "text",
@@ -69,7 +67,7 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TinaTextField;
+    field: TextField;
     value: unknown;
   }): Promise<string> => {
     if (typeof value !== "string") {

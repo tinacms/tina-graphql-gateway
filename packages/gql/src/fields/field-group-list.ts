@@ -1,4 +1,4 @@
-import type { TinaField } from "./index";
+import type { TinaField, Field } from "./index";
 import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveFieldType, resolveDataType } from "../graphql";
@@ -10,7 +10,7 @@ export type FieldGroupListField = {
   name: string;
   type: "field_group_list";
   default: string;
-  fields: TinaField[];
+  fields: Field[];
   config?: {
     required?: boolean;
   };
@@ -18,7 +18,6 @@ export type FieldGroupListField = {
 export type TinaFieldGroupListField = {
   label: string;
   name: string;
-  type: "field_group_list";
   component: "group-list";
   __typename: "FieldGroupListFormField";
   default: string;
@@ -42,7 +41,6 @@ const build = {
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
-          type: { type: GraphQLString },
           component: { type: GraphQLString },
           fields: {
             // field is structural subtyping TemplateData shape
@@ -77,7 +75,7 @@ const resolve = {
     field: FieldGroupListField;
     resolveField: resolveFieldType;
   }): Promise<TinaFieldGroupListField> => {
-    const { ...rest } = field;
+    const { type, ...rest } = field;
 
     const fields = await Promise.all(
       field.fields.map(async (f) => await resolveField(datasource, f))
@@ -97,7 +95,7 @@ const resolve = {
     resolveData,
   }: {
     datasource: DataSource;
-    field: TinaFieldGroupListField;
+    field: FieldGroupListField;
     value: unknown;
     resolveData: resolveDataType;
   }) => {

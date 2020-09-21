@@ -19,7 +19,6 @@ union PostFormFields = TextareaFormField | SelectFormField | BlocksFormField
 type TextareaFormField {
   name: String
   label: String
-  type: String
   component: String
   config: Config
 }
@@ -55,7 +54,6 @@ union SectionFormFields = TextareaFormField | FieldGroupFormField | ListFormFiel
 type FieldGroupFormField {
   name: String
   label: String
-  type: String
   component: String
   fields: [CtaFormFields]
 }
@@ -98,7 +96,6 @@ union AuthorFormFields = TextareaFormField | SelectFormField | ListFormField | F
 type FieldGroupListFormField {
   name: String
   label: String
-  type: String
   component: String
   fields: [AccoladesFormFields]
 }

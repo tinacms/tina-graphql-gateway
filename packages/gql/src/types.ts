@@ -1,4 +1,4 @@
-import type { TinaField } from "./fields";
+import type { Field, TinaField } from "./fields";
 
 export type DirectorySection = {
   type: "directory";
@@ -36,12 +36,18 @@ export type Settings = {
   data: { sections: Section[] };
 };
 
-export type TemplateData = {
+export type WithFields = {
   label: string;
+  fields: Field[];
+};
+export type TemplateData = WithFields & {
   hide_body?: boolean;
   display_field?: string;
-  fields: TinaField[];
   pages?: string[];
+};
+export type TinaTemplateData = {
+  label: string;
+  fields: TinaField[];
 };
 export type Template = {
   data: TemplateData;
