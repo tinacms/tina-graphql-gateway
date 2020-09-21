@@ -1,7 +1,12 @@
 import type { TinaField } from "./index";
 import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { resolveFieldType, resolveDataType } from "../graphql";
+import Joi from "joi";
+import type {
+  resolveFieldType,
+  resolveDataType,
+  ResolvedData,
+} from "../graphql";
 import type { Cache } from "../schema-builder";
 
 export type FieldGroupField = {
@@ -87,12 +92,25 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: TinaFieldGroupField;
-    value: FieldGroupValue;
+    value: unknown;
     resolveData: resolveDataType;
-  }) => {
+  }): Promise<ResolvedData> => {
+    assertIsData(value);
     return await resolveData(datasource, field, value);
   },
 };
+
+function assertIsData(
+  value: unknown
+): asserts value is {
+  [key: string]: unknown;
+} {
+  const schema = Joi.object({}).unknown();
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const fieldGroup = {
   build,

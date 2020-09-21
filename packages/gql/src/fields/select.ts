@@ -166,7 +166,7 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: TinaSelectField;
-    value: string;
+    value: unknown;
   }) => {
     switch (field.config.source.type) {
       case "documents":

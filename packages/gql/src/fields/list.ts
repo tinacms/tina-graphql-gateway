@@ -1,5 +1,6 @@
 import type { TinaField } from "./index";
 import type { DataSource } from "../datasources/datasource";
+import Joi from "joi";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -247,8 +248,16 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: TinaListField;
-    value: string[];
-  }) => {
+    value: unknown;
+  }): Promise<
+    | {
+        _resolver: "_resource";
+        _resolver_kind: "_nested_sources";
+        _args: { paths: string[] };
+      }
+    | string[]
+  > => {
+    assertIsStringArray(value);
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
     if (!isSimple) {
@@ -276,6 +285,14 @@ const resolve = {
     }
   },
 };
+
+function assertIsStringArray(value: unknown): asserts value is string[] {
+  const schema = Joi.array().items(Joi.string());
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const list = {
   resolve,

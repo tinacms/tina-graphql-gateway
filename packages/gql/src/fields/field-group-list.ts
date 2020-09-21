@@ -3,7 +3,7 @@ import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { resolveFieldType, resolveDataType } from "../graphql";
 import type { Cache } from "../schema-builder";
-import type { FieldGroupValue } from "./field-group";
+import Joi from "joi";
 
 export type FieldGroupListField = {
   label: string;
@@ -98,14 +98,27 @@ const resolve = {
   }: {
     datasource: DataSource;
     field: TinaFieldGroupListField;
-    value: FieldGroupValue[];
+    value: unknown;
     resolveData: resolveDataType;
   }) => {
+    assertIsDataArray(value);
     return await Promise.all(
       value.map(async (v: any) => await resolveData(datasource, field, v))
     );
   },
 };
+
+function assertIsDataArray(
+  value: unknown
+): asserts value is {
+  [key: string]: unknown;
+}[] {
+  const schema = Joi.array().items(Joi.object({}).unknown());
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const fieldGroupList = {
   resolve,

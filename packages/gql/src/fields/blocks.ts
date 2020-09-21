@@ -1,6 +1,7 @@
 import type { DataSource } from "../datasources/datasource";
 import type { TemplateData } from "../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+import Joi from "joi";
 import type {
   resolveTemplateType,
   resolveDataType,
@@ -156,11 +157,10 @@ const resolve = {
     value: unknown;
     resolveData: resolveDataType;
   }): Promise<ResolvedData[]> => {
-    assertIsArray(value);
+    assertIsBlock(value);
 
     return await Promise.all(
       value.map(async (item) => {
-        assertIsBlock(item);
         const { template, ...rest } = item;
         return await resolveData(
           datasource,
@@ -172,19 +172,15 @@ const resolve = {
   },
 };
 
-function assertIsArray(value: unknown): asserts value is any[] {
-  if (!Array.isArray(value)) {
-    throw new Error(`Expected an array for block value`);
-  }
-}
-
-function assertIsBlock(value: unknown): asserts value is BlockValue {
-  if (typeof value === "object") {
-    if (!value || !value.hasOwnProperty("template")) {
-      throw new Error(
-        `Expected value to be an object with property 'template'`
-      );
-    }
+function assertIsBlock(value: unknown): asserts value is BlockValue[] {
+  const schema = Joi.array().items(
+    Joi.object({
+      template: Joi.string(),
+    }).unknown()
+  );
+  const { error } = schema.validate(value);
+  if (error) {
+    throw new Error(error.message);
   }
 }
 
