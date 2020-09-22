@@ -4,13 +4,6 @@ import { assertType, testCache, gql } from "../test-util";
 describe("Blocks", () => {
   describe("builders", () => {
     test("builds the expected field schema", async () => {
-      const field = {
-        name: "sections",
-        type: "blocks" as const,
-        label: "Sections",
-        template_types: ["section"],
-      };
-
       const mockGetTemplate = jest.fn(() => {
         return {
           label: "Section",
@@ -25,7 +18,12 @@ describe("Blocks", () => {
       });
       const result = await blocks.build.field({
         cache: testCache({ mockGetTemplate: mockGetTemplate }),
-        field,
+        field: {
+          name: "sections",
+          type: "blocks" as const,
+          label: "Sections",
+          template_types: ["section"],
+        },
       });
 
       expect(mockGetTemplate).toHaveBeenCalledWith({ slug: "section" });

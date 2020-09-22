@@ -4,22 +4,20 @@ import { assertType, testCache, gql } from "../test-util";
 describe("Field Group", () => {
   describe("builders", () => {
     test("builds the expected field schema", async () => {
-      const field = {
-        name: "cta",
-        label: "Cta",
-        type: "field_group" as const,
-        fields: [
-          {
-            name: "header",
-            label: "Header",
-            type: "textarea" as const,
-          },
-        ],
-      };
-
       const result = await fieldGroup.build.field({
         cache: testCache({}),
-        field,
+        field: {
+          name: "cta",
+          label: "Cta",
+          type: "field_group" as const,
+          fields: [
+            {
+              name: "header",
+              label: "Header",
+              type: "textarea" as const,
+            },
+          ],
+        },
       });
 
       assertType(result).matches(gql`

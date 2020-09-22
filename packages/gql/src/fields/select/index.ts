@@ -29,7 +29,7 @@ export type SectionSelect = BaseSelectField & {
 };
 
 export type SimpleSelect = BaseSelectField & {
-  default: string;
+  default?: string;
   config: {
     options: string[];
     required?: boolean;

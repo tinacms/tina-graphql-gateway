@@ -6,7 +6,6 @@ describe("Select", () => {
     test("builds the expected field schema", async () => {
       const result = await select.build.field({
         cache: testCache({}),
-        // FIXME: need to look at these types a little more
         field: {
           name: "role",
           label: "role",

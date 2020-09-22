@@ -4,11 +4,9 @@ import { assertType, testCache, gql } from "../test-util";
 describe("Text", () => {
   describe("builders", () => {
     test("builds the expected field schema", () => {
-      const field = { name: "name", label: "Name", type: "text" as const };
-
       const result = text.build.field({
         cache: testCache({}),
-        field,
+        field: { name: "name", label: "Name", type: "text" as const },
       });
 
       assertType(result).matches(gql`
