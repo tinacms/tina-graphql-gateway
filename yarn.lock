@@ -2326,6 +2326,7 @@ __metadata:
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
     "@types/ws": ^7.2.6
+    "@types/yup": ^0.29.7
     body-parser: ^1.19.0
     chokidar: ^3.4.2
     chokidar-cli: ^2.1.0
@@ -2338,7 +2339,6 @@ __metadata:
     jest: ^26.1.0
     jest-diff: ^26.4.2
     jest-matcher-utils: ^26.4.2
-    joi: ^17.2.1
     lodash: ^4.17.20
     ts-jest: ^26.1.2
     tslib: ^1.11.1
@@ -2346,6 +2346,7 @@ __metadata:
     typedoc: ^0.19.2
     typescript: ^3.8.3
     ws: ^7.3.1
+    yup: ^0.29.3
   bin:
     "forestry:serve": ./dist/index.js
   languageName: unknown
@@ -3023,15 +3024,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/address@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@hapi/address@npm:4.1.0"
-  dependencies:
-    "@hapi/hoek": ^9.0.0
-  checksum: 2844aceeb993bb767ae2c34e75767e7eff1b0cf811c4655c6500206d8d06a7deacdf4cf4172901e3bcafcbd7e8892b5ff786d0469071b9ba5ec14d0896034497
-  languageName: node
-  linkType: hard
-
 "@hapi/bourne@npm:1.x.x":
   version: 1.3.2
   resolution: "@hapi/bourne@npm:1.3.2"
@@ -3039,24 +3031,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/formula@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@hapi/formula@npm:2.0.0"
-  checksum: 02d14257149799b478e21f2620639470efb152f09dd2083fb9a6f247f29760de4af6ceb938b2337ecdf2a0514c2edd5beca6df5415d5c2cea909977fb0da4eaf
-  languageName: node
-  linkType: hard
-
 "@hapi/hoek@npm:8.x.x, @hapi/hoek@npm:^8.3.0":
   version: 8.5.1
   resolution: "@hapi/hoek@npm:8.5.1"
   checksum: 17bf9a0b6f2f9ecb248824dab838c66c50b16b00b1d3785233fafd5abacb06cc6cdcbd6f4c7be87babb227fc02fff46ad1c23de3f5b6f48ffe36b6aac829d82c
-  languageName: node
-  linkType: hard
-
-"@hapi/hoek@npm:^9.0.0":
-  version: 9.1.0
-  resolution: "@hapi/hoek@npm:9.1.0"
-  checksum: c77ac8f0c1ae6e21b3d77fa63f462dc1b0c84481388f5e54c651e86cf565d58cb701c396a1fa86a746d5dc278013ad5b3513a58c4cb19a493802d17b68c90740
   languageName: node
   linkType: hard
 
@@ -3072,28 +3050,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hapi/pinpoint@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@hapi/pinpoint@npm:2.0.0"
-  checksum: 445ca018999145dccff58ca1be71fa533c3124a1d0f256b8c3daf88067992a20aebfbdee49664741cfac160d924c76d24bd3e8eeb521af721e6f606f4bd64634
-  languageName: node
-  linkType: hard
-
 "@hapi/topo@npm:3.x.x":
   version: 3.1.6
   resolution: "@hapi/topo@npm:3.1.6"
   dependencies:
     "@hapi/hoek": ^8.3.0
   checksum: 4550d3d7498a203ce5c0e53753eb9f510aa2b74c08bfaf7d7c4676a0943b27d72f22297ff006e8396eb74e6b73154ebf98feab19c199b0768a084a777d024a50
-  languageName: node
-  linkType: hard
-
-"@hapi/topo@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@hapi/topo@npm:5.0.0"
-  dependencies:
-    "@hapi/hoek": ^9.0.0
-  checksum: f92797d5ef54bb801a3591a118ea483ed5a6b41cdd1aaa6f7bf427b64b5f76056bc7063447adf43be8f94b04408228cce12963ea498b8da8f9e01d01c78710ac
   languageName: node
   linkType: hard
 
@@ -5415,6 +5377,13 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 2133c8cb5878d13959844f98e546e69dacdf44cd9baf87d84c828a1a093febfc97c8f4df19cffd34a4a4f726a3cdb1851da4391176accf56534c5f8a1c271f46
+  languageName: node
+  linkType: hard
+
+"@types/yup@npm:^0.29.7":
+  version: 0.29.7
+  resolution: "@types/yup@npm:0.29.7"
+  checksum: f23dda1240b72efa7a6b5d9cddc20a8c5a3e37a59e37f6c41aa027a1b75f57f5ce3bf871d81eec642066f5e91955ddf83b232a5e38dfe23822592cab41808acc
   languageName: node
   linkType: hard
 
@@ -16122,19 +16091,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"joi@npm:^17.2.1":
-  version: 17.2.1
-  resolution: "joi@npm:17.2.1"
-  dependencies:
-    "@hapi/address": ^4.1.0
-    "@hapi/formula": ^2.0.0
-    "@hapi/hoek": ^9.0.0
-    "@hapi/pinpoint": ^2.0.0
-    "@hapi/topo": ^5.0.0
-  checksum: 197c86238922203a34a894a6240342462815bb538412333b496500520ec4d5ad04db3c7ae6d3ea58e8b1780252c91e53eb22ac7822cb82c14572920f60f031f7
-  languageName: node
-  linkType: hard
-
 "joycon@npm:^2.2.5":
   version: 2.2.5
   resolution: "joycon@npm:2.2.5"
@@ -24550,7 +24506,7 @@ resolve@1.15.1:
   languageName: node
   linkType: hard
 
-"synchronous-promise@npm:^2.0.10":
+"synchronous-promise@npm:^2.0.10, synchronous-promise@npm:^2.0.13":
   version: 2.0.13
   resolution: "synchronous-promise@npm:2.0.13"
   checksum: 8e182d5999ea709ea39dd11b0c5feae564ba1cce99dc0bab475751086f0b08dfd1e318f01ba51913102b476f464c44b45f162feaaf54d1b69afadeb9bd8888e1
@@ -27694,6 +27650,21 @@ typescript@~3.7.2:
     synchronous-promise: ^2.0.10
     toposort: ^2.0.2
   checksum: c5801c5832dac33201f26dc93af6a354668219112a37771322025096252f64ea61fe589bb255bbf028c3f2ba6ec51aba5a290786bbcb3f06a5505eedc3afbe4f
+  languageName: node
+  linkType: hard
+
+"yup@npm:^0.29.3":
+  version: 0.29.3
+  resolution: "yup@npm:0.29.3"
+  dependencies:
+    "@babel/runtime": ^7.10.5
+    fn-name: ~3.0.0
+    lodash: ^4.17.15
+    lodash-es: ^4.17.11
+    property-expr: ^2.0.2
+    synchronous-promise: ^2.0.13
+    toposort: ^2.0.2
+  checksum: bc07ab697d38169c9fad874696008ec84dab14f5e3559b539c7edb01ea49235808670ea4cb7de64009ed473fb3700e6794ed407c293cb94b2d6c4f34deb16e4b
   languageName: node
   linkType: hard
 
