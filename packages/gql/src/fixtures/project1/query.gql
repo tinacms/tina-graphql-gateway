@@ -8,9 +8,7 @@ query DocumentQuery($path: String!) {
             name
             label
             component
-            config {
-              required
-            }
+            description
           }
           ... on SelectFormField {
             name
@@ -29,9 +27,7 @@ query DocumentQuery($path: String!) {
                     name
                     label
                     component
-                    config {
-                      required
-                    }
+                    description
                   }
                   ... on FieldGroupFormField {
                     name
@@ -42,9 +38,7 @@ query DocumentQuery($path: String!) {
                         name
                         label
                         component
-                        config {
-                          required
-                        }
+                        description
                       }
                     }
                   }
@@ -63,9 +57,7 @@ query DocumentQuery($path: String!) {
                         name
                         label
                         component
-                        config {
-                          required
-                        }
+                        description
                       }
                     }
                   }
@@ -109,9 +101,7 @@ query DocumentQuery($path: String!) {
             name
             label
             component
-            config {
-              required
-            }
+            description
           }
           ... on SelectFormField {
             name
@@ -134,9 +124,7 @@ query DocumentQuery($path: String!) {
                 name
                 label
                 component
-                config {
-                  required
-                }
+                description
               }
             }
           }
@@ -149,9 +137,7 @@ query DocumentQuery($path: String!) {
                 name
                 label
                 component
-                config {
-                  required
-                }
+                description
               }
             }
           }

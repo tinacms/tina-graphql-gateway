@@ -5,9 +5,11 @@ fields:
   - name: name
     label: Name
     type: textarea
+    description: Your first name & last name
   - name: role
     label: role
     type: select
+    description: What's your job?
     config:
       source:
         type: simple

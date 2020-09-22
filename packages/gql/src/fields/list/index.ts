@@ -1,6 +1,6 @@
 import type { TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
-import Joi from "joi";
+import * as yup from "yup";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -243,11 +243,8 @@ const resolve = {
 };
 
 function assertIsStringArray(value: unknown): asserts value is string[] {
-  const schema = Joi.array().items(Joi.string());
-  const { error } = schema.validate(value);
-  if (error) {
-    throw new Error(error.message);
-  }
+  const schema = yup.array().of(yup.string());
+  schema.validateSync(value);
 }
 
 export const list = {
