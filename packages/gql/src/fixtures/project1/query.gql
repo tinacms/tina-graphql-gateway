@@ -16,7 +16,7 @@ query DocumentQuery($path: String!) {
             component
             options
           }
-          ... on BlocksFormField {
+          ... on BlocksSectionField {
             name
             label
             component

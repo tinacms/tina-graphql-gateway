@@ -1,4 +1,5 @@
 import type { DataSource } from "../../datasources/datasource";
+import { friendlyName } from "../../util";
 import type { TinaTemplateData } from "../../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import * as yup from "yup";
@@ -29,7 +30,7 @@ export type TinaBlocksField = {
     required?: boolean;
   };
   templates: { [key: string]: TinaTemplateData };
-  __typename: "BlocksFormField";
+  __typename: string;
 };
 
 type BlockValue = {
@@ -51,18 +52,24 @@ const build = {
       })
     );
 
+    const name = `Blocks${field.template_types
+      .map((name) => friendlyName(name))
+      .join("")}`;
+
     return cache.build(
       new GraphQLObjectType<BlocksField>({
-        name: "BlocksFormField",
+        name: typename(field),
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           templates: {
-            type: new GraphQLObjectType({
-              name: "BlocksTemplates",
-              fields: templateForms,
-            }),
+            type: cache.build(
+              new GraphQLObjectType({
+                name: `${typename(field)}Templates`,
+                fields: templateForms,
+              })
+            ),
           },
         },
       })
@@ -140,7 +147,7 @@ const resolve = {
       ...field,
       component: "blocks" as const,
       templates,
-      __typename: "BlocksFormField" as const,
+      __typename: typename(field),
     };
   },
 
@@ -177,6 +184,13 @@ function assertIsBlock(value: unknown): asserts value is BlockValue[] {
   );
   schema.validateSync(value);
 }
+
+const typename = (field: BlocksField) => {
+  const name = `Blocks${field.template_types
+    .map((name) => friendlyName(name))
+    .join("")}`;
+  return name;
+};
 
 export const blocks = {
   resolve,
