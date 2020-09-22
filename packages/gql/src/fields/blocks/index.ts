@@ -1,7 +1,7 @@
 import type { DataSource } from "../../datasources/datasource";
 import type { TinaTemplateData } from "../../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import Joi from "joi";
+import * as yup from "yup";
 import type {
   resolveTemplateType,
   resolveDataType,
@@ -170,15 +170,12 @@ const resolve = {
 };
 
 function assertIsBlock(value: unknown): asserts value is BlockValue[] {
-  const schema = Joi.array().items(
-    Joi.object({
-      template: Joi.string(),
-    }).unknown()
+  const schema = yup.array().of(
+    yup.object({
+      template: yup.string().required(),
+    })
   );
-  const { error } = schema.validate(value);
-  if (error) {
-    throw new Error(error.message);
-  }
+  schema.validateSync(value);
 }
 
 export const blocks = {

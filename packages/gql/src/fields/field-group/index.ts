@@ -1,5 +1,5 @@
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import Joi from "joi";
+import * as yup from "yup";
 import type {
   resolveFieldType,
   resolveDataType,
@@ -103,11 +103,8 @@ function assertIsData(
 ): asserts value is {
   [key: string]: unknown;
 } {
-  const schema = Joi.object({}).unknown();
-  const { error } = schema.validate(value);
-  if (error) {
-    throw new Error(error.message);
-  }
+  const schema = yup.object({});
+  schema.validateSync(value);
 }
 
 export const fieldGroup = {

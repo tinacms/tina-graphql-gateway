@@ -34,11 +34,7 @@ describe("Field Group", () => {
           name: String
           label: String
           component: String
-          config: Config
-        }
-
-        type Config {
-          required: String
+          description: String
         }
       `);
     });

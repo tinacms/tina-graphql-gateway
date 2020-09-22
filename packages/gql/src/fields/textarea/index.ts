@@ -32,14 +32,7 @@ const build = {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
           component: { type: GraphQLString },
-          config: {
-            type: cache.build(
-              new GraphQLObjectType({
-                name: "Config",
-                fields: { required: { type: GraphQLString } },
-              })
-            ),
-          },
+          description: { type: GraphQLString },
         },
       })
     );
