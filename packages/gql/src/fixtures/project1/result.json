@@ -8,9 +8,7 @@
             "name": "title",
             "label": "Title",
             "component": "textarea",
-            "config": {
-              "required": null
-            }
+            "description": "The name of your post, keep it short!"
           },
           {
             "name": "author",
@@ -31,9 +29,7 @@
                     "name": "description",
                     "label": "Description",
                     "component": "textarea",
-                    "config": {
-                      "required": null
-                    }
+                    "description": null
                   },
                   {
                     "name": "cta",
@@ -44,9 +40,7 @@
                         "name": "header",
                         "label": "Header",
                         "component": "textarea",
-                        "config": {
-                          "required": null
-                        }
+                        "description": null
                       }
                     ]
                   },

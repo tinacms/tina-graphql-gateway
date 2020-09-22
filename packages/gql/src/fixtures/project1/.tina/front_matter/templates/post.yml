@@ -6,6 +6,7 @@ fields:
   - name: title
     label: Title
     type: textarea
+    description: The name of your post, keep it short!
     config:
       required: false
   - name: author

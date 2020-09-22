@@ -1,5 +1,5 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import Joi from "joi";
+import * as yup from "yup";
 import type { TinaField, Field } from "../index";
 import type { DataSource } from "../../datasources/datasource";
 import type { resolveFieldType, resolveDataType } from "../../graphql";
@@ -111,11 +111,8 @@ function assertIsDataArray(
 ): asserts value is {
   [key: string]: unknown;
 }[] {
-  const schema = Joi.array().items(Joi.object({}).unknown());
-  const { error } = schema.validate(value);
-  if (error) {
-    throw new Error(error.message);
-  }
+  const schema = yup.array().of(yup.object({}));
+  schema.validateSync(value);
 }
 
 export const fieldGroupList = {
