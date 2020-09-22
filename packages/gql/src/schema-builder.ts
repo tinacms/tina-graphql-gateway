@@ -293,10 +293,10 @@ export type Cache = {
   };
 };
 
+const storage: {
+  [key: string]: GraphQLType;
+} = {};
 export const cacheInit = (datasource: DataSource) => {
-  const storage: {
-    [key: string]: GraphQLType;
-  } = {};
   const cache: Cache = {
     build: (gqlType) => {
       const name = getNamedType(gqlType).toString();

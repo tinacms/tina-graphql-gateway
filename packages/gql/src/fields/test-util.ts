@@ -4,6 +4,7 @@ import {
   printSchema,
   GraphQLObjectType,
   getNamedType,
+  GraphQLUnionType,
 } from "graphql";
 import { FilesystemDataSource } from "../datasources/filesystem-manager";
 import { cacheInit } from "../schema-builder";
@@ -30,6 +31,25 @@ export const assertType = (type: GraphQLObjectType<any, any>) => {
 ${gqlString}`);
     },
   };
+};
+export const assertNoTypeCollisions = (
+  types: GraphQLObjectType<any, any>[]
+) => {
+  const union = new GraphQLUnionType({
+    name: "MultitypeUnion",
+    types: types,
+  });
+  const t = new GraphQLObjectType({
+    name: "MultitypeObject",
+    fields: { f: { type: union } },
+  });
+  const schema = new GraphQLSchema({ query: t });
+  const names = types.map((t) => getNamedType(t).toString());
+  const isArrayUnique = (arr: string[]) =>
+    Array.isArray(arr) && new Set(arr).size === arr.length; // add function to check that array is unique.
+  expect(isArrayUnique(names)).toBeTruthy();
+  // Useful to grab a snapshot
+  console.log(printSchema(schema));
 };
 
 /**

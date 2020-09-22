@@ -44,7 +44,6 @@ const build = {
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           fields: {
-            // field is structural subtyping TemplateData shape
             type: await cache.builder.buildTemplateFormFieldsUnion(
               cache,
               field
