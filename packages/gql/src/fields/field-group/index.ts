@@ -1,43 +1,44 @@
-import type { TinaField, Field } from "./index";
-import type { DataSource } from "../datasources/datasource";
-import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import type { resolveFieldType, resolveDataType } from "../graphql";
-import type { Cache } from "../schema-builder";
+import { GraphQLString, GraphQLObjectType } from "graphql";
 import Joi from "joi";
+import type {
+  resolveFieldType,
+  resolveDataType,
+  ResolvedData,
+} from "../../graphql";
+import type { TinaField, Field } from "../index";
+import type { DataSource } from "../../datasources/datasource";
+import type { Cache } from "../../schema-builder";
 
-export type FieldGroupListField = {
+export type FieldGroupField = {
   label: string;
   name: string;
-  type: "field_group_list";
-  default: string;
+  type: "field_group";
+  default?: string;
   fields: Field[];
   config?: {
     required?: boolean;
   };
 };
-export type TinaFieldGroupListField = {
+export type TinaFieldGroupField = {
   label: string;
   name: string;
-  component: "group-list";
-  __typename: "FieldGroupListFormField";
-  default: string;
+  component: "group";
+  __typename: "FieldGroupFormField";
+  default?: string;
   fields: TinaField[];
   config?: {
     required?: boolean;
   };
 };
+export type FieldGroupValue = {
+  [key: string]: unknown;
+};
 
 const build = {
-  field: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
+  field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "FieldGroupListFormField",
+        name: "FieldGroupFormField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -53,18 +54,11 @@ const build = {
       })
     );
   },
-  value: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
-    return {
-      type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
-    };
+  value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
+    return { type: await cache.builder.buildTemplateData(cache, field) };
   },
 };
+
 const resolve = {
   field: async ({
     datasource,
@@ -72,9 +66,9 @@ const resolve = {
     resolveField,
   }: {
     datasource: DataSource;
-    field: FieldGroupListField;
+    field: FieldGroupField;
     resolveField: resolveFieldType;
-  }): Promise<TinaFieldGroupListField> => {
+  }): Promise<TinaFieldGroupField> => {
     const { type, ...rest } = field;
 
     const fields = await Promise.all(
@@ -83,9 +77,9 @@ const resolve = {
 
     return {
       ...rest,
-      component: "group-list",
+      component: "group",
       fields,
-      __typename: "FieldGroupListFormField",
+      __typename: "FieldGroupFormField",
     };
   },
   value: async ({
@@ -95,30 +89,28 @@ const resolve = {
     resolveData,
   }: {
     datasource: DataSource;
-    field: FieldGroupListField;
+    field: FieldGroupField;
     value: unknown;
     resolveData: resolveDataType;
-  }) => {
-    assertIsDataArray(value);
-    return await Promise.all(
-      value.map(async (v: any) => await resolveData(datasource, field, v))
-    );
+  }): Promise<ResolvedData> => {
+    assertIsData(value);
+    return await resolveData(datasource, field, value);
   },
 };
 
-function assertIsDataArray(
+function assertIsData(
   value: unknown
 ): asserts value is {
   [key: string]: unknown;
-}[] {
-  const schema = Joi.array().items(Joi.object({}).unknown());
+} {
+  const schema = Joi.object({}).unknown();
   const { error } = schema.validate(value);
   if (error) {
     throw new Error(error.message);
   }
 }
 
-export const fieldGroupList = {
-  resolve,
+export const fieldGroup = {
   build,
+  resolve,
 };

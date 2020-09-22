@@ -1,6 +1,6 @@
-import type { DataSource } from "../datasources/datasource";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import type { Cache } from "../schema-builder";
+import type { DataSource } from "../../datasources/datasource";
+import type { Cache } from "../../schema-builder";
 
 export type BaseSelectField = {
   label: string;
@@ -30,7 +30,6 @@ export type SectionSelect = BaseSelectField & {
 
 export type SimpleSelect = BaseSelectField & {
   default: string;
-  options: string[];
   config: {
     options: string[];
     required?: boolean;

@@ -293,11 +293,7 @@ export type Cache = {
   };
 };
 
-export const schemaBuilder = async ({
-  datasource,
-}: {
-  datasource: DataSource;
-}) => {
+export const cacheInit = (datasource: DataSource) => {
   const storage: {
     [key: string]: GraphQLType;
   } = {};
@@ -321,6 +317,16 @@ export const schemaBuilder = async ({
       buildTemplateFormFieldsUnion,
     },
   };
+
+  return cache;
+};
+
+export const schemaBuilder = async ({
+  datasource,
+}: {
+  datasource: DataSource;
+}) => {
+  const cache = cacheInit(datasource);
 
   const schema = new GraphQLSchema({
     query: new GraphQLObjectType({

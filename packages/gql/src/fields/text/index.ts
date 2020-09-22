@@ -1,33 +1,33 @@
-import type { DataSource } from "../datasources/datasource";
+import type { DataSource } from "../../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { Cache } from "../schema-builder";
+import type { Cache } from "../../schema-builder";
 
-export type TextareaField = {
+export type TextField = {
   label: string;
   name: string;
-  type: "textarea";
-  default: string;
+  type: "text";
+  default?: string;
   config?: {
     required?: boolean;
   };
 };
 
-export type TinaTextareaField = {
+export type TinaTextField = {
   label: string;
   name: string;
-  component: "textarea";
-  default: string;
+  component: "text";
+  default?: string;
   config?: {
     required?: boolean;
   };
-  __typename: "TextareaFormField";
+  __typename: "TextFormField";
 };
 
 const build = {
-  field: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+  field: ({ cache, field }: { cache: Cache; field: TextField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "TextareaFormField",
+        name: "TextFormField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -44,21 +44,21 @@ const build = {
       })
     );
   },
-  value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+  value: ({ cache, field }: { cache: Cache; field: TextField }) => {
     return { type: GraphQLString };
   },
 };
 
 const resolve = {
-  field: ({ field }: { field: TextareaField }): TinaTextareaField => {
+  field: ({ field }: { field: TextField }): TinaTextField => {
     const { type, ...rest } = field;
     return {
       ...rest,
-      component: "textarea",
+      component: "text",
       config: rest.config || {
         required: false,
       },
-      __typename: "TextareaFormField",
+      __typename: "TextFormField",
     };
   },
   value: async ({
@@ -67,19 +67,19 @@ const resolve = {
     value,
   }: {
     datasource: DataSource;
-    field: TextareaField;
+    field: TextField;
     value: unknown;
   }): Promise<string> => {
     if (typeof value !== "string") {
       throw new Error(
-        `Unexpected value of type ${typeof value} for resolved textarea value`
+        `Unexpected value of type ${typeof value} for resolved text value`
       );
     }
     return value;
   },
 };
 
-export const textarea = {
+export const text = {
   resolve,
   build,
 };

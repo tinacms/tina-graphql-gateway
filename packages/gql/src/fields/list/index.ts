@@ -1,5 +1,5 @@
-import type { TinaField } from "./index";
-import type { DataSource } from "../datasources/datasource";
+import type { TinaField } from "../index";
+import type { DataSource } from "../../datasources/datasource";
 import Joi from "joi";
 import {
   GraphQLString,
@@ -7,8 +7,8 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
-import type { Cache } from "../schema-builder";
-import { select } from "./select";
+import type { Cache } from "../../schema-builder";
+import { select } from "../select";
 
 export type BaseListField = {
   label: string;
@@ -23,8 +23,9 @@ type BaseConfig = {
   max?: number;
 };
 export type SimpleList = BaseListField & {
+  // FIXME: this isn't required at all for simple lists
   config: BaseConfig & {
-    source: undefined;
+    source?: undefined;
   };
 };
 export type DocumentList = BaseListField & {

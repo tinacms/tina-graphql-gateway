@@ -1,20 +1,19 @@
-import type { DataSource } from "../datasources/datasource";
-import type { TinaTemplateData } from "../types";
+import type { DataSource } from "../../datasources/datasource";
+import type { TinaTemplateData } from "../../types";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import Joi from "joi";
 import type {
   resolveTemplateType,
   resolveDataType,
   ResolvedData,
-} from "../graphql";
-import type { Cache } from "../schema-builder";
-// import type { BlocksFieldDefinititon } from "@tinacms/fields";
+} from "../../graphql";
+import type { Cache } from "../../schema-builder";
 
 export type BlocksField = {
   label: string;
   name: string;
   type: "blocks";
-  default: string;
+  default?: string;
   template_types: string[];
   config?: {
     required?: boolean;
@@ -24,8 +23,7 @@ export type TinaBlocksField = {
   label: string;
   name: string;
   type: "blocks";
-  default: string;
-  template_types: string[];
+  default?: string;
   component: "blocks";
   config?: {
     required?: boolean;
