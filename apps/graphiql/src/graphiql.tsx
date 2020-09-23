@@ -15,7 +15,9 @@ export const Explorer = () => {
     explorerIsOpen: true,
     codeExporterIsOpen: false,
   });
-  const [projects, setProjects] = React.useState([]);
+  const [projects, setProjects] = React.useState<
+    { label: string; value: string }[]
+  >([]);
 
   const graphQLFetcher = (graphQLParams: object) => {
     const url = `http://localhost:4000/${project}`;
@@ -101,20 +103,6 @@ export const Explorer = () => {
                 </Link>
               );
             })}
-            {/* @ts-ignore */}
-            <GraphiQL.Button
-              key="prettifty"
-              onClick={() => _graphiql.handlePrettifyQuery()}
-              label="Prettify"
-              title="Prettify Query (Shift-Ctrl-P)"
-            />
-            {/* @ts-ignore */}
-            <GraphiQL.Button
-              key="history"
-              onClick={() => _graphiql.handleToggleHistory()}
-              label="History"
-              title="Show History"
-            />
             {/* @ts-ignore */}
             <GraphiQL.Button
               key="explorer"
