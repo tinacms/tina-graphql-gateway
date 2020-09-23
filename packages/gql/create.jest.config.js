@@ -7,6 +7,7 @@ module.exports = function createJestConfig(pack) {
     testRegex: "(\\.spec)\\.(ts|tsx|js)$",
     modulePaths: ["<rootDir>/dir/", "<rootDir>/node_modules/"],
     moduleFileExtensions: ["ts", "tsx", "js"],
+    testPathIgnorePatterns: ["/dist/"],
     displayName: pack.name,
     name: pack.name,
     moduleNameMapper: {
