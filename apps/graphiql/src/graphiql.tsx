@@ -1,7 +1,13 @@
 import React from "react";
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
-import { getIntrospectionQuery, buildClientSchema, parse } from "graphql";
+import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import {
+  getIntrospectionQuery,
+  buildClientSchema,
+  parse,
+  print,
+} from "graphql";
 
 type ParameterType = {
   variables?: any;
@@ -32,7 +38,14 @@ function updateURL() {
   // history.replaceState(null, null, locationQuery(parameters));
 }
 
-const DEFAULT_QUERY = parameters.query || undefined;
+const DEFAULT_QUERY = `query MyQuery($path: String) {
+  document(path: $path) {
+    ... on Post {
+      path
+    }
+  }
+}
+`;
 
 const DEFAULT_VARIABLES = parameters.variables || undefined;
 
@@ -43,33 +56,14 @@ const QUERY_EXAMPLE_FALLBACK = `#     {
 #     }`;
 
 function generateDefaultFallbackQuery(queryExample) {
-  return `# Welcome to GraphiQL
-#
-# GraphiQL is an in-browser tool for writing, validating, and
-# testing GraphQL queries.
-#
-# Type queries into this side of the screen, and you will see intelligent
-# typeaheads aware of the current GraphQL type schema and live syntax and
-# validation errors highlighted within the text.
-#
-# GraphQL queries typically start with a "{" character. Lines that starts
-# with a # are ignored.
-#
-# An example GraphQL query might look like:
-#
-${queryExample}
-#
-# Keyboard shortcuts:
-#
-#  Prettify Query:  Shift-Ctrl-P (or press the prettify button above)
-#
-#     Merge Query:  Shift-Ctrl-M (or press the merge button above)
-#
-#       Run Query:  Ctrl-Enter (or press the play button above)
-#
-#   Auto Complete:  Ctrl-Space (or just start typing)
-#
-`;
+  return `query MyQuery($path: String) {
+    document(path: $path) {
+      ... on Post {
+        path
+      }
+    }
+  }
+  `;
 }
 
 export class Explorer extends React.Component {
@@ -82,7 +76,8 @@ export class Explorer extends React.Component {
   };
 
   graphQLFetcher = (graphQLParams) => {
-    return fetch(this.props.url, {
+    const url = `http://localhost:4000/${this.props.path}`;
+    return fetch(url, {
       method: `post`,
       headers: {
         Accept: `application/json`,
@@ -103,7 +98,7 @@ export class Explorer extends React.Component {
 
       if (this.state.query === null) {
         if (!newState.query) {
-          newState.query = generateDefaultFallbackQuery(QUERY_EXAMPLE_FALLBACK);
+          newState.query = print(queryBuilder(buildClientSchema(result)));
         }
       }
 
