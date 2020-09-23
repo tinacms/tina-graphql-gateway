@@ -1,0 +1,54 @@
+type Query {
+  document(path: String!): DocumentUnion
+}
+
+union DocumentUnion = Post | Author
+
+type Post {
+  form: Form
+  content: String
+  data: PostData
+}
+
+type Form {
+  fields: [FieldsUnionAuthor]
+}
+
+union FieldsUnionAuthor = textarea
+
+type textarea {
+  name: String
+  label: String
+  description: String
+  component: String
+}
+
+type PostData {
+  title: String
+  sections: [SectionDataUnion]
+  author: AuthorUnion
+}
+
+union SectionDataUnion = Section
+
+type Section {
+  form: Form
+  content: String
+  data: SectionData
+}
+
+type SectionData {
+  description: String
+}
+
+union AuthorUnion = Author
+
+type Author {
+  form: Form
+  content: String
+  data: AuthorData
+}
+
+type AuthorData {
+  name: String
+}

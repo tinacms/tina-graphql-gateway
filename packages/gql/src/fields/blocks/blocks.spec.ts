@@ -12,9 +12,10 @@ describe("Blocks", () => {
       const mockGetTemplate = jest.fn(() => {
         return {
           label: "Section",
+          __namespace: "SomeTemplate",
           fields: [
             {
-              __namespace: "SomeTemplate",
+              __namespace: "SomeTemplateSection",
               name: "name",
               label: "Name",
               type: "textarea",
@@ -47,10 +48,10 @@ describe("Blocks", () => {
         }
 
         type SectionForm {
-          fields: [SectionFormFields]
+          fields: [SomeTemplateSectionFormFields]
         }
 
-        union SectionFormFields = TextareaField
+        union SomeTemplateSectionFormFields = TextareaField
 
         type TextareaField {
           name: String
@@ -61,32 +62,34 @@ describe("Blocks", () => {
       `);
     });
     test("multiple block field definitions don't collide", async () => {
-      const mockGetTemplate = jest.fn(() => {
-        return {
-          label: "Section",
-          fields: [
-            {
-              name: "name",
-              label: "Name",
-              type: "textarea",
-            },
-          ],
-        };
+      const mockGetTemplate = jest.fn(({ slug }) => {
+        if (slug === "section") {
+          return {
+            label: "Section",
+            fields: [
+              {
+                name: "name",
+                label: "Name",
+                type: "textarea",
+              },
+            ],
+          };
+        } else {
+          return {
+            label: "Section2",
+            fields: [
+              {
+                name: "name",
+                label: "Name",
+                type: "textarea",
+              },
+            ],
+          };
+        }
       });
-      const mockGetTemplate2 = jest.fn(() => {
-        return {
-          label: "Section2",
-          fields: [
-            {
-              name: "name",
-              label: "Name",
-              type: "textarea",
-            },
-          ],
-        };
-      });
+      const cache = testCache({ mockGetTemplate });
       const block1 = await blocks.build.field({
-        cache: testCache({ mockGetTemplate: mockGetTemplate }),
+        cache,
         field: {
           name: "sections",
           type: "blocks",
@@ -96,7 +99,7 @@ describe("Blocks", () => {
         },
       });
       const block2 = await blocks.build.field({
-        cache: testCache({ mockGetTemplate: mockGetTemplate2 }),
+        cache,
         field: {
           name: "sections",
           type: "blocks",
@@ -107,7 +110,7 @@ describe("Blocks", () => {
       });
 
       expect(mockGetTemplate).toHaveBeenCalledWith({ slug: "section" });
-      expect(mockGetTemplate2).toHaveBeenCalledWith({ slug: "section2" });
+      expect(mockGetTemplate).toHaveBeenCalledWith({ slug: "section2" });
       assertNoTypeCollisions([block1, block2]);
     });
   });

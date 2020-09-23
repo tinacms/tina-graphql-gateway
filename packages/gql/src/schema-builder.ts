@@ -133,7 +133,7 @@ const buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion = async (
   return cache.build(
     GraphQLList(
       new GraphQLUnionType({
-        name: `${template.label}FormFields`,
+        name: `${template.__namespace}${template.label}FormFields`,
         types: await buildTemplateFormFields(cache, template),
       })
     )
@@ -296,10 +296,10 @@ export type Cache = {
   };
 };
 
-const storage: {
-  [key: string]: GraphQLType;
-} = {};
-export const cacheInit = (datasource: DataSource) => {
+export const cacheInit = (
+  datasource: DataSource,
+  storage: { [key: string]: GraphQLType }
+) => {
   const cache: Cache = {
     build: (gqlType) => {
       const name = getNamedType(gqlType).toString();
@@ -329,7 +329,10 @@ export const schemaBuilder = async ({
 }: {
   datasource: DataSource;
 }) => {
-  const cache = cacheInit(datasource);
+  const storage: {
+    [key: string]: GraphQLType;
+  } = {};
+  const cache = cacheInit(datasource, storage);
 
   const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -337,7 +340,7 @@ export const schemaBuilder = async ({
       fields: {
         document: {
           args: {
-            path: { type: GraphQLNonNull(GraphQLString) },
+            path: { type: GraphQLString },
           },
           type: await buildDocumentUnion({ cache }),
         },

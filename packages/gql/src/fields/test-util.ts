@@ -5,18 +5,21 @@ import {
   GraphQLObjectType,
   getNamedType,
   GraphQLUnionType,
+  GraphQLType,
 } from "graphql";
-import { FilesystemDataSource } from "../datasources/filesystem-manager";
+import { FileSystemManager } from "../datasources/filesystem-manager";
 import { cacheInit } from "../schema-builder";
-import { DataSource } from "../datasources/datasource";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
-  const filesystemDataSource = FilesystemDataSource(projectRoot);
+  const filesystemDataSource = new FileSystemManager(projectRoot);
   if (mockGetTemplate) {
     filesystemDataSource.getTemplate = mockGetTemplate;
   }
-  return cacheInit(filesystemDataSource);
+  const storage: {
+    [key: string]: GraphQLType;
+  } = {};
+  return cacheInit(filesystemDataSource, storage);
 };
 
 export const assertType = (type: GraphQLObjectType<any, any>) => {
@@ -43,7 +46,6 @@ export const assertNoTypeCollisions = (
     name: "MultitypeObject",
     fields: { f: { type: union } },
   });
-  const schema = new GraphQLSchema({ query: t });
   const names = types.map((t) => getNamedType(t).toString());
   const isArrayUnique = (arr: string[]) =>
     Array.isArray(arr) && new Set(arr).size === arr.length; // add function to check that array is unique.
@@ -53,6 +55,7 @@ export const assertNoTypeCollisions = (
     // console.error("Types are equal");
     throw new Error(`Unable to create schema with multiple identical types`);
   }
+  const schema = new GraphQLSchema({ query: t });
   // Useful to grab a snapshot
   // console.log(printSchema(schema));
 };

@@ -27,10 +27,10 @@ describe("Field Group List", () => {
           name: String
           label: String
           component: String
-          fields: [CtaFormFields]
+          fields: [SomenamespaceCtaFormFields]
         }
 
-        union CtaFormFields = TextareaField
+        union SomenamespaceCtaFormFields = TextareaField
 
         type TextareaField {
           name: String
