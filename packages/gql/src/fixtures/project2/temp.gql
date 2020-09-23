@@ -1,5 +1,5 @@
 type Query {
-  document(path: String): DocumentUnion
+  document(path: String!): DocumentUnion
 }
 
 union DocumentUnion = Post | Author
@@ -11,10 +11,10 @@ type Post {
 }
 
 type PostForm {
-  fields: [undefinedPostFormFields]
+  fields: [PostFormFields]
 }
 
-union undefinedPostFormFields = TextareaField | SelectField | PostSectionsBlocksField
+union PostFormFields = TextareaField | SelectField | PostSectionsBlocksField
 
 type TextareaField {
   name: String
@@ -42,19 +42,19 @@ type PostSectionsBlocksFieldTemplates {
 }
 
 type SectionForm {
-  fields: [undefinedSectionFormFields]
+  fields: [SectionFormFields]
 }
 
-union undefinedSectionFormFields = TextareaField | SectionCtaGroupField | ListField
+union SectionFormFields = TextareaField | SectionCtaGroupField | ListField
 
 type SectionCtaGroupField {
   name: String
   label: String
   component: String
-  fields: [SectionCtaFormFields]
+  fields: [CtaFormFields]
 }
 
-union SectionCtaFormFields = TextareaField
+union CtaFormFields = TextareaField
 
 type ListField {
   name: String
@@ -84,19 +84,19 @@ type Author {
 }
 
 type AuthorForm {
-  fields: [undefinedAuthorFormFields]
+  fields: [AuthorFormFields]
 }
 
-union undefinedAuthorFormFields = TextareaField | SelectField | ListField | AuthorAccoladesGroupListField
+union AuthorFormFields = TextareaField | SelectField | ListField | AuthorAccoladesGroupListField
 
 type AuthorAccoladesGroupListField {
   name: String
   label: String
   component: String
-  fields: [AuthorAccoladesFormFields]
+  fields: [AccoladesFormFields]
 }
 
-union AuthorAccoladesFormFields = TextareaField
+union AccoladesFormFields = TextareaField
 
 type AuthorData {
   name: String

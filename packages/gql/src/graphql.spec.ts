@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
-import { FilesystemDataSource } from "./datasources/filesystem-manager";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 import { parse, buildSchema } from "graphql";
 
 describe("Document Resolver", () => {
@@ -13,7 +13,7 @@ describe("Document Resolver", () => {
       .readFileSync(path.join(projectRoot, "query.gql"))
       .toString();
 
-    const datasource = FilesystemDataSource(projectRoot);
+    const datasource = new FileSystemManager(projectRoot);
     const schema = await schemaBuilder({ datasource });
     // const schema = buildSchema(
     //   await fs.readFileSync(path.join(projectRoot, "temp.gql")).toString()

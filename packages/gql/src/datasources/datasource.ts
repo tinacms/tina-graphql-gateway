@@ -16,7 +16,7 @@ export type DocumentArgs = {
 export const isDocumentArgs = (args: any): args is DocumentArgs => {
   return args.path;
 };
-export type DataSource = {
+export interface DataSource {
   /**
    * `getData`
    *
@@ -61,7 +61,7 @@ export type DataSource = {
    */
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
-};
+}
 
 export type DocumentSummary = {
   _template: string;

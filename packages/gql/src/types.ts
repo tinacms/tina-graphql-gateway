@@ -39,6 +39,7 @@ export type Settings = {
 export type WithFields = {
   label: string;
   fields: Field[];
+  __namespace: string;
 };
 export type TemplateData = WithFields & {
   hide_body?: boolean;

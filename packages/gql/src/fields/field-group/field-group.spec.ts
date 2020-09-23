@@ -32,10 +32,10 @@ describe("Field Group", () => {
           name: String
           label: String
           component: String
-          fields: [CtaFormFields]
+          fields: [SomeTemplateCtaFormFields]
         }
 
-        union CtaFormFields = TextareaField
+        union SomeTemplateCtaFormFields = TextareaField
 
         type TextareaField {
           name: String
@@ -46,8 +46,9 @@ describe("Field Group", () => {
       `);
     });
     test("multiple definitions don't collide", async () => {
+      const cache = testCache({});
       const group1 = await fieldGroup.build.field({
-        cache: testCache({}),
+        cache,
         field: {
           name: "cta",
           label: "Cta",
@@ -64,7 +65,7 @@ describe("Field Group", () => {
         },
       });
       const group2 = await fieldGroup.build.field({
-        cache: testCache({}),
+        cache,
         field: {
           name: "cta",
           label: "Cta",

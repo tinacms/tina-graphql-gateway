@@ -1,16 +1,15 @@
 {
   "name": "@forestryio/gql",
   "version": "0.0.7",
-  "module": "dist",
+  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "bin": {
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --esm",
-    "watch": "yarn tsup src/**/*.ts --watch",
-    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
-    "serve": "yarn node dist/index.js",
+    "build": "yarn tsup src/index.ts --format cjs",
+    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
     "test-watch": "jest --watch"
   },
@@ -35,6 +34,7 @@
     "jest-diff": "^26.4.2",
     "jest-matcher-utils": "^26.4.2",
     "lodash": "^4.17.20",
+    "nodemon": "^2.0.4",
     "tslib": "^1.11.1",
     "typedoc": "^0.19.2",
     "typescript": "^3.8.3",
