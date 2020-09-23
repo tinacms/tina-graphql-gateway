@@ -68,7 +68,7 @@ describe("Blocks", () => {
             {
               name: "name",
               label: "Name",
-              type: "textarea" as const,
+              type: "textarea",
             },
           ],
         };
@@ -80,7 +80,7 @@ describe("Blocks", () => {
             {
               name: "name",
               label: "Name",
-              type: "textarea" as const,
+              type: "textarea",
             },
           ],
         };

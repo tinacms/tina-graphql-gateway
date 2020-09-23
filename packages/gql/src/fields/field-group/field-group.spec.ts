@@ -14,13 +14,13 @@ describe("Field Group", () => {
         field: {
           name: "cta",
           label: "Cta",
-          type: "field_group" as const,
+          type: "field_group",
           __namespace: "SomeTemplate",
           fields: [
             {
               name: "header",
               label: "Header",
-              type: "textarea" as const,
+              type: "textarea",
               __namespace: "SomeTemplateCta",
             },
           ],
@@ -28,7 +28,7 @@ describe("Field Group", () => {
       });
 
       assertType(result).matches(gql`
-        type SomenamespaceCtaGroupListField {
+        type SomeTemplateCtaGroupField {
           name: String
           label: String
           component: String
@@ -45,19 +45,19 @@ describe("Field Group", () => {
         }
       `);
     });
-    test.only("multiple definitions don't collide", async () => {
+    test("multiple definitions don't collide", async () => {
       const group1 = await fieldGroup.build.field({
         cache: testCache({}),
         field: {
           name: "cta",
           label: "Cta",
-          type: "field_group" as const,
+          type: "field_group",
           __namespace: "Somenamespace",
           fields: [
             {
               name: "header",
               label: "Header",
-              type: "textarea" as const,
+              type: "textarea",
               __namespace: "SomenamespaceCta",
             },
           ],
