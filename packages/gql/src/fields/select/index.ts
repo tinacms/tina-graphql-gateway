@@ -52,7 +52,7 @@ const build = {
   field: ({ cache, field }: { cache: Cache; field: SelectField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "SelectFormField",
+        name: "SelectField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -103,7 +103,7 @@ const resolve = {
     const f = {
       ...rest,
       component: "select" as const,
-      __typename: "SelectFormField",
+      __typename: "SelectField",
     };
     switch (field.config.source.type) {
       case "documents":

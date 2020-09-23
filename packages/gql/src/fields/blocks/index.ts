@@ -16,6 +16,7 @@ export type BlocksField = {
   type: "blocks";
   default?: string;
   template_types: string[];
+  __namespace: string;
   config?: {
     required?: boolean;
   };
@@ -58,7 +59,7 @@ const build = {
 
     return cache.build(
       new GraphQLObjectType<BlocksField>({
-        name: typename(field),
+        name: `${field.__namespace}${field.label}BlocksField`,
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -66,7 +67,7 @@ const build = {
           templates: {
             type: cache.build(
               new GraphQLObjectType({
-                name: `${typename(field)}Templates`,
+                name: `${field.__namespace}${field.label}BlocksFieldTemplates`,
                 fields: templateForms,
               })
             ),
@@ -147,7 +148,7 @@ const resolve = {
       ...field,
       component: "blocks" as const,
       templates,
-      __typename: typename(field),
+      __typename: `${field.__namespace}${field.label}BlocksField`,
     };
   },
 
@@ -184,13 +185,6 @@ function assertIsBlock(value: unknown): asserts value is BlockValue[] {
   );
   schema.validateSync(value);
 }
-
-const typename = (field: BlocksField) => {
-  const name = `Blocks${field.template_types
-    .map((name) => friendlyName(name))
-    .join("")}`;
-  return name;
-};
 
 export const blocks = {
   resolve,

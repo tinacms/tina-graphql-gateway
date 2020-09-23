@@ -4,37 +4,37 @@ query DocumentQuery($path: String!) {
     ... on Post {
       form {
         fields {
-          ... on TextareaFormField {
+          ... on TextareaField {
             name
             label
             component
             description
           }
-          ... on SelectFormField {
+          ... on SelectField {
             name
             label
             component
             options
           }
-          ... on BlocksSectionField {
+          ... on PostSectionsBlocksField {
             name
             label
             component
             templates {
               sectionTemplateFields {
                 fields {
-                  ... on TextareaFormField {
+                  ... on TextareaField {
                     name
                     label
                     component
                     description
                   }
-                  ... on FieldGroupFormField {
+                  ... on SectionCtaGroupField {
                     name
                     label
                     component
                     fields {
-                      ... on TextareaFormField {
+                      ... on TextareaField {
                         name
                         label
                         component
@@ -42,18 +42,18 @@ query DocumentQuery($path: String!) {
                       }
                     }
                   }
-                  ... on ListFormField {
+                  ... on ListField {
                     name
                     label
                     component
                     field {
-                      ... on SelectFormField {
+                      ... on SelectField {
                         name
                         label
                         component
                         options
                       }
-                      ... on TextareaFormField {
+                      ... on TextareaField {
                         name
                         label
                         component
@@ -97,30 +97,30 @@ query DocumentQuery($path: String!) {
     ... on Author {
       form {
         fields {
-          ... on TextareaFormField {
+          ... on TextareaField {
             name
             label
             component
             description
           }
-          ... on SelectFormField {
+          ... on SelectField {
             name
             label
             component
             options
           }
-          ... on ListFormField {
+          ... on ListField {
             name
             label
             component
             field {
-              ... on SelectFormField {
+              ... on SelectField {
                 name
                 label
                 component
                 options
               }
-              ... on TextareaFormField {
+              ... on TextareaField {
                 name
                 label
                 component
@@ -128,12 +128,12 @@ query DocumentQuery($path: String!) {
               }
             }
           }
-          ... on FieldGroupListFormField {
+          ... on AuthorAccoladesGroupListField {
             name
             label
             component
             fields {
-              ... on TextareaFormField {
+              ... on TextareaField {
                 name
                 label
                 component

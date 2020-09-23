@@ -11,6 +11,7 @@ export type FieldGroupListField = {
   type: "field_group_list";
   default?: string;
   fields: Field[];
+  __namespace: string;
   config?: {
     required?: boolean;
   };
@@ -37,7 +38,7 @@ const build = {
   }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "FieldGroupListFormField",
+        name: `${field.__namespace}${field.label}GroupListField`,
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },

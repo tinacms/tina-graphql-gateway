@@ -10,6 +10,7 @@ export type TextareaField = {
   config?: {
     required?: boolean;
   };
+  __namespace: string;
 };
 
 export type TinaTextareaField = {
@@ -20,14 +21,14 @@ export type TinaTextareaField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TextareaFormField";
+  __typename: "TextareaField";
 };
 
 const build = {
   field: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "TextareaFormField",
+        name: "TextareaField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -51,7 +52,7 @@ const resolve = {
       config: rest.config || {
         required: false,
       },
-      __typename: "TextareaFormField",
+      __typename: "TextareaField",
     };
   },
   value: async ({

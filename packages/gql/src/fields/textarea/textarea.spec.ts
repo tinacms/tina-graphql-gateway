@@ -6,11 +6,16 @@ describe("Text", () => {
     test("builds the expected field schema", () => {
       const result = textarea.build.field({
         cache: testCache({}),
-        field: { name: "name", label: "Name", type: "textarea" as const },
+        field: {
+          name: "name",
+          label: "Name",
+          type: "textarea" as const,
+          __namespace: "SomeTemplate",
+        },
       });
 
       assertType(result).matches(gql`
-        type TextareaFormField {
+        type TextareaField {
           name: String
           label: String
           component: String
