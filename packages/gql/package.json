@@ -7,7 +7,7 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/**/*.ts",
+    "build": "yarn tsup src/index.ts --esm",
     "watch": "yarn tsup src/**/*.ts --watch",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn node dist/index.js",
