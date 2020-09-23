@@ -110,7 +110,6 @@ type AccoladesData {
   description: String
 }
 
-"""This is a test"""
 union sectionDataUnion = SectionData
 
 type SectionData {

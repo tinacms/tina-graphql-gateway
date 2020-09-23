@@ -9,7 +9,7 @@ describe("Select", () => {
         field: {
           name: "role",
           label: "role",
-          type: "select" as const,
+          type: "select",
           config: {
             options: ["CEO", "CTO", "COO", "CFO"],
             source: { type: "simple" },

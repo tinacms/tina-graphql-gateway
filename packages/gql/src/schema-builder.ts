@@ -13,8 +13,8 @@ import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
 import { blocks } from "./fields/blocks";
-import { fieldGroup, FieldGroupField } from "./fields/field-group";
-import { fieldGroupList, FieldGroupListField } from "./fields/field-group-list";
+import { fieldGroup } from "./fields/field-group";
+import { fieldGroupList } from "./fields/field-group-list";
 import { list } from "./fields/list";
 import type { GraphQLFieldConfigMap } from "graphql";
 import type { TemplateData, WithFields } from "./types";
@@ -223,49 +223,6 @@ const buildDocumentTypes = async ({
   );
 };
 
-function isWithFields(t: TemplateData | Field): t is WithFields {
-  return t.hasOwnProperty("fields");
-}
-
-const namespaceFields = (template: TemplateData): TemplateData => {
-  return {
-    ...template,
-    fields: template.fields.map((f) => {
-      if (isWithFields(f)) {
-        return {
-          ...namespaceSubFields(f, template.label),
-        };
-      } else {
-        return {
-          ...f,
-          __namespace: `${template.label}`,
-        };
-      }
-    }),
-  };
-};
-const namespaceSubFields = (
-  template: FieldGroupField | FieldGroupListField,
-  parentNamespace: string
-): Field => {
-  return {
-    ...template,
-    fields: template.fields.map((f) => {
-      if (isWithFields(f)) {
-        return {
-          ...namespaceSubFields(f, template.label),
-          __namespace: `${parentNamespace}${template.label}`,
-        };
-      } else {
-        return {
-          ...f,
-        };
-      }
-    }),
-    __namespace: template.label,
-  };
-};
-
 /**
  * Same as BuildDocumentUnion except that it only builds the `data` portion, used
  * for block children
@@ -296,7 +253,6 @@ const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
   return cache.build(
     new GraphQLUnionType({
       name: `${templates.join("")}DataUnion`,
-      description: "This is a test",
       types,
     })
   );
