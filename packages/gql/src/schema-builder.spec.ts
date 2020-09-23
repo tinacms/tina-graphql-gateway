@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { schemaBuilder } from "./schema-builder";
-import { FilesystemDataSource } from "./datasources/filesystem-manager";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 import { print, printSchema } from "graphql";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 
@@ -9,7 +9,7 @@ describe("Schema builder", () => {
   test("does it", async () => {
     const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
 
-    const datasource = FilesystemDataSource(projectRoot);
+    const datasource = new FileSystemManager(projectRoot);
     const schema = await schemaBuilder({ datasource });
 
     // Writing these for now, useful for debugging

@@ -1,0 +1,92 @@
+{
+  "data": {
+    "document": {
+      "__typename": "Post",
+      "form": {
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "component": "textarea",
+            "description": "The name of your post, keep it short!"
+          },
+          {
+            "name": "author",
+            "label": "Author",
+            "component": "select",
+            "options": [
+              "authors/homer.md"
+            ]
+          },
+          {
+            "name": "sections",
+            "label": "Sections",
+            "component": "blocks",
+            "templates": {
+              "sectionTemplateFields": {
+                "fields": [
+                  {
+                    "name": "description",
+                    "label": "Description",
+                    "component": "textarea",
+                    "description": null
+                  },
+                  {
+                    "name": "cta",
+                    "label": "Cta",
+                    "component": "group",
+                    "fields": [
+                      {
+                        "name": "header",
+                        "label": "Header",
+                        "component": "textarea",
+                        "description": null
+                      }
+                    ]
+                  },
+                  {
+                    "name": "authors",
+                    "label": "Authors",
+                    "component": "list",
+                    "field": {
+                      "name": "authors",
+                      "label": "Authors",
+                      "component": "select",
+                      "options": [
+                        "authors/homer.md"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "path": "posts/1.md",
+      "data": {
+        "title": "Some Title",
+        "author": {
+          "document": {
+            "path": "authors/homer.md"
+          }
+        },
+        "sections": [
+          {
+            "description": "Some textarea description",
+            "cta": {
+              "header": "Some CTA"
+            },
+            "authors": {
+              "documents": [
+                {
+                  "path": "authors/homer.md"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

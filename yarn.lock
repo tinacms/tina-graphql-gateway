@@ -2340,6 +2340,7 @@ __metadata:
     jest-diff: ^26.4.2
     jest-matcher-utils: ^26.4.2
     lodash: ^4.17.20
+    nodemon: ^2.0.4
     ts-jest: ^26.1.2
     tslib: ^1.11.1
     tsup: ^3.6.1
@@ -18487,7 +18488,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nodemon@npm:^2.0.2":
+"nodemon@npm:^2.0.2, nodemon@npm:^2.0.4":
   version: 2.0.4
   resolution: "nodemon@npm:2.0.4"
   dependencies:
