@@ -1,82 +1,24 @@
 import React from "react";
 import GraphiQL from "graphiql";
+// @ts-ignore no types provided
 import GraphiQLExplorer from "graphiql-explorer";
-import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
-import {
-  getIntrospectionQuery,
-  buildClientSchema,
-  parse,
-  print,
-} from "graphql";
+import { queryBuilder } from "@forestryio/graphql-helpers";
+import { Link, useParams } from "react-router-dom";
+import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 
-type ParameterType = {
-  variables?: any;
-  operationName?: any;
-  query?: any;
-};
-const parameters: ParameterType = {};
-function locationQuery(params) {
-  return (
-    `?` +
-    Object.keys(params)
-      .map(function (key) {
-        return encodeURIComponent(key) + `=` + encodeURIComponent(params[key]);
-      })
-      .join(`&`)
-  );
-}
-
-function onEditVariables(newVariables) {
-  parameters.variables = newVariables;
-  updateURL();
-}
-function onEditOperationName(newOperationName) {
-  parameters.operationName = newOperationName;
-  updateURL();
-}
-function updateURL() {
-  // history.replaceState(null, null, locationQuery(parameters));
-}
-
-const DEFAULT_QUERY = `query MyQuery($path: String) {
-  document(path: $path) {
-    ... on Post {
-      path
-    }
-  }
-}
-`;
-
-const DEFAULT_VARIABLES = parameters.variables || undefined;
-
-const QUERY_EXAMPLE_FALLBACK = `#     {
-#       document(path: $path) {
-#         __typename
-#       }
-#     }`;
-
-function generateDefaultFallbackQuery(queryExample) {
-  return `query MyQuery($path: String) {
-    document(path: $path) {
-      ... on Post {
-        path
-      }
-    }
-  }
-  `;
-}
-
-export class Explorer extends React.Component {
-  state = {
+export const Explorer = () => {
+  let { project } = useParams();
+  const [state, setState] = React.useState({
     schema: null,
-    query: DEFAULT_QUERY,
-    variables: DEFAULT_VARIABLES,
+    query: null,
+    variables: JSON.stringify({ path: "posts/1.md" }, null, 2),
     explorerIsOpen: true,
     codeExporterIsOpen: false,
-  };
+  });
+  const [projects, setProjects] = React.useState([]);
 
-  graphQLFetcher = (graphQLParams) => {
-    const url = `http://localhost:4000/${this.props.path}`;
+  const graphQLFetcher = (graphQLParams: object) => {
+    const url = `http://localhost:4000/${project}`;
     return fetch(url, {
       method: `post`,
       headers: {
@@ -89,237 +31,100 @@ export class Explorer extends React.Component {
       return response.json();
     });
   };
+  const _graphiql = React.useRef();
 
-  componentDidMount() {
-    this.graphQLFetcher({
+  React.useEffect(() => {
+    const listProjects = async () => {
+      const result = await fetch(`http://localhost:4000/list-projects`);
+      const json = await result.json();
+      setProjects(json);
+    };
+    listProjects();
+  }, []);
+  React.useEffect(() => {
+    graphQLFetcher({
       query: getIntrospectionQuery(),
     }).then((result) => {
-      const newState = { schema: buildClientSchema(result.data) };
+      const newState: { schema: any; query: null | string } = {
+        schema: buildClientSchema(result.data),
+        query: "",
+      };
 
-      if (this.state.query === null) {
-        if (!newState.query) {
-          newState.query = print(queryBuilder(buildClientSchema(result)));
-        }
+      if (!newState.query) {
+        const clientSchema = buildClientSchema(result.data);
+        const query = queryBuilder(clientSchema);
+        // @ts-ignore for some reason query builder shows no return type
+        newState.query = print(query);
       }
 
-      this.setState(newState);
+      setState({ ...state, ...newState });
     });
+  }, [project]);
 
-    const editor = this._graphiql.getQueryEditor();
-    editor.setOption(`extraKeys`, {
-      ...(editor.options.extraKeys || {}),
-      "Shift-Alt-LeftClick": this._handleInspectOperation,
-    });
-  }
-
-  _handleInspectOperation = (cm, mousePos) => {
-    const parsedQuery = parse(this.state.query || ``);
-
-    if (!parsedQuery) {
-      console.error(`Couldn't parse query document`);
-      return null;
-    }
-
-    const token = cm.getTokenAt(mousePos);
-    const start = { line: mousePos.line, ch: token.start };
-    const end = { line: mousePos.line, ch: token.end };
-    const relevantMousePos = {
-      start: cm.indexFromPos(start),
-      end: cm.indexFromPos(end),
-    };
-
-    const position = relevantMousePos;
-
-    const def = parsedQuery.definitions.find((definition) => {
-      if (!definition.loc) {
-        console.log(`Missing location information for definition`);
-        return false;
-      }
-
-      const { start, end } = definition.loc;
-      return start <= position.start && end >= position.end;
-    });
-
-    if (!def) {
-      console.error(
-        `Unable to find definition corresponding to mouse position`
-      );
-      return null;
-    }
-
-    const operationKind =
-      def.kind === `OperationDefinition`
-        ? def.operation
-        : def.kind === `FragmentDefinition`
-        ? `fragment`
-        : `unknown`;
-
-    const operationName =
-      def.kind === `OperationDefinition` && !!def.name
-        ? def.name.value
-        : def.kind === `FragmentDefinition` && !!def.name
-        ? def.name.value
-        : `unknown`;
-
-    const selector = `.graphiql-explorer-root #${operationKind}-${operationName}`;
-
-    const el = document.querySelector(selector);
-    if (el) {
-      el.scrollIntoView();
-      return true;
-    }
-
-    return false;
+  const _handleEditQuery = (query: any) => {
+    setState({ ...state, query });
   };
 
-  _handleEditQuery = (query) => {
-    parameters.query = query;
-    updateURL();
-    this.setState({ query });
+  const _handleToggleExplorer = () => {
+    setState({ ...state, explorerIsOpen: !state.explorerIsOpen });
   };
 
-  _handleToggleExplorer = () => {
-    const newExplorerIsOpen = !this.state.explorerIsOpen;
-    // @ts-ignore
-    parameters.explorerIsOpen = newExplorerIsOpen;
-    updateURL();
-    this.setState({ explorerIsOpen: newExplorerIsOpen });
-  };
+  const { query, variables, schema } = state;
 
-  _handleToggleExporter = () => {
-    const newCodeExporterIsOpen = !this.state.codeExporterIsOpen;
-    // @ts-ignore
-    parameters.codeExporterIsOpen = newCodeExporterIsOpen;
-    updateURL();
-    this.setState({ codeExporterIsOpen: newCodeExporterIsOpen });
-  };
-
-  render() {
-    const { query, variables, schema, codeExporterIsOpen } = this.state;
-    return (
-      <div id="root" className="graphiql-container">
-        <React.Fragment>
-          <GraphiQLExplorer
-            schema={schema}
-            query={query}
-            onEdit={this._handleEditQuery}
-            explorerIsOpen={this.state.explorerIsOpen}
-            onToggleExplorer={this._handleToggleExplorer}
-            onRunOperation={(operationName) =>
-              this._graphiql.handleRunQuery(operationName)
-            }
-          />
-          <GraphiQL
-            ref={(ref) => (this._graphiql = ref)}
-            fetcher={this.graphQLFetcher}
-            schema={schema}
-            query={query}
-            variables={variables}
-            onEditQuery={this._handleEditQuery}
-            onEditVariables={onEditVariables}
-            onEditOperationName={onEditOperationName}
-          >
-            <GraphiQL.Toolbar>
-              <GraphiQL.Button
-                onClick={() => this._graphiql.handlePrettifyQuery()}
-                label="Prettify"
-                title="Prettify Query (Shift-Ctrl-P)"
-              />
-              <GraphiQL.Button
-                onClick={() => this._graphiql.handleToggleHistory()}
-                label="History"
-                title="Show History"
-              />
-              <GraphiQL.Button
-                onClick={this._handleToggleExplorer}
-                label="Explorer"
-                title="Toggle Explorer"
-              />
-              <GraphiQL.Button
-                onClick={this._handleToggleExporter}
-                label="Code Exporter"
-                title="Toggle Code Exporter"
-              />
-            </GraphiQL.Toolbar>
-          </GraphiQL>
-          {/* {codeExporter} */}
-        </React.Fragment>
-      </div>
-    );
-  }
-}
-
-// const App2 = ({ url }: { url: string }) => {
-//   const [codeExporterIsOpen, setCodeExporterIsOpen] = React.useState(false);
-//   const [explorerIsOpen, setExplorerIsOpen] = React.useState(false);
-//   const [query, setQuery] = React.useState()
-//   const graphiqlRef = React.useRef()
-
-//   const _handleToggleExporter = () => {
-//     setCodeExporterIsOpen(!codeExporterIsOpen);
-//   };
-//   const _handleToggleExplorer = () => {
-//     setExplorerIsOpen(!explorerIsOpen);
-//   };
-
-//   const { variables, schema } = this.state;
-//   const codeExporter = codeExporterIsOpen ? (
-//     <CodeExporter
-//       hideCodeExporter={_handleToggleExporter}
-//       snippets={snippets}
-//       query={query}
-//       codeMirrorTheme="default"
-//     />
-//   ) : null;
-
-//   return (
-//     <div id="root" className="graphiql-container">
-//       <React.Fragment>
-//         <GraphiQLExplorer
-//           schema={schema}
-//           query={query}
-//           onEdit={this._handleEditQuery}
-//           explorerIsOpen={explorerIsOpen}
-//           onToggleExplorer={_handleToggleExplorer}
-//           onRunOperation={(operationName) =>
-//             this._graphiql.handleRunQuery(operationName)
-//           }
-//         />
-//         <GraphiQL
-//           ref={(ref) => (graphiqlRef = ref)}
-//           fetcher={this.graphQLFetcher}
-//           schema={schema}
-//           query={query}
-//           variables={variables}
-//           onEditQuery={this._handleEditQuery}
-//           onEditVariables={onEditVariables}
-//           onEditOperationName={onEditOperationName}
-//         >
-//           <GraphiQL.Toolbar>
-//             <GraphiQL.Button
-//               onClick={() => this._graphiql.handlePrettifyQuery()}
-//               label="Prettify"
-//               title="Prettify Query (Shift-Ctrl-P)"
-//             />
-//             <GraphiQL.Button
-//               onClick={() => this._graphiql.handleToggleHistory()}
-//               label="History"
-//               title="Show History"
-//             />
-//             <GraphiQL.Button
-//               onClick={this._handleToggleExplorer}
-//               label="Explorer"
-//               title="Toggle Explorer"
-//             />
-//             <GraphiQL.Button
-//               onClick={this._handleToggleExporter}
-//               label="Code Exporter"
-//               title="Toggle Code Exporter"
-//             />
-//           </GraphiQL.Toolbar>
-//         </GraphiQL>
-//         {codeExporter}
-//       </React.Fragment>
-//     </div>
-//   );
-// };
+  return (
+    <div id="root" className="graphiql-container">
+      <React.Fragment>
+        <GraphiQLExplorer
+          schema={schema}
+          query={query || ""}
+          onEdit={_handleEditQuery}
+          explorerIsOpen={state.explorerIsOpen}
+          onToggleExplorer={_handleToggleExplorer}
+          onRunOperation={(operationName: any) =>
+            _graphiql.handleRunQuery(operationName)
+          }
+        />
+        {/* @ts-ignore */}
+        <GraphiQL
+          ref={_graphiql}
+          fetcher={graphQLFetcher}
+          schema={schema}
+          query={query}
+          variables={variables}
+        >
+          <GraphiQL.Toolbar>
+            {projects.map((project) => {
+              return (
+                <Link to={`/${project.value}`}>
+                  {/* @ts-ignore */}
+                  <GraphiQL.Button key={project.value} label={project.label} />
+                </Link>
+              );
+            })}
+            {/* @ts-ignore */}
+            <GraphiQL.Button
+              key="prettifty"
+              onClick={() => _graphiql.handlePrettifyQuery()}
+              label="Prettify"
+              title="Prettify Query (Shift-Ctrl-P)"
+            />
+            {/* @ts-ignore */}
+            <GraphiQL.Button
+              key="history"
+              onClick={() => _graphiql.handleToggleHistory()}
+              label="History"
+              title="Show History"
+            />
+            {/* @ts-ignore */}
+            <GraphiQL.Button
+              key="explorer"
+              onClick={_handleToggleExplorer}
+              label="Explorer"
+              title="Toggle Explorer"
+            />
+          </GraphiQL.Toolbar>
+        </GraphiQL>
+      </React.Fragment>
+    </div>
+  );
+};
