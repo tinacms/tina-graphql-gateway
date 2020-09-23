@@ -20,7 +20,7 @@ export type TinaFieldGroupListField = {
   label: string;
   name: string;
   component: "group-list";
-  __typename: "FieldGroupListFormField";
+  __typename: string;
   default?: string;
   fields: TinaField[];
   config?: {
@@ -86,7 +86,7 @@ const resolve = {
       ...rest,
       component: "group-list",
       fields,
-      __typename: "FieldGroupListFormField",
+      __typename: `${field.__namespace}${field.label}GroupListField`,
     };
   },
   value: async ({

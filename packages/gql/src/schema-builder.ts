@@ -133,7 +133,7 @@ const buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion = async (
   return cache.build(
     GraphQLList(
       new GraphQLUnionType({
-        name: `${template.__namespace}${template.label}FormFields`,
+        name: `${template.__namespace || ""}${template.label}FormFields`,
         types: await buildTemplateFormFields(cache, template),
       })
     )

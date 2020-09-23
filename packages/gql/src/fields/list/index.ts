@@ -82,7 +82,7 @@ const build = {
                 ),
                 cache.build(
                   new GraphQLObjectType({
-                    name: "TextareaField",
+                    name: "TextField",
                     fields: {
                       component: { type: GraphQLString },
                     },
