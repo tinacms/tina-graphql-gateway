@@ -9,7 +9,7 @@ describe("List", () => {
         field: {
           name: "cta",
           label: "Cta",
-          type: "list" as const,
+          type: "list",
           config: {
             use_select: false,
           },

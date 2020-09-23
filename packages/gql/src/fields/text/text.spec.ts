@@ -9,7 +9,7 @@ describe("Text", () => {
         field: {
           name: "name",
           label: "Name",
-          type: "text" as const,
+          type: "text",
           __namespace: "SomeTemplate",
         },
       });

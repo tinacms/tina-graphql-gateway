@@ -10,12 +10,12 @@ describe("Field Group List", () => {
           name: "cta",
           label: "Cta",
           __namespace: "Somenamespace",
-          type: "field_group_list" as const,
+          type: "field_group_list",
           fields: [
             {
               name: "header",
               label: "Header",
-              type: "textarea" as const,
+              type: "textarea",
               __namespace: "SomenamespaceCta",
             },
           ],
