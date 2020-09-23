@@ -53,7 +53,7 @@ export type TinaListField = {
   name: string;
   component: "list";
   field: TinaField;
-  __typename: "ListFormField";
+  __typename: "ListField";
 };
 
 const build = {
@@ -61,7 +61,7 @@ const build = {
   field: ({ cache, field }: { cache: Cache; field: ListField }) => {
     return cache.build(
       new GraphQLObjectType({
-        name: "ListFormField",
+        name: "ListField",
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
@@ -73,7 +73,7 @@ const build = {
                 // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
                 cache.build(
                   new GraphQLObjectType({
-                    name: "SelectFormField",
+                    name: "SelectField",
                     fields: {
                       component: { type: GraphQLString },
                       options: { type: GraphQLList(GraphQLString) },
@@ -82,7 +82,7 @@ const build = {
                 ),
                 cache.build(
                   new GraphQLObjectType({
-                    name: "TextareaFormField",
+                    name: "TextareaField",
                     fields: {
                       component: { type: GraphQLString },
                     },
@@ -163,7 +163,7 @@ const resolve = {
       name: "",
       label: "Text",
       component: "text",
-      __typename: "TextFormField" as const,
+      __typename: "TextField" as const,
     };
     let list;
     switch (listTypeIdentifier) {
@@ -177,7 +177,7 @@ const resolve = {
           ...list,
           component: "select" as const,
           type: "select" as const,
-          __typename: "SelectFormField",
+          __typename: "SelectField",
         };
         fieldComponent = await select.resolve.field({
           datasource,
@@ -194,7 +194,7 @@ const resolve = {
       ...rest,
       component: "list",
       field: fieldComponent,
-      __typename: "ListFormField",
+      __typename: "ListField",
     };
   },
   value: async ({

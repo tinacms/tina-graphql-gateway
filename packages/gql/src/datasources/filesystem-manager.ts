@@ -3,8 +3,11 @@ import fs from "fs";
 import _ from "lodash";
 import matter from "gray-matter";
 import { byTypeWorks } from "../types";
-import type { Settings, Template, TemplateData } from "../types";
+import type { Settings, Template, TemplateData, WithFields } from "../types";
 import type { DataSource } from "./datasource";
+import type { Field } from "../fields";
+import { FieldGroupField } from "../fields/field-group";
+import { FieldGroupListField } from "../fields/field-group-list";
 
 export const FilesystemDataSource = (projectRoot: string): DataSource => {
   return {
@@ -47,7 +50,7 @@ export const FilesystemDataSource = (projectRoot: string): DataSource => {
             `${templateBasename}.yml`
           );
           const { data } = await readFile<Template>(fullPath);
-          return data;
+          return namespaceFields(data);
         })
       );
     },
@@ -83,8 +86,9 @@ export const FilesystemDataSource = (projectRoot: string): DataSource => {
       if (!template) {
         throw new Error(`Unable to find template for document ${args.path}`);
       }
+      // console.log(namespaceFields(template));
 
-      return template;
+      return namespaceFields(template);
     },
     getTemplate: async ({ slug }) => {
       const fullPath = p.join(projectRoot, ".tina/front_matter/templates");
@@ -97,7 +101,7 @@ export const FilesystemDataSource = (projectRoot: string): DataSource => {
       }
       const { data } = await readFile<Template>(p.join(fullPath, template));
 
-      return data;
+      return namespaceFields(data);
     },
   };
 };
@@ -121,4 +125,47 @@ export const parseMatter = async <T>(data: Buffer): Promise<T> => {
 
   // @ts-ignore
   return res;
+};
+
+function isWithFields(t: TemplateData | Field): t is WithFields {
+  return t.hasOwnProperty("fields");
+}
+
+const namespaceFields = (template: TemplateData): TemplateData => {
+  return {
+    ...template,
+    fields: template.fields.map((f) => {
+      if (isWithFields(f)) {
+        return {
+          ...namespaceSubFields(f, template.label),
+        };
+      } else {
+        return {
+          ...f,
+          __namespace: `${template.label}`,
+        };
+      }
+    }),
+  };
+};
+const namespaceSubFields = (
+  template: FieldGroupField | FieldGroupListField,
+  parentNamespace: string
+): Field => {
+  return {
+    ...template,
+    fields: template.fields.map((f) => {
+      if (isWithFields(f)) {
+        return {
+          ...namespaceSubFields(f, template.label),
+          __namespace: `${parentNamespace}${template.label}`,
+        };
+      } else {
+        return {
+          ...f,
+        };
+      }
+    }),
+    __namespace: parentNamespace,
+  };
 };

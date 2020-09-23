@@ -47,9 +47,14 @@ export const assertNoTypeCollisions = (
   const names = types.map((t) => getNamedType(t).toString());
   const isArrayUnique = (arr: string[]) =>
     Array.isArray(arr) && new Set(arr).size === arr.length; // add function to check that array is unique.
-  expect(isArrayUnique(names)).toBeTruthy();
+  try {
+    expect(isArrayUnique(names)).toBeTruthy();
+  } catch (e) {
+    // console.error("Types are equal");
+    throw new Error(`Unable to create schema with multiple identical types`);
+  }
   // Useful to grab a snapshot
-  console.log(printSchema(schema));
+  // console.log(printSchema(schema));
 };
 
 /**

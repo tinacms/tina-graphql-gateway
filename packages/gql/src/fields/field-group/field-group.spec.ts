@@ -15,27 +15,29 @@ describe("Field Group", () => {
           name: "cta",
           label: "Cta",
           type: "field_group" as const,
+          __namespace: "SomeTemplate",
           fields: [
             {
               name: "header",
               label: "Header",
               type: "textarea" as const,
+              __namespace: "SomeTemplateCta",
             },
           ],
         },
       });
 
       assertType(result).matches(gql`
-        type FieldGroupFormField {
+        type SomenamespaceCtaGroupListField {
           name: String
           label: String
           component: String
           fields: [CtaFormFields]
         }
 
-        union CtaFormFields = TextareaFormField
+        union CtaFormFields = TextareaField
 
-        type TextareaFormField {
+        type TextareaField {
           name: String
           label: String
           component: String
@@ -43,18 +45,20 @@ describe("Field Group", () => {
         }
       `);
     });
-    test.skip("multiple definitions don't collide", async () => {
+    test.only("multiple definitions don't collide", async () => {
       const group1 = await fieldGroup.build.field({
         cache: testCache({}),
         field: {
           name: "cta",
           label: "Cta",
           type: "field_group" as const,
+          __namespace: "Somenamespace",
           fields: [
             {
               name: "header",
               label: "Header",
               type: "textarea" as const,
+              __namespace: "SomenamespaceCta",
             },
           ],
         },
@@ -64,12 +68,14 @@ describe("Field Group", () => {
         field: {
           name: "cta",
           label: "Cta",
-          type: "field_group" as const,
+          type: "field_group",
+          __namespace: "Somenamespace2",
           fields: [
             {
-              name: "description",
-              label: "Description",
-              type: "text" as const,
+              name: "title",
+              label: "Title",
+              type: "textarea",
+              __namespace: "Somenamespace2Cta",
             },
           ],
         },

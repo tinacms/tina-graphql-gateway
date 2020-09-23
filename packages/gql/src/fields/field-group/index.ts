@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
+import { GraphQLString, GraphQLObjectType, getNamedType } from "graphql";
 import * as yup from "yup";
 import type {
   resolveFieldType,
@@ -18,12 +18,13 @@ export type FieldGroupField = {
   config?: {
     required?: boolean;
   };
+  __namespace: string;
 };
 export type TinaFieldGroupField = {
   label: string;
   name: string;
   component: "group";
-  __typename: "FieldGroupFormField";
+  __typename: string;
   default?: string;
   fields: TinaField[];
   config?: {
@@ -36,18 +37,19 @@ export type FieldGroupValue = {
 
 const build = {
   field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
+    const union = await cache.builder.buildTemplateFormFieldsUnion(
+      cache,
+      field
+    );
     return cache.build(
       new GraphQLObjectType({
-        name: "FieldGroupFormField",
+        name: `${field.__namespace}${field.label}GroupField`,
         fields: {
           name: { type: GraphQLString },
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           fields: {
-            type: await cache.builder.buildTemplateFormFieldsUnion(
-              cache,
-              field
-            ),
+            type: union,
           },
         },
       })
@@ -78,7 +80,7 @@ const resolve = {
       ...rest,
       component: "group",
       fields,
-      __typename: "FieldGroupFormField",
+      __typename: `${field.__namespace}${field.label}GroupField`,
     };
   },
   value: async ({
