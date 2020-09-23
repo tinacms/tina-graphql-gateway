@@ -1,9 +1,6 @@
 import express from "express";
 import path from "path";
-import {
-  FilesystemDataSource,
-  FileSystemManager,
-} from "./datasources/filesystem-manager";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 import { schemaBuilder } from "./schema-builder";
 import { graphqlInit } from "./graphql";
 // @ts-ignore
@@ -33,6 +30,14 @@ wss.on("connection", (ws: WebSocket) => {
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.get("/list-projects", async (req, res) => {
+  return res.json([
+    // TODO: look up fixtures and provide them here for testing
+    { label: "Project 1", value: "project1" },
+    { label: "Project 2", value: "project2" },
+  ]);
+});
 
 app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;

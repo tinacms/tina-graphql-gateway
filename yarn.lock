@@ -2353,6 +2353,82 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@forestryio/graphiql@workspace:apps/graphiql":
+  version: 0.0.0-use.local
+  resolution: "@forestryio/graphiql@workspace:apps/graphiql"
+  dependencies:
+    "@babel/core": 7.9.0
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
+    "@svgr/webpack": 4.3.3
+    "@testing-library/jest-dom": ^4.2.4
+    "@testing-library/react": ^9.3.2
+    "@testing-library/user-event": ^7.1.2
+    "@types/jest": ^24.0.0
+    "@types/node": ^12.0.0
+    "@types/react": ^16.9.0
+    "@types/react-dom": ^16.9.0
+    "@types/react-router-dom": ^5.1.5
+    "@typescript-eslint/eslint-plugin": ^2.10.0
+    "@typescript-eslint/parser": ^2.10.0
+    babel-eslint: 10.1.0
+    babel-jest: ^24.9.0
+    babel-loader: 8.1.0
+    babel-plugin-named-asset-import: ^0.3.6
+    babel-preset-react-app: ^9.1.2
+    camelcase: ^5.3.1
+    case-sensitive-paths-webpack-plugin: 2.3.0
+    codemirror: ^5.57.0
+    css-loader: 3.4.2
+    dotenv: 8.2.0
+    dotenv-expand: 5.1.0
+    eslint: ^6.6.0
+    eslint-config-react-app: ^5.2.1
+    eslint-loader: 3.0.3
+    eslint-plugin-flowtype: 4.6.0
+    eslint-plugin-import: 2.20.1
+    eslint-plugin-jsx-a11y: 6.2.3
+    eslint-plugin-react: 7.19.0
+    eslint-plugin-react-hooks: ^1.6.1
+    file-loader: 4.3.0
+    fs-extra: ^8.1.0
+    graphiql: ^1.0.4
+    graphiql-explorer: ^0.6.2
+    graphql: ^15.3.0
+    html-webpack-plugin: 4.0.0-beta.11
+    identity-obj-proxy: 3.0.0
+    jest: 24.9.0
+    jest-environment-jsdom-fourteen: 1.0.1
+    jest-resolve: 24.9.0
+    jest-watch-typeahead: 0.4.2
+    mini-css-extract-plugin: 0.9.0
+    optimize-css-assets-webpack-plugin: 5.0.3
+    pnp-webpack-plugin: 1.6.4
+    postcss-flexbugs-fixes: 4.1.0
+    postcss-loader: 3.0.0
+    postcss-normalize: 8.0.1
+    postcss-preset-env: 6.7.0
+    postcss-safe-parser: 4.0.1
+    react: ^16.13.1
+    react-app-polyfill: ^1.0.6
+    react-dev-utils: ^10.2.1
+    react-dom: ^16.13.1
+    react-router-dom: ^5.2.0
+    resolve: 1.15.0
+    resolve-url-loader: 3.1.1
+    sass-loader: 8.0.2
+    semver: 6.3.0
+    style-loader: 0.23.1
+    terser-webpack-plugin: 2.3.8
+    ts-pnp: 1.1.6
+    typescript: ~3.7.2
+    url-loader: 2.3.0
+    webpack: 4.42.0
+    webpack-dev-server: 3.11.0
+    webpack-manifest-plugin: 2.2.0
+    workbox-webpack-plugin: 4.3.1
+  languageName: unknown
+  linkType: soft
+
 "@forestryio/graphql-helpers@workspace:packages/graphql-helpers":
   version: 0.0.0-use.local
   resolution: "@forestryio/graphql-helpers@workspace:packages/graphql-helpers"
@@ -12310,15 +12386,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-fsevents@2.1.2:
-  version: 2.1.2
-  resolution: "fsevents@npm:2.1.2"
-  dependencies:
-    node-gyp: latest
-  checksum: 8f61ef784058aa410def121afcf20014fbb845c678c04e43fe1fd1edec6c469c5452343b4a49960d89e8a207955c8e9b37a229af7a8fc5b28658c9e0faabe086
-  languageName: node
-  linkType: hard
-
 fsevents@^1.2.7:
   version: 1.2.13
   resolution: "fsevents@npm:1.2.13"
@@ -12335,15 +12402,6 @@ fsevents@^1.2.7:
   dependencies:
     node-gyp: latest
   checksum: 8977781884d06c5bcb97b5f909efdce9683c925f2a0ce7e098d2cdffe2e0a0a50b1868547bb94dca75428c06535a4a70517a7bb3bb5a974d93bf9ffc067291eb
-  languageName: node
-  linkType: hard
-
-"fsevents@patch:fsevents@2.1.2#builtin<compat/fsevents>":
-  version: 2.1.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.1.2#builtin<compat/fsevents>::version=2.1.2&hash=495457"
-  dependencies:
-    node-gyp: latest
-  checksum: 1d1501fde92a2c1ff0a134fe2db97a10916ed83321c8604998441a2cab4f5343040cd60ba64a6a06e3e321778139178c4b4a565eaa05b9cf7e16b511cdf9dcab
   languageName: node
   linkType: hard
 
@@ -13003,31 +13061,6 @@ fsevents@^1.2.7:
   checksum: a1109389e9bfec50133ec19f582567cc82c2d370f87a34fa8a2a565191f48c4f71abadc030cb5a39360a67cc1e54024d32e1e40232366fa2b5d2c7c485cc33bd
   languageName: node
   linkType: hard
-
-"graphiql@workspace:apps/graphiql":
-  version: 0.0.0-use.local
-  resolution: "graphiql@workspace:apps/graphiql"
-  dependencies:
-    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
-    "@testing-library/jest-dom": ^4.2.4
-    "@testing-library/react": ^9.3.2
-    "@testing-library/user-event": ^7.1.2
-    "@types/jest": ^24.0.0
-    "@types/node": ^12.0.0
-    "@types/react": ^16.9.0
-    "@types/react-dom": ^16.9.0
-    "@types/react-router-dom": ^5.1.5
-    codemirror: ^5.57.0
-    graphiql: ^1.0.4
-    graphiql-explorer: ^0.6.2
-    graphql: ^15.3.0
-    react: ^16.13.1
-    react-dom: ^16.13.1
-    react-router-dom: ^5.2.0
-    react-scripts: 3.4.3
-    typescript: ~3.7.2
-  languageName: unknown
-  linkType: soft
 
 "graphql-import@npm:0.7.1":
   version: 0.7.1
@@ -21734,77 +21767,6 @@ fsevents@^1.2.7:
   peerDependencies:
     react: ">=15"
   checksum: 4437eaa9bab02d46a7d6ea4915731c1f31642d6c3e3f7b9f951f5c6a9a73f35d4deb43a2d6b4be85f27816a20de96c3b9a9239f4b7e9136742106794ad20e95c
-  languageName: node
-  linkType: hard
-
-"react-scripts@npm:3.4.3":
-  version: 3.4.3
-  resolution: "react-scripts@npm:3.4.3"
-  dependencies:
-    "@babel/core": 7.9.0
-    "@svgr/webpack": 4.3.3
-    "@typescript-eslint/eslint-plugin": ^2.10.0
-    "@typescript-eslint/parser": ^2.10.0
-    babel-eslint: 10.1.0
-    babel-jest: ^24.9.0
-    babel-loader: 8.1.0
-    babel-plugin-named-asset-import: ^0.3.6
-    babel-preset-react-app: ^9.1.2
-    camelcase: ^5.3.1
-    case-sensitive-paths-webpack-plugin: 2.3.0
-    css-loader: 3.4.2
-    dotenv: 8.2.0
-    dotenv-expand: 5.1.0
-    eslint: ^6.6.0
-    eslint-config-react-app: ^5.2.1
-    eslint-loader: 3.0.3
-    eslint-plugin-flowtype: 4.6.0
-    eslint-plugin-import: 2.20.1
-    eslint-plugin-jsx-a11y: 6.2.3
-    eslint-plugin-react: 7.19.0
-    eslint-plugin-react-hooks: ^1.6.1
-    file-loader: 4.3.0
-    fs-extra: ^8.1.0
-    fsevents: 2.1.2
-    html-webpack-plugin: 4.0.0-beta.11
-    identity-obj-proxy: 3.0.0
-    jest: 24.9.0
-    jest-environment-jsdom-fourteen: 1.0.1
-    jest-resolve: 24.9.0
-    jest-watch-typeahead: 0.4.2
-    mini-css-extract-plugin: 0.9.0
-    optimize-css-assets-webpack-plugin: 5.0.3
-    pnp-webpack-plugin: 1.6.4
-    postcss-flexbugs-fixes: 4.1.0
-    postcss-loader: 3.0.0
-    postcss-normalize: 8.0.1
-    postcss-preset-env: 6.7.0
-    postcss-safe-parser: 4.0.1
-    react-app-polyfill: ^1.0.6
-    react-dev-utils: ^10.2.1
-    resolve: 1.15.0
-    resolve-url-loader: 3.1.1
-    sass-loader: 8.0.2
-    semver: 6.3.0
-    style-loader: 0.23.1
-    terser-webpack-plugin: 2.3.8
-    ts-pnp: 1.1.6
-    url-loader: 2.3.0
-    webpack: 4.42.0
-    webpack-dev-server: 3.11.0
-    webpack-manifest-plugin: 2.2.0
-    workbox-webpack-plugin: 4.3.1
-  peerDependencies:
-    typescript: ^3.2.1
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  bin:
-    react-scripts: bin/react-scripts.js
-  checksum: 63a9f736e57caaf4d32edbf2b513973b2a620c919393727735b483b0198fa51b3749ec56c814bd0d5c8cc0c1643636f298a60ba6dd18d264bf6d32aa1c631d37
   languageName: node
   linkType: hard
 
