@@ -1,7 +1,7 @@
 import { list } from ".";
 import { assertType, testCache, gql } from "../test-util";
 
-describe("Field Group", () => {
+describe("List", () => {
   describe("builders", () => {
     test("builds the expected field schema", async () => {
       const result = await list.build.field({
@@ -17,21 +17,21 @@ describe("Field Group", () => {
       });
 
       assertType(result).matches(gql`
-        type ListFormField {
+        type ListField {
           name: String
           label: String
           component: String
           field: ListFormFieldItemField
         }
 
-        union ListFormFieldItemField = SelectFormField | TextareaFormField
+        union ListFormFieldItemField = SelectField | TextareaField
 
-        type SelectFormField {
+        type SelectField {
           component: String
           options: [String]
         }
 
-        type TextareaFormField {
+        type TextareaField {
           component: String
         }
       `);

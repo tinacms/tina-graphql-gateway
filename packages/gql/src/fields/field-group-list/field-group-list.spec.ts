@@ -9,28 +9,30 @@ describe("Field Group List", () => {
         field: {
           name: "cta",
           label: "Cta",
+          __namespace: "Somenamespace",
           type: "field_group_list" as const,
           fields: [
             {
               name: "header",
               label: "Header",
               type: "textarea" as const,
+              __namespace: "SomenamespaceCta",
             },
           ],
         },
       });
 
       assertType(result).matches(gql`
-        type FieldGroupListFormField {
+        type SomenamespaceCtaGroupListField {
           name: String
           label: String
           component: String
           fields: [CtaFormFields]
         }
 
-        union CtaFormFields = TextareaFormField
+        union CtaFormFields = TextareaField
 
-        type TextareaFormField {
+        type TextareaField {
           name: String
           label: String
           component: String

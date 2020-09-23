@@ -14,30 +14,30 @@ type PostForm {
   fields: [PostFormFields]
 }
 
-union PostFormFields = TextareaFormField | SelectFormField | BlocksSectionField
+union PostFormFields = TextareaField | SelectField | PostSectionsBlocksField
 
-type TextareaFormField {
+type TextareaField {
   name: String
   label: String
   component: String
   description: String
 }
 
-type SelectFormField {
+type SelectField {
   name: String
   label: String
   component: String
   options: [String]
 }
 
-type BlocksSectionField {
+type PostSectionsBlocksField {
   name: String
   label: String
   component: String
-  templates: BlocksSectionTemplates
+  templates: PostSectionsBlocksFieldTemplates
 }
 
-type BlocksSectionTemplates {
+type PostSectionsBlocksFieldTemplates {
   sectionTemplateFields: SectionForm
 }
 
@@ -45,25 +45,25 @@ type SectionForm {
   fields: [SectionFormFields]
 }
 
-union SectionFormFields = TextareaFormField | FieldGroupFormField | ListFormField
+union SectionFormFields = TextareaField | SectionCtaGroupField | ListField
 
-type FieldGroupFormField {
+type SectionCtaGroupField {
   name: String
   label: String
   component: String
   fields: [CtaFormFields]
 }
 
-union CtaFormFields = TextareaFormField
+union CtaFormFields = TextareaField
 
-type ListFormField {
+type ListField {
   name: String
   label: String
   component: String
   field: ListFormFieldItemField
 }
 
-union ListFormFieldItemField = SelectFormField | TextareaFormField
+union ListFormFieldItemField = SelectField | TextareaField
 
 type PostData {
   title: String
@@ -87,16 +87,16 @@ type AuthorForm {
   fields: [AuthorFormFields]
 }
 
-union AuthorFormFields = TextareaFormField | SelectFormField | ListFormField | FieldGroupListFormField
+union AuthorFormFields = TextareaField | SelectField | ListField | AuthorAccoladesGroupListField
 
-type FieldGroupListFormField {
+type AuthorAccoladesGroupListField {
   name: String
   label: String
   component: String
   fields: [AccoladesFormFields]
 }
 
-union AccoladesFormFields = TextareaFormField
+union AccoladesFormFields = TextareaField
 
 type AuthorData {
   name: String

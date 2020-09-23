@@ -14,9 +14,10 @@ describe("Blocks", () => {
           label: "Section",
           fields: [
             {
+              __namespace: "SomeTemplate",
               name: "name",
               label: "Name",
-              type: "textarea" as const,
+              type: "textarea",
             },
           ],
         };
@@ -25,22 +26,23 @@ describe("Blocks", () => {
         cache: testCache({ mockGetTemplate: mockGetTemplate }),
         field: {
           name: "sections",
-          type: "blocks" as const,
+          type: "blocks",
           label: "Sections",
+          __namespace: "SomeTemplate",
           template_types: ["section"],
         },
       });
 
       expect(mockGetTemplate).toHaveBeenCalledWith({ slug: "section" });
       assertType(result).matches(gql`
-        type BlocksSection {
+        type SomeTemplateSectionsBlocksField {
           name: String
           label: String
           component: String
-          templates: BlocksSectionTemplates
+          templates: SomeTemplateSectionsBlocksFieldTemplates
         }
 
-        type BlocksSectionTemplates {
+        type SomeTemplateSectionsBlocksFieldTemplates {
           sectionTemplateFields: SectionForm
         }
 
@@ -48,9 +50,9 @@ describe("Blocks", () => {
           fields: [SectionFormFields]
         }
 
-        union SectionFormFields = TextareaFormField
+        union SectionFormFields = TextareaField
 
-        type TextareaFormField {
+        type TextareaField {
           name: String
           label: String
           component: String
@@ -87,17 +89,19 @@ describe("Blocks", () => {
         cache: testCache({ mockGetTemplate: mockGetTemplate }),
         field: {
           name: "sections",
-          type: "blocks" as const,
+          type: "blocks",
           label: "Sections",
           template_types: ["section"],
+          __namespace: "SomeTemplate2",
         },
       });
       const block2 = await blocks.build.field({
         cache: testCache({ mockGetTemplate: mockGetTemplate2 }),
         field: {
           name: "sections",
-          type: "blocks" as const,
+          type: "blocks",
           label: "Sections",
+          __namespace: "SomeTemplate",
           template_types: ["section2"],
         },
       });

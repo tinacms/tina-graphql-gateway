@@ -18,7 +18,7 @@ describe("Select", () => {
       });
 
       assertType(result).matches(gql`
-        type SelectFormField {
+        type SelectField {
           name: String
           label: String
           component: String

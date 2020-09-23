@@ -13,11 +13,11 @@ import { text } from "./fields/text";
 import { textarea } from "./fields/textarea";
 import { select } from "./fields/select";
 import { blocks } from "./fields/blocks";
-import { fieldGroup } from "./fields/field-group";
-import { fieldGroupList } from "./fields/field-group-list";
+import { fieldGroup, FieldGroupField } from "./fields/field-group";
+import { fieldGroupList, FieldGroupListField } from "./fields/field-group-list";
 import { list } from "./fields/list";
 import type { GraphQLFieldConfigMap } from "graphql";
-import type { TemplateData } from "./types";
+import type { TemplateData, WithFields } from "./types";
 import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
 import type { ContextT } from "./graphql";
@@ -145,11 +145,12 @@ type BuildTemplateForm = (
   template: TemplateData
 ) => Promise<GraphQLObjectType<any, any>>;
 const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
+  const t = template;
   return cache.build(
     new GraphQLObjectType({
       name: `${template.label}Form`,
       fields: {
-        fields: { type: await buildTemplateFormFieldsUnion(cache, template) },
+        fields: { type: await buildTemplateFormFieldsUnion(cache, t) },
       },
     })
   );
@@ -214,9 +215,55 @@ const buildDocumentTypes = async ({
 }): Promise<GraphQLObjectType<any, any>[]> => {
   return Promise.all(
     (await cache.datasource.getTemplatesForSection(section)).map(
-      async (template) => await buildTemplate(cache, template)
+      async (template) => {
+        const t = template;
+        return await buildTemplate(cache, t);
+      }
     )
   );
+};
+
+function isWithFields(t: TemplateData | Field): t is WithFields {
+  return t.hasOwnProperty("fields");
+}
+
+const namespaceFields = (template: TemplateData): TemplateData => {
+  return {
+    ...template,
+    fields: template.fields.map((f) => {
+      if (isWithFields(f)) {
+        return {
+          ...namespaceSubFields(f, template.label),
+        };
+      } else {
+        return {
+          ...f,
+          __namespace: `${template.label}`,
+        };
+      }
+    }),
+  };
+};
+const namespaceSubFields = (
+  template: FieldGroupField | FieldGroupListField,
+  parentNamespace: string
+): Field => {
+  return {
+    ...template,
+    fields: template.fields.map((f) => {
+      if (isWithFields(f)) {
+        return {
+          ...namespaceSubFields(f, template.label),
+          __namespace: `${parentNamespace}${template.label}`,
+        };
+      } else {
+        return {
+          ...f,
+        };
+      }
+    }),
+    __namespace: template.label,
+  };
 };
 
 /**
