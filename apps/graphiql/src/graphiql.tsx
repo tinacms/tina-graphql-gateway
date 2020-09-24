@@ -28,8 +28,7 @@ const UseIt = ({ formConfig }) => {
     id: "tina-tutorial-index",
     label: "Edit Page",
     fields: formConfig.form.fields,
-    // fields: [{ name: "Hello", label: "HIII", component: "text" }],
-    initialValues: {},
+    initialValues: formConfig.initialValues,
     onSubmit: async () => {
       window.alert("Saved!");
     },
