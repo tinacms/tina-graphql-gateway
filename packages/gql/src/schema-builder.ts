@@ -150,6 +150,7 @@ const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
     new GraphQLObjectType({
       name: `${template.label}Form`,
       fields: {
+        label: { type: GraphQLString },
         fields: { type: await buildTemplateFormFieldsUnion(cache, t) },
       },
     })
