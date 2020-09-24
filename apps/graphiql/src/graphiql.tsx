@@ -5,6 +5,40 @@ import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { Link, useParams } from "react-router-dom";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
+import { TinaProvider, TinaCMS, useCMS, useForm, usePlugin } from "tinacms";
+
+const TinaWrap = ({ formConfig }) => {
+  const cms = new TinaCMS({
+    sidebar: true,
+    enabled: true,
+  });
+
+  return (
+    <TinaProvider cms={cms}>
+      {formConfig ? <UseIt formConfig={formConfig} /> : null}
+      {/* <UseIt formConfig={formConfig} /> */}
+    </TinaProvider>
+  );
+};
+
+const UseIt = ({ formConfig }) => {
+  // console.log(formConfig.form.fields);
+  const cms = useCMS();
+  const formConfig2 = {
+    id: "tina-tutorial-index",
+    label: "Edit Page",
+    fields: formConfig.form.fields,
+    // fields: [{ name: "Hello", label: "HIII", component: "text" }],
+    initialValues: {},
+    onSubmit: async () => {
+      window.alert("Saved!");
+    },
+  };
+  const [editableData, form] = useForm(formConfig2);
+  usePlugin(form);
+
+  return <div />;
+};
 
 export const Explorer = () => {
   let { project } = useParams();
@@ -18,6 +52,9 @@ export const Explorer = () => {
   const [projects, setProjects] = React.useState<
     { label: string; value: string }[]
   >([]);
+  const [queryResult, setQueryResult] = React.useState<null | { data: object }>(
+    null
+  );
 
   const graphQLFetcher = (graphQLParams: object) => {
     const url = `http://localhost:4000/${project}`;
@@ -30,7 +67,12 @@ export const Explorer = () => {
       body: JSON.stringify(graphQLParams),
       // credentials: `include`,
     }).then(function (response) {
-      return response.json();
+      return response.json().then((json) => {
+        if (json?.data?.document) {
+          setQueryResult(json.data.document);
+        }
+        return json;
+      });
     });
   };
   const _graphiql = React.useRef();
@@ -75,6 +117,7 @@ export const Explorer = () => {
 
   return (
     <div id="root" className="graphiql-container">
+      {queryResult && <TinaWrap formConfig={queryResult} />}
       <React.Fragment>
         <GraphiQLExplorer
           schema={schema}
@@ -82,9 +125,9 @@ export const Explorer = () => {
           onEdit={_handleEditQuery}
           explorerIsOpen={state.explorerIsOpen}
           onToggleExplorer={_handleToggleExplorer}
-          onRunOperation={(operationName: any) =>
-            _graphiql.handleRunQuery(operationName)
-          }
+          onRunOperation={(operationName: any) => {
+            _graphiql.handleRunQuery(operationName);
+          }}
         />
         {/* @ts-ignore */}
         <GraphiQL
