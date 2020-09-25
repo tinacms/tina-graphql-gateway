@@ -282,7 +282,7 @@ const resolveData: resolveDataType = async (
   resolvedTemplate,
   data
 ) => {
-  const accum = {};
+  const accum: { [key: string]: unknown } = {};
   await Promise.all(
     Object.keys(data).map(async (key) => {
       const field = findField(resolvedTemplate.fields, key);
@@ -313,7 +313,7 @@ const resolveInitialValues: resolveInitialValuesType = async (
   resolvedTemplate,
   data
 ) => {
-  const accum = {};
+  const accum: { [key: string]: unknown } = {};
   await Promise.all(
     Object.keys(data).map(async (key) => {
       const field = findField(resolvedTemplate.fields, key);
