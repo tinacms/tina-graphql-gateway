@@ -1,13 +1,20 @@
-import { GraphQLString, GraphQLObjectType, getNamedType } from "graphql";
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  getNamedType,
+  GraphQLInputObjectType,
+  GraphQLBoolean,
+  GraphQLFloat,
+} from "graphql";
 import * as yup from "yup";
 import type {
   resolveFieldType,
   resolveDataType,
   ResolvedData,
-} from "../../graphql";
+} from "../../resolver";
 import type { TinaField, Field } from "../index";
 import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../schema-builder";
+import type { Cache } from "../../builder";
 
 export type FieldGroupField = {
   label: string;
@@ -66,6 +73,9 @@ const build = {
   },
   value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return { type: await cache.builder.buildTemplateData(cache, field) };
+  },
+  input: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
+    return { type: await cache.builder.buildTemplateInputData(cache, field) };
   },
 };
 

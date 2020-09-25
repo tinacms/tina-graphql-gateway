@@ -1,15 +1,21 @@
 import type { DataSource } from "../../datasources/datasource";
 import { friendlyName } from "../../util";
 import type { TinaTemplateData } from "../../types";
-import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+import {
+  GraphQLString,
+  GraphQLInputObjectType,
+  getNamedType,
+  GraphQLObjectType,
+  GraphQLList,
+} from "graphql";
 import * as yup from "yup";
 import type {
   resolveTemplateType,
   resolveDataType,
   resolveInitialValuesType,
   ResolvedData,
-} from "../../graphql";
-import type { Cache } from "../../schema-builder";
+} from "../../resolver";
+import type { Cache } from "../../builder";
 
 export type BlocksField = {
   label: string;
@@ -99,6 +105,32 @@ const build = {
         await cache.builder.buildDataUnion({
           cache,
           templates: field.template_types,
+        })
+      ),
+    };
+  },
+  input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+    const templates = await Promise.all(
+      field.template_types.map((tt) =>
+        cache.datasource.getTemplate({ slug: tt })
+      )
+    );
+
+    const templateTypes = await Promise.all(
+      templates.map((template) => {
+        return cache.builder.buildTemplateInputData(cache, template);
+      })
+    );
+
+    const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
+    templateTypes.forEach((template) => {
+      accum[getNamedType(template).toString()] = { type: template };
+    });
+    return {
+      type: cache.build(
+        new GraphQLInputObjectType({
+          name: `${field.__namespace}${field.label}BlocksInput`,
+          fields: accum,
         })
       ),
     };

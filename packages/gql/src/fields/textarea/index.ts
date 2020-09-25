@@ -1,6 +1,13 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLInt,
+} from "graphql";
 import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../schema-builder";
+import type { Cache } from "../../builder";
+import { graphqlInit } from "../../resolver";
 
 export type TextareaField = {
   label: string;
@@ -42,6 +49,9 @@ const build = {
     return { type: GraphQLString };
   },
   value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+    return { type: GraphQLString };
+  },
+  input: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return { type: GraphQLString };
   },
 };

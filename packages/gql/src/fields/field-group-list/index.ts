@@ -2,8 +2,8 @@ import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import * as yup from "yup";
 import type { TinaField, Field } from "../index";
 import type { DataSource } from "../../datasources/datasource";
-import type { resolveFieldType, resolveDataType } from "../../graphql";
-import type { Cache } from "../../schema-builder";
+import type { resolveFieldType, resolveDataType } from "../../resolver";
+import type { Cache } from "../../builder";
 
 export type FieldGroupListField = {
   label: string;
@@ -74,6 +74,19 @@ const build = {
   }) => {
     return {
       type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
+    };
+  },
+  input: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: FieldGroupListField;
+  }) => {
+    return {
+      type: GraphQLList(
+        await cache.builder.buildTemplateInputData(cache, field)
+      ),
     };
   },
 };
