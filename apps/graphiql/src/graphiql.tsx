@@ -56,6 +56,7 @@ export const Explorer = () => {
   );
 
   const graphQLFetcher = (graphQLParams: object) => {
+    setQueryResult(null);
     const url = `http://localhost:4000/${project}`;
     return fetch(url, {
       method: `post`,
