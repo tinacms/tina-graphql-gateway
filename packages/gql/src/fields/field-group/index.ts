@@ -55,6 +55,15 @@ const build = {
       })
     );
   },
+  initialValue: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: FieldGroupField;
+  }) => {
+    return { type: await cache.builder.buildInitialValues(cache, field) };
+  },
   value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
     return { type: await cache.builder.buildTemplateData(cache, field) };
   },
@@ -82,6 +91,20 @@ const resolve = {
       fields,
       __typename: `${field.__namespace}${field.label}GroupField`,
     };
+  },
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    value: unknown;
+    resolveData: resolveDataType;
+  }): Promise<ResolvedData> => {
+    assertIsData(value);
+    return await resolveData(datasource, field, value);
   },
   value: async ({
     datasource,

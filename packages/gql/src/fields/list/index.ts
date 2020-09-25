@@ -95,6 +95,40 @@ const build = {
       })
     );
   },
+  initialValue: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: ListField;
+  }) => {
+    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+    const isSimple = field.config.use_select ? false : true;
+    if (!isSimple) {
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
+    }
+
+    let list;
+    switch (listTypeIdentifier) {
+      case "documents":
+        list = field as DocumentList;
+        throw new Error(`document select not implemented`);
+      case "pages":
+        list = field as SectionList;
+        const section = list.config.source.section;
+        return {
+          type: GraphQLList(GraphQLString),
+        };
+      case "simple":
+        list = field as SimpleList;
+        return { type: GraphQLList(GraphQLString) };
+    }
+  },
   value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
     const isSimple = field.config.use_select ? false : true;
@@ -196,6 +230,44 @@ const resolve = {
       field: fieldComponent,
       __typename: "ListField",
     };
+  },
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+    value: unknown;
+  }): Promise<
+    | {
+        _resolver: "_resource";
+        _resolver_kind: "_nested_sources";
+        _args: { paths: string[] };
+      }
+    | string[]
+  > => {
+    assertIsStringArray(value);
+    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+    const isSimple = field.config.use_select ? false : true;
+    if (!isSimple) {
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
+    }
+    let list;
+    switch (listTypeIdentifier) {
+      case "documents":
+        list = field as DocumentList;
+        throw new Error(`document list not implemented`);
+      case "pages":
+        return value;
+      case "simple":
+        return value;
+    }
   },
   value: async ({
     datasource,
