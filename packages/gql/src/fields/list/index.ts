@@ -7,7 +7,7 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
-import type { Cache } from "../../schema-builder";
+import type { Cache } from "../../builder";
 import { select } from "../select";
 
 export type BaseListField = {
@@ -142,6 +142,9 @@ const build = {
         list = field as SimpleList;
         return { type: GraphQLList(GraphQLString) };
     }
+  },
+  input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
+    return { type: GraphQLList(GraphQLString) };
   },
 };
 const resolve = {

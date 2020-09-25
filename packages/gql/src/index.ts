@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { FileSystemManager } from "./datasources/filesystem-manager";
-import { schemaBuilder } from "./schema-builder";
+import { schemaBuilder } from "./builder";
 import { graphqlInit } from "./resolver";
 // @ts-ignore
 import bodyParser from "body-parser";
@@ -43,7 +43,6 @@ app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;
 
   const projectRoot = path.join(process.cwd(), `src/fixtures${req.path}`);
-  // const datasource = FilesystemDataSource(projectRoot);
   const datasource = new FileSystemManager(projectRoot);
   const schema = await schemaBuilder({ datasource });
   const result = await graphqlInit({

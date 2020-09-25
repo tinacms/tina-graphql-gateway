@@ -1,6 +1,6 @@
 import type { DataSource } from "../../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { Cache } from "../../schema-builder";
+import type { Cache } from "../../builder";
 
 export type TextField = {
   label: string;
@@ -41,6 +41,9 @@ const build = {
     return { type: GraphQLString };
   },
   value: ({ cache, field }: { cache: Cache; field: TextField }) => {
+    return { type: GraphQLString };
+  },
+  input: ({ cache, field }: { cache: Cache; field: TextField }) => {
     return { type: GraphQLString };
   },
 };

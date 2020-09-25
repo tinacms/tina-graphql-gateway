@@ -1,5 +1,5 @@
 ---
-title: Home
+title: I'm Home
 blocks:
 - template: sidecar
   text: |-
@@ -59,8 +59,7 @@ blocks:
 
     We believe the path to success is found through a holistic approach to training and a strong sense of community. This culture is what fuels GCTC, and helps our runners to stay committed to their athletic endeavors. By joining our team you are taking the first step in breaking down barriers and achieving your goals.
   image: /uploads/sunset.jpg
-  cta:
-    header: ''
+  cta: {}
   actions: []
   style: Column
 ---
