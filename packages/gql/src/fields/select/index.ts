@@ -62,6 +62,26 @@ const build = {
       })
     );
   },
+  initialValue: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: SelectField;
+  }) => {
+    let select;
+    switch (field.config.source.type) {
+      case "documents":
+        throw new Error(`document select not implemented`);
+      case "pages":
+        select = field as SectionSelect;
+        return {
+          type: GraphQLString,
+        };
+      case "simple":
+        return { type: GraphQLString };
+    }
+  },
   value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
     let select;
     switch (field.config.source.type) {
@@ -122,6 +142,24 @@ const resolve = {
           ...f,
           options: select.config.options,
         };
+    }
+  },
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+    value: unknown;
+  }) => {
+    switch (field.config.source.type) {
+      case "documents":
+        throw new Error(`document select not implemented`);
+      case "pages":
+        return value;
+      case "simple":
+        return value;
     }
   },
   value: async ({

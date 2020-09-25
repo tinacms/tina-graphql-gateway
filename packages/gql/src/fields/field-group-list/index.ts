@@ -54,6 +54,17 @@ const build = {
       })
     );
   },
+  initialValue: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: FieldGroupListField;
+  }) => {
+    return {
+      type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
+    };
+  },
   value: async ({
     cache,
     field,
@@ -88,6 +99,22 @@ const resolve = {
       fields,
       __typename: `${field.__namespace}${field.label}GroupListField`,
     };
+  },
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupListField;
+    value: unknown;
+    resolveData: resolveDataType;
+  }) => {
+    assertIsDataArray(value);
+    return await Promise.all(
+      value.map(async (v: any) => await resolveData(datasource, field, v))
+    );
   },
   value: async ({
     datasource,

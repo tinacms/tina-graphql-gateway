@@ -103,6 +103,68 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
   return fields;
 };
 
+type BuildTemplateInitialValueFields = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
+const buildTemplateInitialValueFields: BuildTemplateInitialValueFields = async (
+  cache,
+  template
+) => {
+  const fields: GraphQLFieldConfigMap<any, ContextT> = {};
+
+  await Promise.all(
+    template.fields.map(async (field) => {
+      switch (field.type) {
+        case "text":
+          fields[field.name] = text.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "textarea":
+          fields[field.name] = textarea.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "select":
+          fields[field.name] = await select.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "blocks":
+          fields[field.name] = await blocks.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "field_group":
+          fields[field.name] = await fieldGroup.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "field_group_list":
+          fields[field.name] = await fieldGroupList.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+        case "list":
+          fields[field.name] = await list.build.initialValue({
+            cache,
+            field,
+          });
+          break;
+      }
+    })
+  );
+
+  return fields;
+};
+
 const buildTemplateFormFields = async (
   cache: Cache,
   template: TemplateData
@@ -182,6 +244,22 @@ const buildTemplateData = async (cache: Cache, template: TemplateData) => {
   );
 };
 
+type BuildInitialValues = (
+  cache: Cache,
+  template: TemplateData
+) => Promise<GraphQLObjectType<any, ContextT>>;
+const buildInitialValues = async (cache: Cache, template: TemplateData) => {
+  return cache.build(
+    new GraphQLObjectType({
+      name: `${template.label}InitialValues`,
+      fields: {
+        _template: { type: GraphQLString },
+        ...(await buildTemplateInitialValueFields(cache, template)),
+      },
+    })
+  );
+};
+
 /**
  * Builds the main shape of the template
  *
@@ -202,6 +280,7 @@ const buildTemplate = async (cache: Cache, template: TemplateData) => {
         form: { type: await buildTemplateForm(cache, template) },
         path: { type: GraphQLString },
         data: { type: await buildTemplateData(cache, template) },
+        initialValues: { type: await buildInitialValues(cache, template) },
       },
     })
   );
@@ -259,6 +338,35 @@ const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
   );
 };
 
+type BuildInitialValuesUnion = ({
+  cache,
+  templates,
+}: {
+  cache: Cache;
+  templates: string[];
+}) => Promise<GraphQLUnionType>;
+const buildInitialValuesUnion: BuildInitialValuesUnion = async ({
+  cache,
+  templates,
+}) => {
+  const templateObjects = await Promise.all(
+    templates.map(
+      async (template) => await cache.datasource.getTemplate({ slug: template })
+    )
+  );
+  const types = await Promise.all(
+    templateObjects.map(
+      async (template) => await buildInitialValues(cache, template)
+    )
+  );
+  return cache.build(
+    new GraphQLUnionType({
+      name: `${templates.join("")}InitialValuesUnion`,
+      types,
+    })
+  );
+};
+
 /**
  * Builds the union which can be any one of multiple templates.
  *
@@ -293,6 +401,8 @@ export type Cache = {
     buildDataUnion: BuildDataUnion;
     buildTemplateForm: BuildTemplateForm;
     buildTemplateData: BuildTemplateData;
+    buildInitialValues: BuildInitialValues;
+    buildInitialValuesUnion: BuildInitialValuesUnion;
     buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion;
   };
 };
@@ -318,6 +428,8 @@ export const cacheInit = (
       buildDataUnion,
       buildTemplateData,
       buildTemplateForm,
+      buildInitialValues,
+      buildInitialValuesUnion,
       buildTemplateFormFieldsUnion,
     },
   };
