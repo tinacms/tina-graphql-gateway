@@ -6,8 +6,21 @@ import { queryBuilder } from "@forestryio/graphql-helpers";
 import { Link, useParams } from "react-router-dom";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 import { TinaProvider, TinaCMS, useCMS, useForm, usePlugin } from "tinacms";
+import { handle } from "./handler";
 
-const TinaWrap = ({ formConfig }) => {
+// {
+// 	"params": {
+// 		"PostInput": {
+// 			"data": {
+// 				"author": "content/authors/christian.md",
+// 				"image": "/uploads/dreams-on-hold.jpg",
+// 				"title": "Dreams on Hold"
+// 			}
+// 		}
+// 	}
+// }
+
+const TinaWrap = ({ formConfig, onSubmit }) => {
   const cms = new TinaCMS({
     sidebar: true,
     enabled: true,
@@ -15,13 +28,15 @@ const TinaWrap = ({ formConfig }) => {
 
   return (
     <TinaProvider cms={cms}>
-      {formConfig ? <UseIt formConfig={formConfig} /> : null}
+      {formConfig ? (
+        <UseIt onSubmit={onSubmit} formConfig={formConfig} />
+      ) : null}
       {/* <UseIt formConfig={formConfig} /> */}
     </TinaProvider>
   );
 };
 
-const UseIt = ({ formConfig }) => {
+const UseIt = ({ formConfig, onSubmit }) => {
   // console.log(formConfig.form.fields);
   const cms = useCMS();
   const formConfig2 = {
@@ -29,8 +44,9 @@ const UseIt = ({ formConfig }) => {
     label: "Edit Page",
     fields: formConfig.form.fields,
     initialValues: formConfig.initialValues,
-    onSubmit: async () => {
-      window.alert("Saved!");
+    onSubmit: async (values) => {
+      const payload = handle(values);
+      onSubmit(payload);
     },
   };
   const [editableData, form] = useForm(formConfig2);
@@ -45,7 +61,7 @@ export const Explorer = () => {
     schema: null,
     query: null,
     variables: JSON.stringify({ path: "posts/1.md" }, null, 2),
-    explorerIsOpen: true,
+    explorerIsOpen: false,
     codeExporterIsOpen: false,
   });
   const [projects, setProjects] = React.useState<
@@ -76,6 +92,20 @@ export const Explorer = () => {
     });
   };
   const _graphiql = React.useRef();
+
+  const setVariables = (values) => {
+    console.log("stting variables", values);
+    setState({
+      ...state,
+      query:
+        "mutation updateDocumentMutation($path: String!, $params: DocumentInput) {      updateDocument(path: $path, params: $params) {        __typename      }    }",
+      variables: JSON.stringify(
+        { path: state.variables.path, params: values },
+        null,
+        2
+      ),
+    });
+  };
 
   React.useEffect(() => {
     const listProjects = async () => {
@@ -117,7 +147,9 @@ export const Explorer = () => {
 
   return (
     <div id="root" className="graphiql-container">
-      {queryResult && <TinaWrap formConfig={queryResult} />}
+      {queryResult && (
+        <TinaWrap onSubmit={setVariables} formConfig={queryResult} />
+      )}
       <React.Fragment>
         <GraphiQLExplorer
           schema={schema}
