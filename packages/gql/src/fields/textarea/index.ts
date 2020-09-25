@@ -38,6 +38,9 @@ const build = {
       })
     );
   },
+  initialValue: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+    return { type: GraphQLString };
+  },
   value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
     return { type: GraphQLString };
   },
@@ -54,6 +57,22 @@ const resolve = {
       },
       __typename: "TextareaField",
     };
+  },
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: TextareaField;
+    value: unknown;
+  }): Promise<string> => {
+    if (typeof value !== "string") {
+      throw new Error(
+        `Unexpected value of type ${typeof value} for resolved textarea value`
+      );
+    }
+    return value;
   },
   value: async ({
     datasource,

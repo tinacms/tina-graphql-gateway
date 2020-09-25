@@ -6,6 +6,7 @@ import * as yup from "yup";
 import type {
   resolveTemplateType,
   resolveDataType,
+  resolveInitialValuesType,
   ResolvedData,
 } from "../../graphql";
 import type { Cache } from "../../schema-builder";
@@ -75,6 +76,22 @@ const build = {
         },
       })
     );
+  },
+  initialValue: async ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => {
+    return {
+      type: GraphQLList(
+        await cache.builder.buildInitialValuesUnion({
+          cache,
+          templates: field.template_types,
+        })
+      ),
+    };
   },
   value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
     return {
@@ -152,6 +169,31 @@ const resolve = {
     };
   },
 
+  initialValue: async ({
+    datasource,
+    field,
+    value,
+    resolveInitialValues,
+    resolveTemplate,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: unknown;
+    resolveInitialValues: resolveInitialValuesType;
+    resolveTemplate: resolveTemplateType;
+  }): Promise<ResolvedData[]> => {
+    assertIsBlock(value);
+    return await Promise.all(
+      value.map(async (item) => {
+        const { template, ...rest } = item;
+        const templateData = await datasource.getTemplate({ slug: template });
+        return {
+          _template: `${template}TemplateFields`,
+          ...(await resolveInitialValues(datasource, templateData, rest)),
+        };
+      })
+    );
+  },
   value: async ({
     datasource,
     field,
