@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../schema-builder";
+import type { Cache } from "../../builder";
 
 export type BaseSelectField = {
   label: string;
@@ -96,6 +96,9 @@ const build = {
       case "simple":
         return { type: GraphQLString };
     }
+  },
+  input: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
+    return { type: GraphQLString };
   },
 };
 
