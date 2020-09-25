@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 import { schemaBuilder } from "./schema-builder";
-import { graphqlInit } from "./graphql";
+import { graphqlInit } from "./resolver";
 // @ts-ignore
 import bodyParser from "body-parser";
 import cors from "cors";
