@@ -69,18 +69,7 @@ const build = {
     cache: Cache;
     field: SelectField;
   }) => {
-    let select;
-    switch (field.config.source.type) {
-      case "documents":
-        throw new Error(`document select not implemented`);
-      case "pages":
-        select = field as SectionSelect;
-        return {
-          type: GraphQLString,
-        };
-      case "simple":
-        return { type: GraphQLString };
-    }
+    return { type: GraphQLString };
   },
   value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
     let select;
@@ -153,14 +142,7 @@ const resolve = {
     field: SelectField;
     value: unknown;
   }) => {
-    switch (field.config.source.type) {
-      case "documents":
-        throw new Error(`document select not implemented`);
-      case "pages":
-        return value;
-      case "simple":
-        return value;
-    }
+    return value;
   },
   value: async ({
     datasource,

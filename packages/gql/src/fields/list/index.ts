@@ -102,32 +102,7 @@ const build = {
     cache: Cache;
     field: ListField;
   }) => {
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document select not implemented`);
-      case "pages":
-        list = field as SectionList;
-        const section = list.config.source.section;
-        return {
-          type: GraphQLList(GraphQLString),
-        };
-      case "simple":
-        list = field as SimpleList;
-        return { type: GraphQLList(GraphQLString) };
-    }
+    return { type: GraphQLList(GraphQLString) };
   },
   value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
     let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -248,26 +223,7 @@ const resolve = {
     | string[]
   > => {
     assertIsStringArray(value);
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document list not implemented`);
-      case "pages":
-        return value;
-      case "simple":
-        return value;
-    }
+    return value;
   },
   value: async ({
     datasource,
