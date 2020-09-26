@@ -264,9 +264,11 @@ const resolve = {
     resolveDocumentInputData: any;
   }): Promise<ResolvedData[]> => {
     // FIXME: we should validate that only one key was passed
+    assertIsArray(value);
 
     return await Promise.all(
       value.map(async (item) => {
+        assertIsBlockInput(item);
         const data = Object.values(item)[0];
         const template = await datasource.getTemplate({
           // FIXME: we're sending the label in here as if it's a template slug
@@ -278,6 +280,27 @@ const resolve = {
     );
   },
 };
+
+function assertIsArray(value: unknown): asserts value is unknown[] {
+  if (!Array.isArray(value)) {
+    throw new Error("Expected an array for block input value");
+  }
+}
+
+function assertIsBlockInput(
+  value: unknown
+): asserts value is { data: { _template: string } & object } {
+  const schema = yup.array().of(
+    yup.object({
+      data: yup
+        .object({
+          _template: yup.string().required(),
+        })
+        .required(),
+    })
+  );
+  schema.validateSync(value);
+}
 
 function assertIsBlock(value: unknown): asserts value is BlockValue[] {
   const schema = yup.array().of(

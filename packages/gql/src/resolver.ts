@@ -144,7 +144,7 @@ const resolveDocumentInputData = async ({
   data: { [key: string]: unknown };
   template: TemplateData;
   datasource: DataSource;
-}): Promise<object> => {
+}): Promise<{ _template: string } & object> => {
   const accum: { [key: string]: unknown } = {};
   await Promise.all(
     template.fields.map(async (field) => {
@@ -244,7 +244,6 @@ const resolveDocumentInput = async ({
   const payload = {
     data: value,
   };
-  // console.log(JSON.stringify(payload, null, 2));
   await datasource.updateDocument({ path: args.path, params: payload });
 
   return true;
