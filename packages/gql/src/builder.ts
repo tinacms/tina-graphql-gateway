@@ -233,6 +233,7 @@ const buildTemplateFormFields = async (
   cache: Cache,
   template: TemplateData
 ) => {
+  // FIXME: this should be unique by field type but not if they're blocks/field groups
   // Unique by field.type
   const fields = _.uniqBy(template.fields, (field) => field.type);
   return Promise.all(
@@ -277,6 +278,7 @@ const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
       name: `${template.label}Form`,
       fields: {
         label: { type: GraphQLString },
+        _template: { type: GraphQLString },
         fields: { type: await buildTemplateFormFieldsUnion(cache, t) },
       },
     })
@@ -316,7 +318,10 @@ const buildTemplateInputData = async (cache: Cache, template: TemplateData) => {
   return cache.build(
     new GraphQLInputObjectType({
       name: `${template.label}InputData`,
-      fields: await buildTemplateInputDataFields(cache, template),
+      fields: {
+        _template: { type: GraphQLString },
+        ...(await buildTemplateInputDataFields(cache, template)),
+      },
     })
   );
 };

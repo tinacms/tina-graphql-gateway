@@ -130,6 +130,25 @@ const resolve = {
     assertIsData(value);
     return await resolveData(datasource, field, value);
   },
+  input: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+    resolveDocumentInputData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupField;
+    value: unknown;
+    resolveData: resolveDataType;
+    resolveDocumentInputData: any;
+  }): Promise<ResolvedData> => {
+    return await resolveDocumentInputData({
+      data: value,
+      template: field,
+      datasource,
+    });
+  },
 };
 
 function assertIsData(

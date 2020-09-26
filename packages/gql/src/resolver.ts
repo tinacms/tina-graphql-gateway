@@ -12,6 +12,7 @@ import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
 import type { DataSource } from "./datasources/datasource";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 
 export type ContextT = {
   datasource: DataSource;
@@ -63,6 +64,14 @@ export const fieldResolver: GraphQLFieldResolver<
 > = async (source, args, context, info) => {
   const value = source[info.fieldName];
   const { datasource } = context;
+
+  if (info.fieldName === "updateDocument") {
+    if (!args.path || typeof args.path !== "string") {
+      throw new Error(`Expected args for initial document request`);
+    }
+    await resolveDocumentInput({ args: args, params: args.params, datasource });
+    return await resolveDocument({ args: args, datasource });
+  }
 
   if (!value) {
     return null;
@@ -127,6 +136,120 @@ const resolveDocument = async ({
   };
 };
 
+const resolveDocumentInputData = async ({
+  data,
+  template,
+  datasource,
+}: {
+  data: { [key: string]: unknown };
+  template: TemplateData;
+  datasource: DataSource;
+}): Promise<object> => {
+  const accum: { [key: string]: unknown } = {};
+  await Promise.all(
+    template.fields.map(async (field) => {
+      const value = data[field.name];
+      switch (field.type) {
+        case "text":
+          accum[field.name] = await text.resolve.input({
+            datasource,
+            field,
+            value,
+          });
+          break;
+        case "textarea":
+          accum[field.name] = await textarea.resolve.input({
+            datasource,
+            field,
+            value,
+          });
+
+          break;
+        case "blocks":
+          accum[field.name] = await blocks.resolve.input({
+            datasource,
+            field,
+            value,
+            resolveData,
+            resolveTemplate,
+            resolveDocumentInputData,
+          });
+
+          break;
+        case "select":
+          accum[field.name] = await select.resolve.input({
+            datasource,
+            field,
+            value,
+          });
+          break;
+        case "list":
+          accum[field.name] = await list.resolve.input({
+            datasource,
+            field,
+            value,
+          });
+          break;
+        case "field_group":
+          accum[field.name] = await fieldGroup.resolve.input({
+            datasource,
+            field,
+            value,
+            resolveData,
+            resolveDocumentInputData,
+          });
+          break;
+        case "field_group_list":
+          accum[field.name] = await fieldGroupList.resolve.input({
+            datasource,
+            field,
+            value,
+            resolveData,
+            resolveDocumentInputData,
+          });
+
+        default:
+          accum[field.name] = value;
+          break;
+      }
+    })
+  );
+
+  return {
+    _template: template.label,
+    ...accum,
+  };
+};
+
+const resolveDocumentInput = async ({
+  args,
+  params,
+  datasource,
+}: {
+  args: { path: string };
+  params: object;
+  datasource: DataSource;
+}): Promise<boolean> => {
+  const template = await datasource.getTemplateForDocument(args);
+
+  // FIXME: we should validate that only one key was passed
+  const data = Object.values(params)[0].data;
+
+  const { _template, ...value } = await resolveDocumentInputData({
+    data,
+    template,
+    datasource,
+  });
+
+  const payload = {
+    data: value,
+  };
+  // console.log(JSON.stringify(payload, null, 2));
+  await datasource.updateDocument({ path: args.path, params: payload });
+
+  return true;
+};
+
 export const graphqlInit = async (args: {
   schema: GraphQLSchema;
   source: string | Source;
@@ -152,6 +275,8 @@ export type resolveTemplateType = (
 const resolveTemplate: resolveTemplateType = async (datasource, template) => {
   return {
     __typename: template.label,
+    // FIXME: this should be slug but we should store it on the template definition
+    _template: template.label,
     ...template,
     fields: await Promise.all(
       template.fields.map(async (field) => resolveField(datasource, field))
