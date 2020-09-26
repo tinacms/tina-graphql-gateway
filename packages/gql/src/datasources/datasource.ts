@@ -61,6 +61,10 @@ export interface DataSource {
    */
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
+  updateDocument: (param: {
+    path: string;
+    params: { content?: string; data: object };
+  }) => Promise<void>;
 }
 
 export type DocumentSummary = {
