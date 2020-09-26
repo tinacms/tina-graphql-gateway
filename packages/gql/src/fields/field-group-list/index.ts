@@ -158,6 +158,8 @@ const resolve = {
     resolveData: resolveDataType;
     resolveDocumentInputData: any;
   }): Promise<unknown> => {
+    assertIsDataArray(value);
+
     return await Promise.all(
       value.map(async (v) => {
         return await resolveDocumentInputData({
