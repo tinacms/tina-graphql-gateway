@@ -4,7 +4,6 @@ role: CFO
 anecdotes:
   - Something simple
 accolades:
-  - figure: Some accollades
-    description: Some description
+  - figure: 20+
+    description: years experience
 ---
-

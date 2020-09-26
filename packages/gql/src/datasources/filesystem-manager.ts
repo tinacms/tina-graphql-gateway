@@ -1,13 +1,14 @@
-import p from "path";
 import fs from "fs";
+import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
 import { byTypeWorks } from "../types";
-import type { Settings, Template, TemplateData, WithFields } from "../types";
-import type { DataSource } from "./datasource";
-import type { Field } from "../fields";
 import { FieldGroupField } from "../fields/field-group";
 import { FieldGroupListField } from "../fields/field-group-list";
+
+import type { Field } from "../fields";
+import type { DataSource } from "./datasource";
+import type { Settings, Template, TemplateData, WithFields } from "../types";
 
 export type DocumentArgs = {
   path: string;
@@ -74,9 +75,6 @@ export class FileSystemManager implements DataSource {
     const fullPath = p.join(this.rootPath, path);
     const res = await fs.readFileSync(fullPath).toString();
     const { content, data } = matter(res);
-    // @ts-ignore
-    // matter.clearCache();
-    // console.log("callget data", data);
 
     return {
       content,
@@ -103,7 +101,6 @@ export class FileSystemManager implements DataSource {
     if (!template) {
       throw new Error(`Unable to find template for document ${args.path}`);
     }
-    // console.log(namespaceFields(template));
 
     return namespaceFields(template);
   };

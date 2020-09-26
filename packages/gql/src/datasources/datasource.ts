@@ -1,5 +1,5 @@
 import type { Field } from "../fields";
-import type { Template, TemplateData } from "../types";
+import type { TemplateData } from "../types";
 
 export type TinaDocument = {
   [key: string]: any;

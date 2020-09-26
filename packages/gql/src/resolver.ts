@@ -12,7 +12,6 @@ import { blocks } from "./fields/blocks";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
 import type { DataSource } from "./datasources/datasource";
-import { FileSystemManager } from "./datasources/filesystem-manager";
 
 export type ContextT = {
   datasource: DataSource;
