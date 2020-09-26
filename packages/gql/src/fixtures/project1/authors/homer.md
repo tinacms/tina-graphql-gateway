@@ -1,9 +1,10 @@
 ---
 name: Homer Simpson
-role: CEO
+role: CFO
 anecdotes:
-  - Works at Power Plant
+  - Something simple
 accolades:
-  - figure: 20+
-    description: years experience
+  - figure: Some accollades
+    description: Some description
 ---
+

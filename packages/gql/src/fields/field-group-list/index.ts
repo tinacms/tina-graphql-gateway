@@ -145,6 +145,29 @@ const resolve = {
       value.map(async (v: any) => await resolveData(datasource, field, v))
     );
   },
+  input: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+    resolveDocumentInputData,
+  }: {
+    datasource: DataSource;
+    field: FieldGroupListField;
+    value: unknown;
+    resolveData: resolveDataType;
+    resolveDocumentInputData: any;
+  }): Promise<unknown> => {
+    return await Promise.all(
+      value.map(async (v) => {
+        return await resolveDocumentInputData({
+          data: v,
+          template: field,
+          datasource,
+        });
+      })
+    );
+  },
 };
 
 function assertIsDataArray(
