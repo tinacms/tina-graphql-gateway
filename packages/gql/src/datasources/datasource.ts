@@ -1,5 +1,5 @@
 import type { Field } from "../fields";
-import type { Template, TemplateData } from "../types";
+import type { TemplateData } from "../types";
 
 export type TinaDocument = {
   [key: string]: any;
@@ -12,10 +12,7 @@ export type TinaDocument = {
 export type DocumentArgs = {
   path: string;
 };
-// FIXME: use unknown here
-export const isDocumentArgs = (args: any): args is DocumentArgs => {
-  return args.path;
-};
+
 export interface DataSource {
   /**
    * `getData`
