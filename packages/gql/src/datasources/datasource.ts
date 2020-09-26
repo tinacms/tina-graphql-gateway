@@ -12,10 +12,7 @@ export type TinaDocument = {
 export type DocumentArgs = {
   path: string;
 };
-// FIXME: use unknown here
-export const isDocumentArgs = (args: any): args is DocumentArgs => {
-  return args.path;
-};
+
 export interface DataSource {
   /**
    * `getData`

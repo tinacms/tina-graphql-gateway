@@ -13,10 +13,6 @@ import type { Settings, Template, TemplateData, WithFields } from "../types";
 export type DocumentArgs = {
   path: string;
 };
-// FIXME: use unknown here
-export const isDocumentArgs = (args: any): args is DocumentArgs => {
-  return args.path;
-};
 
 export class FileSystemManager implements DataSource {
   rootPath: string;
