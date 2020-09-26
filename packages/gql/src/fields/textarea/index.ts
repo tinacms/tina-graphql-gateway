@@ -100,6 +100,22 @@ const resolve = {
     }
     return value;
   },
+  input: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: TextareaField;
+    value: unknown;
+  }): Promise<string> => {
+    if (typeof value !== "string") {
+      throw new Error(
+        `Unexpected value of type ${typeof value} for resolved textarea value`
+      );
+    }
+    return value;
+  },
 };
 
 export const textarea = {

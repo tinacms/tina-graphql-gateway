@@ -271,6 +271,47 @@ const resolve = {
         return value;
     }
   },
+  input: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: ListField;
+    value: unknown;
+  }): Promise<
+    | {
+        _resolver: "_resource";
+        _resolver_kind: "_nested_sources";
+        _args: { paths: string[] };
+      }
+    | string[]
+  > => {
+    assertIsStringArray(value);
+    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+    const isSimple = field.config.use_select ? false : true;
+    if (!isSimple) {
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
+    }
+    let list;
+    switch (listTypeIdentifier) {
+      case "documents":
+        list = field as DocumentList;
+        throw new Error(`document list not implemented`);
+      case "pages":
+        // TODO: validate the documents exists
+        return value;
+      case "simple":
+        // TODO: validate the item is in the options list if it's a select
+        list = field as SimpleList;
+        return value;
+    }
+  },
 };
 
 function assertIsStringArray(value: unknown): asserts value is string[] {

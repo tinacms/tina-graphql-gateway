@@ -169,6 +169,26 @@ const resolve = {
         return value;
     }
   },
+  input: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: SelectField;
+    value: unknown;
+  }) => {
+    switch (field.config.source.type) {
+      case "documents":
+        throw new Error(`document select not implemented`);
+      case "pages":
+        // TODO: validate the document exists
+        return value;
+      // TODO: validate the item is in the options list
+      case "simple":
+        return value;
+    }
+  },
 };
 
 export const select = {

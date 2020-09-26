@@ -1,5 +1,6 @@
 import type { DataSource } from "../../datasources/datasource";
 import { friendlyName } from "../../util";
+import _ from "lodash";
 import type { TinaTemplateData } from "../../types";
 import {
   GraphQLString,
@@ -59,10 +60,6 @@ const build = {
         };
       })
     );
-
-    const name = `Blocks${field.template_types
-      .map((name) => friendlyName(name))
-      .join("")}`;
 
     return cache.build(
       new GraphQLObjectType<BlocksField>({
@@ -128,10 +125,12 @@ const build = {
     });
     return {
       type: cache.build(
-        new GraphQLInputObjectType({
-          name: `${field.__namespace}${field.label}BlocksInput`,
-          fields: accum,
-        })
+        GraphQLList(
+          new GraphQLInputObjectType({
+            name: `${field.__namespace}${field.label}BlocksInput`,
+            fields: accum,
+          })
+        )
       ),
     };
   },
@@ -246,6 +245,35 @@ const resolve = {
         const { template, ...rest } = item;
         const templateData = await datasource.getTemplate({ slug: template });
         return await resolveData(datasource, templateData, rest);
+      })
+    );
+  },
+  input: async ({
+    datasource,
+    field,
+    value,
+    resolveData,
+    resolveTemplate,
+    resolveDocumentInputData,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: unknown;
+    resolveData: resolveDataType;
+    resolveTemplate: resolveTemplateType;
+    resolveDocumentInputData: any;
+  }): Promise<ResolvedData[]> => {
+    // FIXME: we should validate that only one key was passed
+
+    return await Promise.all(
+      value.map(async (item) => {
+        const data = Object.values(item)[0];
+        const template = await datasource.getTemplate({
+          // FIXME: we're sending the label in here as if it's a template slug
+          // we want to send the slug in instead so we don't have to lowercase it
+          slug: _.lowerCase(data._template),
+        });
+        return await resolveDocumentInputData({ data, template, datasource });
       })
     );
   },
