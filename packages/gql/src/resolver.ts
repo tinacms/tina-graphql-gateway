@@ -57,6 +57,17 @@ function isResource(
   }
 }
 
+function assertIsDocumentInputArgs(
+  args: FieldResolverArgs
+): asserts args is { path: string; params: object } {
+  if (!args.path || typeof args.path !== "string") {
+    throw new Error(`Expected args for input document request`);
+  }
+  if (!args.params || typeof args.params !== "object") {
+    throw new Error(`Expected args for input document request`);
+  }
+}
+
 export const fieldResolver: GraphQLFieldResolver<
   FieldResolverSource,
   ContextT,
@@ -66,9 +77,8 @@ export const fieldResolver: GraphQLFieldResolver<
   const { datasource } = context;
 
   if (info.fieldName === "updateDocument") {
-    if (!args.path || typeof args.path !== "string") {
-      throw new Error(`Expected args for initial document request`);
-    }
+    assertIsDocumentInputArgs(args);
+
     await resolveDocumentInput({ args: args, params: args.params, datasource });
     return await resolveDocument({ args: args, datasource });
   }
