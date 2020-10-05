@@ -5,10 +5,12 @@ import {
   GraphQLObjectType,
   getNamedType,
   GraphQLUnionType,
+  buildSchema,
+  parse,
   GraphQLType,
 } from "graphql";
 import { FileSystemManager } from "../datasources/filesystem-manager";
-import { cacheInit } from "../schema-builder";
+import { cacheInit } from "../cache";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
@@ -16,12 +18,18 @@ export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   if (mockGetTemplate) {
     filesystemDataSource.getTemplate = mockGetTemplate;
   }
-  const storage: {
-    [key: string]: GraphQLType;
-  } = {};
-  return cacheInit(filesystemDataSource, storage);
+  return cacheInit(filesystemDataSource);
 };
 
+export const assertSchema = (schema: GraphQLSchema) => {
+  // Useful to grab a snapshot
+  // console.log(printSchema(schema));
+  return {
+    matches: (gqlString: string) => {
+      expect(printSchema(schema)).toEqual(printSchema(buildSchema(gqlString)));
+    },
+  };
+};
 export const assertType = (type: GraphQLObjectType<any, any>) => {
   // Useful to grab a snapshot
   // console.log(printSchema(new GraphQLSchema({ query: type })));

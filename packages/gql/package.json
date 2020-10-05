@@ -7,8 +7,9 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/server.ts --format cjs",
+    "watch": "yarn tsup src/server.ts --watch --format cjs",
+    "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
     "test-watch": "jest --watch"
@@ -37,6 +38,8 @@
     "nodemon": "^2.0.4",
     "tslib": "^1.11.1",
     "typedoc": "^0.19.2",
+    "typedoc-plugin-external-module-name": "^4.0.3",
+    "typedoc-plugin-graphql": "^1.0.3",
     "typescript": "^3.8.3",
     "ws": "^7.3.1",
     "yup": "^0.29.3"

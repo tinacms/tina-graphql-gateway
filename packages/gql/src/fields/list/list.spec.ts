@@ -24,14 +24,14 @@ describe("List", () => {
           field: ListFormFieldItemField
         }
 
-        union ListFormFieldItemField = SelectField | TextareaField
+        union ListFormFieldItemField = SelectField | TextField
 
         type SelectField {
           component: String
           options: [String]
         }
 
-        type TextareaField {
+        type TextField {
           component: String
         }
       `);

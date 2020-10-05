@@ -4455,6 +4455,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tslib", "npm:1.13.0"],
             ["tsup", "npm:3.6.1"],
             ["typedoc", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.19.2"],
+            ["typedoc-plugin-external-module-name", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:4.0.3"],
+            ["typedoc-plugin-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:1.0.3"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"],
             ["ws", "virtual:011ff9495da039ed8bc5c08f6192fd52735a209184ec4f3f32093e7d589abb4feac412e88d55fe50ff1f9dc1112eb71484f3c14102803dfd018bd7f34ade9ccd#npm:7.3.1"],
             ["yup", "npm:0.29.3"]
@@ -17417,6 +17419,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/highlight.js-npm-10.2.0-c7b0b930ee-249ae2aa45.zip/node_modules/highlight.js/",
           "packageDependencies": [
             ["highlight.js", "npm:10.2.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:10.2.1", {
+          "packageLocation": "./.yarn/cache/highlight.js-npm-10.2.1-078ab533c8-a799dabfbf.zip/node_modules/highlight.js/",
+          "packageDependencies": [
+            ["highlight.js", "npm:10.2.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["highlightjs-graphql", [
+        ["npm:1.0.2", {
+          "packageLocation": "./.yarn/cache/highlightjs-graphql-npm-1.0.2-1445b9f479-81a4bc552d.zip/node_modules/highlightjs-graphql/",
+          "packageDependencies": [
+            ["highlightjs-graphql", "npm:1.0.2"]
           ],
           "linkType": "HARD",
         }]
@@ -30733,9 +30751,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["semver", "npm:7.3.2"],
             ["shelljs", "npm:0.8.4"],
             ["typedoc-default-themes", "npm:0.11.4"],
+            ["typedoc-plugin-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:1.0.3"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"]
           ],
           "packagePeers": [
+            "typedoc-plugin-graphql",
             "typescript"
           ],
           "linkType": "HARD",
@@ -30746,6 +30766,36 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/typedoc-default-themes-npm-0.11.4-4359825f62-1993030e24.zip/node_modules/typedoc-default-themes/",
           "packageDependencies": [
             ["typedoc-default-themes", "npm:0.11.4"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["typedoc-plugin-external-module-name", [
+        ["virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:4.0.3", {
+          "packageLocation": "./.yarn/$$virtual/typedoc-plugin-external-module-name-virtual-61272c5580/0/cache/typedoc-plugin-external-module-name-npm-4.0.3-70859ab471-52ccf3f437.zip/node_modules/typedoc-plugin-external-module-name/",
+          "packageDependencies": [
+            ["typedoc-plugin-external-module-name", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:4.0.3"],
+            ["lodash", "npm:4.17.20"],
+            ["semver", "npm:7.3.2"],
+            ["typedoc", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.19.2"]
+          ],
+          "packagePeers": [
+            "typedoc"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["typedoc-plugin-graphql", [
+        ["virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:1.0.3", {
+          "packageLocation": "./.yarn/$$virtual/typedoc-plugin-graphql-virtual-15e91e418c/0/cache/typedoc-plugin-graphql-npm-1.0.3-ea7feebab0-5fbeb81aeb.zip/node_modules/typedoc-plugin-graphql/",
+          "packageDependencies": [
+            ["typedoc-plugin-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:1.0.3"],
+            ["highlight.js", "npm:10.2.1"],
+            ["highlightjs-graphql", "npm:1.0.2"],
+            ["typedoc", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.19.2"]
+          ],
+          "packagePeers": [
+            "typedoc"
           ],
           "linkType": "HARD",
         }]

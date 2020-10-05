@@ -45,7 +45,7 @@ const UseIt = ({ formConfig, onSubmit }) => {
     fields: formConfig.form.fields,
     initialValues: formConfig.initialValues,
     onSubmit: async (values) => {
-      const payload = handle(values);
+      const payload = handle(values, formConfig.form);
       onSubmit(payload);
     },
   };
@@ -57,10 +57,16 @@ const UseIt = ({ formConfig, onSubmit }) => {
 
 export const Explorer = () => {
   let { project } = useParams();
+  const [vars, setVars] = React.useState();
+  React.useEffect(() => {
+    if (!vars) {
+      setVars({ path: "posts/1.md" });
+    }
+  }, [vars]);
   const [state, setState] = React.useState({
     schema: null,
     query: null,
-    variables: JSON.stringify({ path: "posts/1.md" }, null, 2),
+    // variables: JSON.stringify({ path: "posts/1.md" }, null, 2),
     explorerIsOpen: false,
     codeExporterIsOpen: false,
   });
@@ -94,16 +100,14 @@ export const Explorer = () => {
   const _graphiql = React.useRef();
 
   const setVariables = (values) => {
-    console.log("stting variables", values);
+    setVars({ path: vars.path, params: values });
     setState({
       ...state,
-      query:
-        "mutation updateDocumentMutation($path: String!, $params: DocumentInput) {      updateDocument(path: $path, params: $params) {        __typename      }    }",
-      variables: JSON.stringify(
-        { path: state.variables.path, params: values },
-        null,
-        2
-      ),
+      query: `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
+  updateDocument(path: $path, params: $params) {
+    __typename
+  }
+}`,
     });
   };
 
@@ -143,7 +147,7 @@ export const Explorer = () => {
     setState({ ...state, explorerIsOpen: !state.explorerIsOpen });
   };
 
-  const { query, variables, schema } = state;
+  const { query, schema } = state;
 
   return (
     <div id="root" className="graphiql-container">
@@ -167,7 +171,7 @@ export const Explorer = () => {
           fetcher={graphQLFetcher}
           schema={schema}
           query={query}
-          variables={variables}
+          variables={JSON.stringify(vars, null, 2)}
         >
           <GraphiQL.Toolbar>
             {projects.map((project) => {

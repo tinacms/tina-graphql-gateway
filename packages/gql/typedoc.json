@@ -1,0 +1,10 @@
+{
+  "inputFiles": ["./src"],
+  "out": "doc",
+  "mode": "modules",
+  "ignoreCompilerErrors": true,
+  "categorizeByGroup": true,
+  "exclude": "**/*.spec.ts",
+  "excludeNotExported": true,
+  "plugin": ["typedoc-plugin-graphql"]
+}

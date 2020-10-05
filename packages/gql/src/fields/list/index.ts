@@ -1,5 +1,3 @@
-import type { TinaField } from "../index";
-import type { DataSource } from "../../datasources/datasource";
 import * as yup from "yup";
 import {
   GraphQLString,
@@ -7,8 +5,278 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
-import type { Cache } from "../../builder";
+
 import { select } from "../select";
+import { builder } from "../../builder/service";
+
+import type { Cache } from "../../cache";
+import type { TinaField } from "../index";
+import type { DataSource } from "../../datasources/datasource";
+
+export const list = {
+  build: {
+    /** Returns one of 3 possible types of select options */
+    field: ({ cache, field }: { cache: Cache; field: ListField }) => {
+      return cache.build(
+        new GraphQLObjectType({
+          name: "ListField",
+          fields: {
+            name: { type: GraphQLString },
+            label: { type: GraphQLString },
+            component: { type: GraphQLString },
+            field: {
+              type: new GraphQLUnionType({
+                name: "ListFormFieldItemField",
+                types: [
+                  // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
+                  cache.build(
+                    new GraphQLObjectType({
+                      name: "SelectField",
+                      fields: {
+                        component: { type: GraphQLString },
+                        options: { type: GraphQLList(GraphQLString) },
+                      },
+                    })
+                  ),
+                  cache.build(
+                    new GraphQLObjectType({
+                      name: "TextField",
+                      fields: {
+                        component: { type: GraphQLString },
+                      },
+                    })
+                  ),
+                ],
+              }),
+            },
+          },
+        })
+      );
+    },
+    initialValue: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: ListField;
+    }) => {
+      return { type: GraphQLList(GraphQLString) };
+    },
+    value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
+      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+      const isSimple = field.config.use_select ? false : true;
+      if (!isSimple) {
+        listTypeIdentifier =
+          field.config?.source?.type === "documents"
+            ? "documents"
+            : field.config?.source?.type === "pages"
+            ? "pages"
+            : "simple";
+      }
+
+      let list;
+      switch (listTypeIdentifier) {
+        case "documents":
+          list = field as DocumentList;
+          throw new Error(`document select not implemented`);
+        case "pages":
+          list = field as SectionList;
+          const section = list.config.source.section;
+          return {
+            type: await cache.build(
+              new GraphQLObjectType({
+                name: `${list.label}Documents`,
+                fields: {
+                  documents: {
+                    type: GraphQLList(
+                      await builder.documentUnion({ cache, section })
+                    ),
+                  },
+                },
+              })
+            ),
+          };
+        case "simple":
+          list = field as SimpleList;
+          return { type: GraphQLList(GraphQLString) };
+      }
+    },
+    input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
+      return { type: GraphQLList(GraphQLString) };
+    },
+  },
+  resolve: {
+    field: async ({
+      datasource,
+      field,
+    }: {
+      datasource: DataSource;
+      field: ListField;
+    }): Promise<TinaListField> => {
+      const { ...rest } = field;
+
+      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+      const isSimple = field.config.use_select ? false : true;
+      if (!isSimple) {
+        listTypeIdentifier =
+          field.config?.source?.type === "documents"
+            ? "documents"
+            : field.config?.source?.type === "pages"
+            ? "pages"
+            : "simple";
+      }
+
+      // FIXME this should be a subset type of TinaField,
+      // this property doesn't need most of these fields
+      let fieldComponent: TinaField = {
+        default: "",
+        name: "",
+        label: "Text",
+        component: "text",
+        __typename: "TextField" as const,
+      };
+      let list;
+      switch (listTypeIdentifier) {
+        case "documents":
+          list = field as DocumentList;
+          throw new Error(`document list not implemented`);
+        case "pages":
+          list = field as SectionList;
+
+          const selectField = {
+            ...list,
+            component: "select" as const,
+            type: "select" as const,
+            __typename: "SelectField",
+          };
+          fieldComponent = await select.resolve.field({
+            datasource,
+            field: selectField,
+          });
+          break;
+        case "simple":
+          list = field as SimpleList;
+          break;
+        // Do nothing, this is the default
+      }
+
+      return {
+        ...rest,
+        component: "list",
+        field: fieldComponent,
+        __typename: "ListField",
+      };
+    },
+    initialValue: async ({
+      datasource,
+      field,
+      value,
+    }: {
+      datasource: DataSource;
+      field: ListField;
+      value: unknown;
+    }): Promise<
+      | {
+          _resolver: "_resource";
+          _resolver_kind: "_nested_sources";
+          _args: { paths: string[] };
+        }
+      | string[]
+    > => {
+      assertIsStringArray(value);
+      return value;
+    },
+    value: async ({
+      datasource,
+      field,
+      value,
+    }: {
+      datasource: DataSource;
+      field: ListField;
+      value: unknown;
+    }): Promise<
+      | {
+          _resolver: "_resource";
+          _resolver_kind: "_nested_sources";
+          _args: { paths: string[] };
+        }
+      | string[]
+    > => {
+      assertIsStringArray(value);
+      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+      const isSimple = field.config.use_select ? false : true;
+      if (!isSimple) {
+        listTypeIdentifier =
+          field.config?.source?.type === "documents"
+            ? "documents"
+            : field.config?.source?.type === "pages"
+            ? "pages"
+            : "simple";
+      }
+      let list;
+      switch (listTypeIdentifier) {
+        case "documents":
+          list = field as DocumentList;
+          throw new Error(`document list not implemented`);
+        case "pages":
+          return {
+            _resolver: "_resource",
+            _resolver_kind: "_nested_sources",
+            _args: { paths: value },
+          };
+        case "simple":
+          list = field as SimpleList;
+          return value;
+      }
+    },
+    input: async ({
+      datasource,
+      field,
+      value,
+    }: {
+      datasource: DataSource;
+      field: ListField;
+      value: unknown;
+    }): Promise<
+      | {
+          _resolver: "_resource";
+          _resolver_kind: "_nested_sources";
+          _args: { paths: string[] };
+        }
+      | string[]
+    > => {
+      assertIsStringArray(value);
+      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+      const isSimple = field.config.use_select ? false : true;
+      if (!isSimple) {
+        listTypeIdentifier =
+          field.config?.source?.type === "documents"
+            ? "documents"
+            : field.config?.source?.type === "pages"
+            ? "pages"
+            : "simple";
+      }
+      let list;
+      switch (listTypeIdentifier) {
+        case "documents":
+          list = field as DocumentList;
+          throw new Error(`document list not implemented`);
+        case "pages":
+          // TODO: validate the documents exists
+          return value;
+        case "simple":
+          // TODO: validate the item is in the options list if it's a select
+          list = field as SimpleList;
+          return value;
+      }
+    },
+  },
+};
+
+function assertIsStringArray(value: unknown): asserts value is string[] {
+  const schema = yup.array().of(yup.string());
+  schema.validateSync(value);
+}
 
 export type BaseListField = {
   label: string;
@@ -54,272 +322,4 @@ export type TinaListField = {
   component: "list";
   field: TinaField;
   __typename: "ListField";
-};
-
-const build = {
-  /** Returns one of 3 possible types of select options */
-  field: ({ cache, field }: { cache: Cache; field: ListField }) => {
-    return cache.build(
-      new GraphQLObjectType({
-        name: "ListField",
-        fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          component: { type: GraphQLString },
-          field: {
-            type: new GraphQLUnionType({
-              name: "ListFormFieldItemField",
-              types: [
-                // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
-                cache.build(
-                  new GraphQLObjectType({
-                    name: "SelectField",
-                    fields: {
-                      component: { type: GraphQLString },
-                      options: { type: GraphQLList(GraphQLString) },
-                    },
-                  })
-                ),
-                cache.build(
-                  new GraphQLObjectType({
-                    name: "TextField",
-                    fields: {
-                      component: { type: GraphQLString },
-                    },
-                  })
-                ),
-              ],
-            }),
-          },
-        },
-      })
-    );
-  },
-  initialValue: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: ListField;
-  }) => {
-    return { type: GraphQLList(GraphQLString) };
-  },
-  value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document select not implemented`);
-      case "pages":
-        list = field as SectionList;
-        const section = list.config.source.section;
-        return {
-          type: await cache.build(
-            new GraphQLObjectType({
-              name: `${list.label}Documents`,
-              fields: {
-                documents: {
-                  type: GraphQLList(
-                    await cache.builder.buildDocumentUnion({ cache, section })
-                  ),
-                },
-              },
-            })
-          ),
-        };
-      case "simple":
-        list = field as SimpleList;
-        return { type: GraphQLList(GraphQLString) };
-    }
-  },
-  input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-    return { type: GraphQLList(GraphQLString) };
-  },
-};
-const resolve = {
-  field: async ({
-    datasource,
-    field,
-  }: {
-    datasource: DataSource;
-    field: ListField;
-  }): Promise<TinaListField> => {
-    const { ...rest } = field;
-
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-
-    // FIXME this should be a subset type of TinaField,
-    // this property doesn't need most of these fields
-    let fieldComponent: TinaField = {
-      default: "",
-      name: "",
-      label: "Text",
-      component: "text",
-      __typename: "TextField" as const,
-    };
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document list not implemented`);
-      case "pages":
-        list = field as SectionList;
-
-        const selectField = {
-          ...list,
-          component: "select" as const,
-          type: "select" as const,
-          __typename: "SelectField",
-        };
-        fieldComponent = await select.resolve.field({
-          datasource,
-          field: selectField,
-        });
-        break;
-      case "simple":
-        list = field as SimpleList;
-        break;
-      // Do nothing, this is the default
-    }
-
-    return {
-      ...rest,
-      component: "list",
-      field: fieldComponent,
-      __typename: "ListField",
-    };
-  },
-  initialValue: async ({
-    datasource,
-    field,
-    value,
-  }: {
-    datasource: DataSource;
-    field: ListField;
-    value: unknown;
-  }): Promise<
-    | {
-        _resolver: "_resource";
-        _resolver_kind: "_nested_sources";
-        _args: { paths: string[] };
-      }
-    | string[]
-  > => {
-    assertIsStringArray(value);
-    return value;
-  },
-  value: async ({
-    datasource,
-    field,
-    value,
-  }: {
-    datasource: DataSource;
-    field: ListField;
-    value: unknown;
-  }): Promise<
-    | {
-        _resolver: "_resource";
-        _resolver_kind: "_nested_sources";
-        _args: { paths: string[] };
-      }
-    | string[]
-  > => {
-    assertIsStringArray(value);
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document list not implemented`);
-      case "pages":
-        return {
-          _resolver: "_resource",
-          _resolver_kind: "_nested_sources",
-          _args: { paths: value },
-        };
-      case "simple":
-        list = field as SimpleList;
-        return value;
-    }
-  },
-  input: async ({
-    datasource,
-    field,
-    value,
-  }: {
-    datasource: DataSource;
-    field: ListField;
-    value: unknown;
-  }): Promise<
-    | {
-        _resolver: "_resource";
-        _resolver_kind: "_nested_sources";
-        _args: { paths: string[] };
-      }
-    | string[]
-  > => {
-    assertIsStringArray(value);
-    let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-    const isSimple = field.config.use_select ? false : true;
-    if (!isSimple) {
-      listTypeIdentifier =
-        field.config?.source?.type === "documents"
-          ? "documents"
-          : field.config?.source?.type === "pages"
-          ? "pages"
-          : "simple";
-    }
-    let list;
-    switch (listTypeIdentifier) {
-      case "documents":
-        list = field as DocumentList;
-        throw new Error(`document list not implemented`);
-      case "pages":
-        // TODO: validate the documents exists
-        return value;
-      case "simple":
-        // TODO: validate the item is in the options list if it's a select
-        list = field as SimpleList;
-        return value;
-    }
-  },
-};
-
-function assertIsStringArray(value: unknown): asserts value is string[] {
-  const schema = yup.array().of(yup.string());
-  schema.validateSync(value);
-}
-
-export const list = {
-  resolve,
-  build,
 };
