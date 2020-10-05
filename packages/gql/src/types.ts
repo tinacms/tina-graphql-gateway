@@ -9,16 +9,17 @@ export type DirectorySection = {
   new_doc_ext: string;
   templates: string[];
 };
+
 export type HeadingSection = {
   type: "heading";
   label: string;
 };
+
 export type DocumentSection = {
   type: "document";
   label: string;
   path: string;
 };
-// export type Section = DirectorySection | HeadingSection | DocumentSection;
 
 interface SectionMap {
   directory: DirectorySection;
@@ -41,15 +42,32 @@ export type WithFields = {
   fields: Field[];
   __namespace: string;
 };
+/**
+ * The data portion of the template file. Currently a template
+ * is parsed with gray-matter, which returns a "content" and "data"
+ * key. TemplateData is the "data" portion
+ * ```yaml
+ * label: Some Label
+ * hide_body: true
+ * fields:
+ *   - name: title
+ *     label: Title
+ *     type: text
+ * pages:
+ *   - path/to/page.md
+ * ```
+ */
 export type TemplateData = WithFields & {
   hide_body?: boolean;
   display_field?: string;
   pages?: string[];
 };
+
 export type TinaTemplateData = {
   label: string;
   fields: TinaField[];
 };
+
 export type Template = {
   data: TemplateData;
 };

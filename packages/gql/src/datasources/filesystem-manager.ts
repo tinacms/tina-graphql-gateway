@@ -33,6 +33,12 @@ export class FileSystemManager implements DataSource {
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
+  getTemplates = async (templates: string[]) =>
+    await Promise.all(
+      templates.map(
+        async (template) => await this.getTemplate({ slug: template })
+      )
+    );
   getTemplatesForSection = async (section?: string) => {
     const { data } = await readFile<Settings>(
       p.join(this.rootPath, ".tina/settings.yml")

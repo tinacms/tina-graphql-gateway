@@ -1,13 +1,15 @@
-import express from "express";
 import path from "path";
-import { FileSystemManager } from "./datasources/filesystem-manager";
-import { schemaBuilder } from "./builder";
-import { graphqlInit } from "./resolver";
-// @ts-ignore
-import bodyParser from "body-parser";
 import cors from "cors";
 import http from "http";
 import WebSocket from "ws";
+import express from "express";
+// @ts-ignore
+import bodyParser from "body-parser";
+
+import { builder } from "./builder/service";
+import { cacheInit } from "./cache";
+import { graphqlInit } from "./resolver";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 
 const app = express();
 //initialize a simple http server
@@ -44,13 +46,17 @@ app.post("/:schema", async (req, res) => {
 
   const projectRoot = path.join(process.cwd(), `src/fixtures${req.path}`);
   const datasource = new FileSystemManager(projectRoot);
-  const schema = await schemaBuilder({ datasource });
+  const cache = cacheInit(datasource);
+  const schema = await builder.schemaBuilder({ cache });
   const result = await graphqlInit({
     schema,
     source: query,
     contextValue: { datasource },
     variableValues: variables,
   });
+  if (result.errors) {
+    console.error(result.errors);
+  }
   return res.json(result);
 });
 

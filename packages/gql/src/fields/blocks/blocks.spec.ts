@@ -44,10 +44,12 @@ describe("Blocks", () => {
         }
 
         type SomeTemplateSectionsBlocksFieldTemplates {
-          sectionTemplateFields: SectionForm
+          Section: SectionForm
         }
 
         type SectionForm {
+          label: String
+          _template: String
           fields: [SomeTemplateSectionFormFields]
         }
 

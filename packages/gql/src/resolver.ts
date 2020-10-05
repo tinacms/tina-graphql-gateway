@@ -1,17 +1,18 @@
+import _ from "lodash";
 import { graphql } from "graphql";
 import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
-import type { TinaField } from "./fields";
-import _ from "lodash";
-import type { TemplateData, TinaTemplateData, WithFields } from "./types";
-import type { Field } from "./fields";
+
 import { text } from "./fields/text";
-import { textarea } from "./fields/textarea";
-import { select } from "./fields/select";
 import { list } from "./fields/list";
+import { select } from "./fields/select";
 import { blocks } from "./fields/blocks";
+import { textarea } from "./fields/textarea";
 import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
+
+import type { Field, TinaField } from "./fields";
 import type { DataSource } from "./datasources/datasource";
+import type { TemplateData, TinaTemplateData, WithFields } from "./types";
 
 export type ContextT = {
   datasource: DataSource;
@@ -416,18 +417,20 @@ const resolveData: resolveDataType = async (
   data
 ) => {
   const accum: { [key: string]: unknown } = {};
+  const { _template, ...rest } = data;
   await Promise.all(
-    Object.keys(data).map(async (key) => {
+    Object.keys(rest).map(async (key) => {
       const field = findField(resolvedTemplate.fields, key);
       return (accum[key] = await resolveDataField(
         datasource,
         field,
-        data[key]
+        rest[key]
       ));
     })
   );
   return {
     __typename: `${resolvedTemplate.label}Data`,
+    _template: resolvedTemplate.label,
     ...accum,
   };
 };
@@ -459,13 +462,16 @@ const resolveInitialValues: resolveInitialValuesType = async (
   );
   return {
     __typename: `${resolvedTemplate.label}InitialValues`,
+    _template: resolvedTemplate.label,
     ...accum,
   };
 };
 const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => f.name === fieldName);
+  const field = fields.find((f) => {
+    return f?.name === fieldName;
+  });
   if (!field) {
-    throw new Error(`Unable to find field for item with name: ${name}`);
+    throw new Error(`Unable to find field for item with name: ${fieldName}`);
   }
   return field;
 };
