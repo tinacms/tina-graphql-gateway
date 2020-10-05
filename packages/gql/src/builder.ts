@@ -258,7 +258,7 @@ const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
       fields: {
         label: { type: GraphQLString },
         _template: { type: GraphQLString },
-        fields: { type: await buildTemplateFormFieldsUnion(cache, t) },
+        fields: { type: await builder.buildTemplateFormFieldsUnion(cache, t) },
       },
     })
   );
