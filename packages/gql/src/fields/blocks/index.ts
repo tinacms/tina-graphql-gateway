@@ -7,6 +7,8 @@ import {
   getNamedType,
   GraphQLObjectType,
   GraphQLList,
+  GraphQLUnionType,
+  GraphQLType,
 } from "graphql";
 import * as yup from "yup";
 import type {
@@ -46,240 +48,291 @@ type BlockValue = {
   [key: string]: unknown;
 };
 
-const build = {
-  field: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-    const templateForms: {
-      [key: string]: { type: GraphQLObjectType<any, any> };
-    } = {};
-    await Promise.all(
-      field.template_types.map(async (templateSlug) => {
-        const template = await cache.datasource.getTemplate({
-          slug: templateSlug,
-        });
-        templateForms[template.label] = {
-          type: await cache.builder.buildTemplateForm(cache, template),
-        };
-      })
-    );
+type BuildArgs = { cache: Cache; field: BlocksField };
 
-    return cache.build(
-      new GraphQLObjectType<BlocksField>({
-        name: `${field.__namespace}${field.label}BlocksField`,
-        fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          component: { type: GraphQLString },
-          templates: {
-            type: cache.build(
-              new GraphQLObjectType({
-                name: `${field.__namespace}${field.label}BlocksFieldTemplates`,
-                fields: templateForms,
-              })
-            ),
-          },
-        },
-      })
-    );
-  },
-  initialValue: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-  }) => {
-    return {
-      type: GraphQLList(
-        await cache.builder.buildInitialValuesUnion({
-          cache,
-          templates: field.template_types,
-        })
-      ),
-    };
-  },
-  value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-    return {
-      type: GraphQLList(
-        await cache.builder.buildDataUnion({
-          cache,
-          templates: field.template_types,
-        })
-      ),
-    };
-  },
-  input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-    const templates = await Promise.all(
-      field.template_types.map((tt) =>
-        cache.datasource.getTemplate({ slug: tt })
-      )
-    );
-
-    const templateTypes = await Promise.all(
-      templates.map((template) => {
-        return cache.builder.buildTemplateInputData(cache, template);
-      })
-    );
-
-    const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-    templateTypes.forEach((template) => {
-      accum[getNamedType(template).toString()] = { type: template };
-    });
-    return {
-      type: cache.build(
-        GraphQLList(
-          new GraphQLInputObjectType({
-            name: `${field.__namespace}${field.label}BlocksInput`,
-            fields: accum,
-          })
-        )
-      ),
-    };
-  },
-};
-
-const resolve = {
+export const blocks = {
   /**
-   * Resolves the values with their respective templates, specified by
-   * the template key.
+   * Build properties are functions which build the various schemas for objects
+   * related to block data
    *
-   * ```js
-   * // given
-   * {
-   *   name: 'sections',
-   *   type: 'blocks',
-   *   label: 'Sections',
-   *   template_types: [ 'section' ]
-   * }
+   * The build process is done ahead of time and can be cached as a static GraphQL SDL file
    *
-   * // expect
-   * {
-   *   name: 'sections',
-   *   type: 'blocks',
-   *   label: 'Sections',
-   *   template_types: [ 'section' ],
-   *   component: 'blocks',
-   *   templates: {
-   *     sectionTemplateFields: {
-   *       __typename: 'Section',
-   *       label: 'Section',
-   *       hide_body: false,
-   *       fields: [Array]
-   *     }
-   *   },
-   *   __typename: 'BlocksFormField'
-   * }
-   *
-   * ```
    */
-  field: async ({
-    datasource,
-    field,
-    resolveTemplate,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    resolveTemplate: resolveTemplateType;
-  }): Promise<TinaBlocksField> => {
-    const templates: { [key: string]: TinaTemplateData } = {};
-    await Promise.all(
-      field.template_types.map(async (templateSlug) => {
-        const template = await datasource.getTemplate({
-          slug: templateSlug,
-        });
-        templates[template.label] = await resolveTemplate(datasource, template);
-      })
-    );
+  build: {
+    /**
+     * Builds a union type which adheres to the [Tina Block](https://tinacms.org/docs/plugins/fields/blocks/) shape.
+     *
+     * Since blocks need to be unique from one another depending on the templates they support, this is field
+     * builds a union which is namespaced by the template name:
+     *
+     * Given the following template definition:
+     * ```yaml
+     * label: MyPage
+     * fields:
+     * - name: sections
+     *   type: blocks
+     *   label: Sections
+     *   template_types:
+     *     - cta
+     *     - hero
+     * ```
 
-    return {
-      ...field,
-      component: "blocks" as const,
-      templates,
-      __typename: `${field.__namespace}${field.label}BlocksField`,
-    };
+     * Builds:
+     * ```graphql
+     * type MyPageSectionsBlocksField {
+     *   name: String
+     *   label: String
+     *   component: String
+     *   templates: SomeTemplateSectionsBlocksFieldTemplates
+     * }
+     * type SomeTemplateSectionsBlocksFieldTemplates {
+     *   sectionTemplateFields: SectionForm
+     * }
+     * type SectionForm {
+     *   fields: [MyPageSectionFormFields]
+     * }
+     * union MyPageSectionFormFields = CtaFormFields | HeroFormFields
+     * ```
+     */
+    field: async ({
+      cache,
+      field,
+    }: BuildArgs): Promise<GraphQLObjectType<BlocksField, any>> => {
+      const templateForms: {
+        [key: string]: { type: GraphQLObjectType<any, any> };
+      } = {};
+      await Promise.all(
+        field.template_types.map(async (templateSlug) => {
+          const template = await cache.datasource.getTemplate({
+            slug: templateSlug,
+          });
+          templateForms[template.label] = {
+            type: await cache.builder.buildTemplateForm(cache, template),
+          };
+        })
+      );
+
+      return cache.build(
+        new GraphQLObjectType<BlocksField>({
+          name: `${field.__namespace}${field.label}BlocksField`,
+          fields: {
+            name: { type: GraphQLString },
+            label: { type: GraphQLString },
+            component: { type: GraphQLString },
+            templates: {
+              type: cache.build(
+                new GraphQLObjectType({
+                  name: `${field.__namespace}${field.label}BlocksFieldTemplates`,
+                  fields: templateForms,
+                })
+              ),
+            },
+          },
+        })
+      );
+    },
+    initialValue: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: BlocksField;
+    }) => {
+      return {
+        type: GraphQLList(
+          await cache.builder.buildInitialValuesUnion({
+            cache,
+            templates: field.template_types,
+          })
+        ),
+      };
+    },
+    value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+      return {
+        type: GraphQLList(
+          await cache.builder.buildDataUnion({
+            cache,
+            templates: field.template_types,
+          })
+        ),
+      };
+    },
+    input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+      const templates = await Promise.all(
+        field.template_types.map((tt) =>
+          cache.datasource.getTemplate({ slug: tt })
+        )
+      );
+
+      const templateTypes = await Promise.all(
+        templates.map((template) => {
+          return cache.builder.buildTemplateInputData(cache, template);
+        })
+      );
+
+      const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
+      templateTypes.forEach((template) => {
+        accum[getNamedType(template).toString()] = { type: template };
+      });
+      return {
+        type: cache.build(
+          GraphQLList(
+            new GraphQLInputObjectType({
+              name: `${field.__namespace}${field.label}BlocksInput`,
+              fields: accum,
+            })
+          )
+        ),
+      };
+    },
   },
+  resolve: {
+    /**
+     * Resolves the values with their respective templates, specified by
+     * the template key.
+     *
+     * ```js
+     * // given
+     * {
+     *   name: 'sections',
+     *   type: 'blocks',
+     *   label: 'Sections',
+     *   template_types: [ 'section' ]
+     * }
+     *
+     * // expect
+     * {
+     *   name: 'sections',
+     *   type: 'blocks',
+     *   label: 'Sections',
+     *   template_types: [ 'section' ],
+     *   component: 'blocks',
+     *   templates: {
+     *     sectionTemplateFields: {
+     *       __typename: 'Section',
+     *       label: 'Section',
+     *       hide_body: false,
+     *       fields: [Array]
+     *     }
+     *   },
+     *   __typename: 'BlocksFormField'
+     * }
+     *
+     * ```
+     */
+    field: async ({
+      datasource,
+      field,
+      resolveTemplate,
+    }: {
+      datasource: DataSource;
+      field: BlocksField;
+      resolveTemplate: resolveTemplateType;
+    }): Promise<TinaBlocksField> => {
+      const templates: { [key: string]: TinaTemplateData } = {};
+      await Promise.all(
+        field.template_types.map(async (templateSlug) => {
+          const template = await datasource.getTemplate({
+            slug: templateSlug,
+          });
+          templates[template.label] = await resolveTemplate(
+            datasource,
+            template
+          );
+        })
+      );
 
-  initialValue: async ({
-    datasource,
-    field,
-    value,
-    resolveInitialValues,
-    resolveTemplate,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-    resolveInitialValues: resolveInitialValuesType;
-    resolveTemplate: resolveTemplateType;
-  }): Promise<ResolvedData[]> => {
-    assertIsBlock(value);
-    return await Promise.all(
-      value.map(async (item) => {
-        const { _template, ...rest } = item;
-        const templateData = await datasource.getTemplate({
-          slug: _.lowerCase(_template),
-        });
-        return {
-          _template: `${_template}TemplateFields`,
-          ...(await resolveInitialValues(datasource, templateData, rest)),
-        };
-      })
-    );
-  },
-  value: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-    resolveTemplate,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-    resolveData: resolveDataType;
-    resolveTemplate: resolveTemplateType;
-  }): Promise<ResolvedData[]> => {
-    assertIsBlock(value);
+      return {
+        ...field,
+        component: "blocks" as const,
+        templates,
+        __typename: `${field.__namespace}${field.label}BlocksField`,
+      };
+    },
 
-    return await Promise.all(
-      value.map(async (item) => {
-        const { _template, ...rest } = item;
-        const templateData = await datasource.getTemplate({
-          slug: _.lowerCase(_template),
-        });
-        return await resolveData(datasource, templateData, rest);
-      })
-    );
-  },
-  input: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-    resolveTemplate,
-    resolveDocumentInputData,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-    resolveData: resolveDataType;
-    resolveTemplate: resolveTemplateType;
-    resolveDocumentInputData: any;
-  }): Promise<ResolvedData[]> => {
-    // FIXME: we should validate that only one key was passed
-    assertIsArray(value);
+    initialValue: async ({
+      datasource,
+      field,
+      value,
+      resolveInitialValues,
+      resolveTemplate,
+    }: {
+      datasource: DataSource;
+      field: BlocksField;
+      value: unknown;
+      resolveInitialValues: resolveInitialValuesType;
+      resolveTemplate: resolveTemplateType;
+    }): Promise<ResolvedData[]> => {
+      assertIsBlock(value);
+      return await Promise.all(
+        value.map(async (item) => {
+          const { _template, ...rest } = item;
+          const templateData = await datasource.getTemplate({
+            slug: _.lowerCase(_template),
+          });
+          return {
+            _template: `${_template}TemplateFields`,
+            ...(await resolveInitialValues(datasource, templateData, rest)),
+          };
+        })
+      );
+    },
+    value: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+      resolveTemplate,
+    }: {
+      datasource: DataSource;
+      field: BlocksField;
+      value: unknown;
+      resolveData: resolveDataType;
+      resolveTemplate: resolveTemplateType;
+    }): Promise<ResolvedData[]> => {
+      assertIsBlock(value);
 
-    return await Promise.all(
-      value.map(async (item) => {
-        assertIsBlockInput(item);
-        const data = Object.values(item)[0];
-        const template = await datasource.getTemplate({
-          // FIXME: we're sending the label in here as if it's a template slug
-          // we want to send the slug in instead so we don't have to lowercase it
-          slug: _.lowerCase(data._template),
-        });
-        return await resolveDocumentInputData({ data, template, datasource });
-      })
-    );
+      return await Promise.all(
+        value.map(async (item) => {
+          const { _template, ...rest } = item;
+          const templateData = await datasource.getTemplate({
+            slug: _.lowerCase(_template),
+          });
+          return await resolveData(datasource, templateData, rest);
+        })
+      );
+    },
+    input: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+      resolveTemplate,
+      resolveDocumentInputData,
+    }: {
+      datasource: DataSource;
+      field: BlocksField;
+      value: unknown;
+      resolveData: resolveDataType;
+      resolveTemplate: resolveTemplateType;
+      resolveDocumentInputData: any;
+    }): Promise<ResolvedData[]> => {
+      // FIXME: we should validate that only one key was passed
+      assertIsArray(value);
+
+      return await Promise.all(
+        value.map(async (item) => {
+          assertIsBlockInput(item);
+          const data = Object.values(item)[0];
+          const template = await datasource.getTemplate({
+            // FIXME: we're sending the label in here as if it's a template slug
+            // we want to send the slug in instead so we don't have to lowercase it
+            slug: _.lowerCase(data._template),
+          });
+          return await resolveDocumentInputData({ data, template, datasource });
+        })
+      );
+    },
   },
 };
 
@@ -325,8 +378,3 @@ function assertIsBlock(value: unknown): asserts value is BlockValue[] {
     throw new Error(`Failed to assertIsBlock`);
   }
 }
-
-export const blocks = {
-  resolve,
-  build,
-};

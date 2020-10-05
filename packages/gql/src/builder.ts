@@ -19,7 +19,7 @@ import { fieldGroup } from "./fields/field-group";
 import { fieldGroupList } from "./fields/field-group-list";
 import { list } from "./fields/list";
 import type { GraphQLFieldConfigMap } from "graphql";
-import type { TemplateData, WithFields } from "./types";
+import type { TemplateData } from "./types";
 import type { Field } from "./fields";
 import type { DataSource } from "./datasources/datasource";
 import type { ContextT } from "./resolver";
@@ -43,13 +43,9 @@ const buildTemplateFormField = async (cache: Cache, field: Field) => {
   }
 };
 
-type BuildTemplateDataFields = (
+const buildTemplateDataFields = async (
   cache: Cache,
   template: TemplateData
-) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
-const buildTemplateDataFields: BuildTemplateDataFields = async (
-  cache,
-  template
 ) => {
   const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
@@ -105,13 +101,9 @@ const buildTemplateDataFields: BuildTemplateDataFields = async (
   return fields;
 };
 
-type BuildTemplateInputDataFields = (
+const buildTemplateInputDataFields = async (
   cache: Cache,
   template: TemplateData
-) => Promise<GraphQLInputFieldConfigMap>;
-const buildTemplateInputDataFields: BuildTemplateInputDataFields = async (
-  cache,
-  template
 ) => {
   const fields: GraphQLInputFieldConfigMap = {};
 
@@ -167,13 +159,9 @@ const buildTemplateInputDataFields: BuildTemplateInputDataFields = async (
   return fields;
 };
 
-type BuildTemplateInitialValueFields = (
+const buildTemplateInitialValueFields = async (
   cache: Cache,
   template: TemplateData
-) => Promise<GraphQLFieldConfigMap<any, ContextT>>;
-const buildTemplateInitialValueFields: BuildTemplateInitialValueFields = async (
-  cache,
-  template
 ) => {
   const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
@@ -233,18 +221,13 @@ const buildTemplateFormFields = async (
   cache: Cache,
   template: TemplateData
 ) => {
-  // FIXME: this should be unique by field type but not if they're blocks/field groups
-  // Unique by field.type
+  // FIXME: This will break when there are multiple block or field group items.
+  // this should be unique by field type but not if they're blocks/field groups
   const fields = _.uniqBy(template.fields, (field) => field.type);
   return Promise.all(
     fields.map(async (field) => await buildTemplateFormField(cache, field))
   );
 };
-
-type BuildTemplateFormFieldsUnion = (
-  cache: Cache,
-  template: TemplateData
-) => Promise<GraphQLList<GraphQLType>>;
 
 /**
  * Builds a union of fields for a form's field property
@@ -253,10 +236,10 @@ type BuildTemplateFormFieldsUnion = (
  * union AuthorFormFields = TextareaFormField | SelectFormField
  * ```
  */
-const buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion = async (
-  cache,
-  template
-) => {
+const buildTemplateFormFieldsUnion = async (
+  cache: Cache,
+  template: TemplateData
+): Promise<GraphQLList<GraphQLType>> => {
   return cache.build(
     GraphQLList(
       new GraphQLUnionType({
@@ -267,11 +250,7 @@ const buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion = async (
   );
 };
 
-type BuildTemplateForm = (
-  cache: Cache,
-  template: TemplateData
-) => Promise<GraphQLObjectType<any, any>>;
-const buildTemplateForm: BuildTemplateForm = async (cache, template) => {
+const buildTemplateForm = async (cache: Cache, template: TemplateData) => {
   const t = template;
   return cache.build(
     new GraphQLObjectType({
@@ -310,10 +289,6 @@ const buildTemplateData = async (cache: Cache, template: TemplateData) => {
   );
 };
 
-type BuildTemplateInputData = (
-  cache: Cache,
-  template: TemplateData
-) => Promise<GraphQLInputObjectType>;
 const buildTemplateInputData = async (cache: Cache, template: TemplateData) => {
   return cache.build(
     new GraphQLInputObjectType({
@@ -326,10 +301,6 @@ const buildTemplateInputData = async (cache: Cache, template: TemplateData) => {
   );
 };
 
-type BuildInitialValues = (
-  cache: Cache,
-  template: TemplateData
-) => Promise<GraphQLObjectType<any, ContextT>>;
 const buildInitialValues = async (cache: Cache, template: TemplateData) => {
   return cache.build(
     new GraphQLObjectType({
@@ -397,23 +368,13 @@ const buildDocumentTypes = async ({
   );
 };
 
-/**
- * Same as BuildDocumentUnion except that it only builds the `data` portion, used
- * for block children
- *
- * ```graphql
- * # Example
- * union PostAuthorDataUnion = PostData | AuthorData
- * ```
- */
-type BuildDataUnion = ({
+const buildDataUnion = async ({
   cache,
   templates,
 }: {
   cache: Cache;
   templates: string[];
-}) => Promise<GraphQLUnionType>;
-const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
+}) => {
   const templateObjects = await Promise.all(
     templates.map(
       async (template) => await cache.datasource.getTemplate({ slug: template })
@@ -432,6 +393,15 @@ const buildDataUnion: BuildDataUnion = async ({ cache, templates }) => {
   );
 };
 
+/**
+ * Same as BuildDocumentUnion except that it only builds the `data` portion, used
+ * for block children
+ *
+ * ```graphql
+ * # Example
+ * union PostAuthorDataUnion = PostData | AuthorData
+ * ```
+ */
 type BuildInitialValuesUnion = ({
   cache,
   templates,
@@ -439,27 +409,6 @@ type BuildInitialValuesUnion = ({
   cache: Cache;
   templates: string[];
 }) => Promise<GraphQLUnionType>;
-const buildInitialValuesUnion: BuildInitialValuesUnion = async ({
-  cache,
-  templates,
-}) => {
-  const templateObjects = await Promise.all(
-    templates.map(
-      async (template) => await cache.datasource.getTemplate({ slug: template })
-    )
-  );
-  const types = await Promise.all(
-    templateObjects.map(
-      async (template) => await buildInitialValues(cache, template)
-    )
-  );
-  return cache.build(
-    new GraphQLUnionType({
-      name: `${templates.join("")}InitialValuesUnion`,
-      types,
-    })
-  );
-};
 
 /**
  * Builds the union which can be any one of multiple templates.
@@ -477,15 +426,6 @@ type BuildDocumentUnion = ({
   section?: string;
 }) => Promise<GraphQLUnionType>;
 
-const buildDocumentUnion: BuildDocumentUnion = async ({ cache, section }) => {
-  return cache.build(
-    new GraphQLUnionType({
-      name: `${section ? section : ""}DocumentUnion`,
-      types: await buildDocumentTypes({ cache, section }),
-    })
-  );
-};
-
 type BuildDocumentInput = ({
   cache,
   section,
@@ -494,41 +434,120 @@ type BuildDocumentInput = ({
   section?: string;
 }) => Promise<GraphQLInputObjectType>;
 
-const buildDocumentInput: BuildDocumentInput = async ({ cache, section }) => {
-  const templates = await Promise.all(
-    (await cache.datasource.getTemplatesForSection(section)).map(
-      async (template) => {
-        const t = template;
-        return await buildTemplateInput(cache, t);
-      }
-    )
-  );
-  const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-  templates.forEach((template) => {
-    accum[getNamedType(template).toString()] = { type: template };
-  });
-  return cache.build(
-    new GraphQLInputObjectType({
-      name: `${section ? section : ""}DocumentInput`,
-      fields: accum,
-    })
-  );
+type builder = {
+  buildDocumentUnion: BuildDocumentUnion;
+  buildDataUnion: typeof buildDataUnion;
+  buildTemplateForm: typeof buildTemplateForm;
+  buildTemplateData: BuildTemplateData;
+  buildTemplateInputData: typeof buildTemplateInputData;
+  buildInitialValues: typeof buildInitialValues;
+  buildInitialValuesUnion: BuildInitialValuesUnion;
+  buildTemplateFormFieldsUnion: typeof buildTemplateFormFieldsUnion;
+  buildDocumentInput: BuildDocumentInput;
+};
+const builder: builder = {
+  buildDocumentUnion: async ({ cache, section }) => {
+    return cache.build(
+      new GraphQLUnionType({
+        name: `${section ? section : ""}DocumentUnion`,
+        types: await buildDocumentTypes({ cache, section }),
+      })
+    );
+  },
+  buildDataUnion: buildDataUnion,
+  buildTemplateForm: async (cache, template) => {
+    const t = template;
+    return cache.build(
+      new GraphQLObjectType({
+        name: `${template.label}Form`,
+        fields: {
+          label: { type: GraphQLString },
+          _template: { type: GraphQLString },
+          fields: { type: await buildTemplateFormFieldsUnion(cache, t) },
+        },
+      })
+    );
+  },
+  buildTemplateData: async (cache: Cache, template: TemplateData) => {
+    return cache.build(
+      new GraphQLObjectType({
+        name: `${template.label}Data`,
+        fields: await buildTemplateDataFields(cache, template),
+      })
+    );
+  },
+  buildTemplateInputData: async (cache: Cache, template: TemplateData) => {
+    return cache.build(
+      new GraphQLInputObjectType({
+        name: `${template.label}InputData`,
+        fields: {
+          _template: { type: GraphQLString },
+          ...(await buildTemplateInputDataFields(cache, template)),
+        },
+      })
+    );
+  },
+  buildInitialValues: async (cache: Cache, template: TemplateData) => {
+    return cache.build(
+      new GraphQLObjectType({
+        name: `${template.label}InitialValues`,
+        fields: {
+          _template: { type: GraphQLString },
+          ...(await buildTemplateInitialValueFields(cache, template)),
+        },
+      })
+    );
+  },
+  buildInitialValuesUnion: async ({ cache, templates }) => {
+    const templateObjects = await cache.datasource.getTemplates(templates);
+    const types = await Promise.all(
+      templateObjects.map(
+        async (template) => await buildInitialValues(cache, template)
+      )
+    );
+    return cache.build(
+      new GraphQLUnionType({
+        name: `${templates.join("")}InitialValuesUnion`,
+        types,
+      })
+    );
+  },
+  buildTemplateFormFieldsUnion: async (cache, template) => {
+    return cache.build(
+      GraphQLList(
+        new GraphQLUnionType({
+          name: `${template.__namespace || ""}${template.label}FormFields`,
+          types: await buildTemplateFormFields(cache, template),
+        })
+      )
+    );
+  },
+  buildDocumentInput: async ({ cache, section }) => {
+    const templates = await Promise.all(
+      (await cache.datasource.getTemplatesForSection(section)).map(
+        async (template) => {
+          return await buildTemplateInput(cache, template);
+        }
+      )
+    );
+    const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
+    templates.forEach((template) => {
+      accum[getNamedType(template).toString()] = { type: template };
+    });
+    return cache.build(
+      new GraphQLInputObjectType({
+        name: `${section ? section : ""}DocumentInput`,
+        fields: accum,
+      })
+    );
+  },
 };
 
 export type Cache = {
   /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
   build: <T extends GraphQLType>(gqlType: T) => T;
   datasource: DataSource;
-  builder: {
-    buildDocumentUnion: BuildDocumentUnion;
-    buildDataUnion: BuildDataUnion;
-    buildTemplateForm: BuildTemplateForm;
-    buildTemplateData: BuildTemplateData;
-    buildTemplateInputData: BuildTemplateInputData;
-    buildInitialValues: BuildInitialValues;
-    buildInitialValuesUnion: BuildInitialValuesUnion;
-    buildTemplateFormFieldsUnion: BuildTemplateFormFieldsUnion;
-  };
+  builder: typeof builder;
 };
 
 export const cacheInit = (
@@ -547,16 +566,7 @@ export const cacheInit = (
       return gqlType as any; // FIXME: not sure if it's possible, but want to just assert its a GraphQL union item
     },
     datasource: datasource,
-    builder: {
-      buildDocumentUnion,
-      buildDataUnion,
-      buildTemplateInputData,
-      buildTemplateData,
-      buildTemplateForm,
-      buildInitialValues,
-      buildInitialValuesUnion,
-      buildTemplateFormFieldsUnion,
-    },
+    builder,
   };
 
   return cache;
@@ -572,8 +582,8 @@ export const schemaBuilder = async ({
   } = {};
   const cache = cacheInit(datasource, storage);
 
-  const documentUnion = await buildDocumentUnion({ cache });
-  const documentInput = await buildDocumentInput({ cache });
+  const documentUnion = await cache.builder.buildDocumentUnion({ cache });
+  const documentInput = await cache.builder.buildDocumentInput({ cache });
   const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
       name: "Query",

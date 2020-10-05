@@ -40,8 +40,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -64,114 +62,7 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#structure" id="structure" style="color: inherit; text-decoration: none;">
-					<h1>Structure</h1>
-				</a>
-				<p>There is an <code>apps/demo</code> folder which is a nextjs app and then everything else is in <code>packages</code>:</p>
-				<a href="#forestrygraphql" id="forestrygraphql" style="color: inherit; text-decoration: none;">
-					<h3>@forestry/graphql</h3>
-				</a>
-				<p>Environment: <code>node</code></p>
-				<p>Provides <code>buildSchema</code> function which takes a <code>DataSource</code> instance and provides a schema based on the data it finds. It also provides the <code>FileSystemManager</code> datasource as well as the <code>DataSource</code> interface.</p>
-				<a href="#forestryclient" id="forestryclient" style="color: inherit; text-decoration: none;">
-					<h3>@forestry/client</h3>
-				</a>
-				<p>Environment: <code>browser</code></p>
-				<p>Provides React hooks for fetching and building the Tina form. It also exposes a CLI for things like generating Typescript types for your content models.</p>
-				<a href="#forestrybuild" id="forestrybuild" style="color: inherit; text-decoration: none;">
-					<h3>@forestry/build</h3>
-				</a>
-				<p>Just a package builder, uses Rollup.</p>
-				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
-					<h3>Getting started</h3>
-				</a>
-				<p>Currently this is a monorepo built with Yarn V2 and Plug-n-Play. This is a more strict package manager so if it&#39;s too much friction we can always go back to Lerna.</p>
-				<p>You should :fingers_crossed: be able to just run these commands. (Please make a note of any hang-ups you ran into during this process)</p>
-				<pre><code class="language-sh"><span class="hljs-comment"># check yarn version, this repo ships with yarn so it should be 2.1.1</span>
-yarn -v
-<span class="hljs-comment"># if that doesn&#x27;t show 2.1.1 it needs to be fixed. You can install the version manually https://yarnpkg.com/getting-started/install but you&#x27;ll definitely need +2.0</span>
-yarn install
-<span class="hljs-comment"># build all the packages</span>
-yarn run build
-<span class="hljs-comment"># watch all packages, (including the NextJS demo app?)</span>
-yarn run watch <span class="hljs-comment"># <span class="hljs-doctag">NOTE:</span> this isn&#x27;t running the apps/demo for me so I&#x27;ve been running it from the `apps/demo` repo directly in a separate tab</span>
-<span class="hljs-comment"># cd to apps/demo</span>
-<span class="hljs-comment"># start the local filesystem GraphQL server</span>
-yarn forestry:start</code></pre>
-				<p>That should allow you to see 2 things: The GraphiQL playground at <code>http:localhost:4001/graphql</code> and the NextJS demo app at <code>http:localhost:3000/home</code>. Tina form changes should result in <code>content/pages/home.md</code> being changed.</p>
-				<a href="#using-the-database-graphql-server-locally" id="using-the-database-graphql-server-locally" style="color: inherit; text-decoration: none;">
-					<h2>Using the <strong>database</strong> GraphQL Server Locally</h2>
-				</a>
-				<blockquote>
-					<p>NOTE: deprecated until we focus on the Teams repo.</p>
-				</blockquote>
-				<p>To use the Database version, ensure you have a database site that matches your <code>.forestry</code> folder config. Your site <code>lookup</code> attribute should be <code>qms5qlc0jk1o9g</code> for now.</p>
-				<p>Set an environment variable called TINA_GQL_SERVER that points to the Express process (for local testing this is &quot;<a href="http://localhost:4002/api/graphql&quot;">http://localhost:4002/api/graphql&quot;</a>)</p>
-				<a href="#the-forestry-folder" id="the-forestry-folder" style="color: inherit; text-decoration: none;">
-					<h3>The <code>.forestry</code> folder</h3>
-				</a>
-				<p>This demo uses a couple of extra things from the <code>.forestry</code> folder:</p>
-				<ul>
-					<li><strong>types.ts</strong> - This is auto-generated from the <code>@forestry/client</code> package, you can see it being used in the <code>[page].tsx</code> file.</li>
-					<li><strong>query.gql</strong> - This is also auto-generated from the <code>@forestry/client</code> package. It&#39;s a reference and isn&#39;t needed.</li>
-				</ul>
-				<hr>
-				<a href="#using-with-tina" id="using-with-tina" style="color: inherit; text-decoration: none;">
-					<h3>Using with Tina</h3>
-				</a>
-				<p>To use this with your local Tina repo look in the <code>demo/next.config.js</code> file, ensure the paths resolve to your local Tina install and you&#39;ve built all the necessary Tina packages.</p>
-				<a href="#using-this-repo-with-the-forestryio-app" id="using-this-repo-with-the-forestryio-app" style="color: inherit; text-decoration: none;">
-					<h3>Using this repo with the Forestry.io app</h3>
-				</a>
-				<p>For demonstation purposes I&#39;ve put the demos in the <code>apps</code> folder. But the Forestry app needs the <code>.forestry</code> files to be in the repo root so you can&#39;t hook this repo up to the app as it stands. We have another repo <a href="https://github.com/forestryio/demo-tina-blocks-graphql">here</a> which utilizes the same <code>.forestry</code> config</p>
-				<a href="#using-these-packages-externally" id="using-these-packages-externally" style="color: inherit; text-decoration: none;">
-					<h2>Using these packages externally</h2>
-				</a>
-				<p>These packages are currently published to NPM under the <code>forestryio</code> scope so you&#39;ll need to be sure you have access.</p>
-				<pre><code>/<span class="hljs-regexp">/npm.pkg.github.com/</span><span class="hljs-symbol">:_authToken=&lt;My-NPM-Auth-Access-Token-Here&gt;</span>
-<span class="hljs-variable">@forestryio</span><span class="hljs-symbol">:registry=https</span><span class="hljs-symbol">://npm</span>.pkg.github.com/
-always-auth=<span class="hljs-keyword">true</span>
-registry=<span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/registry.npmjs.org/</span> <span class="hljs-comment"># All other packages</span></code></pre>
-				<a href="#yarn-v2-repos-ignore-npmrc" id="yarn-v2-repos-ignore-npmrc" style="color: inherit; text-decoration: none;">
-					<h3>Yarn v2 repos ignore .npmrc</h3>
-				</a>
-				<p>If you&#39;re setting up a new repo with yarn v2, note that it <a href="https://yarnpkg.com/advanced/migration/#dont-use-npmrc-files">won&#39;t respect any settings</a> in your <code>.npmrc</code> - instead you can configure your settings in the .yarnrc.yml` file.</p>
-				<a href="#release-workflow" id="release-workflow" style="color: inherit; text-decoration: none;">
-					<h2>Release Workflow</h2>
-				</a>
-				<blockquote>
-					<p>Note: we&#39;re trialing yarn v2 so this is experimental. We&#39;re confident in the Lerna setup but it leaves a lot of gaps - hoping yarn v2 fills them but if it&#39;s too much trouble we&#39;ll scrap this.</p>
-				</blockquote>
-				<p>When making edits to a package, manually run <code>yarn version &lt;patch | minor | major&gt; --deferred</code>. This will populate a <code>version</code> file in the <code>.yarn</code> folder which will keep track of what type of version bump should be applied during the next release. Your commit message has nothing to do with the release (not using Conventional Commits here).</p>
-				<a href="#ci-check-versions" id="ci-check-versions" style="color: inherit; text-decoration: none;">
-					<h3>CI check versions</h3>
-				</a>
-				<p>Since you&#39;re now responsible for manually maintaining your package updates that can be cumbersome, it&#39;d be easy to forget that your change would require an upstream package to bump it&#39;s version. For that reason there&#39;s <code>yarn version check</code> and <code>yarn version check --interactive</code>. CI will fail when a &quot;release strategy&quot; hasn&#39;t been set for a package with changes or with dependency changes. You can see which packages need to be addressed in <code>--interactive</code> mode.</p>
-				<a href="#explanation" id="explanation" style="color: inherit; text-decoration: none;">
-					<h3>Explanation</h3>
-				</a>
-				<a href="#versioning-is-deferred" id="versioning-is-deferred" style="color: inherit; text-decoration: none;">
-					<h4>Versioning is deferred</h4>
-				</a>
-				<p><a href="https://yarnpkg.com/features/release-workflow#deferred-versioning">https://yarnpkg.com/features/release-workflow#deferred-versioning</a></p>
-				<p>In order to prevent inconsistencies in versioning we&#39;ll push changes manually - not relying on Conventional Commits as they are tough to keep track of and don&#39;t typically trace very well through a changelog. The hope here is that <code>yarn version apply --all</code> will still allow us to version things in a single commit, the difference being the changelog messages need to be hand-written. There&#39;s some work being done on this, but I&#39;m not sure the Conventional Commit approach makes things any more clear. Tracking this issue for context (<a href="https://github.com/yarnpkg/berry/issues/1510">https://github.com/yarnpkg/berry/issues/1510</a>)</p>
-				<a href="#authentication" id="authentication" style="color: inherit; text-decoration: none;">
-					<h3>Authentication</h3>
-				</a>
-				<p>The demo project uses the Tina Teams authentication wrapper. To allow logging-in, you will need to add the following to your <strong>.env</strong></p>
-				<pre><code><span class="hljs-attr">SITE_CLIENT_ID</span>=YOUR-CLIENT-ID-GOES-HERE</code></pre>
-				<p>The <code>SITE_CLIENT_ID</code> can be retrieved by creating a client within Hydra:</p>
-				<p>Your request may look like:</p>
-				<pre><code>POST http:<span class="hljs-regexp">//</span>localhost:<span class="hljs-number">4445</span>/clients
-
-{
-  <span class="hljs-string">&quot;client_name&quot;</span>: <span class="hljs-string">&quot;myapp5&quot;</span>,
-  <span class="hljs-string">&quot;redirect_uris&quot;</span>: [
-    <span class="hljs-string">&quot;http://localhost:3002/api/callback&quot;</span>
-  ],
-  <span class="hljs-string">&quot;token_endpoint_auth_method&quot;</span>: <span class="hljs-string">&quot;none&quot;</span>
-}</code></pre>
-				<p>This should give a response with a <code>client_id</code> property.</p>
+				<p>This is the readme</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -217,10 +108,10 @@ registry=<span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/regis
 						<a href="modules/_fields_textarea_index_.html">&quot;fields/textarea/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_index_.html">&quot;index&quot;</a>
+						<a href="modules/_resolver_.html">&quot;resolver&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_resolver_.html">&quot;resolver&quot;</a>
+						<a href="modules/_server_.html">&quot;server&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/_types_.html">&quot;types&quot;</a>

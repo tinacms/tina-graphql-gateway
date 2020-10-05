@@ -1,7 +1,10 @@
 {
   "inputFiles": ["./src"],
   "out": "doc",
+  "mode": "modules",
   "ignoreCompilerErrors": true,
   "categorizeByGroup": true,
-  "exclude": "**/*.spec.ts"
+  "exclude": "**/*.spec.ts",
+  "excludeNotExported": true,
+  "categoryOrder": ["Object literals", "*"]
 }
