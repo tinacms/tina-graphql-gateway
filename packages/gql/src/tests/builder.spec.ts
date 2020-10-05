@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { schemaBuilder } from "./schema-builder";
-import { FileSystemManager } from "./datasources/filesystem-manager";
+import { schemaBuilder } from "../builder";
+import { FileSystemManager } from "../datasources/filesystem-manager";
 import { print, printSchema } from "graphql";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 

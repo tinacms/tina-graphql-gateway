@@ -7,8 +7,9 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/server.ts --format cjs",
+    "watch": "yarn tsup src/server.ts --watch --format cjs",
+    "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
     "test-watch": "jest --watch"

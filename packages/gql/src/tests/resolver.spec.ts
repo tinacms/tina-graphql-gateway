@@ -1,9 +1,8 @@
 import path from "path";
 import fs from "fs";
-import { schemaBuilder } from "./schema-builder";
-import { graphqlInit } from "./graphql";
-import { FileSystemManager } from "./datasources/filesystem-manager";
-import { parse, buildSchema } from "graphql";
+import { schemaBuilder } from "../builder";
+import { graphqlInit } from "../resolver";
+import { FileSystemManager } from "../datasources/filesystem-manager";
 
 describe("Document Resolver", () => {
   test("Receives a path and returns the request document object", async () => {

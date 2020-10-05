@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SectionMap | @forestryio/gql</title>
+	<title>ResolvedData | @forestryio/gql</title>
 	<meta name="description" content="Documentation for @forestryio/gql">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_types_.html">&quot;types&quot;</a>
+					<a href="../modules/_resolver_.html">&quot;resolver&quot;</a>
 				</li>
 				<li>
-					<a href="_types_.sectionmap.html">SectionMap</a>
+					<a href="_resolver_.resolveddata.html">ResolvedData</a>
 				</li>
 			</ul>
-			<h1>Interface SectionMap</h1>
+			<h1>Interface ResolvedData</h1>
 		</div>
 	</div>
 </header>
@@ -73,57 +73,13 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SectionMap</span>
+						<span class="target">ResolvedData</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-not-exported">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_types_.sectionmap.html#directory" class="tsd-kind-icon">directory</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_types_.sectionmap.html#document" class="tsd-kind-icon">document</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported"><a href="_types_.sectionmap.html#heading" class="tsd-kind-icon">heading</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="directory" class="tsd-anchor"></a>
-					<h3>directory</h3>
-					<div class="tsd-signature tsd-kind-icon">directory<span class="tsd-signature-symbol">:</span> <a href="../modules/_types_.html#directorysection" class="tsd-signature-type">DirectorySection</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f461231/packages/gql/src/types.ts#L24">packages/gql/src/types.ts:24</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="document" class="tsd-anchor"></a>
-					<h3>document</h3>
-					<div class="tsd-signature tsd-kind-icon">document<span class="tsd-signature-symbol">:</span> <a href="../modules/_types_.html#documentsection" class="tsd-signature-type">DocumentSection</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f461231/packages/gql/src/types.ts#L26">packages/gql/src/types.ts:26</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-					<a name="heading" class="tsd-anchor"></a>
-					<h3>heading</h3>
-					<div class="tsd-signature tsd-kind-icon">heading<span class="tsd-signature-symbol">:</span> <a href="../modules/_types_.html#headingsection" class="tsd-signature-type">HeadingSection</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f461231/packages/gql/src/types.ts#L25">packages/gql/src/types.ts:25</a></li>
-						</ul>
-					</aside>
-				</section>
+			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-module">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../modules/_fields_index_.html#field" class="tsd-signature-type">Field</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -171,10 +127,10 @@
 					<li class=" tsd-kind-module">
 						<a href="../modules/_index_.html">&quot;index&quot;</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="../modules/_resolver_.html">&quot;resolver&quot;</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="../modules/_types_.html">&quot;types&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -184,53 +140,84 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="_resolver_.resolveinitialvalues.html" class="tsd-kind-icon">Resolve<wbr>Initial<wbr>Values</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-is-not-exported">
-						<a href="_types_.sectionmap.html" class="tsd-kind-icon">Section<wbr>Map</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="_types_.sectionmap.html#directory" class="tsd-kind-icon">directory</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="_types_.sectionmap.html#document" class="tsd-kind-icon">document</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-not-exported">
-								<a href="_types_.sectionmap.html#heading" class="tsd-kind-icon">heading</a>
-							</li>
-						</ul>
+					<li class="current tsd-kind-interface tsd-parent-kind-module">
+						<a href="_resolver_.resolveddata.html" class="tsd-kind-icon">Resolved<wbr>Data</a>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#directorysection" class="tsd-kind-icon">Directory<wbr>Section</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#documentsection" class="tsd-kind-icon">Document<wbr>Section</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#headingsection" class="tsd-kind-icon">Heading<wbr>Section</a>
+						<a href="../modules/_resolver_.html#contextt" class="tsd-kind-icon">ContextT</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
-						<a href="../modules/_types_.html#section" class="tsd-kind-icon">Section</a>
+						<a href="../modules/_resolver_.html#fieldresolverargs" class="tsd-kind-icon">Field<wbr>Resolver<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#fieldresolversource" class="tsd-kind-icon">Field<wbr>Resolver<wbr>Source</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#settings" class="tsd-kind-icon">Settings</a>
+						<a href="../modules/_resolver_.html#initialsource" class="tsd-kind-icon">Initial<wbr>Source</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedocument" class="tsd-kind-icon">Resolve<wbr>Document</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#template" class="tsd-kind-icon">Template</a>
+						<a href="../modules/_resolver_.html#resolvedatatype" class="tsd-kind-icon">resolve<wbr>Data<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#templatedata" class="tsd-kind-icon">Template<wbr>Data</a>
+						<a href="../modules/_resolver_.html#resolvefieldtype" class="tsd-kind-icon">resolve<wbr>Field<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#tinatemplatedata" class="tsd-kind-icon">Tina<wbr>Template<wbr>Data</a>
+						<a href="../modules/_resolver_.html#resolveinitialvaluestype" class="tsd-kind-icon">resolve<wbr>Initial<wbr>Values<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_types_.html#withfields" class="tsd-kind-icon">With<wbr>Fields</a>
+						<a href="../modules/_resolver_.html#resolvetemplatetype" class="tsd-kind-icon">resolve<wbr>Template<wbr>Type</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="../modules/_types_.html#bytypeworks" class="tsd-kind-icon">by<wbr>Type<wbr>Works</a>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#assertisdocumentinputargs" class="tsd-kind-icon">assert<wbr>IsDocument<wbr>Input<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/_resolver_.html#fieldresolver" class="tsd-kind-icon">field<wbr>Resolver</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#findfield" class="tsd-kind-icon">find<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/_resolver_.html#graphqlinit" class="tsd-kind-icon">graphql<wbr>Init</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#isresource" class="tsd-kind-icon">is<wbr>Resource</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedata" class="tsd-kind-icon">resolve<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedatafield" class="tsd-kind-icon">resolve<wbr>Data<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedocument-1" class="tsd-kind-icon">resolve<wbr>Document</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedocumentinput" class="tsd-kind-icon">resolve<wbr>Document<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvedocumentinputdata" class="tsd-kind-icon">resolve<wbr>Document<wbr>Input<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvefield" class="tsd-kind-icon">resolve<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolveinitialvalues-1" class="tsd-kind-icon">resolve<wbr>Initial<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolveinitialvaluesfield" class="tsd-kind-icon">resolve<wbr>Initial<wbr>Values<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_.html#resolvetemplate" class="tsd-kind-icon">resolve<wbr>Template</a>
 					</li>
 				</ul>
 			</nav>
@@ -250,7 +237,6 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
