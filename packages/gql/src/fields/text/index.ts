@@ -71,7 +71,7 @@ const resolve = {
   }): Promise<string> => {
     if (typeof value !== "string") {
       throw new Error(
-        `Unexpected value of type ${typeof value} for resolved text value`
+        `Unexpected initial value of type ${typeof value} for resolved text value`
       );
     }
     return value;
@@ -103,7 +103,7 @@ const resolve = {
   }): Promise<string> => {
     if (typeof value !== "string") {
       throw new Error(
-        `Unexpected value of type ${typeof value} for resolved text value`
+        `Unexpected input value of type ${typeof value} for resolved text value`
       );
     }
     return value;

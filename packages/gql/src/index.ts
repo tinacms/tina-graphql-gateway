@@ -51,6 +51,9 @@ app.post("/:schema", async (req, res) => {
     contextValue: { datasource },
     variableValues: variables,
   });
+  if (result.errors) {
+    console.error(result.errors);
+  }
   return res.json(result);
 });
 

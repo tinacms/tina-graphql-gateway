@@ -416,18 +416,20 @@ const resolveData: resolveDataType = async (
   data
 ) => {
   const accum: { [key: string]: unknown } = {};
+  const { _template, ...rest } = data;
   await Promise.all(
-    Object.keys(data).map(async (key) => {
+    Object.keys(rest).map(async (key) => {
       const field = findField(resolvedTemplate.fields, key);
       return (accum[key] = await resolveDataField(
         datasource,
         field,
-        data[key]
+        rest[key]
       ));
     })
   );
   return {
     __typename: `${resolvedTemplate.label}Data`,
+    _template: resolvedTemplate.label,
     ...accum,
   };
 };
@@ -459,13 +461,16 @@ const resolveInitialValues: resolveInitialValuesType = async (
   );
   return {
     __typename: `${resolvedTemplate.label}InitialValues`,
+    _template: resolvedTemplate.label,
     ...accum,
   };
 };
 const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => f.name === fieldName);
+  const field = fields.find((f) => {
+    return f?.name === fieldName;
+  });
   if (!field) {
-    throw new Error(`Unable to find field for item with name: ${name}`);
+    throw new Error(`Unable to find field for item with name: ${fieldName}`);
   }
   return field;
 };

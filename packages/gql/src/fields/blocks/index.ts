@@ -1,5 +1,4 @@
 import type { DataSource } from "../../datasources/datasource";
-import { friendlyName } from "../../util";
 import _ from "lodash";
 import type { TinaTemplateData } from "../../types";
 import {
@@ -43,19 +42,21 @@ export type TinaBlocksField = {
 };
 
 type BlockValue = {
-  template: string;
+  _template: string;
   [key: string]: unknown;
 };
 
 const build = {
   field: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-    const templateForms: { [key: string]: any } = {};
+    const templateForms: {
+      [key: string]: { type: GraphQLObjectType<any, any> };
+    } = {};
     await Promise.all(
       field.template_types.map(async (templateSlug) => {
         const template = await cache.datasource.getTemplate({
           slug: templateSlug,
         });
-        templateForms[`${templateSlug}TemplateFields`] = {
+        templateForms[template.label] = {
           type: await cache.builder.buildTemplateForm(cache, template),
         };
       })
@@ -185,10 +186,7 @@ const resolve = {
         const template = await datasource.getTemplate({
           slug: templateSlug,
         });
-        templates[`${templateSlug}TemplateFields`] = await resolveTemplate(
-          datasource,
-          template
-        );
+        templates[template.label] = await resolveTemplate(datasource, template);
       })
     );
 
@@ -216,10 +214,12 @@ const resolve = {
     assertIsBlock(value);
     return await Promise.all(
       value.map(async (item) => {
-        const { template, ...rest } = item;
-        const templateData = await datasource.getTemplate({ slug: template });
+        const { _template, ...rest } = item;
+        const templateData = await datasource.getTemplate({
+          slug: _.lowerCase(_template),
+        });
         return {
-          _template: `${template}TemplateFields`,
+          _template: `${_template}TemplateFields`,
           ...(await resolveInitialValues(datasource, templateData, rest)),
         };
       })
@@ -242,8 +242,10 @@ const resolve = {
 
     return await Promise.all(
       value.map(async (item) => {
-        const { template, ...rest } = item;
-        const templateData = await datasource.getTemplate({ slug: template });
+        const { _template, ...rest } = item;
+        const templateData = await datasource.getTemplate({
+          slug: _.lowerCase(_template),
+        });
         return await resolveData(datasource, templateData, rest);
       })
     );
@@ -290,25 +292,38 @@ function assertIsArray(value: unknown): asserts value is unknown[] {
 function assertIsBlockInput(
   value: unknown
 ): asserts value is { data: { _template: string } & object } {
-  const schema = yup.array().of(
-    yup.object({
-      data: yup
-        .object({
-          _template: yup.string().required(),
-        })
-        .required(),
+  assertIsObject(value);
+  const data = Object.values(value)[0];
+  const schema = yup
+    .object({
+      _template: yup.string().required(),
     })
-  );
+    .required();
+  try {
+    schema.validateSync(data);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockInput`);
+  }
+}
+
+function assertIsObject(value: unknown): asserts value is object {
+  const schema = yup.object().required();
   schema.validateSync(value);
 }
 
 function assertIsBlock(value: unknown): asserts value is BlockValue[] {
   const schema = yup.array().of(
     yup.object({
-      template: yup.string().required(),
+      _template: yup.string().required(),
     })
   );
-  schema.validateSync(value);
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlock`);
+  }
 }
 
 export const blocks = {

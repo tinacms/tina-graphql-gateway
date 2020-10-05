@@ -1,10 +1,4 @@
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLInt,
-} from "graphql";
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql";
 import type { DataSource } from "../../datasources/datasource";
 import type { Cache } from "../../builder";
 import { graphqlInit } from "../../resolver";
@@ -79,7 +73,7 @@ const resolve = {
   }): Promise<string> => {
     if (typeof value !== "string") {
       throw new Error(
-        `Unexpected value of type ${typeof value} for resolved textarea value`
+        `Unexpected initial value of type ${typeof value} for resolved textarea value`
       );
     }
     return value;
@@ -111,7 +105,7 @@ const resolve = {
   }): Promise<string> => {
     if (typeof value !== "string") {
       throw new Error(
-        `Unexpected value of type ${typeof value} for resolved textarea value`
+        `Unexpected input value of type ${typeof value} for resolved textarea value`
       );
     }
     return value;
