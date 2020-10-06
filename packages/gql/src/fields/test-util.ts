@@ -26,6 +26,7 @@ export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
 
 export const assertSchema = (schema: GraphQLSchema) => {
   // Useful to grab a snapshot
+  // console.log(printSchema(schema));
   return {
     matches: (gqlString: string) => {
       expect(printSchema(schema)).toEqual(printSchema(buildSchema(gqlString)));

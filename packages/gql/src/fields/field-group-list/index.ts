@@ -45,10 +45,7 @@ const build = {
           component: { type: GraphQLString },
           fields: {
             // field is structural subtyping TemplateData shape
-            type: await cache.builder.buildTemplateFormFieldsUnion(
-              cache,
-              field
-            ),
+            type: await cache.builder.documentFormFieldsUnion(cache, field),
           },
         },
       })
@@ -62,7 +59,7 @@ const build = {
     field: FieldGroupListField;
   }) => {
     return {
-      type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
+      type: GraphQLList(await cache.builder.documentDataObject(cache, field)),
     };
   },
   value: async ({
@@ -73,7 +70,7 @@ const build = {
     field: FieldGroupListField;
   }) => {
     return {
-      type: GraphQLList(await cache.builder.buildTemplateData(cache, field)),
+      type: GraphQLList(await cache.builder.documentDataObject(cache, field)),
     };
   },
   input: async ({
@@ -85,7 +82,7 @@ const build = {
   }) => {
     return {
       type: GraphQLList(
-        await cache.builder.buildTemplateInputData(cache, field)
+        await cache.builder.documentDataInputObject(cache, field)
       ),
     };
   },

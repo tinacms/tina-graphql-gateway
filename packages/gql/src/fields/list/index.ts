@@ -131,7 +131,7 @@ const build = {
               fields: {
                 documents: {
                   type: GraphQLList(
-                    await cache.builder.buildDocumentUnion({ cache, section })
+                    await cache.builder.documentUnion({ cache, section })
                   ),
                 },
               },

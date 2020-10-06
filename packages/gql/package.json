@@ -38,6 +38,8 @@
     "nodemon": "^2.0.4",
     "tslib": "^1.11.1",
     "typedoc": "^0.19.2",
+    "typedoc-plugin-external-module-name": "^4.0.3",
+    "typedoc-plugin-graphql": "^1.0.3",
     "typescript": "^3.8.3",
     "ws": "^7.3.1",
     "yup": "^0.29.3"

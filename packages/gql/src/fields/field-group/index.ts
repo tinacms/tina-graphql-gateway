@@ -16,6 +16,19 @@ import type { TinaField, Field } from "../index";
 import type { DataSource } from "../../datasources/datasource";
 import type { Cache } from "../../builder";
 
+/**
+ * The Forestry definition for Field Group
+ *
+ * ```yaml
+ * label: Some Name
+ * name: some-name
+ * type: field_group
+ * fields:
+ *   - label: Some nested field
+ *     name: my-field
+ *     type: Text
+ * ```
+ */
 export type FieldGroupField = {
   label: string;
   name: string;
@@ -44,10 +57,7 @@ export type FieldGroupValue = {
 
 const build = {
   field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    const union = await cache.builder.buildTemplateFormFieldsUnion(
-      cache,
-      field
-    );
+    const union = await cache.builder.documentFormFieldsUnion(cache, field);
     return cache.build(
       new GraphQLObjectType({
         name: `${field.__namespace}${field.label}GroupField`,
@@ -69,13 +79,15 @@ const build = {
     cache: Cache;
     field: FieldGroupField;
   }) => {
-    return { type: await cache.builder.buildInitialValues(cache, field) };
+    return {
+      type: await cache.builder.documentInitialValuesObject(cache, field),
+    };
   },
   value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await cache.builder.buildTemplateData(cache, field) };
+    return { type: await cache.builder.documentDataObject(cache, field) };
   },
   input: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await cache.builder.buildTemplateInputData(cache, field) };
+    return { type: await cache.builder.documentDataInputObject(cache, field) };
   },
 };
 

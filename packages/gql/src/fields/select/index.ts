@@ -84,7 +84,7 @@ const build = {
               name: `${select.label}Document`,
               fields: {
                 document: {
-                  type: await cache.builder.buildDocumentUnion({
+                  type: await cache.builder.documentUnion({
                     cache,
                     section: select.config.source.section,
                   }),

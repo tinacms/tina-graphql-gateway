@@ -27,8 +27,8 @@ describe("Schema builder", () => {
       union DocumentUnion = Post | Author
 
       type Post {
-        form: PostForm
         path: String
+        form: PostForm
         data: PostData
         initialValues: PostInitialValues
       }
@@ -112,8 +112,8 @@ describe("Schema builder", () => {
       union authorsDocumentUnion = Author
 
       type Author {
-        form: AuthorForm
         path: String
+        form: AuthorForm
         data: AuthorData
         initialValues: AuthorInitialValues
       }

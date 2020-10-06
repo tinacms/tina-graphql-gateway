@@ -6,5 +6,5 @@
   "categorizeByGroup": true,
   "exclude": "**/*.spec.ts",
   "excludeNotExported": true,
-  "categoryOrder": ["Object literals", "*"]
+  "plugin": ["typedoc-plugin-graphql"]
 }

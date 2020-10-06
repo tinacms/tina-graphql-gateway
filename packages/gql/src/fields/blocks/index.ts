@@ -7,8 +7,6 @@ import {
   getNamedType,
   GraphQLObjectType,
   GraphQLList,
-  GraphQLUnionType,
-  GraphQLType,
 } from "graphql";
 import * as yup from "yup";
 import type {
@@ -107,7 +105,7 @@ export const blocks = {
             slug: templateSlug,
           });
           templateForms[template.label] = {
-            type: await cache.builder.buildTemplateForm(cache, template),
+            type: await cache.builder.documentFormObject(cache, template),
           };
         })
       );
@@ -140,7 +138,7 @@ export const blocks = {
     }) => {
       return {
         type: GraphQLList(
-          await cache.builder.buildInitialValuesUnion({
+          await cache.builder.initialValuesUnion({
             cache,
             templates: field.template_types,
           })
@@ -150,7 +148,7 @@ export const blocks = {
     value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return {
         type: GraphQLList(
-          await cache.builder.buildDataUnion({
+          await cache.builder.documentDataUnion({
             cache,
             templates: field.template_types,
           })
@@ -166,7 +164,7 @@ export const blocks = {
 
       const templateTypes = await Promise.all(
         templates.map((template) => {
-          return cache.builder.buildTemplateInputData(cache, template);
+          return cache.builder.documentDataInputObject(cache, template);
         })
       );
 
