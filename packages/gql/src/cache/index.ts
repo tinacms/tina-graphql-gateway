@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { getNamedType, GraphQLType } from "graphql";
 
-import type { DataSource } from "./datasources/datasource";
+import type { DataSource } from "../datasources/datasource";
 
 /**
  * Holds an in-memory cache of GraphQL Objects which have been built, allowing

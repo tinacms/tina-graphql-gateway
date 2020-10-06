@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
-import { builder } from "../../builder/service";
+import { builder } from "../../builder";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
