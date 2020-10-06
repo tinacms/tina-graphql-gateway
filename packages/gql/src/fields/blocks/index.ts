@@ -9,17 +9,11 @@ import {
 } from "graphql";
 
 import { builder } from "../../builder";
-import {
-  resolveTemplate,
-  resolveData,
-  resolveDocumentInputData,
-  resolveInitialValues,
-} from "../../resolver/field-resolver";
+import { resolver } from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { TinaTemplateData } from "../../types";
 import type { DataSource } from "../../datasources/datasource";
-import type { ResolvedData } from "../../resolver/field-resolver";
 
 export const blocks = {
   /**
@@ -204,7 +198,7 @@ export const blocks = {
           const template = await datasource.getTemplate({
             slug: templateSlug,
           });
-          templates[template.label] = await resolveTemplate(
+          templates[template.label] = await resolver.templateFields(
             datasource,
             template
           );
@@ -227,7 +221,7 @@ export const blocks = {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-    }): Promise<ResolvedData[]> => {
+    }) => {
       assertIsBlock(value);
       return await Promise.all(
         value.map(async (item) => {
@@ -236,8 +230,11 @@ export const blocks = {
             slug: _.lowerCase(_template),
           });
           return {
-            _template: `${_template}TemplateFields`,
-            ...(await resolveInitialValues(datasource, templateData, rest)),
+            ...(await resolver.dataInitialValues(
+              datasource,
+              templateData,
+              rest
+            )),
           };
         })
       );
@@ -250,7 +247,7 @@ export const blocks = {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-    }): Promise<ResolvedData[]> => {
+    }) => {
       assertIsBlock(value);
 
       return await Promise.all(
@@ -259,7 +256,7 @@ export const blocks = {
           const templateData = await datasource.getTemplate({
             slug: _.lowerCase(_template),
           });
-          return await resolveData(datasource, templateData, rest);
+          return await resolver.dataUnion(datasource, templateData, rest);
         })
       );
     },
@@ -271,7 +268,7 @@ export const blocks = {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-    }): Promise<ResolvedData[]> => {
+    }) => {
       // FIXME: we should validate that only one key was passed
       assertIsArray(value);
 
@@ -284,7 +281,11 @@ export const blocks = {
             // we want to send the slug in instead so we don't have to lowercase it
             slug: _.lowerCase(data._template),
           });
-          return await resolveDocumentInputData({ data, template, datasource });
+          return await resolver.documentInputData({
+            data,
+            template,
+            datasource,
+          });
         })
       );
     },

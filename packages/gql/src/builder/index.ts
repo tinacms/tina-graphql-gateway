@@ -161,13 +161,14 @@ export const builder = {
     return cache.build(
       new GraphQLObjectType({
         name: `${template.label}Data`,
-        fields: await builder.buildTemplateDataFields(cache, template),
+        fields: await builder.documentDataObjectFields(cache, template),
       })
     );
   },
   /**
    * Iterate through the template fields, passing them on to their data value builders
-   */ buildTemplateDataFields: async (cache: Cache, template: TemplateData) => {
+   */
+  documentDataObjectFields: async (cache: Cache, template: TemplateData) => {
     const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
     await Promise.all(
@@ -222,7 +223,7 @@ export const builder = {
         name: `${template.label}InitialValues`,
         fields: {
           _template: { type: GraphQLString },
-          ...(await builder.buildTemplateInitialValueFields(cache, template)),
+          ...(await builder.documentInitialValuesObjectFields(cache, template)),
         },
       })
     );
@@ -230,7 +231,7 @@ export const builder = {
   /**
    * Iterate through the template fields, passing them on to their initial value builders
    */
-  buildTemplateInitialValueFields: async (
+  documentInitialValuesObjectFields: async (
     cache: Cache,
     template: TemplateData
   ) => {
@@ -270,9 +271,23 @@ export const builder = {
     );
   },
   /**
+   * The input values for mutations to the document data
+   */
+  documentDataInputObject: async (cache: Cache, template: TemplateData) => {
+    return cache.build(
+      new GraphQLInputObjectType({
+        name: `${template.label}InputData`,
+        fields: {
+          _template: { type: GraphQLString },
+          ...(await builder.documentDataInputObjectFields(cache, template)),
+        },
+      })
+    );
+  },
+  /**
    * Iterate through the template fields, passing them on to their input builders
    */
-  buildTemplateInputDataFields: async (
+  documentDataInputObjectFields: async (
     cache: Cache,
     template: TemplateData
   ) => {
@@ -285,20 +300,6 @@ export const builder = {
     );
 
     return fields;
-  },
-  /**
-   * The input values for mutations to the document data
-   */
-  documentDataInputObject: async (cache: Cache, template: TemplateData) => {
-    return cache.build(
-      new GraphQLInputObjectType({
-        name: `${template.label}InputData`,
-        fields: {
-          _template: { type: GraphQLString },
-          ...(await builder.buildTemplateInputDataFields(cache, template)),
-        },
-      })
-    );
   },
   /**
    * The input values for the document

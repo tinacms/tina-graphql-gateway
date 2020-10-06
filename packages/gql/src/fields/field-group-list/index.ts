@@ -2,11 +2,7 @@ import * as yup from "yup";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
 import { builder } from "../../builder";
-import {
-  resolveField,
-  resolveData,
-  resolveDocumentInputData,
-} from "../../resolver/field-resolver";
+import { resolver } from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
@@ -104,7 +100,7 @@ export const fieldGroupList = {
       const { type, ...rest } = field;
 
       const fields = await Promise.all(
-        field.fields.map(async (f) => await resolveField(datasource, f))
+        field.fields.map(async (f) => await resolver.field(datasource, f))
       );
 
       return {
@@ -125,7 +121,9 @@ export const fieldGroupList = {
     }) => {
       assertIsDataArray(value);
       return await Promise.all(
-        value.map(async (v: any) => await resolveData(datasource, field, v))
+        value.map(
+          async (v: any) => await resolver.dataUnion(datasource, field, v)
+        )
       );
     },
     value: async ({
@@ -139,7 +137,9 @@ export const fieldGroupList = {
     }) => {
       assertIsDataArray(value);
       return await Promise.all(
-        value.map(async (v: any) => await resolveData(datasource, field, v))
+        value.map(
+          async (v: any) => await resolver.dataUnion(datasource, field, v)
+        )
       );
     },
     input: async ({
@@ -155,7 +155,7 @@ export const fieldGroupList = {
 
       return await Promise.all(
         value.map(async (v) => {
-          return await resolveDocumentInputData({
+          return await resolver.documentInputData({
             data: v,
             template: field,
             datasource,

@@ -2,20 +2,11 @@ import { GraphQLString, GraphQLObjectType } from "graphql";
 import * as yup from "yup";
 
 import { builder } from "../../builder";
-import {
-  resolveField,
-  resolveData,
-  resolveDocumentInputData,
-} from "../../resolver/field-resolver";
+import { resolver } from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
-import type {
-  resolveFieldType,
-  resolveDataType,
-  ResolvedData,
-} from "../../resolver/field-resolver";
 
 export const fieldGroup = {
   build: {
@@ -81,7 +72,7 @@ export const fieldGroup = {
       const { type, ...rest } = field;
 
       const fields = await Promise.all(
-        field.fields.map(async (f) => await resolveField(datasource, f))
+        field.fields.map(async (f) => await resolver.field(datasource, f))
       );
 
       return {
@@ -99,9 +90,9 @@ export const fieldGroup = {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-    }): Promise<ResolvedData> => {
+    }) => {
       assertIsData(value);
-      return await resolveData(datasource, field, value);
+      return await resolver.dataUnion(datasource, field, value);
     },
     value: async ({
       datasource,
@@ -111,9 +102,9 @@ export const fieldGroup = {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-    }): Promise<ResolvedData> => {
+    }) => {
       assertIsData(value);
-      return await resolveData(datasource, field, value);
+      return await resolver.dataUnion(datasource, field, value);
     },
     input: async ({
       datasource,
@@ -123,9 +114,9 @@ export const fieldGroup = {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-    }): Promise<ResolvedData> => {
+    }) => {
       assertIsData(value);
-      return await resolveDocumentInputData({
+      return await resolver.documentInputData({
         data: value,
         template: field,
         datasource,

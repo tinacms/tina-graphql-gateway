@@ -9,9 +9,316 @@ import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
 
-import type { Field, TinaField } from "../fields";
+import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
-import type { TemplateData, TinaTemplateData, WithFields } from "../types";
+import type { TemplateData } from "../types";
+
+export const fieldResolver: GraphQLFieldResolver<
+  FieldResolverSource,
+  ContextT,
+  FieldResolverArgs
+> = async (source, args, context, info) => {
+  const value = source[info.fieldName];
+  const { datasource } = context;
+
+  if (info.fieldName === "updateDocument") {
+    assertIsDocumentInputArgs(args);
+
+    await resolver.documentInput({
+      args: args,
+      params: args.params,
+      datasource,
+    });
+    return await resolver.documentUnion({ args: args, datasource });
+  }
+
+  if (!value) {
+    return null;
+  }
+  if (isResource(value)) {
+    switch (value._resolver_kind) {
+      case "_initial":
+        if (!args.path || typeof args.path !== "string") {
+          throw new Error(`Expected args for initial document request`);
+        }
+        return resolver.documentUnion({
+          args: { path: args.path },
+          datasource,
+        });
+      case "_nested_source":
+        return {
+          document: await resolver.documentUnion({
+            args: value._args,
+            datasource,
+          }),
+        };
+      case "_nested_sources":
+        return {
+          documents: await Promise.all(
+            value._args.paths.map(async (p) => {
+              return await resolver.documentUnion({
+                args: { path: p },
+                datasource,
+              });
+            })
+          ),
+        };
+    }
+  } else {
+    return value;
+  }
+};
+
+export const resolver = {
+  /**
+   * Retrieves the top-level document and provides the __typename so it can be resolved automatically
+   * by the GraphQL type resolver
+   */
+  documentUnion: async ({
+    args,
+    datasource,
+  }: {
+    args: { path: string };
+    datasource: DataSource;
+  }): Promise<unknown> => {
+    const { data } = await datasource.getData(args);
+    const template = await datasource.getTemplateForDocument(args);
+
+    return {
+      __typename: template.label,
+      path: args.path,
+      content: "\nSome content\n",
+      form: await resolver.templateFields(datasource, template),
+      data: await resolver.dataUnion(datasource, template, data),
+      initialValues: await resolver.dataInitialValues(
+        datasource,
+        template,
+        data
+      ),
+    };
+  },
+  /**
+   * Given a template and document data, return the resolved data along with the _template and __typename
+   * so it can be resolved by the GraphQL type resolver
+   */
+  dataUnion: async (
+    datasource: DataSource,
+    resolvedTemplate: TemplateData,
+    data: DocumentData
+  ) => {
+    const accum: { [key: string]: unknown } = {};
+    const { _template, ...rest } = data;
+    await Promise.all(
+      Object.keys(rest).map(async (key) => {
+        const field = findField(resolvedTemplate.fields, key);
+        return (accum[key] = await resolver.dataField(
+          datasource,
+          field,
+          rest[key]
+        ));
+      })
+    );
+    return {
+      __typename: `${resolvedTemplate.label}Data`,
+      _template: resolvedTemplate.label,
+      ...accum,
+    };
+  },
+  /**
+   * Given a template and document data, return the appropriate initialValues along with the _template and __typename
+   */
+  dataInitialValues: async (
+    datasource: DataSource,
+    resolvedTemplate: TemplateData,
+    data: DocumentData
+  ) => {
+    const accum: { [key: string]: unknown } = {};
+    await Promise.all(
+      Object.keys(data).map(async (key) => {
+        const field = findField(resolvedTemplate.fields, key);
+        return (accum[key] = await resolver.dataInitialValuesField(
+          datasource,
+          field,
+          data[key]
+        ));
+      })
+    );
+    return {
+      __typename: `${resolvedTemplate.label}InitialValues`,
+      _template: resolvedTemplate.label,
+      ...accum,
+    };
+  },
+  dataInitialValuesField: async (
+    datasource: DataSource,
+    field: Field,
+    value: unknown
+  ) => {
+    switch (field.type) {
+      case "text":
+        return text.resolve.initialValue({ datasource, field, value });
+      case "textarea":
+        return textarea.resolve.initialValue({ datasource, field, value });
+      case "blocks":
+        return blocks.resolve.initialValue({ datasource, field, value });
+      case "select":
+        return select.resolve.initialValue({ datasource, field, value });
+      case "list":
+        return list.resolve.initialValue({ datasource, field, value });
+      case "field_group":
+        return fieldGroup.resolve.initialValue({ datasource, field, value });
+      case "field_group_list":
+        return fieldGroupList.resolve.initialValue({
+          datasource,
+          field,
+          value,
+        });
+    }
+  },
+  dataField: async (datasource: DataSource, field: Field, value: unknown) => {
+    switch (field.type) {
+      case "text":
+        return text.resolve.value({ datasource, field, value });
+      case "textarea":
+        return textarea.resolve.value({ datasource, field, value });
+      case "blocks":
+        return blocks.resolve.value({ datasource, field, value });
+      case "select":
+        return select.resolve.value({ datasource, field, value });
+      case "list":
+        return list.resolve.value({ datasource, field, value });
+      case "field_group":
+        return fieldGroup.resolve.value({ datasource, field, value });
+      case "field_group_list":
+        return fieldGroupList.resolve.value({
+          datasource,
+          field,
+          value,
+        });
+    }
+  },
+  field: async (datasource: DataSource, field: Field) => {
+    switch (field.type) {
+      case "text":
+        return await text.resolve.field({ field });
+      case "textarea":
+        return await textarea.resolve.field({ field });
+      case "blocks":
+        return await blocks.resolve.field({ datasource, field });
+      case "select":
+        return await select.resolve.field({ datasource, field });
+      case "list":
+        return await list.resolve.field({ datasource, field });
+      case "field_group":
+        return await fieldGroup.resolve.field({ datasource, field });
+      case "field_group_list":
+        return await fieldGroupList.resolve.field({
+          datasource,
+          field,
+        });
+    }
+  },
+  templateFields: async (datasource: DataSource, template: TemplateData) => {
+    return {
+      __typename: template.label,
+      // FIXME: this should be slug but we should store it on the template definition
+      _template: template.label,
+      ...template,
+      fields: await Promise.all(
+        template.fields.map(async (field) => resolver.field(datasource, field))
+      ),
+    };
+  },
+  documentInputDataField: async ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: Field;
+    value: unknown;
+  }) => {
+    switch (field.type) {
+      case "text":
+        return await text.resolve.input({ datasource, field, value });
+      case "textarea":
+        return await textarea.resolve.input({ datasource, field, value });
+      case "blocks":
+        return await blocks.resolve.input({ datasource, field, value });
+      case "select":
+        return await select.resolve.input({ datasource, field, value });
+      case "list":
+        return await list.resolve.input({ datasource, field, value });
+      case "field_group":
+        return await fieldGroup.resolve.input({ datasource, field, value });
+      case "field_group_list":
+        return await fieldGroupList.resolve.input({ datasource, field, value });
+    }
+  },
+  documentInputData: async ({
+    data,
+    template,
+    datasource,
+  }: {
+    data: { [key: string]: unknown };
+    template: TemplateData;
+    datasource: DataSource;
+  }): Promise<{ _template: string } & object> => {
+    const accum: { [key: string]: unknown } = {};
+    await Promise.all(
+      template.fields.map(async (field) => {
+        const value = data[field.name];
+        accum[field.name] = await resolver.documentInputDataField({
+          datasource,
+          field,
+          value,
+        });
+      })
+    );
+
+    return {
+      _template: template.label,
+      ...accum,
+    };
+  },
+  documentInput: async ({
+    args,
+    params,
+    datasource,
+  }: {
+    args: { path: string };
+    params: object;
+    datasource: DataSource;
+  }): Promise<boolean> => {
+    const template = await datasource.getTemplateForDocument(args);
+
+    // FIXME: we should validate that only one key was passed
+    const data = Object.values(params)[0].data;
+
+    const { _template, ...value } = await resolver.documentInputData({
+      data,
+      template,
+      datasource,
+    });
+
+    const payload = {
+      data: value,
+    };
+    await datasource.updateDocument({ path: args.path, params: payload });
+
+    return true;
+  },
+};
+
+const findField = (fields: Field[], fieldName: string) => {
+  const field = fields.find((f) => {
+    return f?.name === fieldName;
+  });
+  if (!field) {
+    throw new Error(`Unable to find field for item with name: ${fieldName}`);
+  }
+  return field;
+};
 
 export type ContextT = {
   datasource: DataSource;
@@ -67,378 +374,6 @@ function assertIsDocumentInputArgs(
   }
 }
 
-export const fieldResolver: GraphQLFieldResolver<
-  FieldResolverSource,
-  ContextT,
-  FieldResolverArgs
-> = async (source, args, context, info) => {
-  const value = source[info.fieldName];
-  const { datasource } = context;
-
-  if (info.fieldName === "updateDocument") {
-    assertIsDocumentInputArgs(args);
-
-    await resolveDocumentInput({ args: args, params: args.params, datasource });
-    return await resolveDocument({ args: args, datasource });
-  }
-
-  if (!value) {
-    return null;
-  }
-  if (isResource(value)) {
-    switch (value._resolver_kind) {
-      case "_initial":
-        if (!args.path || typeof args.path !== "string") {
-          throw new Error(`Expected args for initial document request`);
-        }
-        return resolveDocument({ args: { path: args.path }, datasource });
-      case "_nested_source":
-        return {
-          document: await resolveDocument({ args: value._args, datasource }),
-        };
-      case "_nested_sources":
-        return {
-          documents: await Promise.all(
-            value._args.paths.map(async (p) => {
-              return await resolveDocument({ args: { path: p }, datasource });
-            })
-          ),
-        };
-    }
-  } else {
-    return value;
-  }
-};
-
-type ResolveDocument = {
-  __typename: string;
-  content: string;
-  form: TinaTemplateData;
-  path: string;
-  data: ResolvedData;
-  initialValues: ResolvedData;
-};
-const resolveDocument = async ({
-  args,
-  datasource,
-}: {
-  args: { path: string };
-  datasource: DataSource;
-}): Promise<ResolveDocument> => {
-  const { data } = await datasource.getData(args);
-  const template = await datasource.getTemplateForDocument(args);
-  const resolvedTemplate = await resolveTemplate(datasource, template);
-  const resolvedData = await resolveData(datasource, template, data);
-  const resolvedInitialValues = await resolveInitialValues(
-    datasource,
-    template,
-    data
-  );
-
-  return {
-    __typename: template.label,
-    path: args.path,
-    content: "\nSome content\n",
-    form: resolvedTemplate,
-    data: resolvedData,
-    initialValues: resolvedInitialValues,
-  };
-};
-
-export const resolveDocumentInputData = async ({
-  data,
-  template,
-  datasource,
-}: {
-  data: { [key: string]: unknown };
-  template: TemplateData;
-  datasource: DataSource;
-}): Promise<{ _template: string } & object> => {
-  const accum: { [key: string]: unknown } = {};
-  await Promise.all(
-    template.fields.map(async (field) => {
-      const value = data[field.name];
-      switch (field.type) {
-        case "text":
-          accum[field.name] = await text.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-          break;
-        case "textarea":
-          accum[field.name] = await textarea.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-
-          break;
-        case "blocks":
-          accum[field.name] = await blocks.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-
-          break;
-        case "select":
-          accum[field.name] = await select.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-          break;
-        case "list":
-          accum[field.name] = await list.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-          break;
-        case "field_group":
-          accum[field.name] = await fieldGroup.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-          break;
-        case "field_group_list":
-          accum[field.name] = await fieldGroupList.resolve.input({
-            datasource,
-            field,
-            value,
-          });
-
-        default:
-          accum[field.name] = value;
-          break;
-      }
-    })
-  );
-
-  return {
-    _template: template.label,
-    ...accum,
-  };
-};
-
-const resolveDocumentInput = async ({
-  args,
-  params,
-  datasource,
-}: {
-  args: { path: string };
-  params: object;
-  datasource: DataSource;
-}): Promise<boolean> => {
-  const template = await datasource.getTemplateForDocument(args);
-
-  // FIXME: we should validate that only one key was passed
-  const data = Object.values(params)[0].data;
-
-  const { _template, ...value } = await resolveDocumentInputData({
-    data,
-    template,
-    datasource,
-  });
-
-  const payload = {
-    data: value,
-  };
-  await datasource.updateDocument({ path: args.path, params: payload });
-
-  return true;
-};
-
-export type resolveTemplateType = (
-  datasource: DataSource,
-  template: TemplateData
-) => Promise<TinaTemplateData>;
-export const resolveTemplate: resolveTemplateType = async (
-  datasource,
-  template
-) => {
-  return {
-    __typename: template.label,
-    // FIXME: this should be slug but we should store it on the template definition
-    _template: template.label,
-    ...template,
-    fields: await Promise.all(
-      template.fields.map(async (field) => resolveField(datasource, field))
-    ),
-  };
-};
-
-export type resolveFieldType = (
-  datasource: DataSource,
-  field: Field
-) => Promise<TinaField>;
-export const resolveField: resolveFieldType = async (datasource, field) => {
-  switch (field.type) {
-    case "text":
-      return await text.resolve.field({ field });
-    case "textarea":
-      return await textarea.resolve.field({ field });
-    case "blocks":
-      return await blocks.resolve.field({ datasource, field });
-    case "select":
-      return await select.resolve.field({ datasource, field });
-    case "list":
-      return await list.resolve.field({ datasource, field });
-    case "field_group":
-      return await fieldGroup.resolve.field({
-        datasource,
-        field,
-      });
-    case "field_group_list":
-      return await fieldGroupList.resolve.field({
-        datasource,
-        field,
-      });
-    default:
-      throw new Error(`Unexpect`);
-  }
-};
-const resolveDataField = async (
-  datasource: DataSource,
-  field: Field,
-  value: unknown
-) => {
-  switch (field.type) {
-    case "text":
-      return text.resolve.value({ datasource, field, value });
-    case "textarea":
-      return textarea.resolve.value({ datasource, field, value });
-    case "blocks":
-      return blocks.resolve.value({
-        datasource,
-        field,
-        value,
-      });
-    case "select":
-      return select.resolve.value({ datasource, field, value });
-    case "list":
-      return list.resolve.value({ datasource, field, value });
-    case "field_group":
-      return fieldGroup.resolve.value({
-        datasource,
-        field,
-        value,
-      });
-    case "field_group_list":
-      return fieldGroupList.resolve.value({
-        datasource,
-        field,
-        value,
-      });
-  }
-};
-const resolveInitialValuesField = async (
-  datasource: DataSource,
-  field: Field,
-  value: unknown
-) => {
-  switch (field.type) {
-    case "text":
-      return text.resolve.initialValue({ datasource, field, value });
-    case "textarea":
-      return textarea.resolve.initialValue({ datasource, field, value });
-    case "blocks":
-      return blocks.resolve.initialValue({
-        datasource,
-        field,
-        value,
-      });
-    case "select":
-      return select.resolve.initialValue({ datasource, field, value });
-    case "list":
-      return list.resolve.initialValue({ datasource, field, value });
-    case "field_group":
-      return fieldGroup.resolve.initialValue({
-        datasource,
-        field,
-        value,
-      });
-    case "field_group_list":
-      return fieldGroupList.resolve.initialValue({
-        datasource,
-        field,
-        value,
-      });
-  }
-};
-export interface ResolvedData {
-  [key: string]: Field | string;
-}
-export type resolveDataType = (
-  datasource: DataSource,
-  field: WithFields,
-  data: {
-    [key: string]: unknown;
-  }
-) => Promise<ResolvedData>;
-export const resolveData: resolveDataType = async (
-  datasource,
-  resolvedTemplate,
-  data
-) => {
-  const accum: { [key: string]: unknown } = {};
-  const { _template, ...rest } = data;
-  await Promise.all(
-    Object.keys(rest).map(async (key) => {
-      const field = findField(resolvedTemplate.fields, key);
-      return (accum[key] = await resolveDataField(
-        datasource,
-        field,
-        rest[key]
-      ));
-    })
-  );
-  return {
-    __typename: `${resolvedTemplate.label}Data`,
-    _template: resolvedTemplate.label,
-    ...accum,
-  };
-};
-export interface ResolveInitialValues {
-  [key: string]: Field | string;
-}
-export type resolveInitialValuesType = (
-  datasource: DataSource,
-  field: WithFields,
-  data: {
-    [key: string]: unknown;
-  }
-) => Promise<ResolvedData>;
-export const resolveInitialValues: resolveInitialValuesType = async (
-  datasource,
-  resolvedTemplate,
-  data
-) => {
-  const accum: { [key: string]: unknown } = {};
-  await Promise.all(
-    Object.keys(data).map(async (key) => {
-      const field = findField(resolvedTemplate.fields, key);
-      return (accum[key] = await resolveInitialValuesField(
-        datasource,
-        field,
-        data[key]
-      ));
-    })
-  );
-  return {
-    __typename: `${resolvedTemplate.label}InitialValues`,
-    _template: resolvedTemplate.label,
-    ...accum,
-  };
-};
-const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => {
-    return f?.name === fieldName;
-  });
-  if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
-  }
-  return field;
+type DocumentData = {
+  [key: string]: unknown;
 };
