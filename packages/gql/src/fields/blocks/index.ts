@@ -20,37 +20,6 @@ import type {
   ResolvedData,
 } from "../../resolver";
 
-export type BlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  default?: string;
-  template_types: string[];
-  __namespace: string;
-  config?: {
-    required?: boolean;
-  };
-};
-export type TinaBlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  default?: string;
-  component: "blocks";
-  config?: {
-    required?: boolean;
-  };
-  templates: { [key: string]: TinaTemplateData };
-  __typename: string;
-};
-
-type BlockValue = {
-  _template: string;
-  [key: string]: unknown;
-};
-
-type BuildArgs = { cache: Cache; field: BlocksField };
-
 export const blocks = {
   /**
    * Build properties are functions which build the various schemas for objects
@@ -379,3 +348,34 @@ function assertIsBlock(value: unknown): asserts value is BlockValue[] {
     throw new Error(`Failed to assertIsBlock`);
   }
 }
+
+export type BlocksField = {
+  label: string;
+  name: string;
+  type: "blocks";
+  default?: string;
+  template_types: string[];
+  __namespace: string;
+  config?: {
+    required?: boolean;
+  };
+};
+export type TinaBlocksField = {
+  label: string;
+  name: string;
+  type: "blocks";
+  default?: string;
+  component: "blocks";
+  config?: {
+    required?: boolean;
+  };
+  templates: { [key: string]: TinaTemplateData };
+  __typename: string;
+};
+
+type BlockValue = {
+  _template: string;
+  [key: string]: unknown;
+};
+
+type BuildArgs = { cache: Cache; field: BlocksField };

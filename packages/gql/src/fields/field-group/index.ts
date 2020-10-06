@@ -12,6 +12,141 @@ import type {
   ResolvedData,
 } from "../../resolver";
 
+export const fieldGroup = {
+  build: {
+    field: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupField;
+    }) => {
+      return cache.build(
+        new GraphQLObjectType({
+          name: `${field.__namespace}${field.label}GroupField`,
+          fields: {
+            name: { type: GraphQLString },
+            label: { type: GraphQLString },
+            component: { type: GraphQLString },
+            fields: {
+              type: await builder.documentFormFieldsUnion(cache, field),
+            },
+          },
+        })
+      );
+    },
+    initialValue: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupField;
+    }) => {
+      return {
+        type: await builder.documentInitialValuesObject(cache, field),
+      };
+    },
+    value: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupField;
+    }) => {
+      return { type: await builder.documentDataObject(cache, field) };
+    },
+    input: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupField;
+    }) => {
+      return { type: await builder.documentDataInputObject(cache, field) };
+    },
+  },
+  resolve: {
+    field: async ({
+      datasource,
+      field,
+      resolveField,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupField;
+      resolveField: resolveFieldType;
+    }): Promise<TinaFieldGroupField> => {
+      const { type, ...rest } = field;
+
+      const fields = await Promise.all(
+        field.fields.map(async (f) => await resolveField(datasource, f))
+      );
+
+      return {
+        ...rest,
+        component: "group",
+        fields,
+        __typename: `${field.__namespace}${field.label}GroupField`,
+      };
+    },
+    initialValue: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupField;
+      value: unknown;
+      resolveData: resolveDataType;
+    }): Promise<ResolvedData> => {
+      assertIsData(value);
+      return await resolveData(datasource, field, value);
+    },
+    value: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupField;
+      value: unknown;
+      resolveData: resolveDataType;
+    }): Promise<ResolvedData> => {
+      assertIsData(value);
+      return await resolveData(datasource, field, value);
+    },
+    input: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+      resolveDocumentInputData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupField;
+      value: unknown;
+      resolveData: resolveDataType;
+      resolveDocumentInputData: any;
+    }): Promise<ResolvedData> => {
+      return await resolveDocumentInputData({
+        data: value,
+        template: field,
+        datasource,
+      });
+    },
+  },
+};
+
+function assertIsData(
+  value: unknown
+): asserts value is {
+  [key: string]: unknown;
+} {
+  const schema = yup.object({});
+  schema.validateSync(value);
+}
+
 /**
  * The Forestry definition for Field Group
  *
@@ -49,125 +184,4 @@ export type TinaFieldGroupField = {
 };
 export type FieldGroupValue = {
   [key: string]: unknown;
-};
-
-const build = {
-  field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return cache.build(
-      new GraphQLObjectType({
-        name: `${field.__namespace}${field.label}GroupField`,
-        fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          component: { type: GraphQLString },
-          fields: {
-            type: await builder.documentFormFieldsUnion(cache, field),
-          },
-        },
-      })
-    );
-  },
-  initialValue: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupField;
-  }) => {
-    return {
-      type: await builder.documentInitialValuesObject(cache, field),
-    };
-  },
-  value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await builder.documentDataObject(cache, field) };
-  },
-  input: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await builder.documentDataInputObject(cache, field) };
-  },
-};
-
-const resolve = {
-  field: async ({
-    datasource,
-    field,
-    resolveField,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupField;
-    resolveField: resolveFieldType;
-  }): Promise<TinaFieldGroupField> => {
-    const { type, ...rest } = field;
-
-    const fields = await Promise.all(
-      field.fields.map(async (f) => await resolveField(datasource, f))
-    );
-
-    return {
-      ...rest,
-      component: "group",
-      fields,
-      __typename: `${field.__namespace}${field.label}GroupField`,
-    };
-  },
-  initialValue: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupField;
-    value: unknown;
-    resolveData: resolveDataType;
-  }): Promise<ResolvedData> => {
-    assertIsData(value);
-    return await resolveData(datasource, field, value);
-  },
-  value: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupField;
-    value: unknown;
-    resolveData: resolveDataType;
-  }): Promise<ResolvedData> => {
-    assertIsData(value);
-    return await resolveData(datasource, field, value);
-  },
-  input: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-    resolveDocumentInputData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupField;
-    value: unknown;
-    resolveData: resolveDataType;
-    resolveDocumentInputData: any;
-  }): Promise<ResolvedData> => {
-    return await resolveDocumentInputData({
-      data: value,
-      template: field,
-      datasource,
-    });
-  },
-};
-
-function assertIsData(
-  value: unknown
-): asserts value is {
-  [key: string]: unknown;
-} {
-  const schema = yup.object({});
-  schema.validateSync(value);
-}
-
-export const fieldGroup = {
-  build,
-  resolve,
 };

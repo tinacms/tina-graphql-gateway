@@ -31,142 +31,144 @@ export type TinaFieldGroupListField = {
   };
 };
 
-const build = {
-  field: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
-    return cache.build(
-      new GraphQLObjectType({
-        name: `${field.__namespace}${field.label}GroupListField`,
-        fields: {
-          name: { type: GraphQLString },
-          label: { type: GraphQLString },
-          component: { type: GraphQLString },
+export const fieldGroupList = {
+  build: {
+    field: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupListField;
+    }) => {
+      return cache.build(
+        new GraphQLObjectType({
+          name: `${field.__namespace}${field.label}GroupListField`,
           fields: {
-            // field is structural subtyping TemplateData shape
-            type: await builder.documentFormFieldsUnion(cache, field),
+            name: { type: GraphQLString },
+            label: { type: GraphQLString },
+            component: { type: GraphQLString },
+            fields: {
+              // field is structural subtyping TemplateData shape
+              type: await builder.documentFormFieldsUnion(cache, field),
+            },
           },
-        },
-      })
-    );
+        })
+      );
+    },
+    initialValue: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupListField;
+    }) => {
+      return {
+        type: GraphQLList(await builder.documentDataObject(cache, field)),
+      };
+    },
+    value: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupListField;
+    }) => {
+      return {
+        type: GraphQLList(await builder.documentDataObject(cache, field)),
+      };
+    },
+    input: async ({
+      cache,
+      field,
+    }: {
+      cache: Cache;
+      field: FieldGroupListField;
+    }) => {
+      return {
+        type: GraphQLList(await builder.documentDataInputObject(cache, field)),
+      };
+    },
   },
-  initialValue: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
-    return {
-      type: GraphQLList(await builder.documentDataObject(cache, field)),
-    };
-  },
-  value: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
-    return {
-      type: GraphQLList(await builder.documentDataObject(cache, field)),
-    };
-  },
-  input: async ({
-    cache,
-    field,
-  }: {
-    cache: Cache;
-    field: FieldGroupListField;
-  }) => {
-    return {
-      type: GraphQLList(await builder.documentDataInputObject(cache, field)),
-    };
-  },
-};
-const resolve = {
-  field: async ({
-    datasource,
-    field,
-    resolveField,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupListField;
-    resolveField: resolveFieldType;
-  }): Promise<TinaFieldGroupListField> => {
-    const { type, ...rest } = field;
+  resolve: {
+    field: async ({
+      datasource,
+      field,
+      resolveField,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupListField;
+      resolveField: resolveFieldType;
+    }): Promise<TinaFieldGroupListField> => {
+      const { type, ...rest } = field;
 
-    const fields = await Promise.all(
-      field.fields.map(async (f) => await resolveField(datasource, f))
-    );
+      const fields = await Promise.all(
+        field.fields.map(async (f) => await resolveField(datasource, f))
+      );
 
-    return {
-      ...rest,
-      component: "group-list",
-      fields,
-      __typename: `${field.__namespace}${field.label}GroupListField`,
-    };
-  },
-  initialValue: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupListField;
-    value: unknown;
-    resolveData: resolveDataType;
-  }) => {
-    assertIsDataArray(value);
-    return await Promise.all(
-      value.map(async (v: any) => await resolveData(datasource, field, v))
-    );
-  },
-  value: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupListField;
-    value: unknown;
-    resolveData: resolveDataType;
-  }) => {
-    assertIsDataArray(value);
-    return await Promise.all(
-      value.map(async (v: any) => await resolveData(datasource, field, v))
-    );
-  },
-  input: async ({
-    datasource,
-    field,
-    value,
-    resolveData,
-    resolveDocumentInputData,
-  }: {
-    datasource: DataSource;
-    field: FieldGroupListField;
-    value: unknown;
-    resolveData: resolveDataType;
-    resolveDocumentInputData: any;
-  }): Promise<unknown> => {
-    assertIsDataArray(value);
+      return {
+        ...rest,
+        component: "group-list",
+        fields,
+        __typename: `${field.__namespace}${field.label}GroupListField`,
+      };
+    },
+    initialValue: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupListField;
+      value: unknown;
+      resolveData: resolveDataType;
+    }) => {
+      assertIsDataArray(value);
+      return await Promise.all(
+        value.map(async (v: any) => await resolveData(datasource, field, v))
+      );
+    },
+    value: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupListField;
+      value: unknown;
+      resolveData: resolveDataType;
+    }) => {
+      assertIsDataArray(value);
+      return await Promise.all(
+        value.map(async (v: any) => await resolveData(datasource, field, v))
+      );
+    },
+    input: async ({
+      datasource,
+      field,
+      value,
+      resolveData,
+      resolveDocumentInputData,
+    }: {
+      datasource: DataSource;
+      field: FieldGroupListField;
+      value: unknown;
+      resolveData: resolveDataType;
+      resolveDocumentInputData: any;
+    }): Promise<unknown> => {
+      assertIsDataArray(value);
 
-    return await Promise.all(
-      value.map(async (v) => {
-        return await resolveDocumentInputData({
-          data: v,
-          template: field,
-          datasource,
-        });
-      })
-    );
+      return await Promise.all(
+        value.map(async (v) => {
+          return await resolveDocumentInputData({
+            data: v,
+            template: field,
+            datasource,
+          });
+        })
+      );
+    },
   },
 };
 
@@ -178,8 +180,3 @@ function assertIsDataArray(
   const schema = yup.array().of(yup.object({}));
   schema.validateSync(value);
 }
-
-export const fieldGroupList = {
-  resolve,
-  build,
-};
