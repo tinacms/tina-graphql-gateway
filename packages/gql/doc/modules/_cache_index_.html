@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;fields/index&quot; | @forestryio/gql</title>
+	<title>&quot;cache/index&quot; | @forestryio/gql</title>
 	<meta name="description" content="Documentation for @forestryio/gql">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_fields_index_.html">&quot;fields/index&quot;</a>
+					<a href="_cache_index_.html">&quot;cache/index&quot;</a>
 				</li>
 			</ul>
-			<h1>Module &quot;fields/index&quot;</h1>
+			<h1>Module &quot;cache/index&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,8 +71,13 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_fields_index_.html#field" class="tsd-kind-icon">Field</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_fields_index_.html#tinafield" class="tsd-kind-icon">Tina<wbr>Field</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_cache_index_.html#cache" class="tsd-kind-icon">Cache</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_cache_index_.html#cacheinit" class="tsd-kind-icon">cache<wbr>Init</a></li>
 							</ul>
 						</section>
 					</div>
@@ -81,24 +86,94 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="field" class="tsd-anchor"></a>
-					<h3>Field</h3>
-					<div class="tsd-signature tsd-kind-icon">Field<span class="tsd-signature-symbol">:</span> <a href="_fields_text_index_.html#textfield" class="tsd-signature-type">TextField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_textarea_index_.html#textareafield" class="tsd-signature-type">TextareaField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_select_index_.html#selectfield" class="tsd-signature-type">SelectField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_field_group_index_.html#fieldgroupfield" class="tsd-signature-type">FieldGroupField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_field_group_list_index_.html#fieldgrouplistfield" class="tsd-signature-type">FieldGroupListField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_list_index_.html#listfield" class="tsd-signature-type">ListField</a></div>
+					<a name="cache" class="tsd-anchor"></a>
+					<h3>Cache</h3>
+					<div class="tsd-signature tsd-kind-icon">Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>build<span class="tsd-signature-symbol">: </span>&lt;T&gt;<span class="tsd-signature-symbol">(</span>gqlType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">; </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/b56c60a/packages/gql/src/fields/index.ts#L12">packages/gql/src/fields/index.ts:12</a></li>
+							<li>Defined in packages/gql/src/cache/index.ts:15</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Holds an in-memory cache of GraphQL Objects which have been built, allowing
+							re-use and avoiding name collisions</p>
+						</div>
+						<pre><code class="language-js"><span class="hljs-comment">// ex. Any other uses of &quot;SomeName&quot; will return the cached version</span>
+cache.build(<span class="hljs-keyword">new</span> GraphQLObjectType({<span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;SomeName&#x27;</span>, <span class="hljs-attr">fields</span>: {...}})</code></pre>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>build<span class="tsd-signature-symbol">: </span>&lt;T&gt;<span class="tsd-signature-symbol">(</span>gqlType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates</p>
+									</div>
+								</div>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable tsd-has-type-parameter">
+											<li class="tsd-signature tsd-kind-icon">&lt;T&gt;<span class="tsd-signature-symbol">(</span>gqlType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-type-parameters-title">Type parameters</h4>
+												<ul class="tsd-type-parameters">
+													<li>
+														<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLType</span></h4>
+													</li>
+												</ul>
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>gqlType: <span class="tsd-signature-type">T</span></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="tinafield" class="tsd-anchor"></a>
-					<h3>Tina<wbr>Field</h3>
-					<div class="tsd-signature tsd-kind-icon">Tina<wbr>Field<span class="tsd-signature-symbol">:</span> <a href="_fields_text_index_.html#tinatextfield" class="tsd-signature-type">TinaTextField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_textarea_index_.html#tinatextareafield" class="tsd-signature-type">TinaTextareaField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_select_index_.html#tinaselectfield" class="tsd-signature-type">TinaSelectField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_blocks_index_.html#tinablocksfield" class="tsd-signature-type">TinaBlocksField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_field_group_index_.html#tinafieldgroupfield" class="tsd-signature-type">TinaFieldGroupField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_field_group_list_index_.html#tinafieldgrouplistfield" class="tsd-signature-type">TinaFieldGroupListField</a><span class="tsd-signature-symbol"> | </span><a href="_fields_list_index_.html#tinalistfield" class="tsd-signature-type">TinaListField</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/b56c60a/packages/gql/src/fields/index.ts#L21">packages/gql/src/fields/index.ts:21</a></li>
-						</ul>
-					</aside>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="cacheinit" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> cache<wbr>Init</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">cache<wbr>Init<span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in packages/gql/src/cache/index.ts:25</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Initialize the cache and datastore services, which keep in-memory
+									state when being used throughout the build process.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>datasource: <a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -111,7 +186,7 @@
 					<li class=" tsd-kind-module">
 						<a href="_builder_service_.html">&quot;builder/service&quot;</a>
 					</li>
-					<li class=" tsd-kind-module">
+					<li class="current tsd-kind-module">
 						<a href="_cache_index_.html">&quot;cache/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -129,7 +204,7 @@
 					<li class=" tsd-kind-module">
 						<a href="_fields_field_group_index_.html">&quot;fields/field-<wbr>group/index&quot;</a>
 					</li>
-					<li class="current tsd-kind-module">
+					<li class=" tsd-kind-module">
 						<a href="_fields_index_.html">&quot;fields/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -164,10 +239,10 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_fields_index_.html#field" class="tsd-kind-icon">Field</a>
+						<a href="_cache_index_.html#cache" class="tsd-kind-icon">Cache</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_fields_index_.html#tinafield" class="tsd-kind-icon">Tina<wbr>Field</a>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_cache_index_.html#cacheinit" class="tsd-kind-icon">cache<wbr>Init</a>
 					</li>
 				</ul>
 			</nav>

@@ -2,17 +2,17 @@ import _ from "lodash";
 import { graphql } from "graphql";
 import { GraphQLSchema, GraphQLFieldResolver, Source } from "graphql";
 
-import { text } from "./fields/text";
-import { list } from "./fields/list";
-import { select } from "./fields/select";
-import { blocks } from "./fields/blocks";
-import { textarea } from "./fields/textarea";
-import { fieldGroup } from "./fields/field-group";
-import { fieldGroupList } from "./fields/field-group-list";
+import { text } from "../fields/text";
+import { list } from "../fields/list";
+import { select } from "../fields/select";
+import { blocks } from "../fields/blocks";
+import { textarea } from "../fields/textarea";
+import { fieldGroup } from "../fields/field-group";
+import { fieldGroupList } from "../fields/field-group-list";
 
-import type { Field, TinaField } from "./fields";
-import type { DataSource } from "./datasources/datasource";
-import type { TemplateData, TinaTemplateData, WithFields } from "./types";
+import type { Field, TinaField } from "../fields";
+import type { DataSource } from "../datasources/datasource";
+import type { TemplateData, TinaTemplateData, WithFields } from "../types";
 
 export type ContextT = {
   datasource: DataSource;

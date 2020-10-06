@@ -8,7 +8,7 @@ import {
   GraphQLList,
 } from "graphql";
 
-import { builder } from "../../builder/service";
+import { builder } from "../../builder";
 
 import type { Cache } from "../../cache";
 import type { TinaTemplateData } from "../../types";
