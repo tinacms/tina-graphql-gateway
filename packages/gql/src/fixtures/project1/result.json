@@ -1,31 +1,108 @@
 {
-  "errors": [
-    {
-      "message": "Cannot query field \"sectionTemplateFields\" on type \"PostSectionsBlocksFieldTemplates\".",
-      "locations": [
-        {
-          "line": 24,
-          "column": 15
-        }
-      ]
-    },
-    {
-      "message": "Fragment cannot be spread here as objects of type \"ListFormFieldItemField\" can never be of type \"TextareaField\".",
-      "locations": [
-        {
-          "line": 56,
-          "column": 23
-        }
-      ]
-    },
-    {
-      "message": "Fragment cannot be spread here as objects of type \"ListFormFieldItemField\" can never be of type \"TextareaField\".",
-      "locations": [
-        {
-          "line": 123,
-          "column": 15
-        }
-      ]
+  "data": {
+    "document": {
+      "__typename": "Post",
+      "form": {
+        "label": "Post",
+        "_template": "Post",
+        "fields": [
+          {
+            "name": "title",
+            "label": "Title",
+            "component": "textarea",
+            "description": "The name of your post, keep it short!"
+          },
+          {
+            "name": "author",
+            "label": "Author",
+            "component": "select",
+            "options": ["authors/marge.md", "authors/homer.md"]
+          },
+          {
+            "name": "sections",
+            "label": "Sections",
+            "component": "blocks",
+            "templates": {
+              "Section": {
+                "label": "Section",
+                "_template": "Section",
+                "fields": [
+                  {
+                    "name": "description",
+                    "label": "Description",
+                    "component": "textarea",
+                    "description": null
+                  },
+                  {
+                    "name": "cta",
+                    "label": "Cta",
+                    "component": "group",
+                    "fields": [
+                      {
+                        "name": "header",
+                        "label": "Header",
+                        "component": "textarea",
+                        "description": null
+                      }
+                    ]
+                  },
+                  {
+                    "name": "authors",
+                    "label": "Authors",
+                    "component": "list",
+                    "field": {
+                      "name": "authors",
+                      "label": "Authors",
+                      "component": "select",
+                      "options": ["authors/marge.md", "authors/homer.md"]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "path": "posts/1.md",
+      "data": {
+        "title": "Some Title",
+        "author": {
+          "document": {
+            "path": "authors/homer.md"
+          }
+        },
+        "sections": [
+          {
+            "description": "Some textarea description",
+            "cta": {
+              "header": "Some CTA"
+            },
+            "authors": {
+              "documents": [
+                {
+                  "path": "authors/marge.md"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "initialValues": {
+        "_template": "Post",
+        "title": "Some Title",
+        "author": "authors/homer.md",
+        "sections": [
+          {
+            "_template": "Section",
+            "description": "Some textarea description",
+            "authors": ["authors/marge.md"],
+            "cta": {
+              "_template": "Cta",
+              "header": "Some CTA"
+            }
+          }
+        ]
+      }
     }
-  ]
+  }
 }
