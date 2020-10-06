@@ -15,7 +15,7 @@ describe("Document Resolver", () => {
 
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const schema = await builder.schemaBuilder({ cache });
+    const schema = await builder.schema({ cache });
 
     const contentPath = "posts/1.md";
     // const contentPath = "authors/homer.md";
@@ -47,7 +47,7 @@ describe("Document Resolver", () => {
 
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const schema = await builder.schemaBuilder({ cache });
+    const schema = await builder.schema({ cache });
     const payload = await fs
       .readFileSync(path.join(projectRoot, "payload.json"))
       .toString();

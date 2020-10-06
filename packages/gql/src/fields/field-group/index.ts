@@ -25,7 +25,7 @@ export const fieldGroup = {
             label: { type: GraphQLString },
             component: { type: GraphQLString },
             fields: {
-              type: await builder.documentFormFieldsUnion(cache, field),
+              type: await builder._documentFormFieldsUnion(cache, field),
             },
           },
         })
@@ -70,15 +70,12 @@ export const fieldGroup = {
       field: FieldGroupField;
     }): Promise<TinaFieldGroupField> => {
       const { type, ...rest } = field;
-
-      const fields = await Promise.all(
-        field.fields.map(async (f) => await resolver.field(datasource, f))
-      );
+      const template = await resolver.documentFormObject(datasource, field);
 
       return {
         ...rest,
+        ...template,
         component: "group",
-        fields,
         __typename: `${field.__namespace}${field.label}GroupField`,
       };
     },
@@ -92,7 +89,7 @@ export const fieldGroup = {
       value: unknown;
     }) => {
       assertIsData(value);
-      return await resolver.dataUnion(datasource, field, value);
+      return await resolver.documentDataObject(datasource, field, value);
     },
     value: async ({
       datasource,
@@ -104,7 +101,7 @@ export const fieldGroup = {
       value: unknown;
     }) => {
       assertIsData(value);
-      return await resolver.dataUnion(datasource, field, value);
+      return await resolver.documentDataObject(datasource, field, value);
     },
     input: async ({
       datasource,
@@ -116,7 +113,7 @@ export const fieldGroup = {
       value: unknown;
     }) => {
       assertIsData(value);
-      return await resolver.documentInputData({
+      return await resolver.documentDataInputObject({
         data: value,
         template: field,
         datasource,

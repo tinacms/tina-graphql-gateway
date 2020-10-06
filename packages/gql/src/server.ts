@@ -42,7 +42,7 @@ app.post("/:schema", async (req, res) => {
   const projectRoot = path.join(process.cwd(), `src/fixtures${req.path}`);
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
-  const schema = await builder.schemaBuilder({ cache });
+  const schema = await builder.schema({ cache });
   const result = await graphqlInit({
     schema,
     source: query,

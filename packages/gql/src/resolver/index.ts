@@ -2,7 +2,7 @@ import _ from "lodash";
 import { graphql } from "graphql";
 import { GraphQLSchema, Source } from "graphql";
 
-import { fieldResolver } from "./field-resolver";
+import { resolver } from "./field-resolver";
 
 import type { DataSource } from "../datasources/datasource";
 
@@ -18,7 +18,7 @@ export const graphqlInit = async (args: {
 }) => {
   return await graphql({
     ...args,
-    fieldResolver: fieldResolver,
+    fieldResolver: resolver.schema,
     rootValue: {
       document: {
         _resolver: "_resource",
