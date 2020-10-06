@@ -125,8 +125,18 @@ export const builder = {
       })
     );
   },
+  /**
+   * The top-level form object for a document
+   *
+   * ```graphql
+   * type AuthorForm = {
+   *  label: String,
+   *  _template: String,
+   *  feilds: ...
+   * }
+   * ```
+   */
   documentFormObject: async (cache: Cache, template: TemplateData) => {
-    const t = template;
     return cache.build(
       new GraphQLObjectType({
         name: `${template.label}Form`,
@@ -134,7 +144,7 @@ export const builder = {
           label: { type: GraphQLString },
           _template: { type: GraphQLString },
           fields: {
-            type: await builder.documentFormFieldsUnion(cache, t),
+            type: await builder.documentFormFieldsUnion(cache, template),
           },
         },
       })
@@ -281,12 +291,18 @@ export const builder = {
       })
     );
   },
+  /**
+   * Iterate through the template fields, passing them on to their form field builders
+   */
   documentFormFields: async (cache: Cache, template: TemplateData) => {
     // FIXME: This will break when there are multiple block or field group items.
     // this should be unique by field type but not if they're blocks/field groups
     const fields = _.uniqBy(template.fields, (field) => field.type);
     return await buildTemplateFormFields(cache, fields);
   },
+  /**
+   * A form's fields is a union of different field types
+   */
   documentFormFieldsUnion: async (
     cache: Cache,
     template: TemplateData
@@ -301,7 +317,6 @@ export const builder = {
     );
   },
 };
-
 /**
  * Holds an in-memory cache of GraphQL Objects which have been built, allowing
  * re-use and avoiding name collisions
@@ -315,9 +330,18 @@ export type Cache = {
   /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
   build: <T extends GraphQLType>(gqlType: T) => T;
   datasource: DataSource;
+  /**
+   * The builder holds all the functions which are required to build the schema, everything
+   * starts with the documentUnion, which then trickles down through the schema, populating
+   * all the fields by reading the settings.yml and template definition files.
+   */
   builder: typeof builder;
 };
 
+/**
+ * Initialize the cache and datastore services, which keep in-memory
+ * state when being used throughout the build process.
+ */
 export const cacheInit = (
   datasource: DataSource,
   storage: { [key: string]: GraphQLType }
