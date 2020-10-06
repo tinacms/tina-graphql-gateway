@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
-import { builder } from "../../builder/service";
+import { builder } from "../../builder";
 
 import type { DataSource } from "../../datasources/datasource";
 import type { Cache } from "../../cache";

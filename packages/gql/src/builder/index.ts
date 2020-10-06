@@ -32,6 +32,10 @@ import type { ContextT } from "../resolver";
  * all the fields by reading the settings.yml and template definition files.
  */
 export const builder = {
+  /**
+   * The entrypoint to the build process. It's likely we'll have many more query fields
+   * in the future.
+   */
   schemaBuilder: async ({ cache }: { cache: Cache }) => {
     const documentUnion = await builder.documentUnion({ cache });
     const documentInput = await builder.sectionDocumentInputObject({
@@ -148,20 +152,6 @@ export const builder = {
     );
   },
   /**
-   * Iterate through the template fields, passing them on to their data value builders
-   */
-  buildTemplateDataFields: async (cache: Cache, template: TemplateData) => {
-    const fields: GraphQLFieldConfigMap<any, ContextT> = {};
-
-    await Promise.all(
-      template.fields.map(async (field) => {
-        fields[field.name] = await buildTemplateDataField(cache, field);
-      })
-    );
-
-    return fields;
-  },
-  /**
    * Similar to documentObject except it only deals with unions on the data layer
    *
    * Builds out the type of data based on the provided template.
@@ -174,6 +164,19 @@ export const builder = {
         fields: await builder.buildTemplateDataFields(cache, template),
       })
     );
+  },
+  /**
+   * Iterate through the template fields, passing them on to their data value builders
+   */ buildTemplateDataFields: async (cache: Cache, template: TemplateData) => {
+    const fields: GraphQLFieldConfigMap<any, ContextT> = {};
+
+    await Promise.all(
+      template.fields.map(async (field) => {
+        fields[field.name] = await buildTemplateDataField(cache, field);
+      })
+    );
+
+    return fields;
   },
   /**
    * The top-level form object for a document
@@ -201,23 +204,6 @@ export const builder = {
     );
   },
   /**
-   * Iterate through the template fields, passing them on to their initial value builders
-   */
-  buildTemplateInitialValueFields: async (
-    cache: Cache,
-    template: TemplateData
-  ) => {
-    const fields: GraphQLFieldConfigMap<any, ContextT> = {};
-
-    await Promise.all(
-      template.fields.map(async (field) => {
-        fields[field.name] = await buildTemplateInitialValueField(cache, field);
-      })
-    );
-
-    return fields;
-  },
-  /**
    * The [initial values](https://tinacms.org/docs/plugins/forms/#form-configuration) for the Tina form.
    *
    * `_template` is provided as a disambiguator when the result value is inside an array.
@@ -240,6 +226,23 @@ export const builder = {
         },
       })
     );
+  },
+  /**
+   * Iterate through the template fields, passing them on to their initial value builders
+   */
+  buildTemplateInitialValueFields: async (
+    cache: Cache,
+    template: TemplateData
+  ) => {
+    const fields: GraphQLFieldConfigMap<any, ContextT> = {};
+
+    await Promise.all(
+      template.fields.map(async (field) => {
+        fields[field.name] = await buildTemplateInitialValueField(cache, field);
+      })
+    );
+
+    return fields;
   },
   /**
    * Currently only used by blocks, which accepts an array of values with different shapes,

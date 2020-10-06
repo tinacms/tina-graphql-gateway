@@ -1,5 +1,5 @@
 import path from "path";
-import { builder } from "../builder/service";
+import { builder } from "../builder";
 import { cacheInit } from "../cache";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql, assertSchema } from "../fields/test-util";

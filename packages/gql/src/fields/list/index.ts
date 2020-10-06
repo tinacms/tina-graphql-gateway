@@ -7,7 +7,7 @@ import {
 } from "graphql";
 
 import { select } from "../select";
-import { builder } from "../../builder/service";
+import { builder } from "../../builder";
 
 import type { Cache } from "../../cache";
 import type { TinaField } from "../index";
