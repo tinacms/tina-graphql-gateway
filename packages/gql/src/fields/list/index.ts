@@ -1,5 +1,3 @@
-import type { TinaField } from "../index";
-import type { DataSource } from "../../datasources/datasource";
 import * as yup from "yup";
 import {
   GraphQLString,
@@ -7,8 +5,13 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
-import type { Cache } from "../../builder";
+
 import { select } from "../select";
+import { builder } from "../../builder/service";
+
+import type { Cache } from "../../cache";
+import type { TinaField } from "../index";
+import type { DataSource } from "../../datasources/datasource";
 
 export type BaseListField = {
   label: string;
@@ -131,7 +134,7 @@ const build = {
               fields: {
                 documents: {
                   type: GraphQLList(
-                    await cache.builder.documentUnion({ cache, section })
+                    await builder.documentUnion({ cache, section })
                   ),
                 },
               },

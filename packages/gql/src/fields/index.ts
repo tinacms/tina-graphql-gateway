@@ -1,13 +1,13 @@
 import { TextField, TinaTextField } from "./text";
-import { TextareaField, TinaTextareaField } from "./textarea";
+import { ListField, TinaListField } from "./list";
 import { SelectField, TinaSelectField } from "./select";
 import { BlocksField, TinaBlocksField } from "./blocks";
+import { TextareaField, TinaTextareaField } from "./textarea";
 import { FieldGroupField, TinaFieldGroupField } from "./field-group";
 import {
   FieldGroupListField,
   TinaFieldGroupListField,
 } from "./field-group-list";
-import { ListField, TinaListField } from "./list";
 
 export type Field =
   | TextField

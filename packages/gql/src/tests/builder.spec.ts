@@ -1,23 +1,16 @@
 import path from "path";
-import fs from "fs";
-import { schemaBuilder } from "../builder";
+import { builder } from "../builder/service";
+import { cacheInit } from "../cache";
 import { FileSystemManager } from "../datasources/filesystem-manager";
-import { print, printSchema } from "graphql";
-import { queryBuilder } from "@forestryio/graphql-helpers";
-import {
-  assertType,
-  assertNoTypeCollisions,
-  testCache,
-  gql,
-  assertSchema,
-} from "../fields/test-util";
+import { gql, assertSchema } from "../fields/test-util";
 
 describe("Schema builder", () => {
   test("does it", async () => {
     const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
 
     const datasource = new FileSystemManager(projectRoot);
-    const schema = await schemaBuilder({ datasource });
+    const cache = cacheInit(datasource);
+    const schema = await builder.schemaBuilder({ cache });
 
     assertSchema(schema).matches(gql`
       type Query {

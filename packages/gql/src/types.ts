@@ -9,16 +9,17 @@ export type DirectorySection = {
   new_doc_ext: string;
   templates: string[];
 };
+
 export type HeadingSection = {
   type: "heading";
   label: string;
 };
+
 export type DocumentSection = {
   type: "document";
   label: string;
   path: string;
 };
-// export type Section = DirectorySection | HeadingSection | DocumentSection;
 
 interface SectionMap {
   directory: DirectorySection;
@@ -61,10 +62,12 @@ export type TemplateData = WithFields & {
   display_field?: string;
   pages?: string[];
 };
+
 export type TinaTemplateData = {
   label: string;
   fields: TinaField[];
 };
+
 export type Template = {
   data: TemplateData;
 };

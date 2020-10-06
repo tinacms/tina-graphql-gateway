@@ -10,7 +10,7 @@ import {
   GraphQLType,
 } from "graphql";
 import { FileSystemManager } from "../datasources/filesystem-manager";
-import { cacheInit } from "../builder";
+import { cacheInit } from "../cache";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
@@ -18,10 +18,7 @@ export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   if (mockGetTemplate) {
     filesystemDataSource.getTemplate = mockGetTemplate;
   }
-  const storage: {
-    [key: string]: GraphQLType;
-  } = {};
-  return cacheInit(filesystemDataSource, storage);
+  return cacheInit(filesystemDataSource);
 };
 
 export const assertSchema = (schema: GraphQLSchema) => {

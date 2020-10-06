@@ -1,6 +1,5 @@
-import type { DataSource } from "../../datasources/datasource";
 import _ from "lodash";
-import type { TinaTemplateData } from "../../types";
+import * as yup from "yup";
 import {
   GraphQLString,
   GraphQLInputObjectType,
@@ -8,14 +7,18 @@ import {
   GraphQLObjectType,
   GraphQLList,
 } from "graphql";
-import * as yup from "yup";
+
+import { builder } from "../../builder/service";
+
+import type { Cache } from "../../cache";
+import type { TinaTemplateData } from "../../types";
+import type { DataSource } from "../../datasources/datasource";
 import type {
   resolveTemplateType,
   resolveDataType,
   resolveInitialValuesType,
   ResolvedData,
 } from "../../resolver";
-import type { Cache } from "../../builder";
 
 export type BlocksField = {
   label: string;
@@ -105,7 +108,7 @@ export const blocks = {
             slug: templateSlug,
           });
           templateForms[template.label] = {
-            type: await cache.builder.documentFormObject(cache, template),
+            type: await builder.documentFormObject(cache, template),
           };
         })
       );
@@ -138,7 +141,7 @@ export const blocks = {
     }) => {
       return {
         type: GraphQLList(
-          await cache.builder.initialValuesUnion({
+          await builder.initialValuesUnion({
             cache,
             templates: field.template_types,
           })
@@ -148,7 +151,7 @@ export const blocks = {
     value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return {
         type: GraphQLList(
-          await cache.builder.documentDataUnion({
+          await builder.documentDataUnion({
             cache,
             templates: field.template_types,
           })
@@ -164,7 +167,7 @@ export const blocks = {
 
       const templateTypes = await Promise.all(
         templates.map((template) => {
-          return cache.builder.documentDataInputObject(cache, template);
+          return builder.documentDataInputObject(cache, template);
         })
       );
 

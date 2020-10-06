@@ -1,9 +1,12 @@
-import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import * as yup from "yup";
-import type { TinaField, Field } from "../index";
+import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+
+import { builder } from "../../builder/service";
+
+import type { Cache } from "../../cache";
+import type { Field, TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
 import type { resolveFieldType, resolveDataType } from "../../resolver";
-import type { Cache } from "../../builder";
 
 export type FieldGroupListField = {
   label: string;
@@ -45,7 +48,7 @@ const build = {
           component: { type: GraphQLString },
           fields: {
             // field is structural subtyping TemplateData shape
-            type: await cache.builder.documentFormFieldsUnion(cache, field),
+            type: await builder.documentFormFieldsUnion(cache, field),
           },
         },
       })
@@ -59,7 +62,7 @@ const build = {
     field: FieldGroupListField;
   }) => {
     return {
-      type: GraphQLList(await cache.builder.documentDataObject(cache, field)),
+      type: GraphQLList(await builder.documentDataObject(cache, field)),
     };
   },
   value: async ({
@@ -70,7 +73,7 @@ const build = {
     field: FieldGroupListField;
   }) => {
     return {
-      type: GraphQLList(await cache.builder.documentDataObject(cache, field)),
+      type: GraphQLList(await builder.documentDataObject(cache, field)),
     };
   },
   input: async ({
@@ -81,9 +84,7 @@ const build = {
     field: FieldGroupListField;
   }) => {
     return {
-      type: GraphQLList(
-        await cache.builder.documentDataInputObject(cache, field)
-      ),
+      type: GraphQLList(await builder.documentDataInputObject(cache, field)),
     };
   },
 };

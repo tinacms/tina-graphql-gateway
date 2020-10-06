@@ -1,7 +1,7 @@
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql";
+import { GraphQLString, GraphQLObjectType } from "graphql";
+
+import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../builder";
-import { graphqlInit } from "../../resolver";
 
 export type TextareaField = {
   label: string;

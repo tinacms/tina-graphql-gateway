@@ -1,20 +1,16 @@
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  getNamedType,
-  GraphQLInputObjectType,
-  GraphQLBoolean,
-  GraphQLFloat,
-} from "graphql";
+import { GraphQLString, GraphQLObjectType } from "graphql";
 import * as yup from "yup";
+
+import { builder } from "../../builder/service";
+
+import type { Cache } from "../../cache";
+import type { Field, TinaField } from "../index";
+import type { DataSource } from "../../datasources/datasource";
 import type {
   resolveFieldType,
   resolveDataType,
   ResolvedData,
 } from "../../resolver";
-import type { TinaField, Field } from "../index";
-import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../builder";
 
 /**
  * The Forestry definition for Field Group
@@ -57,7 +53,6 @@ export type FieldGroupValue = {
 
 const build = {
   field: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    const union = await cache.builder.documentFormFieldsUnion(cache, field);
     return cache.build(
       new GraphQLObjectType({
         name: `${field.__namespace}${field.label}GroupField`,
@@ -66,7 +61,7 @@ const build = {
           label: { type: GraphQLString },
           component: { type: GraphQLString },
           fields: {
-            type: union,
+            type: await builder.documentFormFieldsUnion(cache, field),
           },
         },
       })
@@ -80,14 +75,14 @@ const build = {
     field: FieldGroupField;
   }) => {
     return {
-      type: await cache.builder.documentInitialValuesObject(cache, field),
+      type: await builder.documentInitialValuesObject(cache, field),
     };
   },
   value: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await cache.builder.documentDataObject(cache, field) };
+    return { type: await builder.documentDataObject(cache, field) };
   },
   input: async ({ cache, field }: { cache: Cache; field: FieldGroupField }) => {
-    return { type: await cache.builder.documentDataInputObject(cache, field) };
+    return { type: await builder.documentDataInputObject(cache, field) };
   },
 };
 

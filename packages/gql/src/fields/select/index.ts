@@ -1,6 +1,9 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+
+import { builder } from "../../builder/service";
+
 import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../builder";
+import type { Cache } from "../../cache";
 
 export type BaseSelectField = {
   label: string;
@@ -84,7 +87,7 @@ const build = {
               name: `${select.label}Document`,
               fields: {
                 document: {
-                  type: await cache.builder.documentUnion({
+                  type: await builder.documentUnion({
                     cache,
                     section: select.config.source.section,
                   }),

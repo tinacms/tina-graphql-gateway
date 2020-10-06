@@ -11,18 +11,20 @@ import {
   GraphQLInputFieldConfigMap,
 } from "graphql";
 import _ from "lodash";
-import { text } from "./fields/text";
-import { textarea } from "./fields/textarea";
-import { select } from "./fields/select";
-import { blocks } from "./fields/blocks";
-import { fieldGroup } from "./fields/field-group";
-import { fieldGroupList } from "./fields/field-group-list";
-import { list } from "./fields/list";
+
+import { Cache } from "../cache";
+import { text } from "../fields/text";
+import { list } from "../fields/list";
+import { select } from "../fields/select";
+import { blocks } from "../fields/blocks";
+import { textarea } from "../fields/textarea";
+import { fieldGroup } from "../fields/field-group";
+import { fieldGroupList } from "../fields/field-group-list";
+
 import type { GraphQLFieldConfigMap } from "graphql";
-import type { TemplateData } from "./types";
-import type { Field } from "./fields";
-import type { DataSource } from "./datasources/datasource";
-import type { ContextT } from "./resolver";
+import type { TemplateData } from "../types";
+import type { Field } from "../fields";
+import type { ContextT } from "../resolver";
 
 /**
  * The builder holds all the functions which are required to build the schema, everything
@@ -30,6 +32,54 @@ import type { ContextT } from "./resolver";
  * all the fields by reading the settings.yml and template definition files.
  */
 export const builder = {
+  schemaBuilder: async ({ cache }: { cache: Cache }) => {
+    const documentUnion = await builder.documentUnion({ cache });
+    const documentInput = await builder.sectionDocumentInputObject({
+      cache,
+    });
+    const schema = new GraphQLSchema({
+      query: new GraphQLObjectType({
+        name: "Query",
+        fields: {
+          document: {
+            args: {
+              path: { type: GraphQLString },
+            },
+            type: documentUnion,
+          },
+        },
+      }),
+      mutation: new GraphQLObjectType({
+        name: "Mutation",
+        fields: {
+          // addDocument: {
+          //   type: '',
+          //   args: {
+          //     path: { type: GraphQLNonNull(GraphQLString)},
+          //     params: ''
+          //   }
+          // },
+          updateDocument: {
+            type: documentUnion,
+            args: {
+              path: { type: GraphQLNonNull(GraphQLString) },
+              params: {
+                type: documentInput,
+              },
+            },
+          },
+          // updateDocument: {
+          //   type: '',
+          //   args: {
+          //     path: { type: GraphQLNonNull(GraphQLString)},
+          //   }
+          // }
+        },
+      }),
+    });
+
+    return schema;
+  },
   /**
    * The top-level result, a document is a file which may be of any one of the templates
    * defined, the union consists of each template which is possible.
@@ -316,110 +366,6 @@ export const builder = {
       )
     );
   },
-};
-/**
- * Holds an in-memory cache of GraphQL Objects which have been built, allowing
- * re-use and avoiding name collisions
- *
- * ```js
- * // ex. Any other uses of "SomeName" will return the cached version
- * cache.build(new GraphQLObjectType({name: 'SomeName', fields: {...}})
- * ```
- */
-export type Cache = {
-  /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
-  build: <T extends GraphQLType>(gqlType: T) => T;
-  datasource: DataSource;
-  /**
-   * The builder holds all the functions which are required to build the schema, everything
-   * starts with the documentUnion, which then trickles down through the schema, populating
-   * all the fields by reading the settings.yml and template definition files.
-   */
-  builder: typeof builder;
-};
-
-/**
- * Initialize the cache and datastore services, which keep in-memory
- * state when being used throughout the build process.
- */
-export const cacheInit = (
-  datasource: DataSource,
-  storage: { [key: string]: GraphQLType }
-) => {
-  const cache: Cache = {
-    build: (gqlType) => {
-      const name = getNamedType(gqlType).toString();
-      if (storage[name]) {
-        return storage[name];
-      } else {
-        storage[name] = gqlType;
-      }
-
-      return gqlType as any; // allows gqlType's internal type to pass through
-    },
-    datasource: datasource,
-    builder,
-  };
-
-  return cache;
-};
-
-export const schemaBuilder = async ({
-  datasource,
-}: {
-  datasource: DataSource;
-}) => {
-  const storage: {
-    [key: string]: GraphQLType;
-  } = {};
-  const cache = cacheInit(datasource, storage);
-
-  const documentUnion = await cache.builder.documentUnion({ cache });
-  const documentInput = await cache.builder.sectionDocumentInputObject({
-    cache,
-  });
-  const schema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-      name: "Query",
-      fields: {
-        document: {
-          args: {
-            path: { type: GraphQLString },
-          },
-          type: documentUnion,
-        },
-      },
-    }),
-    mutation: new GraphQLObjectType({
-      name: "Mutation",
-      fields: {
-        // addDocument: {
-        //   type: '',
-        //   args: {
-        //     path: { type: GraphQLNonNull(GraphQLString)},
-        //     params: ''
-        //   }
-        // },
-        updateDocument: {
-          type: documentUnion,
-          args: {
-            path: { type: GraphQLNonNull(GraphQLString) },
-            params: {
-              type: documentInput,
-            },
-          },
-        },
-        // updateDocument: {
-        //   type: '',
-        //   args: {
-        //     path: { type: GraphQLNonNull(GraphQLString)},
-        //   }
-        // }
-      },
-    }),
-  });
-
-  return schema;
 };
 
 const buildTemplateFormFields = async (cache: Cache, fields: Field[]) => {

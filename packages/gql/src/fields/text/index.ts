@@ -1,6 +1,7 @@
-import type { DataSource } from "../../datasources/datasource";
 import { GraphQLString, GraphQLObjectType } from "graphql";
-import type { Cache } from "../../builder";
+
+import type { Cache } from "../../cache";
+import type { DataSource } from "../../datasources/datasource";
 
 export type TextField = {
   label: string;
