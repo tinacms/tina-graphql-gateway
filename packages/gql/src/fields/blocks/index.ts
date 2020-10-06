@@ -9,16 +9,17 @@ import {
 } from "graphql";
 
 import { builder } from "../../builder";
+import {
+  resolveTemplate,
+  resolveData,
+  resolveDocumentInputData,
+  resolveInitialValues,
+} from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { TinaTemplateData } from "../../types";
 import type { DataSource } from "../../datasources/datasource";
-import type {
-  resolveTemplateType,
-  resolveDataType,
-  resolveInitialValuesType,
-  ResolvedData,
-} from "../../resolver";
+import type { ResolvedData } from "../../resolver/field-resolver";
 
 export const blocks = {
   /**
@@ -193,11 +194,9 @@ export const blocks = {
     field: async ({
       datasource,
       field,
-      resolveTemplate,
     }: {
       datasource: DataSource;
       field: BlocksField;
-      resolveTemplate: resolveTemplateType;
     }): Promise<TinaBlocksField> => {
       const templates: { [key: string]: TinaTemplateData } = {};
       await Promise.all(
@@ -224,14 +223,10 @@ export const blocks = {
       datasource,
       field,
       value,
-      resolveInitialValues,
-      resolveTemplate,
     }: {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-      resolveInitialValues: resolveInitialValuesType;
-      resolveTemplate: resolveTemplateType;
     }): Promise<ResolvedData[]> => {
       assertIsBlock(value);
       return await Promise.all(
@@ -251,14 +246,10 @@ export const blocks = {
       datasource,
       field,
       value,
-      resolveData,
-      resolveTemplate,
     }: {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-      resolveData: resolveDataType;
-      resolveTemplate: resolveTemplateType;
     }): Promise<ResolvedData[]> => {
       assertIsBlock(value);
 
@@ -276,16 +267,10 @@ export const blocks = {
       datasource,
       field,
       value,
-      resolveData,
-      resolveTemplate,
-      resolveDocumentInputData,
     }: {
       datasource: DataSource;
       field: BlocksField;
       value: unknown;
-      resolveData: resolveDataType;
-      resolveTemplate: resolveTemplateType;
-      resolveDocumentInputData: any;
     }): Promise<ResolvedData[]> => {
       // FIXME: we should validate that only one key was passed
       assertIsArray(value);

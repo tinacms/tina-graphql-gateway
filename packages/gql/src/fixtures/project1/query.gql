@@ -3,6 +3,8 @@ query DocumentQuery($path: String!) {
     __typename
     ... on Post {
       form {
+        label
+        _template
         fields {
           ... on TextareaField {
             name
@@ -21,7 +23,9 @@ query DocumentQuery($path: String!) {
             label
             component
             templates {
-              sectionTemplateFields {
+              Section {
+                label
+                _template
                 fields {
                   ... on TextareaField {
                     name
@@ -53,11 +57,8 @@ query DocumentQuery($path: String!) {
                         component
                         options
                       }
-                      ... on TextareaField {
-                        name
-                        label
+                      ... on TextField {
                         component
-                        description
                       }
                     }
                   }
@@ -93,9 +94,27 @@ query DocumentQuery($path: String!) {
           }
         }
       }
+      initialValues {
+        _template
+        title
+        author
+        sections {
+          ... on SectionInitialValues {
+            _template
+            description
+            authors
+            cta {
+              _template
+              header
+            }
+          }
+        }
+      }
     }
     ... on Author {
       form {
+        label
+        _template
         fields {
           ... on TextareaField {
             name
@@ -120,11 +139,8 @@ query DocumentQuery($path: String!) {
                 component
                 options
               }
-              ... on TextareaField {
-                name
-                label
+              ... on TextField {
                 component
-                description
               }
             }
           }
@@ -145,6 +161,16 @@ query DocumentQuery($path: String!) {
       }
       path
       data {
+        name
+        role
+        anecdotes
+        accolades {
+          figure
+          description
+        }
+      }
+      initialValues {
+        _template
         name
         role
         anecdotes

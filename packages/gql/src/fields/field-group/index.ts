@@ -2,6 +2,11 @@ import { GraphQLString, GraphQLObjectType } from "graphql";
 import * as yup from "yup";
 
 import { builder } from "../../builder";
+import {
+  resolveField,
+  resolveData,
+  resolveDocumentInputData,
+} from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
@@ -10,7 +15,7 @@ import type {
   resolveFieldType,
   resolveDataType,
   ResolvedData,
-} from "../../resolver";
+} from "../../resolver/field-resolver";
 
 export const fieldGroup = {
   build: {
@@ -69,11 +74,9 @@ export const fieldGroup = {
     field: async ({
       datasource,
       field,
-      resolveField,
     }: {
       datasource: DataSource;
       field: FieldGroupField;
-      resolveField: resolveFieldType;
     }): Promise<TinaFieldGroupField> => {
       const { type, ...rest } = field;
 
@@ -92,12 +95,10 @@ export const fieldGroup = {
       datasource,
       field,
       value,
-      resolveData,
     }: {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-      resolveData: resolveDataType;
     }): Promise<ResolvedData> => {
       assertIsData(value);
       return await resolveData(datasource, field, value);
@@ -106,12 +107,10 @@ export const fieldGroup = {
       datasource,
       field,
       value,
-      resolveData,
     }: {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-      resolveData: resolveDataType;
     }): Promise<ResolvedData> => {
       assertIsData(value);
       return await resolveData(datasource, field, value);
@@ -120,15 +119,12 @@ export const fieldGroup = {
       datasource,
       field,
       value,
-      resolveData,
-      resolveDocumentInputData,
     }: {
       datasource: DataSource;
       field: FieldGroupField;
       value: unknown;
-      resolveData: resolveDataType;
-      resolveDocumentInputData: any;
     }): Promise<ResolvedData> => {
+      assertIsData(value);
       return await resolveDocumentInputData({
         data: value,
         template: field,
