@@ -1,0 +1,5 @@
+mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
+  updateDocument(path: $path, params: $params) {
+    __typename
+  }
+}
