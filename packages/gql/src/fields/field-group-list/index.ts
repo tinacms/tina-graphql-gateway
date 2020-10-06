@@ -49,7 +49,7 @@ export const fieldGroupList = {
             component: { type: GraphQLString },
             fields: {
               // field is structural subtyping TemplateData shape
-              type: await builder.documentFormFieldsUnion(cache, field),
+              type: await builder._documentFormFieldsUnion(cache, field),
             },
           },
         })
@@ -98,15 +98,12 @@ export const fieldGroupList = {
       field: FieldGroupListField;
     }): Promise<TinaFieldGroupListField> => {
       const { type, ...rest } = field;
-
-      const fields = await Promise.all(
-        field.fields.map(async (f) => await resolver.field(datasource, f))
-      );
+      const template = await resolver.documentFormObject(datasource, field);
 
       return {
         ...rest,
+        ...template,
         component: "group-list",
-        fields,
         __typename: `${field.__namespace}${field.label}GroupListField`,
       };
     },
@@ -122,7 +119,8 @@ export const fieldGroupList = {
       assertIsDataArray(value);
       return await Promise.all(
         value.map(
-          async (v: any) => await resolver.dataUnion(datasource, field, v)
+          async (v: any) =>
+            await resolver.documentDataObject(datasource, field, v)
         )
       );
     },
@@ -138,7 +136,8 @@ export const fieldGroupList = {
       assertIsDataArray(value);
       return await Promise.all(
         value.map(
-          async (v: any) => await resolver.dataUnion(datasource, field, v)
+          async (v: any) =>
+            await resolver.documentDataObject(datasource, field, v)
         )
       );
     },
@@ -155,7 +154,7 @@ export const fieldGroupList = {
 
       return await Promise.all(
         value.map(async (v) => {
-          return await resolver.documentInputData({
+          return await resolver.documentDataInputObject({
             data: v,
             template: field,
             datasource,

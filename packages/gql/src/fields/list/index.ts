@@ -89,7 +89,7 @@ export const list = {
                 fields: {
                   documents: {
                     type: GraphQLList(
-                      await builder.documentUnion({ cache, section })
+                      await builder._documentUnion({ cache, section })
                     ),
                   },
                 },
