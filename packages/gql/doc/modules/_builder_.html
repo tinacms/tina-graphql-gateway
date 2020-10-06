@@ -98,9 +98,17 @@
 					<div class="tsd-signature tsd-kind-icon">Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>build<span class="tsd-signature-symbol">: </span>&lt;T&gt;<span class="tsd-signature-symbol">(</span>gqlType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">; </span>builder<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="_builder_.html#builder-1" class="tsd-signature-type">builder</a><span class="tsd-signature-symbol">; </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L381">packages/gql/src/builder.ts:381</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L314">packages/gql/src/builder.ts:314</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Holds an in-memory cache of GraphQL Objects which have been built, allowing
+							re-use and avoiding name collisions</p>
+						</div>
+						<pre><code class="language-js"><span class="hljs-comment">// ex. Any other uses of &quot;SomeName&quot; will return the cached version</span>
+cache.build(<span class="hljs-keyword">new</span> GraphQLObjectType({<span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;SomeName&#x27;</span>, <span class="hljs-attr">fields</span>: {...}})</code></pre>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -158,7 +166,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L388">packages/gql/src/builder.ts:388</a></li>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L321">packages/gql/src/builder.ts:321</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -189,7 +197,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L410">packages/gql/src/builder.ts:410</a></li>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L343">packages/gql/src/builder.ts:343</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -216,7 +224,7 @@
 					<div class="tsd-signature tsd-kind-icon">builder<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L157">packages/gql/src/builder.ts:157</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L32">packages/gql/src/builder.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -227,6 +235,99 @@
 						</div>
 					</div>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="builder-1.buildtemplatedatafields" class="tsd-anchor"></a>
+						<h3>build<wbr>Template<wbr>Data<wbr>Fields</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">build<wbr>Template<wbr>Data<wbr>Fields<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLFieldConfigMap</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="_resolver_.html#contextt" class="tsd-signature-type">ContextT</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L103">packages/gql/src/builder.ts:103</a></li>
+									</ul>
+								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Iterate through the template fields, passing them on to their data value builders</p>
+									</div>
+								</div>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
+									</li>
+									<li>
+										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLFieldConfigMap</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="_resolver_.html#contextt" class="tsd-signature-type">ContextT</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="builder-1.buildtemplateinitialvaluefields" class="tsd-anchor"></a>
+						<h3>build<wbr>Template<wbr>Initial<wbr>Value<wbr>Fields</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">build<wbr>Template<wbr>Initial<wbr>Value<wbr>Fields<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLFieldConfigMap</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="_resolver_.html#contextt" class="tsd-signature-type">ContextT</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L146">packages/gql/src/builder.ts:146</a></li>
+									</ul>
+								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Iterate through the template fields, passing them on to their initial value builders</p>
+									</div>
+								</div>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
+									</li>
+									<li>
+										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLFieldConfigMap</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="_resolver_.html#contextt" class="tsd-signature-type">ContextT</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="builder-1.buildtemplateinputdatafields" class="tsd-anchor"></a>
+						<h3>build<wbr>Template<wbr>Input<wbr>Data<wbr>Fields</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">build<wbr>Template<wbr>Input<wbr>Data<wbr>Fields<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputFieldConfigMap</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L212">packages/gql/src/builder.ts:212</a></li>
+									</ul>
+								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Iterate through the template fields, passing them on to their input builders</p>
+									</div>
+								</div>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
+									</li>
+									<li>
+										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputFieldConfigMap</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
 						<a name="builder-1.documentdatainputobject" class="tsd-anchor"></a>
 						<h3>document<wbr>Data<wbr>Input<wbr>Object</h3>
 						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
@@ -236,7 +337,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L305">packages/gql/src/builder.ts:305</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L229">packages/gql/src/builder.ts:229</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -267,7 +368,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L230">packages/gql/src/builder.ts:230</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L120">packages/gql/src/builder.ts:120</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -300,7 +401,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L204">packages/gql/src/builder.ts:204</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L80">packages/gql/src/builder.ts:80</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -328,6 +429,58 @@
 						</ul>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="builder-1.documentformfields" class="tsd-anchor"></a>
+						<h3>document<wbr>Form<wbr>Fields</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">document<wbr>Form<wbr>Fields<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L284">packages/gql/src/builder.ts:284</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
+									</li>
+									<li>
+										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+						<a name="builder-1.documentformfieldsunion" class="tsd-anchor"></a>
+						<h3>document<wbr>Form<wbr>Fields<wbr>Union</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+							<li class="tsd-signature tsd-kind-icon">document<wbr>Form<wbr>Fields<wbr>Union<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L290">packages/gql/src/builder.ts:290</a></li>
+									</ul>
+								</aside>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
+									</li>
+									<li>
+										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
 						<a name="builder-1.documentformobject" class="tsd-anchor"></a>
 						<h3>document<wbr>Form<wbr>Object</h3>
 						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
@@ -337,7 +490,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L238">packages/gql/src/builder.ts:238</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L128">packages/gql/src/builder.ts:128</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -363,14 +516,14 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L266">packages/gql/src/builder.ts:266</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L173">packages/gql/src/builder.ts:173</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>The <a href="https://tinacms.org/docs/plugins/forms/#form-configuration">initial values</a> for the Tina form.</p>
 									</div>
-									<p><code>_template</code> is provided as a disambiguator when an initial value comes inside an array.</p>
+									<p><code>_template</code> is provided as a disambiguator when the result value is inside an array.</p>
 									<pre><code class="language-graphql">type MyBlock = {
   _template: String
   description: String
@@ -400,7 +553,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L319">packages/gql/src/builder.ts:319</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L243">packages/gql/src/builder.ts:243</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -431,7 +584,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L184">packages/gql/src/builder.ts:184</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L60">packages/gql/src/builder.ts:60</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -463,13 +616,13 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L162">packages/gql/src/builder.ts:162</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L37">packages/gql/src/builder.ts:37</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>The top-level result, a document is a file which may be of any one of the templates
-										defined, the union consists of each template which is possible</p>
+										defined, the union consists of each template which is possible.</p>
 									</div>
 								</div>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,7 +653,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L281">packages/gql/src/builder.ts:281</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L188">packages/gql/src/builder.ts:188</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -537,7 +690,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L335">packages/gql/src/builder.ts:335</a></li>
+										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/955c539/packages/gql/src/builder.ts#L259">packages/gql/src/builder.ts:259</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -560,58 +713,6 @@
 									</li>
 								</ul>
 								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputObjectType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							</li>
-						</ul>
-					</section>
-					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-						<a name="builder-1.templateformfields" class="tsd-anchor"></a>
-						<h3>template<wbr>Form<wbr>Fields</h3>
-						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
-							<li class="tsd-signature tsd-kind-icon">template<wbr>Form<wbr>Fields<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<aside class="tsd-sources">
-									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L360">packages/gql/src/builder.ts:360</a></li>
-									</ul>
-								</aside>
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
-									</li>
-									<li>
-										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							</li>
-						</ul>
-					</section>
-					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-						<a name="builder-1.templateformfieldsunion" class="tsd-anchor"></a>
-						<h3>template<wbr>Form<wbr>Fields<wbr>Union</h3>
-						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
-							<li class="tsd-signature tsd-kind-icon">template<wbr>Form<wbr>Fields<wbr>Union<span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="_builder_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<aside class="tsd-sources">
-									<ul>
-										<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f195f70/packages/gql/src/builder.ts#L366">packages/gql/src/builder.ts:366</a></li>
-									</ul>
-								</aside>
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>cache: <a href="_builder_.html#cache" class="tsd-signature-type">Cache</a></h5>
-									</li>
-									<li>
-										<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							</li>
 						</ul>
 					</section>
