@@ -1,5 +1,5 @@
 import path from "path";
-import { builder } from "../builder";
+import { builder } from ".";
 import { cacheInit } from "../cache";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql, assertSchema } from "../fields/test-util";
@@ -10,7 +10,7 @@ describe("Schema builder", () => {
 
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const schema = await builder.schemaBuilder({ cache });
+    const schema = await builder.schema({ cache });
 
     assertSchema(schema).matches(gql`
       type Query {

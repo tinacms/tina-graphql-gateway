@@ -69,27 +69,14 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_resolver_index_.resolveinitialvalues.html" class="tsd-kind-icon">Resolve<wbr>Initial<wbr>Values</a></li>
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-kind-icon">Resolved<wbr>Data</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#contextt" class="tsd-kind-icon">ContextT</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#initialsource" class="tsd-kind-icon">Initial<wbr>Source</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#resolvedatatype" class="tsd-kind-icon">resolve<wbr>Data<wbr>Type</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#resolvefieldtype" class="tsd-kind-icon">resolve<wbr>Field<wbr>Type</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#resolveinitialvaluestype" class="tsd-kind-icon">resolve<wbr>Initial<wbr>Values<wbr>Type</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_resolver_index_.html#resolvetemplatetype" class="tsd-kind-icon">resolve<wbr>Template<wbr>Type</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_resolver_index_.html#fieldresolver" class="tsd-kind-icon">field<wbr>Resolver</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_resolver_index_.html#graphqlinit" class="tsd-kind-icon">graphql<wbr>Init</a></li>
 							</ul>
 						</section>
@@ -104,7 +91,7 @@
 					<div class="tsd-signature tsd-kind-icon">ContextT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L17">packages/gql/src/resolver/index.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/8476477/packages/gql/src/resolver/index.ts#L9">packages/gql/src/resolver/index.ts:9</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -116,212 +103,9 @@
 						</ul>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="initialsource" class="tsd-anchor"></a>
-					<h3>Initial<wbr>Source</h3>
-					<div class="tsd-signature tsd-kind-icon">Initial<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>_resolver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_resource"</span><span class="tsd-signature-symbol">; </span>_resolver_kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_initial"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>_args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>_resolver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_resource"</span><span class="tsd-signature-symbol">; </span>_resolver_kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_nested_source"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>_args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>paths<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>_resolver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_resource"</span><span class="tsd-signature-symbol">; </span>_resolver_kind<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"_nested_sources"</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L30">packages/gql/src/resolver/index.ts:30</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Each document request should populate these reserved
-								properties so we know how to delegate them, for fields
-								list &quot;select&quot; fields which reference another document
-								it is responsible for providing these in the field
-							value resolver</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="resolvedatatype" class="tsd-anchor"></a>
-					<h3>resolve<wbr>Data<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<wbr>Data<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L407">packages/gql/src/resolver/index.ts:407</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>datasource: <a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
-											</li>
-											<li>
-												<h5>field: <a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a></h5>
-											</li>
-											<li>
-												<h5>data: <span class="tsd-signature-symbol">{}</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter-index-signature">
-														<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">unknown</span></h5>
-													</li>
-												</ul>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="resolvefieldtype" class="tsd-anchor"></a>
-					<h3>resolve<wbr>Field<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<wbr>Field<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_fields_index_.html#field" class="tsd-signature-type">Field</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_index_.html#tinafield" class="tsd-signature-type">TinaField</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L296">packages/gql/src/resolver/index.ts:296</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_fields_index_.html#field" class="tsd-signature-type">Field</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_index_.html#tinafield" class="tsd-signature-type">TinaField</a><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>datasource: <a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
-											</li>
-											<li>
-												<h5>field: <a href="_fields_index_.html#field" class="tsd-signature-type">Field</a></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_index_.html#tinafield" class="tsd-signature-type">TinaField</a><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="resolveinitialvaluestype" class="tsd-anchor"></a>
-					<h3>resolve<wbr>Initial<wbr>Values<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<wbr>Initial<wbr>Values<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L440">packages/gql/src/resolver/index.ts:440</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, field<span class="tsd-signature-symbol">: </span><a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>datasource: <a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
-											</li>
-											<li>
-												<h5>field: <a href="_types_.html#withfields" class="tsd-signature-type">WithFields</a></h5>
-											</li>
-											<li>
-												<h5>data: <span class="tsd-signature-symbol">{}</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter-index-signature">
-														<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">unknown</span></h5>
-													</li>
-												</ul>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-signature-type">ResolvedData</a><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="resolvetemplatetype" class="tsd-anchor"></a>
-					<h3>resolve<wbr>Template<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">resolve<wbr>Template<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#tinatemplatedata" class="tsd-signature-type">TinaTemplateData</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L280">packages/gql/src/resolver/index.ts:280</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, template<span class="tsd-signature-symbol">: </span><a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#tinatemplatedata" class="tsd-signature-type">TinaTemplateData</a><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>datasource: <a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a></h5>
-											</li>
-											<li>
-												<h5>template: <a href="_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#tinatemplatedata" class="tsd-signature-type">TinaTemplateData</a><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="fieldresolver" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> field<wbr>Resolver</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">field<wbr>Resolver<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverSource</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverArgs</span>, context<span class="tsd-signature-symbol">: </span><a href="_resolver_index_.html#contextt" class="tsd-signature-type">ContextT</a>, info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLResolveInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L75">packages/gql/src/resolver/index.ts:75</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>source: <span class="tsd-signature-type">FieldResolverSource</span></h5>
-								</li>
-								<li>
-									<h5>args: <span class="tsd-signature-type">FieldResolverArgs</span></h5>
-								</li>
-								<li>
-									<h5>context: <a href="_resolver_index_.html#contextt" class="tsd-signature-type">ContextT</a></h5>
-								</li>
-								<li>
-									<h5>info: <span class="tsd-signature-type">GraphQLResolveInfo</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="graphqlinit" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> graphql<wbr>Init</h3>
@@ -332,7 +116,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/4c6b041/packages/gql/src/resolver/index.ts#L262">packages/gql/src/resolver/index.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/8476477/packages/gql/src/resolver/index.ts#L13">packages/gql/src/resolver/index.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -411,6 +195,9 @@
 					<li class=" tsd-kind-module">
 						<a href="_fields_textarea_index_.html">&quot;fields/textarea/index&quot;</a>
 					</li>
+					<li class=" tsd-kind-module">
+						<a href="_resolver_field_resolver_.html">&quot;resolver/field-<wbr>resolver&quot;</a>
+					</li>
 					<li class="current tsd-kind-module">
 						<a href="_resolver_index_.html">&quot;resolver/index&quot;</a>
 					</li>
@@ -427,32 +214,8 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="../interfaces/_resolver_index_.resolveinitialvalues.html" class="tsd-kind-icon">Resolve<wbr>Initial<wbr>Values</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="../interfaces/_resolver_index_.resolveddata.html" class="tsd-kind-icon">Resolved<wbr>Data</a>
-					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_resolver_index_.html#contextt" class="tsd-kind-icon">ContextT</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_resolver_index_.html#initialsource" class="tsd-kind-icon">Initial<wbr>Source</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_resolver_index_.html#resolvedatatype" class="tsd-kind-icon">resolve<wbr>Data<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_resolver_index_.html#resolvefieldtype" class="tsd-kind-icon">resolve<wbr>Field<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_resolver_index_.html#resolveinitialvaluestype" class="tsd-kind-icon">resolve<wbr>Initial<wbr>Values<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_resolver_index_.html#resolvetemplatetype" class="tsd-kind-icon">resolve<wbr>Template<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="_resolver_index_.html#fieldresolver" class="tsd-kind-icon">field<wbr>Resolver</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_resolver_index_.html#graphqlinit" class="tsd-kind-icon">graphql<wbr>Init</a>

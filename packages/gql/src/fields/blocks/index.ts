@@ -105,7 +105,7 @@ export const blocks = {
     }) => {
       return {
         type: GraphQLList(
-          await builder.initialValuesUnion({
+          await builder._initialValuesUnion({
             cache,
             templates: field.template_types,
           })
@@ -115,7 +115,7 @@ export const blocks = {
     value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return {
         type: GraphQLList(
-          await builder.documentDataUnion({
+          await builder._documentDataUnion({
             cache,
             templates: field.template_types,
           })
@@ -198,7 +198,7 @@ export const blocks = {
           const template = await datasource.getTemplate({
             slug: templateSlug,
           });
-          templates[template.label] = await resolver.templateFields(
+          templates[template.label] = await resolver.documentFormObject(
             datasource,
             template
           );
@@ -230,7 +230,7 @@ export const blocks = {
             slug: _.lowerCase(_template),
           });
           return {
-            ...(await resolver.dataInitialValues(
+            ...(await resolver.documentInitialValuesObject(
               datasource,
               templateData,
               rest
@@ -256,7 +256,11 @@ export const blocks = {
           const templateData = await datasource.getTemplate({
             slug: _.lowerCase(_template),
           });
-          return await resolver.dataUnion(datasource, templateData, rest);
+          return await resolver.documentDataObject(
+            datasource,
+            templateData,
+            rest
+          );
         })
       );
     },
@@ -281,7 +285,7 @@ export const blocks = {
             // we want to send the slug in instead so we don't have to lowercase it
             slug: _.lowerCase(data._template),
           });
-          return await resolver.documentInputData({
+          return await resolver.documentDataInputObject({
             data,
             template,
             datasource,
