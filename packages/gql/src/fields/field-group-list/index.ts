@@ -2,11 +2,15 @@ import * as yup from "yup";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
 import { builder } from "../../builder";
+import {
+  resolveField,
+  resolveData,
+  resolveDocumentInputData,
+} from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
-import type { resolveFieldType, resolveDataType } from "../../resolver";
 
 export type FieldGroupListField = {
   label: string;
@@ -93,11 +97,9 @@ export const fieldGroupList = {
     field: async ({
       datasource,
       field,
-      resolveField,
     }: {
       datasource: DataSource;
       field: FieldGroupListField;
-      resolveField: resolveFieldType;
     }): Promise<TinaFieldGroupListField> => {
       const { type, ...rest } = field;
 
@@ -116,12 +118,10 @@ export const fieldGroupList = {
       datasource,
       field,
       value,
-      resolveData,
     }: {
       datasource: DataSource;
       field: FieldGroupListField;
       value: unknown;
-      resolveData: resolveDataType;
     }) => {
       assertIsDataArray(value);
       return await Promise.all(
@@ -132,12 +132,10 @@ export const fieldGroupList = {
       datasource,
       field,
       value,
-      resolveData,
     }: {
       datasource: DataSource;
       field: FieldGroupListField;
       value: unknown;
-      resolveData: resolveDataType;
     }) => {
       assertIsDataArray(value);
       return await Promise.all(
@@ -148,14 +146,10 @@ export const fieldGroupList = {
       datasource,
       field,
       value,
-      resolveData,
-      resolveDocumentInputData,
     }: {
       datasource: DataSource;
       field: FieldGroupListField;
       value: unknown;
-      resolveData: resolveDataType;
-      resolveDocumentInputData: any;
     }): Promise<unknown> => {
       assertIsDataArray(value);
 
