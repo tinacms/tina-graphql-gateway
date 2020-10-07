@@ -151,6 +151,9 @@ export interface Builder {
   ) => Promise<GraphQLList<GraphQLType>>;
 }
 
+/**
+ * @internal this is redundant in documentation
+ */
 export const builder: Builder = {
   schema: async ({ cache }: { cache: Cache }) => {
     const documentUnion = await builder.documentUnion({ cache });
@@ -310,7 +313,7 @@ export const builder: Builder = {
     );
     return cache.build(
       new GraphQLUnionType({
-        name: `${templates.join("")}initialValuesUnion`,
+        name: `${templates.join("")}InitialValuesUnion`,
         types,
       })
     );
