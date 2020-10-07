@@ -33,6 +33,7 @@ app.get("/list-projects", async (req, res) => {
     // TODO: look up fixtures and provide them here for testing
     { label: "Project 1", value: "project1" },
     { label: "Project 2", value: "project2" },
+    { label: "Project 3", value: "project3" },
   ]);
 });
 

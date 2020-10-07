@@ -17,7 +17,6 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Main = (props) => {
-  console.log("hi", props);
   return (
     <div>
       <h1>{template}</h1>

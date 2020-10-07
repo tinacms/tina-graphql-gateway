@@ -3,6 +3,7 @@ import type { Field, TinaField } from "./fields";
 export type DirectorySection = {
   type: "directory";
   label: string;
+  slug: string;
   path: string;
   create: "documents" | "all";
   match: string;

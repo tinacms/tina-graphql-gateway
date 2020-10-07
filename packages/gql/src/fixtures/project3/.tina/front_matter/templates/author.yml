@@ -1,0 +1,50 @@
+---
+label: Author
+hide_body: false
+display_field: name
+fields:
+  - name: name
+    type: text
+    config:
+      required: true
+    label: Name
+  - name: image
+    type: file
+    config:
+      maxSize: 64
+    label: Image
+  - name: gallery
+    type: image_gallery
+    label: Gallery
+  - name: anecdotes
+    type: list
+    config:
+      use_select: false
+    label: Anecdotes
+    description: Something simple about their high-level achievements
+  - name: accolades
+    type: field_group_list
+    fields:
+      - name: figure
+        type: text
+        config:
+          required: false
+        label: Figure
+        description: A single number or word to emphasize
+      - name: description
+        type: text
+        config:
+          required: false
+        label: Description
+    config:
+      max: 3
+    label: Accolades
+    description: Key accomplishments which make this person stand out.
+pages:
+  - content/authors/chris.md
+  - content/authors/christian.md
+  - content/authors/emily.md
+  - content/authors/eric.md
+  - content/authors/jen.md
+  - content/authors/nikki.md
+  - content/authors/terrence.md

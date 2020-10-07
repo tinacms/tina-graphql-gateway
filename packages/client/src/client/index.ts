@@ -1,6 +1,7 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 import { authenticate } from "../auth/authenticate";
+import { handle } from "./handle";
 
 const transform = (obj: any) => {
   if (typeof obj === "boolean") {
@@ -56,7 +57,7 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
+const DEFAULT_TINA_GQL_SERVER = "http://localhost:4000/project1";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
 
 interface ServerOptions {
@@ -126,13 +127,28 @@ export class ForestryClient {
     return data;
   };
 
-  updateContent = async ({ path, payload }: { path: string; payload: any }) => {
+  updateContent = async ({
+    path,
+    payload,
+    form,
+  }: {
+    path: string;
+    payload: any;
+    form: { fields: unknown[] };
+  }) => {
     const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
       updateDocument(path: $path, params: $params) {
         __typename
       }
     }`;
     const { _template, __typename, ...rest } = payload;
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+    const schema = buildClientSchema(data);
+    // @ts-ignore
+    console.log(handle(payload, form));
+    console.log(payload);
 
     const transformedPayload = transform({
       _template,
