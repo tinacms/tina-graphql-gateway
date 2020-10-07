@@ -5,6 +5,6 @@
   "ignoreCompilerErrors": true,
   "categorizeByGroup": true,
   "exclude": "**/*.spec.ts",
-  "excludeNotExported": true,
+  "excludeNotExported": false,
   "plugin": ["typedoc-plugin-graphql"]
 }

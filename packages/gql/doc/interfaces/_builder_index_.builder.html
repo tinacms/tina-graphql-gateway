@@ -40,6 +40,8 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -116,13 +118,20 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Input<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputObjectType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L123">packages/gql/src/builder/index.ts:123</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L51">packages/gql/src/builder/index.ts:51</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The input values for mutations to the document data</p>
+							<p>Builds the input type for document data</p>
 						</div>
+						<pre><code class="language-graphql"># example
+input PostInputData {
+  _template: String
+  title: String
+  author: String
+}</code></pre>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentdatainputobject">Resolver.documentDataInputObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -155,7 +164,7 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L76">packages/gql/src/builder/index.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L71">packages/gql/src/builder/index.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -164,6 +173,12 @@
 						</div>
 						<p>Builds out the type of data based on the provided template.
 						Each <code>type</code> from the <a href="_builder_index_.builder.html#documentdataunion">documentDataUnion</a> is built by this function.</p>
+						<pre><code class="language-graphql"># example
+type PostData {
+  title: String
+  author: AuthorDocument
+}</code></pre>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentdataobject">Resolver.documentDataObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -196,7 +211,7 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Union<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>templates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLUnionType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L66">packages/gql/src/builder/index.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L87">packages/gql/src/builder/index.ts:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -204,6 +219,9 @@
 							<p>Similar to <a href="_builder_index_.builder.html#documentunion">documentUnion</a> except it only deals with unions on the data layer.</p>
 						</div>
 						<p>This is used in blocks, which stores it&#39;s values inline rather than via another document</p>
+						<pre><code class="language-graphql">union blockDataUnion = HeroData | FeaturedPostData</code></pre>
+						<p>Note that there is no equivalent <code>Resolver</code> for unions, this is because instead of providing a <code>typeResolver</code>, we
+						return the <code>__typename</code> from each possible type (which GraphQL uses if no <code>typeResolver</code> function is provided)</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -241,13 +259,19 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Form<wbr>Fields<wbr>Union<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L148">packages/gql/src/builder/index.ts:148</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L104">packages/gql/src/builder/index.ts:104</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>A form&#39;s fields is a union of different field types</p>
 						</div>
+						<pre><code class="language-graphql"># example:
+union PostFormFields = TextareaField | SelectField
+# this actually returns a list of this union, meaning we have an array of unlike objects
+[PostFormFields]</code></pre>
+						<p>Note that there is no equivalent <code>Resolver</code> for unions, this is because instead of providing a <code>typeResolver</code>, we
+						return the <code>__typename</code> from each possible type (which GraphQL uses if no <code>typeResolver</code> function is provided)</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -280,18 +304,20 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Form<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L91">packages/gql/src/builder/index.ts:91</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L121">packages/gql/src/builder/index.ts:121</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The top-level form object for a document</p>
+							<p>The top-level form type for a document</p>
 						</div>
-						<pre><code class="language-graphql">type AuthorForm = {
- label: String,
+						<pre><code class="language-graphql"># example
+type AuthorForm = {
  _template: String,
- feilds: ...
+ label: String,
+ fields: [AuthorFormFields]
 }</code></pre>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentformobject">Resolver.documentFormObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -324,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Initial<wbr>Values<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L108">packages/gql/src/builder/index.ts:108</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L141">packages/gql/src/builder/index.ts:141</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -332,11 +358,13 @@
 							<p>The <a href="https://tinacms.org/docs/plugins/forms/#form-configuration">initial values</a> for the Tina form.</p>
 						</div>
 						<p><code>_template</code> is provided as a disambiguator when the result value is inside an array.</p>
-						<pre><code class="language-graphql">type MyBlock = {
+						<pre><code class="language-graphql">type PostInitialValues {
   _template: String
-  description: String
-  authors: [String]
+  title: String
+  author: String
+  categories: [CategoryData]
 }</code></pre>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentinitialvaluesobject">Resolver.documentInitialValuesObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -369,13 +397,19 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Input<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputObjectType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L130">packages/gql/src/builder/index.ts:130</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L157">packages/gql/src/builder/index.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The input values for the document</p>
+							<p>The input values for the document. See <a href="_builder_index_.builder.html#documentdatainputobject">documentDataInputObject</a> for the data input portion.</p>
+							<pre><code class="language-graphql"># example
+input PostInput {
+  content: String
+  data: PostInputData
+}</code></pre>
 						</div>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentinputobject">Resolver.documentInputObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -408,7 +442,7 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L57">packages/gql/src/builder/index.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L176">packages/gql/src/builder/index.ts:176</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -416,6 +450,13 @@
 							<p>Builds out the type of document based on the provided template.
 							Each <code>type</code> from the <a href="_builder_index_.builder.html#documentunion">documentUnion</a> is built by this function.</p>
 						</div>
+						<pre><code class="language-graphql">type Post {
+ path: String
+ form: PostForm
+ data: PostData
+ initialValues: PostInitialValues
+}</code></pre>
+						<p>See <a href="_resolver_field_resolver_.resolver.html#documentobject">Resolver.documentObject</a> for the equivalent resolver</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -448,16 +489,34 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Tagged<wbr>Union<wbr>Input<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>section<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLInputObjectType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L141">packages/gql/src/builder/index.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L214">packages/gql/src/builder/index.ts:214</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The input values for mutations to the document from a section</p>
 						</div>
+						<pre><code class="language-graphql"># Example
+input DocumentInput {
+ PostInput: PostInput
+ AuthorInput: AuthorInput
+}</code></pre>
 						<p>Note that while this isn&#39;t a union, it&#39;s behaving close to one,
-							GraphQL doesn&#39;t support unions in mutations, but this is somewhat
-						close to the same thing</p>
+							GraphQL doesn&#39;t support unions in mutations, so instead each key
+						(ex. <code>PostInput</code>) is the property we require when accepting a mutation.</p>
+						<p>So if your payload looked like this it&#39;d be considered invalid, while it&#39;s
+							possible to provide both <code>PostInput</code> and <code>AuthorInput</code> from the schema&#39;s perspective
+						, we&#39;ll throw an error, changing the author data at path <code>posts/1.md</code> makes no sense:</p>
+						<pre><code class="language-json">{
+ &quot;path&quot;: &quot;posts/1.md&quot;,
+ &quot;params&quot;: {
+   &quot;PostInput&quot;: {
+     &quot;data&quot;: {
+       ...
+   &quot;AuthorInput&quot;: {
+     &quot;data&quot;: {
+       ...</code></pre>
+						<p><a href="https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md#-5-one-of-tagged-union">Read more about the trade-offs here</a></p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -495,7 +554,7 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Union<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>section<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLUnionType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L48">packages/gql/src/builder/index.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L248">packages/gql/src/builder/index.ts:248</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -503,6 +562,23 @@
 							<p>The top-level result, a document is a file which may be of any one of the templates
 							defined, the union consists of each template which is possible.</p>
 						</div>
+						<pre><code class="language-graphql">union DocumentUnion = Post | Page</code></pre>
+						<p>Note that this is also used on section-level references as well. If you have a <code>post</code> template
+							which has an <code>authors</code> reference, that author document could consist of multiple template types.
+						An example might be that some authors use a more detailed template, while others are very basic</p>
+						<pre><code class="language-graphql">union authorsDocumentUnion = DetailedAuthor | BasicAuthor</code></pre>
+						<p>In this example the <code>authorsDocumentUnion</code> would be referenced in the <code>Post</code>&#39;s type (notice that the
+						<code>authorsDocumentUnion</code> is &quot;namespaced&quot; by the section slug <code>authors</code>)</p>
+						<pre><code class="language-graphql">type PostData {
+  title: String
+  author: AuthorDocument
+}
+
+type AuthorDocument {
+  document: authorsDocumentUnion
+}
+
+union authorsDocumentUnion = DetailedAuthor | BasicAuthor</code></pre>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -545,7 +621,7 @@
 					<div class="tsd-signature tsd-kind-icon">initial<wbr>Values<wbr>Union<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>templates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLUnionType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L116">packages/gql/src/builder/index.ts:116</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L273">packages/gql/src/builder/index.ts:273</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -553,6 +629,19 @@
 							<p>Currently only used by blocks, which accepts an array of values with different shapes,
 							disambiguated by their <code>_template</code> property seen in <a href="_builder_index_.builder.html#documentinitialvaluesobject">documentInitialValuesObject</a>.</p>
 						</div>
+						<pre><code class="language-graphql">union sectionInitialValuesUnion = HeroInitialValues | FeaturedPostInitialValues
+
+type HeroInitialValues {
+  _template: String
+  description: String
+  image: String
+}
+
+type FeaturedPostInitialValues {
+  _template: String
+  cta: String
+  post: Post
+}</code></pre>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -590,7 +679,7 @@
 					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="../modules/_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>section<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLSchema</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/builder/index.ts#L39">packages/gql/src/builder/index.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/builder/index.ts#L301">packages/gql/src/builder/index.ts:301</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -598,6 +687,23 @@
 							<p>The entrypoint to the build process. It&#39;s likely we&#39;ll have many more query fields
 							in the future.</p>
 						</div>
+						<pre><code class="language-graphql"># example
+type Query {
+  document(path: String): DocumentUnion
+}
+
+union DocumentUnion = Post | Author
+
+type Mutation {
+  updateDocument(path: String!, params: DocumentInput): DocumentUnion
+}
+
+input DocumentInput {
+  PostInput: PostInput
+  AuthorInput: AuthorInput
+}
+
+...</code></pre>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -745,6 +851,18 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_builder_index_.html#buildtemplatedatafield" class="tsd-kind-icon">build<wbr>Template<wbr>Data<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_builder_index_.html#buildtemplateformfields" class="tsd-kind-icon">build<wbr>Template<wbr>Form<wbr>Fields</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_builder_index_.html#buildtemplateinitialvaluefield" class="tsd-kind-icon">build<wbr>Template<wbr>Initial<wbr>Value<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_builder_index_.html#buildtemplateinputdatafield" class="tsd-kind-icon">build<wbr>Template<wbr>Input<wbr>Data<wbr>Field</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

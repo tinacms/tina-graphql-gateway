@@ -40,6 +40,8 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -102,9 +104,20 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Input<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L56">packages/gql/src/resolver/field-resolver.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L30">packages/gql/src/resolver/field-resolver.ts:30</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The values required to mutate the document</p>
+						</div>
+						<pre><code class="language-json">{
+ <span class="hljs-attr">&quot;_template&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+ <span class="hljs-attr">&quot;title&quot;</span>: <span class="hljs-string">&quot;Some Title&quot;</span>,
+ <span class="hljs-attr">&quot;author&quot;</span>: <span class="hljs-string">&quot;authors/homer.md&quot;</span>,
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentdatainputobject">Builder.documentDataInputObject</a> for the equivalent builder</p>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -146,24 +159,46 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="documentdataobject" class="tsd-anchor"></a>
 					<h3>document<wbr>Data<wbr>Object</h3>
-					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DocumentData</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">document<wbr>Data<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L35">packages/gql/src/resolver/field-resolver.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L68">packages/gql/src/resolver/field-resolver.ts:68</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Given a template and document data, return the resolved data along with the _template and __typename
+							<p>Given a template and document data, return the resolved data along with the <code>_template</code> and <code>__typename</code>
 							so it can be resolved by the GraphQL type resolver</p>
 						</div>
+						<p>Notice in the below example the <code>author</code> key doesn&#39;t actually have the resolved author. This is because
+							we&#39;re relying on GraphQL to call the field resolver on each key the user asks for. So in this scenario
+						we won&#39;t get the author document until we know the user has asked for it in their query.</p>
+						<p>If we were to fetch the author document at this stage, we are possibly over-fetching data that we&#39;ll never return
+						to the user.</p>
+						<p>Another important note - this function returns some things which are not needed by the end result. If you look at the [builder](<a href="_builder_index_.builder.html#documentdataobject">Builder.documentDataObject</a>)
+							for this function, it doesn&#39;t have a requirement for <code>__typename</code> or <code>_template</code> - these values are used internally by subsequent
+							<code>resolver</code> calls. Since field resolvers work like a waterfall, these values will be used downstream, and won&#39;t end up being returned
+						to the end user.</p>
+						<pre><code class="language-json">{
+  <span class="hljs-attr">&quot;__typename&quot;</span>: <span class="hljs-string">&quot;PostData&quot;</span>,
+  <span class="hljs-attr">&quot;_template&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+  <span class="hljs-attr">&quot;title&quot;</span>: <span class="hljs-string">&quot;Some Title&quot;</span>,
+  <span class="hljs-attr">&quot;author&quot;</span>: {
+    <span class="hljs-attr">&quot;_resolver&quot;</span>: <span class="hljs-string">&quot;_resource&quot;</span>,
+    <span class="hljs-attr">&quot;_resolver_kind&quot;</span>: <span class="hljs-string">&quot;_nested_source&quot;</span>,
+    <span class="hljs-attr">&quot;_args&quot;</span>: {
+      <span class="hljs-attr">&quot;path&quot;</span>: <span class="hljs-string">&quot;authors/homer.md&quot;</span>
+    }
+  }
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentdataobject">Builder.documentDataObject</a> for the equivalent builder</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DocumentData</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -176,7 +211,7 @@
 												<h5>resolvedTemplate: <a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
 											</li>
 											<li>
-												<h5>data: <span class="tsd-signature-type">DocumentData</span></h5>
+												<h5>data: <a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -192,9 +227,51 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Form<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, template<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_types_.html#tinatemplatedata" class="tsd-signature-type">TinaTemplateData</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L52">packages/gql/src/resolver/field-resolver.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L118">packages/gql/src/resolver/field-resolver.ts:118</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The top-level form type for a document</p>
+						</div>
+						<pre><code class="language-json">{
+  <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+  <span class="hljs-attr">&quot;hide_body&quot;</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">&quot;display_field&quot;</span>: <span class="hljs-string">&quot;title&quot;</span>,
+  <span class="hljs-attr">&quot;fields&quot;</span>: [
+    {
+      <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;title&quot;</span>,
+      <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;Title&quot;</span>,
+      <span class="hljs-attr">&quot;description&quot;</span>: <span class="hljs-string">&quot;The name of your post, keep it short!&quot;</span>,
+      <span class="hljs-attr">&quot;config&quot;</span>: {
+        <span class="hljs-attr">&quot;required&quot;</span>: <span class="hljs-literal">false</span>
+      },
+      <span class="hljs-attr">&quot;component&quot;</span>: <span class="hljs-string">&quot;textarea&quot;</span>,
+      <span class="hljs-attr">&quot;__namespace&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+      <span class="hljs-attr">&quot;__typename&quot;</span>: <span class="hljs-string">&quot;TextareaField&quot;</span>
+    },
+    {
+      <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;author&quot;</span>,
+      <span class="hljs-attr">&quot;config&quot;</span>: {
+        <span class="hljs-attr">&quot;required&quot;</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">&quot;source&quot;</span>: {
+         <span class="hljs-attr">&quot;type&quot;</span>: <span class="hljs-string">&quot;pages&quot;</span>,
+          <span class="hljs-attr">&quot;section&quot;</span>: <span class="hljs-string">&quot;authors&quot;</span>
+        }
+      },
+      <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;Author&quot;</span>,
+      <span class="hljs-attr">&quot;component&quot;</span>: <span class="hljs-string">&quot;select&quot;</span>,
+      <span class="hljs-attr">&quot;__namespace&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+      <span class="hljs-attr">&quot;__typename&quot;</span>: <span class="hljs-string">&quot;SelectField&quot;</span>,
+     <span class="hljs-attr">&quot;options&quot;</span>: [
+        <span class="hljs-string">&quot;authors/marge.md&quot;</span>,
+        <span class="hljs-string">&quot;authors/homer.md&quot;</span>
+      ]
+    },
+  }
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentformobject">Builder.documentFormObject</a> for the equivalent builder</p>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -223,23 +300,30 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="documentinitialvaluesobject" class="tsd-anchor"></a>
 					<h3>document<wbr>Initial<wbr>Values<wbr>Object</h3>
-					<div class="tsd-signature tsd-kind-icon">document<wbr>Initial<wbr>Values<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DocumentData</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">document<wbr>Initial<wbr>Values<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L43">packages/gql/src/resolver/field-resolver.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L136">packages/gql/src/resolver/field-resolver.ts:136</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Given a template and document data, return the appropriate initialValues along with the _template and __typename</p>
 						</div>
+						<pre><code class="language-json">{
+  <span class="hljs-attr">&quot;__typename&quot;</span>: <span class="hljs-string">&quot;PostInitialValues&quot;</span>,
+  <span class="hljs-attr">&quot;_template&quot;</span>: <span class="hljs-string">&quot;Post&quot;</span>,
+  <span class="hljs-attr">&quot;title&quot;</span>: <span class="hljs-string">&quot;Some Title&quot;</span>,
+  <span class="hljs-attr">&quot;author&quot;</span>: <span class="hljs-string">&quot;authors/homer.md&quot;</span>
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentinitialvaluesobject">Builder.documentInitialValuesObject</a> for the equivalent builder</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DocumentData</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a>, resolvedTemplate<span class="tsd-signature-symbol">: </span><a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a>, data<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -252,7 +336,7 @@
 												<h5>resolvedTemplate: <a href="../modules/_types_.html#templatedata" class="tsd-signature-type">TemplateData</a></h5>
 											</li>
 											<li>
-												<h5>data: <span class="tsd-signature-type">DocumentData</span></h5>
+												<h5>data: <a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-signature-type">DocumentData</a></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -268,9 +352,23 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Input<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L61">packages/gql/src/resolver/field-resolver.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L160">packages/gql/src/resolver/field-resolver.ts:160</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Builds the JSON representation of the file being written, this value is passed to the
+							DataSource which persists the data, the return value is not used</p>
+						</div>
+						<pre><code class="language-json">{
+  <span class="hljs-attr">&quot;data&quot;</span>: {
+    <span class="hljs-attr">&quot;title&quot;</span>: <span class="hljs-string">&quot;Some Title&quot;</span>,
+    <span class="hljs-attr">&quot;author&quot;</span>: <span class="hljs-string">&quot;authors/homer.md&quot;</span>,
+  },
+  <span class="hljs-attr">&quot;content&quot;</span>: <span class="hljs-string">&quot;&quot;</span>
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentinputobject">Builder.documentInputObject</a> for the equivalent builder</p>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -315,14 +413,22 @@
 					<div class="tsd-signature tsd-kind-icon">document<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>datasource<span class="tsd-signature-symbol">: </span><a href="_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L27">packages/gql/src/resolver/field-resolver.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L182">packages/gql/src/resolver/field-resolver.ts:182</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Retrieves the top-level document and provides the __typename so it can be resolved automatically
-							by the GraphQL type resolver</p>
+							<p>The top-level return value</p>
 						</div>
+						<pre><code class="language-json">{
+  &quot;__typename&quot;: &quot;Post&quot;,
+  &quot;path&quot;: &quot;posts/1.md&quot;,
+  &quot;content&quot;: &quot;&quot;,
+  &quot;form&quot;: {...}
+  &quot;data&quot;: {...}
+  &quot;initialValues&quot;: {...}
+}</code></pre>
+						<p>See <a href="_builder_index_.builder.html#documentobject">Builder.documentObject</a> for the equivalent builder</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -362,10 +468,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="schema" class="tsd-anchor"></a>
 					<h3>schema</h3>
-					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverSource</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverArgs</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-signature-type">ContextT</a>, info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLResolveInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#fieldresolversource" class="tsd-signature-type">FieldResolverSource</a>, args<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#fieldresolverargs" class="tsd-signature-type">FieldResolverArgs</a>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-signature-type">ContextT</a>, info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLResolveInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/resolver/field-resolver.ts#L17">packages/gql/src/resolver/field-resolver.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/resolver/field-resolver.ts#L186">packages/gql/src/resolver/field-resolver.ts:186</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -373,17 +479,17 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverSource</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FieldResolverArgs</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-signature-type">ContextT</a>, info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLResolveInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#fieldresolversource" class="tsd-signature-type">FieldResolverSource</a>, args<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#fieldresolverargs" class="tsd-signature-type">FieldResolverArgs</a>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-signature-type">ContextT</a>, info<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLResolveInfo</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>source: <span class="tsd-signature-type">FieldResolverSource</span></h5>
+												<h5>source: <a href="../modules/_resolver_field_resolver_.html#fieldresolversource" class="tsd-signature-type">FieldResolverSource</a></h5>
 											</li>
 											<li>
-												<h5>args: <span class="tsd-signature-type">FieldResolverArgs</span></h5>
+												<h5>args: <a href="../modules/_resolver_field_resolver_.html#fieldresolverargs" class="tsd-signature-type">FieldResolverArgs</a></h5>
 											</li>
 											<li>
 												<h5>context: <a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-signature-type">ContextT</a></h5>
@@ -498,8 +604,38 @@
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_resolver_field_resolver_.html#contextt" class="tsd-kind-icon">ContextT</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#documentdata" class="tsd-kind-icon">Document<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#fieldresolverargs" class="tsd-kind-icon">Field<wbr>Resolver<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#fieldresolversource" class="tsd-kind-icon">Field<wbr>Resolver<wbr>Source</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_resolver_field_resolver_.html#initialsource" class="tsd-kind-icon">Initial<wbr>Source</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#assertisdocumentinputargs" class="tsd-kind-icon">assert<wbr>IsDocument<wbr>Input<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#datafield" class="tsd-kind-icon">data<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#datainitialvaluesfield" class="tsd-kind-icon">data<wbr>Initial<wbr>Values<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#datavalue" class="tsd-kind-icon">data<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#documentinputdatafield" class="tsd-kind-icon">document<wbr>Input<wbr>Data<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#findfield" class="tsd-kind-icon">find<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_resolver_field_resolver_.html#isresource" class="tsd-kind-icon">is<wbr>Resource</a>
 					</li>
 				</ul>
 			</nav>

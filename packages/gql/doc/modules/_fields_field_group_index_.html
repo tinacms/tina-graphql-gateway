@@ -40,6 +40,8 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -76,6 +78,12 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_fields_field_group_index_.html#tinafieldgroupfield" class="tsd-kind-icon">Tina<wbr>Field<wbr>Group<wbr>Field</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_field_group_index_.html#assertisdata" class="tsd-kind-icon">assert<wbr>IsData</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Object literals</h3>
 							<ul class="tsd-index-list">
@@ -93,7 +101,7 @@
 					<div class="tsd-signature tsd-kind-icon">Field<wbr>Group<wbr>Field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>__namespace<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>required<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><a href="_fields_index_.html#field" class="tsd-signature-type">Field</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"field_group"</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L147">packages/gql/src/fields/field-group/index.ts:147</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L147">packages/gql/src/fields/field-group/index.ts:147</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -141,7 +149,7 @@
 					<div class="tsd-signature tsd-kind-icon">Field<wbr>Group<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L169">packages/gql/src/fields/field-group/index.ts:169</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L169">packages/gql/src/fields/field-group/index.ts:169</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -159,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">Tina<wbr>Field<wbr>Group<wbr>Field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>component<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"group"</span><span class="tsd-signature-symbol">; </span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>required<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><a href="_fields_index_.html#tinafield" class="tsd-signature-type">TinaField</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L158">packages/gql/src/fields/field-group/index.ts:158</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L158">packages/gql/src/fields/field-group/index.ts:158</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -190,6 +198,32 @@
 					</div>
 				</section>
 			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="assertisdata" class="tsd-anchor"></a>
+					<h3>assert<wbr>IsData</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>IsData<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{}</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L125">packages/gql/src/fields/field-group/index.ts:125</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{}</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Object literals</h2>
 				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-module">
@@ -198,7 +232,7 @@
 					<div class="tsd-signature tsd-kind-icon">field<wbr>Group<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L11">packages/gql/src/fields/field-group/index.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L11">packages/gql/src/fields/field-group/index.ts:11</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -207,7 +241,7 @@
 						<div class="tsd-signature tsd-kind-icon">build<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L12">packages/gql/src/fields/field-group/index.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L12">packages/gql/src/fields/field-group/index.ts:12</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -220,7 +254,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L13">packages/gql/src/fields/field-group/index.ts:13</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L13">packages/gql/src/fields/field-group/index.ts:13</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -251,7 +285,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L34">packages/gql/src/fields/field-group/index.ts:34</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L34">packages/gql/src/fields/field-group/index.ts:34</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -282,7 +316,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L54">packages/gql/src/fields/field-group/index.ts:54</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L54">packages/gql/src/fields/field-group/index.ts:54</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -313,7 +347,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L45">packages/gql/src/fields/field-group/index.ts:45</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L45">packages/gql/src/fields/field-group/index.ts:45</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -341,7 +375,7 @@
 						<div class="tsd-signature tsd-kind-icon">resolve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L64">packages/gql/src/fields/field-group/index.ts:64</a></li>
+								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L64">packages/gql/src/fields/field-group/index.ts:64</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
@@ -354,7 +388,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L65">packages/gql/src/fields/field-group/index.ts:65</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L65">packages/gql/src/fields/field-group/index.ts:65</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -385,7 +419,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L82">packages/gql/src/fields/field-group/index.ts:82</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L82">packages/gql/src/fields/field-group/index.ts:82</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -419,7 +453,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L106">packages/gql/src/fields/field-group/index.ts:106</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L106">packages/gql/src/fields/field-group/index.ts:106</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -453,7 +487,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/field-group/index.ts#L94">packages/gql/src/fields/field-group/index.ts:94</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/field-group/index.ts#L94">packages/gql/src/fields/field-group/index.ts:94</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -553,6 +587,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_fields_field_group_index_.html#tinafieldgroupfield" class="tsd-kind-icon">Tina<wbr>Field<wbr>Group<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_field_group_index_.html#assertisdata" class="tsd-kind-icon">assert<wbr>IsData</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
 						<a href="_fields_field_group_index_.html#fieldgroup" class="tsd-kind-icon">field<wbr>Group</a>
