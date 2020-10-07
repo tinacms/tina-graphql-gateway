@@ -105,7 +105,7 @@ export const blocks = {
     }) => {
       return {
         type: GraphQLList(
-          await builder._initialValuesUnion({
+          await builder.initialValuesUnion({
             cache,
             templates: field.template_types,
           })
@@ -115,7 +115,7 @@ export const blocks = {
     value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return {
         type: GraphQLList(
-          await builder._documentDataUnion({
+          await builder.documentDataUnion({
             cache,
             templates: field.template_types,
           })

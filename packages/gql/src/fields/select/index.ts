@@ -43,7 +43,7 @@ export const select = {
                 name: `${select.label}Document`,
                 fields: {
                   document: {
-                    type: await builder._documentUnion({
+                    type: await builder.documentUnion({
                       cache,
                       section: select.config.source.section,
                     }),

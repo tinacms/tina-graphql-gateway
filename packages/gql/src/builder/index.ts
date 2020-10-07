@@ -31,14 +31,130 @@ import type { ContextT } from "../resolver";
  * starts with the documentUnion, which then trickles down through the schema, populating
  * all the fields by reading the settings.yml and template definition files.
  */
-export const builder = {
+export interface Builder {
   /**
    * The entrypoint to the build process. It's likely we'll have many more query fields
    * in the future.
    */
+  schema: (args: {
+    cache: Cache;
+    /** If no section is provided, this is the top-level document field */
+    section?: string;
+  }) => Promise<GraphQLSchema>;
+  /**
+   * The top-level result, a document is a file which may be of any one of the templates
+   * defined, the union consists of each template which is possible.
+   */
+  documentUnion: (args: {
+    cache: Cache;
+    /** If no section is provided, this is the top-level document field */
+    section?: string;
+  }) => Promise<GraphQLUnionType>;
+  /**
+   * Builds out the type of document based on the provided template.
+   * Each `type` from the {@link documentUnion} is built by this function.
+   */
+  documentObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLObjectType<any, any>>;
+  /**
+   * Similar to {@link documentUnion} except it only deals with unions on the data layer.
+   *
+   * This is used in blocks, which stores it's values inline rather than via another document
+   */
+  documentDataUnion: (args: {
+    cache: Cache;
+    templates: string[];
+  }) => Promise<GraphQLUnionType>;
+  /**
+   * Similar to documentObject except it only deals with unions on the data layer
+   *
+   * Builds out the type of data based on the provided template.
+   * Each `type` from the {@link documentDataUnion} is built by this function.
+   */
+  documentDataObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLObjectType<any, any>>;
+  /**
+   * The top-level form object for a document
+   *
+   * ```graphql
+   * type AuthorForm = {
+   *  label: String,
+   *  _template: String,
+   *  feilds: ...
+   * }
+   * ```
+   */
+  documentFormObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLObjectType<any, any>>;
+  /**
+   * The [initial values](https://tinacms.org/docs/plugins/forms/#form-configuration) for the Tina form.
+   *
+   * `_template` is provided as a disambiguator when the result value is inside an array.
+   *
+   * ```graphql
+   * type MyBlock = {
+   *   _template: String
+   *   description: String
+   *   authors: [String]
+   * }
+   * ```
+   */
+  documentInitialValuesObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLObjectType<any, any>>;
+  /**
+   * Currently only used by blocks, which accepts an array of values with different shapes,
+   * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
+   */
+  initialValuesUnion: (args: {
+    cache: Cache;
+    templates: string[];
+  }) => Promise<GraphQLUnionType>;
+  /**
+   * The input values for mutations to the document data
+   */
+  documentDataInputObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLInputObjectType>;
+  /**
+   * The input values for the document
+   */
+  documentInputObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLInputObjectType>;
+  /**
+   * The input values for mutations to the document from a section
+   *
+   * Note that while this isn't a union, it's behaving close to one,
+   * GraphQL doesn't support unions in mutations, but this is somewhat
+   * close to the same thing
+   */
+  documentTaggedUnionInputObject: (args: {
+    cache: Cache;
+    section?: string;
+  }) => Promise<GraphQLInputObjectType>;
+  /**
+   * A form's fields is a union of different field types
+   */
+  documentFormFieldsUnion: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLList<GraphQLType>>;
+}
+
+export const builder: Builder = {
   schema: async ({ cache }: { cache: Cache }) => {
-    const documentUnion = await builder._documentUnion({ cache });
-    const documentInput = await builder.sectionDocumentInputObject({
+    const documentUnion = await builder.documentUnion({ cache });
+    const documentInput = await builder.documentTaggedUnionInputObject({
       cache,
     });
     const schema = new GraphQLSchema({
@@ -84,18 +200,7 @@ export const builder = {
 
     return schema;
   },
-  /**
-   * The top-level result, a document is a file which may be of any one of the templates
-   * defined, the union consists of each template which is possible.
-   */
-  _documentUnion: async ({
-    cache,
-    section,
-  }: {
-    cache: Cache;
-    /** If no section is provided, this is the top-level document field */
-    section?: string;
-  }) => {
+  documentUnion: async ({ cache, section }) => {
     return cache.build(
       new GraphQLUnionType({
         name: `${section ? section : ""}DocumentUnion`,
@@ -107,10 +212,6 @@ export const builder = {
       })
     );
   },
-  /**
-   * Builds out the type of document based on the provided template.
-   * Each `type` from the {@link _documentUnion} is built by this function.
-   */
   documentObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
@@ -126,12 +227,7 @@ export const builder = {
       })
     );
   },
-  /**
-   * Similar to {@link documentUnion} except it only deals with unions on the data layer.
-   *
-   * This is used in blocks, which stores it's values inline rather than via another document
-   */
-  _documentDataUnion: async ({
+  documentDataUnion: async ({
     cache,
     templates,
   }: {
@@ -151,12 +247,6 @@ export const builder = {
       })
     );
   },
-  /**
-   * Similar to documentObject except it only deals with unions on the data layer
-   *
-   * Builds out the type of data based on the provided template.
-   * Each `type` from the {@link _documentDataUnion} is built by this function.
-   */
   documentDataObject: async (cache: Cache, template: TemplateData) => {
     const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
@@ -172,17 +262,6 @@ export const builder = {
       })
     );
   },
-  /**
-   * The top-level form object for a document
-   *
-   * ```graphql
-   * type AuthorForm = {
-   *  label: String,
-   *  _template: String,
-   *  feilds: ...
-   * }
-   * ```
-   */
   documentFormObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
@@ -191,25 +270,12 @@ export const builder = {
           label: { type: GraphQLString },
           _template: { type: GraphQLString },
           fields: {
-            type: await builder._documentFormFieldsUnion(cache, template),
+            type: await builder.documentFormFieldsUnion(cache, template),
           },
         },
       })
     );
   },
-  /**
-   * The [initial values](https://tinacms.org/docs/plugins/forms/#form-configuration) for the Tina form.
-   *
-   * `_template` is provided as a disambiguator when the result value is inside an array.
-   *
-   * ```graphql
-   * type MyBlock = {
-   *   _template: String
-   *   description: String
-   *   authors: [String]
-   * }
-   * ```
-   */
   documentInitialValuesObject: async (cache: Cache, template: TemplateData) => {
     const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
@@ -228,11 +294,7 @@ export const builder = {
       })
     );
   },
-  /**
-   * Currently only used by blocks, which accepts an array of values with different shapes,
-   * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
-   */
-  _initialValuesUnion: async ({
+  initialValuesUnion: async ({
     cache,
     templates,
   }: {
@@ -248,14 +310,11 @@ export const builder = {
     );
     return cache.build(
       new GraphQLUnionType({
-        name: `${templates.join("")}_initialValuesUnion`,
+        name: `${templates.join("")}initialValuesUnion`,
         types,
       })
     );
   },
-  /**
-   * The input values for mutations to the document data
-   */
   documentDataInputObject: async (cache: Cache, template: TemplateData) => {
     const fields: GraphQLInputFieldConfigMap = {};
 
@@ -274,10 +333,7 @@ export const builder = {
       })
     );
   },
-  /**
-   * The input values for the document
-   */
-  _documentInputObject: async (cache: Cache, template: TemplateData) => {
+  documentInputObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLInputObjectType({
         name: `${template.label}Input`,
@@ -290,10 +346,7 @@ export const builder = {
       })
     );
   },
-  /**
-   * The input values for mutations to the document from a section
-   */
-  sectionDocumentInputObject: async ({
+  documentTaggedUnionInputObject: async ({
     cache,
     section,
   }: {
@@ -303,7 +356,7 @@ export const builder = {
     const templates = await Promise.all(
       (await cache.datasource.getTemplatesForSection(section)).map(
         async (template) => {
-          return await builder._documentInputObject(cache, template);
+          return await builder.documentInputObject(cache, template);
         }
       )
     );
@@ -318,10 +371,7 @@ export const builder = {
       })
     );
   },
-  /**
-   * A form's fields is a union of different field types
-   */
-  _documentFormFieldsUnion: async (
+  documentFormFieldsUnion: async (
     cache: Cache,
     template: TemplateData
   ): Promise<GraphQLList<GraphQLType>> => {

@@ -49,7 +49,7 @@ export const fieldGroupList = {
             component: { type: GraphQLString },
             fields: {
               // field is structural subtyping TemplateData shape
-              type: await builder._documentFormFieldsUnion(cache, field),
+              type: await builder.documentFormFieldsUnion(cache, field),
             },
           },
         })

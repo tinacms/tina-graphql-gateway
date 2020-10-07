@@ -26,7 +26,7 @@ export const resolver = {
     if (info.fieldName === "updateDocument") {
       assertIsDocumentInputArgs(args);
 
-      await resolver.sectionDocumentInputObject({
+      await resolver.documentInputObject({
         args: args,
         params: args.params,
         datasource,
@@ -183,7 +183,7 @@ export const resolver = {
       ...accum,
     };
   },
-  sectionDocumentInputObject: async ({
+  documentInputObject: async ({
     args,
     params,
     datasource,
@@ -205,6 +205,7 @@ export const resolver = {
 
     const payload = {
       data: value,
+      content: "", // TODO: Implement me
     };
     await datasource.updateDocument({ path: args.path, params: payload });
 
