@@ -6,6 +6,7 @@ import {
   getNamedType,
   GraphQLObjectType,
   GraphQLList,
+  GraphQLType,
 } from "graphql";
 
 import { builder } from "../../builder";
@@ -15,16 +16,8 @@ import type { Cache } from "../../cache";
 import type { TinaTemplateData } from "../../types";
 import type { DataSource } from "../../datasources/datasource";
 
-export const blocks = {
+export interface Build {
   /**
-   * Build properties are functions which build the various schemas for objects
-   * related to block data
-   *
-   * The build process is done ahead of time and can be cached as a static GraphQL SDL file
-   *
-   */
-  build: {
-    /**
      * Builds a union type which adheres to the [Tina Block](https://tinacms.org/docs/plugins/fields/blocks/) shape.
      *
      * Since blocks need to be unique from one another depending on the templates they support, this is field
@@ -59,6 +52,117 @@ export const blocks = {
      * union MyPageSectionFormFields = CtaFormFields | HeroFormFields
      * ```
      */
+  field: ({
+    cache,
+    field,
+  }: BuildArgs) => Promise<GraphQLObjectType<BlocksField, any>>;
+  initialValue: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => Promise<{ type: GraphQLList<GraphQLType> }>;
+  value: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => Promise<{ type: GraphQLList<GraphQLType> }>;
+  input: ({
+    cache,
+    field,
+  }: {
+    cache: Cache;
+    field: BlocksField;
+  }) => Promise<{ type: GraphQLList<GraphQLType> }>;
+}
+
+export interface Resolve {
+  /**
+   * Resolves the values with their respective templates, specified by
+   * the template key.
+   *
+   * ```js
+   * // given
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ]
+   * }
+   *
+   * // expect
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ],
+   *   component: 'blocks',
+   *   templates: {
+   *     sectionTemplateFields: {
+   *       __typename: 'Section',
+   *       label: 'Section',
+   *       hide_body: false,
+   *       fields: [Array]
+   *     }
+   *   },
+   *   __typename: 'BlocksFormField'
+   * }
+   *
+   * ```
+   */
+  field: ({
+    datasource,
+    field,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+  }) => Promise<TinaBlocksField>;
+  initialValue: ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: unknown;
+  }) => Promise<unknown>;
+  value: ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: unknown;
+  }) => Promise<unknown>;
+  input: ({
+    datasource,
+    field,
+    value,
+  }: {
+    datasource: DataSource;
+    field: BlocksField;
+    value: unknown;
+  }) => Promise<unknown>;
+}
+
+export interface Blocks {
+  /**
+   * Build properties are functions which build the various schemas for objects
+   * related to block data
+   *
+   * The build process is done ahead of time and can be cached as a static GraphQL SDL file
+   *
+   */
+  build: Build;
+  resolve: Resolve;
+}
+
+export const blocks: Blocks = {
+  build: {
     field: async ({
       cache,
       field,
@@ -152,39 +256,6 @@ export const blocks = {
     },
   },
   resolve: {
-    /**
-     * Resolves the values with their respective templates, specified by
-     * the template key.
-     *
-     * ```js
-     * // given
-     * {
-     *   name: 'sections',
-     *   type: 'blocks',
-     *   label: 'Sections',
-     *   template_types: [ 'section' ]
-     * }
-     *
-     * // expect
-     * {
-     *   name: 'sections',
-     *   type: 'blocks',
-     *   label: 'Sections',
-     *   template_types: [ 'section' ],
-     *   component: 'blocks',
-     *   templates: {
-     *     sectionTemplateFields: {
-     *       __typename: 'Section',
-     *       label: 'Section',
-     *       hide_body: false,
-     *       fields: [Array]
-     *     }
-     *   },
-     *   __typename: 'BlocksFormField'
-     * }
-     *
-     * ```
-     */
     field: async ({
       datasource,
       field,

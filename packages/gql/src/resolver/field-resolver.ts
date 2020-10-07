@@ -14,23 +14,56 @@ import type { TemplateData, TinaTemplateData } from "../types";
 import type { GraphQLResolveInfo } from "graphql";
 
 export interface Resolver {
-  schema: (
-    source: FieldResolverSource,
-    args: FieldResolverArgs,
-    context: ContextT,
-    info: GraphQLResolveInfo
-  ) => Promise<unknown>;
   /**
-   * Retrieves the top-level document and provides the __typename so it can be resolved automatically
-   * by the GraphQL type resolver
+   * The values required to mutate the document
+   *
+   * ```json
+   * {
+   *  "_template": "Post",
+   *  "title": "Some Title",
+   *  "author": "authors/homer.md",
+   * }
+   * ```
+   *
+   * See {@link Builder.documentDataInputObject} for the equivalent builder
    */
-  documentObject: (args: {
-    args: { path: string };
+  documentDataInputObject: (args: {
+    data: { [key: string]: unknown };
+    template: TemplateData;
     datasource: DataSource;
-  }) => Promise<unknown>;
+  }) => Promise<{ _template: string } & object>;
   /**
-   * Given a template and document data, return the resolved data along with the _template and __typename
+   * Given a template and document data, return the resolved data along with the `_template` and `__typename`
    * so it can be resolved by the GraphQL type resolver
+   *
+   * Notice in the below example the `author` key doesn't actually have the resolved author. This is because
+   * we're relying on GraphQL to call the field resolver on each key the user asks for. So in this scenario
+   * we won't get the author document until we know the user has asked for it in their query.
+   *
+   * If we were to fetch the author document at this stage, we are possibly over-fetching data that we'll never return
+   * to the user.
+   *
+   * Another important note - this function returns some things which are not needed by the end result. If you look at the [builder]({@link Builder.documentDataObject})
+   * for this function, it doesn't have a requirement for `__typename` or `_template` - these values are used internally by subsequent
+   * `resolver` calls. Since field resolvers work like a waterfall, these values will be used downstream, and won't end up being returned
+   * to the end user.
+   *
+   * ```json
+   * {
+   *   "__typename": "PostData",
+   *   "_template": "Post",
+   *   "title": "Some Title",
+   *   "author": {
+   *     "_resolver": "_resource",
+   *     "_resolver_kind": "_nested_source",
+   *     "_args": {
+   *       "path": "authors/homer.md"
+   *     }
+   *   }
+   * }
+   * ```
+   *
+   * See {@link Builder.documentDataObject} for the equivalent builder
    */
   documentDataObject: (
     datasource: DataSource,
@@ -38,7 +71,67 @@ export interface Resolver {
     data: DocumentData
   ) => Promise<unknown>;
   /**
+   *
+   * The top-level form type for a document
+   *
+   * ```json
+   * {
+   *   "label": "Post",
+   *   "hide_body": false,
+   *   "display_field": "title",
+   *   "fields": [
+   *     {
+   *       "name": "title",
+   *       "label": "Title",
+   *       "description": "The name of your post, keep it short!",
+   *       "config": {
+   *         "required": false
+   *       },
+   *       "component": "textarea",
+   *       "__namespace": "Post",
+   *       "__typename": "TextareaField"
+   *     },
+   *     {
+   *       "name": "author",
+   *       "config": {
+   *         "required": false,
+   *         "source": {
+   *          "type": "pages",
+   *           "section": "authors"
+   *         }
+   *       },
+   *       "label": "Author",
+   *       "component": "select",
+   *       "__namespace": "Post",
+   *       "__typename": "SelectField",
+   *      "options": [
+   *         "authors/marge.md",
+   *         "authors/homer.md"
+   *       ]
+   *     },
+   *   }
+   * }
+   * ```
+   *
+   * See {@link Builder.documentFormObject} for the equivalent builder
+   */
+  documentFormObject: (
+    datasource: DataSource,
+    template: TemplateData
+  ) => Promise<TinaTemplateData>;
+  /**
    * Given a template and document data, return the appropriate initialValues along with the _template and __typename
+   *
+   * ```json
+   * {
+   *   "__typename": "PostInitialValues",
+   *   "_template": "Post",
+   *   "title": "Some Title",
+   *   "author": "authors/homer.md"
+   * }
+   * ```
+   *
+   * See {@link Builder.documentInitialValuesObject} for the equivalent builder
    */
   documentInitialValuesObject: (
     datasource: DataSource,
@@ -49,20 +142,53 @@ export interface Resolver {
     _template: string;
     [key: string]: unknown;
   }>;
-  documentFormObject: (
-    datasource: DataSource,
-    template: TemplateData
-  ) => Promise<TinaTemplateData>;
-  documentDataInputObject: (args: {
-    data: { [key: string]: unknown };
-    template: TemplateData;
-    datasource: DataSource;
-  }) => Promise<{ _template: string } & object>;
+  /**
+   * Builds the JSON representation of the file being written, this value is passed to the
+   * DataSource which persists the data, the return value is not used
+   *
+   * ```json
+   * {
+   *   "data": {
+   *     "title": "Some Title",
+   *     "author": "authors/homer.md",
+   *   },
+   *   "content": ""
+   * }
+   * ```
+   * See {@link Builder.documentInputObject} for the equivalent builder
+   */
   documentInputObject: (params: {
     args: { path: string };
     params: object;
     datasource: DataSource;
   }) => Promise<boolean>;
+  /**
+   *
+   * The top-level return value
+   *
+   * ```json
+   * {
+   *   "__typename": "Post",
+   *   "path": "posts/1.md",
+   *   "content": "",
+   *   "form": {...}
+   *   "data": {...}
+   *   "initialValues": {...}
+   * }
+   * ```
+   *
+   * See {@link Builder.documentObject} for the equivalent builder
+   */
+  documentObject: (args: {
+    args: { path: string };
+    datasource: DataSource;
+  }) => Promise<unknown>;
+  schema: (
+    source: FieldResolverSource,
+    args: FieldResolverArgs,
+    context: ContextT,
+    info: GraphQLResolveInfo
+  ) => Promise<unknown>;
 }
 
 /**
@@ -251,6 +377,7 @@ export const resolver: Resolver = {
       data: value,
       content: "", // TODO: Implement me
     };
+    console.log(JSON.stringify(payload, null, 2));
     await datasource.updateDocument({ path: args.path, params: payload });
 
     return true;

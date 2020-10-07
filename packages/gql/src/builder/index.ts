@@ -9,6 +9,8 @@ import {
   GraphQLType,
   GraphQLInputObjectType,
   GraphQLInputFieldConfigMap,
+  printType,
+  printSchema,
 } from "graphql";
 import _ from "lodash";
 
@@ -33,28 +35,40 @@ import type { ContextT } from "../resolver";
  */
 export interface Builder {
   /**
-   * The entrypoint to the build process. It's likely we'll have many more query fields
-   * in the future.
+   * Builds the input type for document data
+   *
+   * ```graphql
+   * # example
+   * input PostInputData {
+   *   _template: String
+   *   title: String
+   *   author: String
+   * }
+   * ```
+   *
+   * See {@link Resolver.documentDataInputObject} for the equivalent resolver
    */
-  schema: (args: {
-    cache: Cache;
-    /** If no section is provided, this is the top-level document field */
-    section?: string;
-  }) => Promise<GraphQLSchema>;
+  documentDataInputObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLInputObjectType>;
   /**
-   * The top-level result, a document is a file which may be of any one of the templates
-   * defined, the union consists of each template which is possible.
+   * Similar to documentObject except it only deals with unions on the data layer
+   *
+   * Builds out the type of data based on the provided template.
+   * Each `type` from the {@link documentDataUnion} is built by this function.
+   *
+   * ```graphql
+   * # example
+   * type PostData {
+   *   title: String
+   *   author: AuthorDocument
+   * }
+   * ```
+   *
+   * See {@link Resolver.documentDataObject} for the equivalent resolver
    */
-  documentUnion: (args: {
-    cache: Cache;
-    /** If no section is provided, this is the top-level document field */
-    section?: string;
-  }) => Promise<GraphQLUnionType>;
-  /**
-   * Builds out the type of document based on the provided template.
-   * Each `type` from the {@link documentUnion} is built by this function.
-   */
-  documentObject: (
+  documentDataObject: (
     cache: Cache,
     template: TemplateData
   ) => Promise<GraphQLObjectType<any, any>>;
@@ -62,31 +76,47 @@ export interface Builder {
    * Similar to {@link documentUnion} except it only deals with unions on the data layer.
    *
    * This is used in blocks, which stores it's values inline rather than via another document
+   *
+   * ```graphql
+   * union blockDataUnion = HeroData | FeaturedPostData
+   * ```
+   *
+   * Note that there is no equivalent `Resolver` for unions, this is because instead of providing a `typeResolver`, we
+   * return the `__typename` from each possible type (which GraphQL uses if no `typeResolver` function is provided)
    */
   documentDataUnion: (args: {
     cache: Cache;
     templates: string[];
   }) => Promise<GraphQLUnionType>;
   /**
-   * Similar to documentObject except it only deals with unions on the data layer
-   *
-   * Builds out the type of data based on the provided template.
-   * Each `type` from the {@link documentDataUnion} is built by this function.
-   */
-  documentDataObject: (
-    cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLObjectType<any, any>>;
-  /**
-   * The top-level form object for a document
+   * A form's fields is a union of different field types
    *
    * ```graphql
+   * # example:
+   * union PostFormFields = TextareaField | SelectField
+   * # this actually returns a list of this union, meaning we have an array of unlike objects
+   * [PostFormFields]
+   * ```
+   *
+   * Note that there is no equivalent `Resolver` for unions, this is because instead of providing a `typeResolver`, we
+   * return the `__typename` from each possible type (which GraphQL uses if no `typeResolver` function is provided)
+   */
+  documentFormFieldsUnion: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLList<GraphQLType>>;
+  /**
+   * The top-level form type for a document
+   *
+   * ```graphql
+   * # example
    * type AuthorForm = {
-   *  label: String,
    *  _template: String,
-   *  feilds: ...
+   *  label: String,
+   *  fields: [AuthorFormFields]
    * }
    * ```
+   * See {@link Resolver.documentFormObject} for the equivalent resolver
    */
   documentFormObject: (
     cache: Cache,
@@ -98,57 +128,181 @@ export interface Builder {
    * `_template` is provided as a disambiguator when the result value is inside an array.
    *
    * ```graphql
-   * type MyBlock = {
+   * type PostInitialValues {
    *   _template: String
-   *   description: String
-   *   authors: [String]
+   *   title: String
+   *   author: String
+   *   categories: [CategoryData]
    * }
    * ```
+   *
+   * See {@link Resolver.documentInitialValuesObject} for the equivalent resolver
    */
   documentInitialValuesObject: (
     cache: Cache,
     template: TemplateData
   ) => Promise<GraphQLObjectType<any, any>>;
   /**
-   * Currently only used by blocks, which accepts an array of values with different shapes,
-   * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
-   */
-  initialValuesUnion: (args: {
-    cache: Cache;
-    templates: string[];
-  }) => Promise<GraphQLUnionType>;
-  /**
-   * The input values for mutations to the document data
-   */
-  documentDataInputObject: (
-    cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLInputObjectType>;
-  /**
-   * The input values for the document
+   * The input values for the document. See {@link documentDataInputObject} for the data input portion.
+   * ```graphql
+   * # example
+   * input PostInput {
+   *   content: String
+   *   data: PostInputData
+   * }
+   * ```
+   *
+   * See {@link Resolver.documentInputObject} for the equivalent resolver
    */
   documentInputObject: (
     cache: Cache,
     template: TemplateData
   ) => Promise<GraphQLInputObjectType>;
   /**
+   * Builds out the type of document based on the provided template.
+   * Each `type` from the {@link documentUnion} is built by this function.
+   *
+   * ```graphql
+   * type Post {
+   *  path: String
+   *  form: PostForm
+   *  data: PostData
+   *  initialValues: PostInitialValues
+   * }
+   * ```
+   *
+   * See {@link Resolver.documentObject} for the equivalent resolver
+   */
+  documentObject: (
+    cache: Cache,
+    template: TemplateData
+  ) => Promise<GraphQLObjectType<any, any>>;
+  /**
    * The input values for mutations to the document from a section
    *
+   * ```graphql
+   * # Example
+   * input DocumentInput {
+   *  PostInput: PostInput
+   *  AuthorInput: AuthorInput
+   * }
+   * ```
+   *
    * Note that while this isn't a union, it's behaving close to one,
-   * GraphQL doesn't support unions in mutations, but this is somewhat
-   * close to the same thing
+   * GraphQL doesn't support unions in mutations, so instead each key
+   * (ex. `PostInput`) is the property we require when accepting a mutation.
+   *
+   * So if your payload looked like this it'd be considered invalid, while it's
+   * possible to provide both `PostInput` and `AuthorInput` from the schema's perspective
+   * , we'll throw an error, changing the author data at path `posts/1.md` makes no sense:
+   *
+   * ```json
+   * {
+   *  "path": "posts/1.md",
+   *  "params": {
+   *    "PostInput": {
+   *      "data": {
+   *        ...
+   *    "AuthorInput": {
+   *      "data": {
+   *        ...
+   * ```
+
+   * [Read more about the trade-offs here](https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md#-5-one-of-tagged-union)
+
    */
   documentTaggedUnionInputObject: (args: {
     cache: Cache;
     section?: string;
   }) => Promise<GraphQLInputObjectType>;
   /**
-   * A form's fields is a union of different field types
+   * The top-level result, a document is a file which may be of any one of the templates
+   * defined, the union consists of each template which is possible.
+   *
+   * ```graphql
+   * union DocumentUnion = Post | Page
+   * ```
+   *
+   * Note that this is also used on section-level references as well. If you have a `post` template
+   * which has an `authors` reference, that author document could consist of multiple template types.
+   * An example might be that some authors use a more detailed template, while others are very basic
+   *
+   * ```graphql
+   * union authorsDocumentUnion = DetailedAuthor | BasicAuthor
+   * ```
+   * In this example the `authorsDocumentUnion` would be referenced in the `Post`'s type (notice that the
+   * `authorsDocumentUnion` is "namespaced" by the section slug `authors`)
+   * ```graphql
+   * type PostData {
+   *   title: String
+   *   author: AuthorDocument
+   * }
+   *
+   * type AuthorDocument {
+   *   document: authorsDocumentUnion
+   * }
+   *
+   * union authorsDocumentUnion = DetailedAuthor | BasicAuthor
+   * ```
    */
-  documentFormFieldsUnion: (
-    cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLList<GraphQLType>>;
+  documentUnion: (args: {
+    cache: Cache;
+    /** If no section is provided, this is the top-level document field */
+    section?: string;
+  }) => Promise<GraphQLUnionType>;
+  /**
+   * Currently only used by blocks, which accepts an array of values with different shapes,
+   * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
+   *
+   * ```graphql
+   * union sectionInitialValuesUnion = HeroInitialValues | FeaturedPostInitialValues
+   *
+   * type HeroInitialValues {
+   *   _template: String
+   *   description: String
+   *   image: String
+   * }
+   *
+   * type FeaturedPostInitialValues {
+   *   _template: String
+   *   cta: String
+   *   post: Post
+   * }
+   * ```
+   */
+  initialValuesUnion: (args: {
+    cache: Cache;
+    templates: string[];
+  }) => Promise<GraphQLUnionType>;
+  /**
+   * The entrypoint to the build process. It's likely we'll have many more query fields
+   * in the future.
+   *
+   *  ```graphql
+   * # example
+   *  type Query {
+   *    document(path: String): DocumentUnion
+   *  }
+   *
+   *  union DocumentUnion = Post | Author
+   *
+   *  type Mutation {
+   *    updateDocument(path: String!, params: DocumentInput): DocumentUnion
+   *  }
+   *
+   *  input DocumentInput {
+   *    PostInput: PostInput
+   *    AuthorInput: AuthorInput
+   *  }
+   *
+   *  ...
+   *  ```
+   */
+  schema: (args: {
+    cache: Cache;
+    /** If no section is provided, this is the top-level document field */
+    section?: string;
+  }) => Promise<GraphQLSchema>;
 }
 
 /**

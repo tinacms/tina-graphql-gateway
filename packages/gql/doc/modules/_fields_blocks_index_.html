@@ -40,6 +40,8 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -69,16 +71,35 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_fields_blocks_index_.blocks.html" class="tsd-kind-icon">Blocks</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_fields_blocks_index_.build.html" class="tsd-kind-icon">Build</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_fields_blocks_index_.resolve.html" class="tsd-kind-icon">Resolve</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#blockvalue" class="tsd-kind-icon">Block<wbr>Value</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_fields_blocks_index_.html#blocksfield" class="tsd-kind-icon">Blocks<wbr>Field</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#buildargs" class="tsd-kind-icon">Build<wbr>Args</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_fields_blocks_index_.html#tinablocksfield" class="tsd-kind-icon">Tina<wbr>Blocks<wbr>Field</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#assertisarray" class="tsd-kind-icon">assert<wbr>IsArray</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#assertisblock" class="tsd-kind-icon">assert<wbr>IsBlock</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#assertisblockinput" class="tsd-kind-icon">assert<wbr>IsBlock<wbr>Input</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="_fields_blocks_index_.html#assertisobject" class="tsd-kind-icon">assert<wbr>IsObject</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Object literals</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-object-literal tsd-parent-kind-module"><a href="_fields_blocks_index_.html#blocks" class="tsd-kind-icon">blocks</a></li>
+								<li class="tsd-kind-object-literal tsd-parent-kind-module"><a href="_fields_blocks_index_.html#blocks-1" class="tsd-kind-icon">blocks</a></li>
 							</ul>
 						</section>
 					</div>
@@ -86,13 +107,34 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="blockvalue" class="tsd-anchor"></a>
+					<h3>Block<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">Block<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L437">packages/gql/src/fields/blocks/index.ts:437</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">unknown</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="blocksfield" class="tsd-anchor"></a>
 					<h3>Blocks<wbr>Field</h3>
 					<div class="tsd-signature tsd-kind-icon">Blocks<wbr>Field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>__namespace<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>required<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>template_types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"blocks"</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L342">packages/gql/src/fields/blocks/index.ts:342</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L413">packages/gql/src/fields/blocks/index.ts:413</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -122,13 +164,34 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="buildargs" class="tsd-anchor"></a>
+					<h3>Build<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">Build<wbr>Args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L442">packages/gql/src/fields/blocks/index.ts:442</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="tinablocksfield" class="tsd-anchor"></a>
 					<h3>Tina<wbr>Blocks<wbr>Field</h3>
 					<div class="tsd-signature tsd-kind-icon">Tina<wbr>Blocks<wbr>Field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>__typename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>component<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"blocks"</span><span class="tsd-signature-symbol">; </span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>required<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>templates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"blocks"</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L353">packages/gql/src/fields/blocks/index.ts:353</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L424">packages/gql/src/fields/blocks/index.ts:424</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -167,35 +230,123 @@
 					</div>
 				</section>
 			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="assertisarray" class="tsd-anchor"></a>
+					<h3>assert<wbr>IsArray</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>IsArray<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L370">packages/gql/src/fields/blocks/index.ts:370</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="assertisblock" class="tsd-anchor"></a>
+					<h3>assert<wbr>IsBlock</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>IsBlock<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">BlockValue</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L399">packages/gql/src/fields/blocks/index.ts:399</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">BlockValue</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="assertisblockinput" class="tsd-anchor"></a>
+					<h3>assert<wbr>IsBlock<wbr>Input</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>IsBlock<wbr>Input<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> }</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L376">packages/gql/src/fields/blocks/index.ts:376</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> }</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="assertisobject" class="tsd-anchor"></a>
+					<h3>assert<wbr>IsObject</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">assert<wbr>IsObject<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">object</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L394">packages/gql/src/fields/blocks/index.ts:394</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">asserts</span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">object</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Object literals</h2>
 				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-module">
-					<a name="blocks" class="tsd-anchor"></a>
+					<a name="blocks-1" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> blocks</h3>
 					<div class="tsd-signature tsd-kind-icon">blocks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L18">packages/gql/src/fields/blocks/index.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L164">packages/gql/src/fields/blocks/index.ts:164</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
-						<a name="blocks.build" class="tsd-anchor"></a>
+						<a name="blocks-1.build-1" class="tsd-anchor"></a>
 						<h3>build</h3>
 						<div class="tsd-signature tsd-kind-icon">build<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L26">packages/gql/src/fields/blocks/index.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L165">packages/gql/src/fields/blocks/index.ts:165</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Build properties are functions which build the various schemas for objects
-								related to block data</p>
-							</div>
-							<p>The build process is done ahead of time and can be cached as a static GraphQL SDL file</p>
-						</div>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.build.field" class="tsd-anchor"></a>
+							<a name="blocks-1.build-1.field-1" class="tsd-anchor"></a>
 							<h3>field</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">field<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLObjectType</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -204,39 +355,9 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L62">packages/gql/src/fields/blocks/index.ts:62</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L166">packages/gql/src/fields/blocks/index.ts:166</a></li>
 										</ul>
 									</aside>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Builds a union type which adheres to the <a href="https://tinacms.org/docs/plugins/fields/blocks/">Tina Block</a> shape.</p>
-										</div>
-										<p>Since blocks need to be unique from one another depending on the templates they support, this is field
-										builds a union which is namespaced by the template name:</p>
-										<p>Given the following template definition:</p>
-										<pre><code class="language-yaml"><span class="hljs-attr">label:</span> <span class="hljs-string">MyPage</span>
-<span class="hljs-attr">fields:</span>
-<span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">sections</span>
-  <span class="hljs-attr">type:</span> <span class="hljs-string">blocks</span>
-  <span class="hljs-attr">label:</span> <span class="hljs-string">Sections</span>
-  <span class="hljs-attr">template_types:</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-string">cta</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-string">hero</span></code></pre>
-										<p>Builds:</p>
-										<pre><code class="language-graphql">type MyPageSectionsBlocksField {
-  name: String
-  label: String
-  component: String
-  templates: SomeTemplateSectionsBlocksFieldTemplates
-}
-type SomeTemplateSectionsBlocksFieldTemplates {
-  sectionTemplateFields: SectionForm
-}
-type SectionForm {
-  fields: [MyPageSectionFormFields]
-}
-union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
-									</div>
 									<h4 class="tsd-parameters-title">Parameters</h4>
 									<ul class="tsd-parameters">
 										<li>
@@ -256,7 +377,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.build.initialvalue" class="tsd-anchor"></a>
+							<a name="blocks-1.build-1.initialvalue" class="tsd-anchor"></a>
 							<h3>initial<wbr>Value</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">initial<wbr>Value<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -265,7 +386,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L99">packages/gql/src/fields/blocks/index.ts:99</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L203">packages/gql/src/fields/blocks/index.ts:203</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -287,7 +408,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.build.input" class="tsd-anchor"></a>
+							<a name="blocks-1.build-1.input" class="tsd-anchor"></a>
 							<h3>input</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">input<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -296,7 +417,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L125">packages/gql/src/fields/blocks/index.ts:125</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L229">packages/gql/src/fields/blocks/index.ts:229</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -318,7 +439,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.build.value" class="tsd-anchor"></a>
+							<a name="blocks-1.build-1.value" class="tsd-anchor"></a>
 							<h3>value</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>cache<span class="tsd-signature-symbol">: </span><a href="_cache_index_.html#cache" class="tsd-signature-type">Cache</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLList</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -327,7 +448,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L115">packages/gql/src/fields/blocks/index.ts:115</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L219">packages/gql/src/fields/blocks/index.ts:219</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -350,16 +471,16 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 						</section>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
-						<a name="blocks.resolve" class="tsd-anchor"></a>
+						<a name="blocks-1.resolve-1" class="tsd-anchor"></a>
 						<h3>resolve</h3>
 						<div class="tsd-signature tsd-kind-icon">resolve<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L154">packages/gql/src/fields/blocks/index.ts:154</a></li>
+								<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L258">packages/gql/src/fields/blocks/index.ts:258</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.resolve.field-1" class="tsd-anchor"></a>
+							<a name="blocks-1.resolve-1.field-2" class="tsd-anchor"></a>
 							<h3>field</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">field<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_fields_blocks_index_.html#tinablocksfield" class="tsd-signature-type">TinaBlocksField</a><span class="tsd-signature-symbol">&gt;</span></li>
@@ -368,41 +489,9 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L188">packages/gql/src/fields/blocks/index.ts:188</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L259">packages/gql/src/fields/blocks/index.ts:259</a></li>
 										</ul>
 									</aside>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>Resolves the values with their respective templates, specified by
-											the template key.</p>
-										</div>
-										<pre><code class="language-js"><span class="hljs-comment">// given</span>
-{
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;sections&#x27;</span>,
-  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;blocks&#x27;</span>,
-  <span class="hljs-attr">label</span>: <span class="hljs-string">&#x27;Sections&#x27;</span>,
-  <span class="hljs-attr">template_types</span>: [ <span class="hljs-string">&#x27;section&#x27;</span> ]
-}
-
-<span class="hljs-comment">// expect</span>
-{
-  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;sections&#x27;</span>,
-  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;blocks&#x27;</span>,
-  <span class="hljs-attr">label</span>: <span class="hljs-string">&#x27;Sections&#x27;</span>,
-  <span class="hljs-attr">template_types</span>: [ <span class="hljs-string">&#x27;section&#x27;</span> ],
-  <span class="hljs-attr">component</span>: <span class="hljs-string">&#x27;blocks&#x27;</span>,
-  <span class="hljs-attr">templates</span>: {
-    <span class="hljs-attr">sectionTemplateFields</span>: {
-      <span class="hljs-attr">__typename</span>: <span class="hljs-string">&#x27;Section&#x27;</span>,
-      <span class="hljs-attr">label</span>: <span class="hljs-string">&#x27;Section&#x27;</span>,
-      <span class="hljs-attr">hide_body</span>: <span class="hljs-literal">false</span>,
-      <span class="hljs-attr">fields</span>: [<span class="hljs-built_in">Array</span>]
-    }
-  },
-  <span class="hljs-attr">__typename</span>: <span class="hljs-string">&#x27;BlocksFormField&#x27;</span>
-}
-</code></pre>
-									</div>
 									<h4 class="tsd-parameters-title">Parameters</h4>
 									<ul class="tsd-parameters">
 										<li>
@@ -422,7 +511,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.resolve.initialvalue-1" class="tsd-anchor"></a>
+							<a name="blocks-1.resolve-1.initialvalue-1" class="tsd-anchor"></a>
 							<h3>initial<wbr>Value</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">initial<wbr>Value<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -431,7 +520,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L216">packages/gql/src/fields/blocks/index.ts:216</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L287">packages/gql/src/fields/blocks/index.ts:287</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +545,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.resolve.input-1" class="tsd-anchor"></a>
+							<a name="blocks-1.resolve-1.input-1" class="tsd-anchor"></a>
 							<h3>input</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">input<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">{ </span>_template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -465,7 +554,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L267">packages/gql/src/fields/blocks/index.ts:267</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L338">packages/gql/src/fields/blocks/index.ts:338</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -490,7 +579,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 							</ul>
 						</section>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
-							<a name="blocks.resolve.value-1" class="tsd-anchor"></a>
+							<a name="blocks-1.resolve-1.value-1" class="tsd-anchor"></a>
 							<h3>value</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
 								<li class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>datasource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_datasources_datasource_.datasource.html" class="tsd-signature-type">DataSource</a><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><a href="_fields_blocks_index_.html#blocksfield" class="tsd-signature-type">BlocksField</a><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
@@ -499,7 +588,7 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/f018e68/packages/gql/src/fields/blocks/index.ts#L242">packages/gql/src/fields/blocks/index.ts:242</a></li>
+											<li>Defined in <a href="https://github.com/forestryio/graphql-demo/blob/24efc9c/packages/gql/src/fields/blocks/index.ts#L313">packages/gql/src/fields/blocks/index.ts:313</a></li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -591,14 +680,41 @@ union MyPageSectionFormFields = CtaFormFields | HeroFormFields</code></pre>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_fields_blocks_index_.blocks.html" class="tsd-kind-icon">Blocks</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_fields_blocks_index_.build.html" class="tsd-kind-icon">Build</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_fields_blocks_index_.resolve.html" class="tsd-kind-icon">Resolve</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#blockvalue" class="tsd-kind-icon">Block<wbr>Value</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_fields_blocks_index_.html#blocksfield" class="tsd-kind-icon">Blocks<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#buildargs" class="tsd-kind-icon">Build<wbr>Args</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_fields_blocks_index_.html#tinablocksfield" class="tsd-kind-icon">Tina<wbr>Blocks<wbr>Field</a>
 					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#assertisarray" class="tsd-kind-icon">assert<wbr>IsArray</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#assertisblock" class="tsd-kind-icon">assert<wbr>IsBlock</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#assertisblockinput" class="tsd-kind-icon">assert<wbr>IsBlock<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="_fields_blocks_index_.html#assertisobject" class="tsd-kind-icon">assert<wbr>IsObject</a>
+					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
-						<a href="_fields_blocks_index_.html#blocks" class="tsd-kind-icon">blocks</a>
+						<a href="_fields_blocks_index_.html#blocks-1" class="tsd-kind-icon">blocks</a>
 					</li>
 				</ul>
 			</nav>
