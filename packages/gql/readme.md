@@ -149,3 +149,7 @@ In the example above the `text.resolve.value` would return "Hello, World!", and 
 Input resolvers don't do much (except in the case of blocks described later), since the GraphQL mutataion payload has all the necessary information, we just pass the value into these resolvers as a runtime type-check. In the future, this is where field-level validations can take place.
 
 **Caveats with `blocks`**: `blocks` values are an array of unlike objects, meaning in order to enforce type-safe requests coming into the server, we need to use a somewhat awkward pattern ([read more about the trade-offs here](https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md#-5-one-of-tagged-union)) which we sort of need to rearrange once it hits the server.
+
+## Architecture Diagram
+
+<iframe style="border:none" width="700" height="350" src="https://whimsical.com/embed/Kh28ULaAYKPRpeCLm3VG63@2Ux7TurymMtzhxz2sLxX"></iframe>
