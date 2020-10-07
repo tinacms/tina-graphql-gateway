@@ -10,10 +10,65 @@ import { fieldGroupList } from "../fields/field-group-list";
 
 import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
-import type { TemplateData } from "../types";
+import type { TemplateData, TinaTemplateData } from "../types";
 import type { GraphQLResolveInfo } from "graphql";
 
-export const resolver = {
+export interface Resolver {
+  schema: (
+    source: FieldResolverSource,
+    args: FieldResolverArgs,
+    context: ContextT,
+    info: GraphQLResolveInfo
+  ) => Promise<unknown>;
+  /**
+   * Retrieves the top-level document and provides the __typename so it can be resolved automatically
+   * by the GraphQL type resolver
+   */
+  documentObject: (args: {
+    args: { path: string };
+    datasource: DataSource;
+  }) => Promise<unknown>;
+  /**
+   * Given a template and document data, return the resolved data along with the _template and __typename
+   * so it can be resolved by the GraphQL type resolver
+   */
+  documentDataObject: (
+    datasource: DataSource,
+    resolvedTemplate: TemplateData,
+    data: DocumentData
+  ) => Promise<unknown>;
+  /**
+   * Given a template and document data, return the appropriate initialValues along with the _template and __typename
+   */
+  documentInitialValuesObject: (
+    datasource: DataSource,
+    resolvedTemplate: TemplateData,
+    data: DocumentData
+  ) => Promise<{
+    __typename: string;
+    _template: string;
+    [key: string]: unknown;
+  }>;
+  documentFormObject: (
+    datasource: DataSource,
+    template: TemplateData
+  ) => Promise<TinaTemplateData>;
+  documentDataInputObject: (args: {
+    data: { [key: string]: unknown };
+    template: TemplateData;
+    datasource: DataSource;
+  }) => Promise<{ _template: string } & object>;
+  documentInputObject: (params: {
+    args: { path: string };
+    params: object;
+    datasource: DataSource;
+  }) => Promise<boolean>;
+}
+
+/**
+ * @internal this is redundant in documentation
+ */
+export const resolver: Resolver = {
   schema: async (
     source: FieldResolverSource,
     args: FieldResolverArgs,
@@ -70,10 +125,6 @@ export const resolver = {
       return value;
     }
   },
-  /**
-   * Retrieves the top-level document and provides the __typename so it can be resolved automatically
-   * by the GraphQL type resolver
-   */
   documentObject: async ({
     args,
     datasource,
@@ -97,10 +148,6 @@ export const resolver = {
       ),
     };
   },
-  /**
-   * Given a template and document data, return the resolved data along with the _template and __typename
-   * so it can be resolved by the GraphQL type resolver
-   */
   documentDataObject: async (
     datasource: DataSource,
     resolvedTemplate: TemplateData,
@@ -120,9 +167,6 @@ export const resolver = {
       ...accum,
     };
   },
-  /**
-   * Given a template and document data, return the appropriate initialValues along with the _template and __typename
-   */
   documentInitialValuesObject: async (
     datasource: DataSource,
     resolvedTemplate: TemplateData,
@@ -265,7 +309,7 @@ const dataValue = async (
       });
   }
 };
-export const dataField = async (datasource: DataSource, field: Field) => {
+const dataField = async (datasource: DataSource, field: Field) => {
   switch (field.type) {
     case "text":
       return await text.resolve.field({ field });
