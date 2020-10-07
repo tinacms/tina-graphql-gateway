@@ -25,7 +25,7 @@ export const fieldGroup = {
             label: { type: GraphQLString },
             component: { type: GraphQLString },
             fields: {
-              type: await builder._documentFormFieldsUnion(cache, field),
+              type: await builder.documentFormFieldsUnion(cache, field),
             },
           },
         })
