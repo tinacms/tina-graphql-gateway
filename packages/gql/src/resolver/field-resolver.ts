@@ -280,7 +280,7 @@ export const resolver: Resolver = {
     data: DocumentData
   ) => {
     const accum: { [key: string]: unknown } = {};
-    const { _template, ...rest } = data;
+    const { template, ...rest } = data;
     await Promise.all(
       Object.keys(rest).map(async (key) => {
         const field = findField(resolvedTemplate.fields, key);
@@ -299,8 +299,11 @@ export const resolver: Resolver = {
     data: DocumentData
   ) => {
     const accum: { [key: string]: unknown } = {};
+
+    const { _template, ...rest } = data;
+
     await Promise.all(
-      Object.keys(data).map(async (key) => {
+      Object.keys(rest).map(async (key) => {
         const field = findField(resolvedTemplate.fields, key);
         return (accum[key] = await dataInitialValuesField(
           datasource,
@@ -377,7 +380,6 @@ export const resolver: Resolver = {
       data: value,
       content: "", // TODO: Implement me
     };
-    console.log(JSON.stringify(payload, null, 2));
     await datasource.updateDocument({ path: args.path, params: payload });
 
     return true;
@@ -550,4 +552,5 @@ function assertIsDocumentInputArgs(
 
 type DocumentData = {
   [key: string]: unknown;
+  template: string;
 };

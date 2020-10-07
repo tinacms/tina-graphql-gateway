@@ -31,7 +31,7 @@ export interface DataSource {
   getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
   getTemplateForDocument: ({ path }: DocumentArgs) => Promise<TemplateData>;
   getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
-  getTemplate: ({ slug }: { slug: string }) => Promise<TemplateData>;
+  getTemplate: (slug: string) => Promise<TemplateData>;
   /**
    * `getTemplatesForSection`
    *

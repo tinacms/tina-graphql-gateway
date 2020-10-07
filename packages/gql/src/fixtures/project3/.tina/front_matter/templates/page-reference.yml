@@ -1,0 +1,21 @@
+---
+label: Page Reference
+hide_body: true
+fields:
+  - name: description
+    type: textarea
+    default: ""
+    config:
+      required: false
+      wysiwyg: true
+      schema:
+        format: markdown
+    label: Description
+  - name: page
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: pages
+    label: Page

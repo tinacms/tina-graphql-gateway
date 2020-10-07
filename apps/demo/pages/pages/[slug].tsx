@@ -22,7 +22,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  console.log(props);
   if (!props.response) {
     return <div />;
   }

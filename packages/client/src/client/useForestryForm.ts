@@ -29,6 +29,7 @@ export function useForestryForm<
       cms.api.forestry.updateContent({
         path: path,
         payload: values,
+        form: data.document.form,
       });
     },
     ...customFormConfig,

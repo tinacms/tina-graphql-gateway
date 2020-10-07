@@ -358,9 +358,10 @@ export const builder: Builder = {
     return schema;
   },
   documentUnion: async ({ cache, section }) => {
+    const name = `${section ? section : ""}DocumentUnion`;
     return cache.build(
       new GraphQLUnionType({
-        name: `${section ? section : ""}DocumentUnion`,
+        name,
         types: await Promise.all(
           (await cache.datasource.getTemplatesForSection(section)).map(
             async (template) => await builder.documentObject(cache, template)

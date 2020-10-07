@@ -2,6 +2,8 @@ import fs from "fs";
 import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
+import { slugify } from "../util";
+
 import { byTypeWorks } from "../types";
 import { FieldGroupField } from "../fields/field-group";
 import { FieldGroupListField } from "../fields/field-group-list";
@@ -28,31 +30,40 @@ export class FileSystemManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (section?: string) => {
-    const templates = await this.getTemplatesForSection(section);
+  getDocumentsForSection = async (sectionSlug?: string) => {
+    const templates = await this.getTemplatesForSection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
-  getTemplates = async (templates: string[]) =>
+  getTemplates = async (templateSlugs: string[]) =>
     await Promise.all(
-      templates.map(
-        async (template) => await this.getTemplate({ slug: template })
+      templateSlugs.map(
+        async (templateSlug) => await this.getTemplate(templateSlug)
       )
     );
-  getTemplatesForSection = async (section?: string) => {
+  getSettingsData = async () => {
     const { data } = await readFile<Settings>(
       p.join(this.rootPath, ".tina/settings.yml")
     );
 
+    return data;
+  };
+  getTemplatesForSection = async (section?: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections.map((section) => {
+      return {
+        ...section,
+        slug: slugify(section.label),
+      };
+    });
+
     const templates = section
-      ? data.sections
-          .filter(byTypeWorks("directory"))
-          .find((templateSection) => {
-            const sectionSlug = _.lowerCase(_.kebabCase(templateSection.label));
-            return sectionSlug === section;
-          })?.templates
+      ? sections.filter(byTypeWorks("directory")).find((templateSection) => {
+          return templateSection.slug === section;
+        })?.templates
       : _.flatten(
-          data.sections
+          sections
             .filter(byTypeWorks("directory"))
             .map(({ templates }) => templates)
         );
@@ -106,7 +117,7 @@ export class FileSystemManager implements DataSource {
 
     return namespaceFields(template);
   };
-  getTemplate = async ({ slug }: { slug: string }) => {
+  getTemplate = async (slug: string) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const templates = await fs.readdirSync(fullPath);
     const template = templates.find((templateBasename) => {
