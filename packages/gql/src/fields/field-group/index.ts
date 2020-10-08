@@ -89,7 +89,11 @@ export const fieldGroup = {
       value: unknown;
     }) => {
       assertIsData(value);
-      return await resolver.documentDataObject(datasource, field, value);
+      return await resolver.documentInitialValuesObject(
+        datasource,
+        field,
+        value
+      );
     },
     value: async ({
       datasource,

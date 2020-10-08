@@ -1,8 +1,10 @@
+import fs from "fs";
 import path from "path";
 import { builder } from ".";
 import { cacheInit } from "../cache";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql, assertSchema } from "../fields/test-util";
+import { printSchema } from "graphql";
 
 describe("Schema builder", () => {
   test("does it", async () => {
@@ -12,238 +14,243 @@ describe("Schema builder", () => {
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
 
-    assertSchema(schema).matches(gql`
-      type Query {
-        document(path: String): DocumentUnion
-      }
+    await fs.writeFileSync(
+      path.join(projectRoot, "refactor.graphql"),
+      printSchema(schema)
+    );
 
-      union DocumentUnion = Post | Author
+    // assertSchema(schema).matches(gql`
+    //   type Query {
+    //     document(path: String): DocumentUnion
+    //   }
 
-      type Post {
-        path: String
-        form: PostForm
-        data: PostData
-        initialValues: PostInitialValues
-      }
+    //   union DocumentUnion = Post | Author
 
-      type PostForm {
-        label: String
-        _template: String
-        fields: [PostFormFields]
-      }
+    //   type Post {
+    //     path: String
+    //     form: PostForm
+    //     data: PostData
+    //     initialValues: PostInitialValues
+    //   }
 
-      union PostFormFields =
-          TextareaField
-        | SelectField
-        | PostSectionsBlocksField
+    //   type PostForm {
+    //     label: String
+    //     _template: String
+    //     fields: [PostFormFields]
+    //   }
 
-      type TextareaField {
-        name: String
-        label: String
-        component: String
-        description: String
-      }
+    //   union PostFormFields =
+    //       TextareaField
+    //     | SelectField
+    //     | PostSectionsBlocksField
 
-      type SelectField {
-        name: String
-        label: String
-        component: String
-        options: [String]
-      }
+    //   type TextareaField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     description: String
+    //   }
 
-      type PostSectionsBlocksField {
-        name: String
-        label: String
-        component: String
-        templates: PostSectionsBlocksFieldTemplates
-      }
+    //   type SelectField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     options: [String]
+    //   }
 
-      type PostSectionsBlocksFieldTemplates {
-        Section: SectionForm
-      }
+    //   type PostSectionsBlocksField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     templates: PostSectionsBlocksFieldTemplates
+    //   }
 
-      type SectionForm {
-        label: String
-        _template: String
-        fields: [SectionFormFields]
-      }
+    //   type PostSectionsBlocksFieldTemplates {
+    //     Section: SectionForm
+    //   }
 
-      union SectionFormFields = TextareaField | SectionCtaGroupField | ListField
+    //   type SectionForm {
+    //     label: String
+    //     _template: String
+    //     fields: [SectionFormFields]
+    //   }
 
-      type SectionCtaGroupField {
-        name: String
-        label: String
-        component: String
-        fields: [SectionCtaFormFields]
-      }
+    //   union SectionFormFields = TextareaField | SectionCtaGroupField | ListField
 
-      union SectionCtaFormFields = TextareaField
+    //   type SectionCtaGroupField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     fields: [SectionCtaFormFields]
+    //   }
 
-      type ListField {
-        name: String
-        label: String
-        component: String
-        field: ListFormFieldItemField
-      }
+    //   union SectionCtaFormFields = TextareaField
 
-      union ListFormFieldItemField = SelectField | TextField
+    //   type ListField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     field: ListFormFieldItemField
+    //   }
 
-      type TextField {
-        component: String
-      }
+    //   union ListFormFieldItemField = SelectField | TextField
 
-      type PostData {
-        title: String
-        author: AuthorDocument
-        sections: [sectionDataUnion]
-      }
+    //   type TextField {
+    //     component: String
+    //   }
 
-      type AuthorDocument {
-        document: authorsDocumentUnion
-      }
+    //   type PostData {
+    //     title: String
+    //     author: AuthorDocument
+    //     sections: [sectionDataUnion]
+    //   }
 
-      union authorsDocumentUnion = Author
+    //   type AuthorDocument {
+    //     document: authorsDocumentUnion
+    //   }
 
-      type Author {
-        path: String
-        form: AuthorForm
-        data: AuthorData
-        initialValues: AuthorInitialValues
-      }
+    //   union authorsDocumentUnion = Author
 
-      type AuthorForm {
-        label: String
-        _template: String
-        fields: [AuthorFormFields]
-      }
+    //   type Author {
+    //     path: String
+    //     form: AuthorForm
+    //     data: AuthorData
+    //     initialValues: AuthorInitialValues
+    //   }
 
-      union AuthorFormFields =
-          TextareaField
-        | SelectField
-        | ListField
-        | AuthorAccoladesGroupListField
+    //   type AuthorForm {
+    //     label: String
+    //     _template: String
+    //     fields: [AuthorFormFields]
+    //   }
 
-      type AuthorAccoladesGroupListField {
-        name: String
-        label: String
-        component: String
-        fields: [AuthorAccoladesFormFields]
-      }
+    //   union AuthorFormFields =
+    //       TextareaField
+    //     | SelectField
+    //     | ListField
+    //     | AuthorAccoladesGroupListField
 
-      union AuthorAccoladesFormFields = TextareaField
+    //   type AuthorAccoladesGroupListField {
+    //     name: String
+    //     label: String
+    //     component: String
+    //     fields: [AuthorAccoladesFormFields]
+    //   }
 
-      type AuthorData {
-        name: String
-        role: String
-        anecdotes: [String]
-        accolades: [AccoladesData]
-      }
+    //   union AuthorAccoladesFormFields = TextareaField
 
-      type AccoladesData {
-        figure: String
-        description: String
-      }
+    //   type AuthorData {
+    //     name: String
+    //     role: String
+    //     anecdotes: [String]
+    //     accolades: [AccoladesData]
+    //   }
 
-      type AuthorInitialValues {
-        _template: String
-        name: String
-        role: String
-        anecdotes: [String]
-        accolades: [AccoladesData]
-      }
+    //   type AccoladesData {
+    //     figure: String
+    //     description: String
+    //   }
 
-      union sectionDataUnion = SectionData
+    //   type AuthorInitialValues {
+    //     _template: String
+    //     name: String
+    //     role: String
+    //     anecdotes: [String]
+    //     accolades: [AccoladesData]
+    //   }
 
-      type SectionData {
-        description: String
-        cta: CtaData
-        authors: AuthorsDocuments
-      }
+    //   union sectionDataUnion = SectionData
 
-      type CtaData {
-        header: String
-      }
+    //   type SectionData {
+    //     description: String
+    //     cta: CtaData
+    //     authors: AuthorsDocuments
+    //   }
 
-      type AuthorsDocuments {
-        documents: [authorsDocumentUnion]
-      }
+    //   type CtaData {
+    //     header: String
+    //   }
 
-      type PostInitialValues {
-        _template: String
-        title: String
-        author: String
-        sections: [sectionInitialValuesUnion]
-      }
+    //   type AuthorsDocuments {
+    //     documents: [authorsDocumentUnion]
+    //   }
 
-      union sectionInitialValuesUnion = SectionInitialValues
+    //   type PostInitialValues {
+    //     _template: String
+    //     title: String
+    //     author: String
+    //     sections: [sectionInitialValuesUnion]
+    //   }
 
-      type SectionInitialValues {
-        _template: String
-        description: String
-        authors: [String]
-        cta: CtaInitialValues
-      }
+    //   union sectionInitialValuesUnion = SectionInitialValues
 
-      type CtaInitialValues {
-        _template: String
-        header: String
-      }
+    //   type SectionInitialValues {
+    //     _template: String
+    //     description: String
+    //     authors: [String]
+    //     cta: CtaInitialValues
+    //   }
 
-      type Mutation {
-        updateDocument(path: String!, params: DocumentInput): DocumentUnion
-      }
+    //   type CtaInitialValues {
+    //     _template: String
+    //     header: String
+    //   }
 
-      input DocumentInput {
-        PostInput: PostInput
-        AuthorInput: AuthorInput
-      }
+    //   type Mutation {
+    //     updateDocument(path: String!, params: DocumentInput): DocumentUnion
+    //   }
 
-      input PostInput {
-        content: String
-        data: PostInputData
-      }
+    //   input DocumentInput {
+    //     PostInput: PostInput
+    //     AuthorInput: AuthorInput
+    //   }
 
-      input PostInputData {
-        _template: String
-        title: String
-        author: String
-        sections: [PostSectionsBlocksInput]
-      }
+    //   input PostInput {
+    //     content: String
+    //     data: PostInputData
+    //   }
 
-      input PostSectionsBlocksInput {
-        SectionInputData: SectionInputData
-      }
+    //   input PostInputData {
+    //     _template: String
+    //     title: String
+    //     author: String
+    //     sections: [PostSectionsBlocksInput]
+    //   }
 
-      input SectionInputData {
-        _template: String
-        description: String
-        authors: [String]
-        cta: CtaInputData
-      }
+    //   input PostSectionsBlocksInput {
+    //     SectionInputData: SectionInputData
+    //   }
 
-      input CtaInputData {
-        _template: String
-        header: String
-      }
+    //   input SectionInputData {
+    //     _template: String
+    //     description: String
+    //     authors: [String]
+    //     cta: CtaInputData
+    //   }
 
-      input AuthorInput {
-        content: String
-        data: AuthorInputData
-      }
+    //   input CtaInputData {
+    //     _template: String
+    //     header: String
+    //   }
 
-      input AuthorInputData {
-        _template: String
-        name: String
-        role: String
-        anecdotes: [String]
-        accolades: [AccoladesInputData]
-      }
+    //   input AuthorInput {
+    //     content: String
+    //     data: AuthorInputData
+    //   }
 
-      input AccoladesInputData {
-        _template: String
-        figure: String
-        description: String
-      }
-    `);
+    //   input AuthorInputData {
+    //     _template: String
+    //     name: String
+    //     role: String
+    //     anecdotes: [String]
+    //     accolades: [AccoladesInputData]
+    //   }
+
+    //   input AccoladesInputData {
+    //     _template: String
+    //     figure: String
+    //     description: String
+    //   }
+    // `);
   });
 });
