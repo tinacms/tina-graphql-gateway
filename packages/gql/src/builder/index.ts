@@ -50,7 +50,8 @@ export interface Builder {
    */
   documentDataInputObject: (
     cache: Cache,
-    template: TemplateData
+    template: TemplateData,
+    returnTemplate?: boolean
   ) => Promise<GraphQLInputObjectType>;
   /**
    * Similar to documentObject except it only deals with unions on the data layer
@@ -70,7 +71,8 @@ export interface Builder {
    */
   documentDataObject: (
     cache: Cache,
-    template: TemplateData
+    template: TemplateData,
+    returnTemplate?: boolean
   ) => Promise<GraphQLObjectType<any, any>>;
   /**
    * Similar to {@link documentUnion} except it only deals with unions on the data layer.
@@ -87,6 +89,7 @@ export interface Builder {
   documentDataUnion: (args: {
     cache: Cache;
     templates: string[];
+    returnTemplate: boolean;
   }) => Promise<GraphQLUnionType>;
   /**
    * A form's fields is a union of different field types
@@ -140,7 +143,8 @@ export interface Builder {
    */
   documentInitialValuesObject: (
     cache: Cache,
-    template: TemplateData
+    template: TemplateData,
+    returnTemplate?: boolean
   ) => Promise<GraphQLObjectType<any, any>>;
   /**
    * The input values for the document. See {@link documentDataInputObject} for the data input portion.
@@ -273,6 +277,7 @@ export interface Builder {
   initialValuesUnion: (args: {
     cache: Cache;
     templates: string[];
+    returnTemplate?: boolean;
   }) => Promise<GraphQLUnionType>;
   /**
    * The entrypoint to the build process. It's likely we'll have many more query fields
@@ -385,17 +390,12 @@ export const builder: Builder = {
       })
     );
   },
-  documentDataUnion: async ({
-    cache,
-    templates,
-  }: {
-    cache: Cache;
-    templates: string[];
-  }) => {
+  documentDataUnion: async ({ cache, templates, returnTemplate }) => {
     const templateObjects = await cache.datasource.getTemplates(templates);
     const types = await Promise.all(
       templateObjects.map(
-        async (template) => await builder.documentDataObject(cache, template)
+        async (template) =>
+          await builder.documentDataObject(cache, template, returnTemplate)
       )
     );
     return cache.build(
@@ -405,7 +405,7 @@ export const builder: Builder = {
       })
     );
   },
-  documentDataObject: async (cache: Cache, template: TemplateData) => {
+  documentDataObject: async (cache, template, returnTemplate) => {
     const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
     await Promise.all(
@@ -413,6 +413,11 @@ export const builder: Builder = {
         fields[field.name] = await buildTemplateDataField(cache, field);
       })
     );
+
+    if (returnTemplate) {
+      fields.template = { type: GraphQLString };
+    }
+
     return cache.build(
       new GraphQLObjectType({
         name: `${template.label}Data`,
@@ -426,7 +431,6 @@ export const builder: Builder = {
         name: `${template.label}Form`,
         fields: {
           label: { type: GraphQLString },
-          _template: { type: GraphQLString },
           fields: {
             type: await builder.documentFormFieldsUnion(cache, template),
           },
@@ -434,7 +438,7 @@ export const builder: Builder = {
       })
     );
   },
-  documentInitialValuesObject: async (cache: Cache, template: TemplateData) => {
+  documentInitialValuesObject: async (cache, template, returnTemplate) => {
     const fields: GraphQLFieldConfigMap<any, ContextT> = {};
 
     await Promise.all(
@@ -442,28 +446,30 @@ export const builder: Builder = {
         fields[field.name] = await buildTemplateInitialValueField(cache, field);
       })
     );
+
+    if (returnTemplate) {
+      fields._template = { type: GraphQLString };
+    }
+
     return cache.build(
       new GraphQLObjectType({
         name: `${template.label}InitialValues`,
         fields: {
-          _template: { type: GraphQLString },
           ...fields,
         },
       })
     );
   },
-  initialValuesUnion: async ({
-    cache,
-    templates,
-  }: {
-    cache: Cache;
-    templates: string[];
-  }) => {
+  initialValuesUnion: async ({ cache, templates, returnTemplate }) => {
     const templateObjects = await cache.datasource.getTemplates(templates);
     const types = await Promise.all(
       templateObjects.map(
         async (template) =>
-          await builder.documentInitialValuesObject(cache, template)
+          await builder.documentInitialValuesObject(
+            cache,
+            template,
+            returnTemplate
+          )
       )
     );
     return cache.build(
@@ -473,7 +479,7 @@ export const builder: Builder = {
       })
     );
   },
-  documentDataInputObject: async (cache: Cache, template: TemplateData) => {
+  documentDataInputObject: async (cache, template, returnTemplate) => {
     const fields: GraphQLInputFieldConfigMap = {};
 
     await Promise.all(
@@ -481,13 +487,13 @@ export const builder: Builder = {
         fields[field.name] = await buildTemplateInputDataField(cache, field);
       })
     );
+    if (returnTemplate) {
+      fields.template = { type: GraphQLString };
+    }
     return cache.build(
       new GraphQLInputObjectType({
         name: `${template.label}InputData`,
-        fields: {
-          _template: { type: GraphQLString },
-          ...fields,
-        },
+        fields,
       })
     );
   },

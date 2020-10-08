@@ -1,4 +1,5 @@
 import _ from "lodash";
+import * as yup from "yup";
 
 import { text } from "../fields/text";
 import { list } from "../fields/list";
@@ -31,7 +32,9 @@ export interface Resolver {
     data: { [key: string]: unknown };
     template: TemplateData;
     datasource: DataSource;
-  }) => Promise<{ _template: string } & object>;
+  }) => Promise<{
+    [key: string]: unknown;
+  }>;
   /**
    * Given a template and document data, return the resolved data along with the `_template` and `__typename`
    * so it can be resolved by the GraphQL type resolver
@@ -139,7 +142,7 @@ export interface Resolver {
     data: DocumentData
   ) => Promise<{
     __typename: string;
-    _template: string;
+    _template?: string;
     [key: string]: unknown;
   }>;
   /**
@@ -218,7 +221,7 @@ export const resolver: Resolver = {
     if (!value) {
       return null;
     }
-    if (isResource(value)) {
+    if (isDocumentField(value)) {
       switch (value._resolver_kind) {
         case "_initial":
           if (!args.path || typeof args.path !== "string") {
@@ -251,13 +254,7 @@ export const resolver: Resolver = {
       return value;
     }
   },
-  documentObject: async ({
-    args,
-    datasource,
-  }: {
-    args: { path: string };
-    datasource: DataSource;
-  }): Promise<unknown> => {
+  documentObject: async ({ args, datasource }) => {
     const { data } = await datasource.getData(args);
     const template = await datasource.getTemplateForDocument(args);
 
@@ -289,7 +286,6 @@ export const resolver: Resolver = {
     );
     return {
       __typename: `${resolvedTemplate.label}Data`,
-      _template: resolvedTemplate.label,
       ...accum,
     };
   },
@@ -300,7 +296,7 @@ export const resolver: Resolver = {
   ) => {
     const accum: { [key: string]: unknown } = {};
 
-    const { _template, ...rest } = data;
+    const { template, ...rest } = data;
 
     await Promise.all(
       Object.keys(rest).map(async (key) => {
@@ -314,7 +310,7 @@ export const resolver: Resolver = {
     );
     return {
       __typename: `${resolvedTemplate.label}InitialValues`,
-      _template: resolvedTemplate.label,
+      _template: data.template,
       ...accum,
     };
   },
@@ -324,22 +320,12 @@ export const resolver: Resolver = {
   ) => {
     return {
       ...template,
-      // FIXME: this should be slug but we should store it on the template definition
-      _template: template.label,
       fields: await Promise.all(
         template.fields.map(async (field) => dataField(datasource, field))
       ),
     };
   },
-  documentDataInputObject: async ({
-    data,
-    template,
-    datasource,
-  }: {
-    data: { [key: string]: unknown };
-    template: TemplateData;
-    datasource: DataSource;
-  }): Promise<{ _template: string } & object> => {
+  documentDataInputObject: async ({ data, template, datasource }) => {
     const accum: { [key: string]: unknown } = {};
     await Promise.all(
       template.fields.map(async (field) => {
@@ -351,19 +337,12 @@ export const resolver: Resolver = {
         });
       })
     );
-    return {
-      _template: template.label,
-      ...accum,
-    };
+    return accum;
   },
   documentInputObject: async ({
     args,
     params,
     datasource,
-  }: {
-    args: { path: string };
-    params: object;
-    datasource: DataSource;
   }): Promise<boolean> => {
     const template = await datasource.getTemplateForDocument(args);
 
@@ -529,7 +508,7 @@ type FieldResolverSource = {
   [key: string]: InitialSource | unknown;
 };
 
-function isResource(
+function isDocumentField(
   item: unknown | FieldResolverSource
 ): item is InitialSource {
   if (typeof item === "object") {
@@ -552,5 +531,6 @@ function assertIsDocumentInputArgs(
 
 type DocumentData = {
   [key: string]: unknown;
-  template: string;
+  /** Only required for data coming from block values */
+  template?: string;
 };
