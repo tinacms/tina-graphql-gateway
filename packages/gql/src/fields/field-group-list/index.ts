@@ -120,7 +120,7 @@ export const fieldGroupList = {
       return await Promise.all(
         value.map(
           async (v: any) =>
-            await resolver.documentDataObject(datasource, field, v)
+            await resolver.documentInitialValuesObject(datasource, field, v)
         )
       );
     },

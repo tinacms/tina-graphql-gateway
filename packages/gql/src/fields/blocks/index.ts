@@ -342,11 +342,12 @@ export const blocks: Blocks = {
         value.map(async (item) => {
           assertIsBlockInput(item);
           const data = Object.values(item)[0];
+          const { _template, ...rest } = data;
           const template = await datasource.getTemplate(
             _.lowerCase(data._template)
           );
           return await resolver.documentDataInputObject({
-            data,
+            rest,
             template,
             datasource,
           });

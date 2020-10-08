@@ -30,13 +30,20 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
       // Return an array of one value, tagged union pattern
       return [acc];
 
+    case "group":
+      const val = values[field.name];
+      // FIXME: this shouldn't be sent down for anything other than blocks
+      const { _template, ...rest } = val;
+
+      return rest;
+
     default:
       return values[field.name];
   }
 };
 
 export const handleData = (values, schema: { fields: Field[] }) => {
-  const accum: { [key: string]: any } = { _template: schema._template };
+  const accum: { [key: string]: any } = {};
   schema.fields.forEach((field) => {
     accum[field.name] = handleInner(values, field);
   });
@@ -101,7 +108,7 @@ export class ForestryClient {
     }`;
 
     const transformedPayload = transform({
-      _template: friendlyFMTName(template, { suffix: "field_config" }),
+      // _template: friendlyFMTName(template, { suffix: "field_config" }),
       data: payload,
     });
 
