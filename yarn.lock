@@ -2318,6 +2318,9 @@ __metadata:
   dependencies:
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-tools/schema": ^6.2.1
+    "@octokit/auth-app": ^2.6.0
+    "@octokit/graphql": ^4.5.6
+    "@octokit/rest": ^18.0.6
     "@tinacms/fields": ^0.29.0
     "@types/cors": ^2.8.7
     "@types/express": ^4.17.8
@@ -3681,6 +3684,142 @@ __metadata:
     "@nodelib/fs.scandir": 2.1.3
     fastq: ^1.6.0
   checksum: f4bffba16cc5d527fa594e120065e6d2376e274fb5df42cc744fcd28805fe23844590db74b20e102805280794208438b574e6e7fc25c6c245896909992a65e83
+  languageName: node
+  linkType: hard
+
+"@octokit/auth-app@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@octokit/auth-app@npm:2.6.0"
+  dependencies:
+    "@octokit/request": ^5.3.0
+    "@octokit/request-error": ^2.0.0
+    "@octokit/types": ^5.0.0
+    "@types/lru-cache": ^5.1.0
+    lru-cache: ^6.0.0
+    universal-github-app-jwt: ^1.0.1
+    universal-user-agent: ^6.0.0
+  checksum: 60c7081317a2ea0889b82ac719a146bfdb146d8807361bdc06494ec12ec39a8260b0d7226a81d277d2bcccd56e690ef14c8d876f550f087998545a6a09fee3e4
+  languageName: node
+  linkType: hard
+
+"@octokit/auth-token@npm:^2.4.0":
+  version: 2.4.2
+  resolution: "@octokit/auth-token@npm:2.4.2"
+  dependencies:
+    "@octokit/types": ^5.0.0
+  checksum: e3347630bbe4d22409879ac6aa166675410cef4fb0ac3ca734d2ab6fa49abf100b28d2de9b5ad347790686fd8d41897a21bbeb2d01f46d6f9ab0faf760f10b83
+  languageName: node
+  linkType: hard
+
+"@octokit/core@npm:^3.0.0":
+  version: 3.1.2
+  resolution: "@octokit/core@npm:3.1.2"
+  dependencies:
+    "@octokit/auth-token": ^2.4.0
+    "@octokit/graphql": ^4.3.1
+    "@octokit/request": ^5.4.0
+    "@octokit/types": ^5.0.0
+    before-after-hook: ^2.1.0
+    universal-user-agent: ^6.0.0
+  checksum: 7ab04fb132feeeec996fed02bf46eb6b5952672f343e65b90805462fadedafd1847148688483f5c7d66f31a29582b74e6133de2850a9c65d7aee05a4c9ad305f
+  languageName: node
+  linkType: hard
+
+"@octokit/endpoint@npm:^6.0.1":
+  version: 6.0.8
+  resolution: "@octokit/endpoint@npm:6.0.8"
+  dependencies:
+    "@octokit/types": ^5.0.0
+    is-plain-object: ^5.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 9aee14e175354942a04c1fc0e2361f73f3fb8251975bf5e556d8130c73670a784374c9d90a5f6a7954b5a78b947432d02bc6259ddda3b3eac3dfdcd3f81e1642
+  languageName: node
+  linkType: hard
+
+"@octokit/graphql@npm:^4.3.1, @octokit/graphql@npm:^4.5.6":
+  version: 4.5.6
+  resolution: "@octokit/graphql@npm:4.5.6"
+  dependencies:
+    "@octokit/request": ^5.3.0
+    "@octokit/types": ^5.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 22456d3ac8a3738748f2e0ad1fa1a516d0ca55dc319355fff18320f2aee59f2f657d9400b3ad59ef9c0271632b8f7f8070fcd737d3d004a07c4024649d928261
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-paginate-rest@npm:^2.2.0":
+  version: 2.4.0
+  resolution: "@octokit/plugin-paginate-rest@npm:2.4.0"
+  dependencies:
+    "@octokit/types": ^5.5.0
+  peerDependencies:
+    "@octokit/core": ">=2"
+  checksum: 547d66b14ef7e84cb66b8b2d0bff41d77db3b8749cdb32ada993cfd8bf409faf754b30627f3fd5c7538a1b6080f15e36a4465717b951bdef8eebc92a14964172
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-request-log@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@octokit/plugin-request-log@npm:1.0.0"
+  checksum: fa9e3bd25fb1ec89b28ac0fa11bfc70f4d105ec603c958444a83ff0a6e5076aa1cdc6279e6344e79cac118cf8a0eae26b277e57c9dc08b7ec12aab16d196c66f
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-rest-endpoint-methods@npm:4.2.0":
+  version: 4.2.0
+  resolution: "@octokit/plugin-rest-endpoint-methods@npm:4.2.0"
+  dependencies:
+    "@octokit/types": ^5.5.0
+    deprecation: ^2.3.1
+  checksum: 4ab0c2eb8da8fac1e9bd0b053f27c2b7e2b7bd15279bb91f7a52d591c874200641e395efaef23d3e549f6260c7f8fbcf25b6faea77389aefe62e479df845d720
+  languageName: node
+  linkType: hard
+
+"@octokit/request-error@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "@octokit/request-error@npm:2.0.2"
+  dependencies:
+    "@octokit/types": ^5.0.1
+    deprecation: ^2.0.0
+    once: ^1.4.0
+  checksum: 3ba45b317978025ae5e1afcdd288276e00c199088df7f6b21d0d954ff6f14419057aa5fdd0fd38a8cc2b1335ce41f1937ada3a67cd262af0d9cabcde265f2969
+  languageName: node
+  linkType: hard
+
+"@octokit/request@npm:^5.3.0, @octokit/request@npm:^5.4.0":
+  version: 5.4.9
+  resolution: "@octokit/request@npm:5.4.9"
+  dependencies:
+    "@octokit/endpoint": ^6.0.1
+    "@octokit/request-error": ^2.0.0
+    "@octokit/types": ^5.0.0
+    deprecation: ^2.0.0
+    is-plain-object: ^5.0.0
+    node-fetch: ^2.6.1
+    once: ^1.4.0
+    universal-user-agent: ^6.0.0
+  checksum: 0c62dac92368d49d22f96ea3e7d1ff5a1b75fa7b42b0cfe7273faee0371119a37e22b1fdca5d7dfff21e547cd908a22c46d234d01571eb9599e61ebe703c51bd
+  languageName: node
+  linkType: hard
+
+"@octokit/rest@npm:^18.0.6":
+  version: 18.0.6
+  resolution: "@octokit/rest@npm:18.0.6"
+  dependencies:
+    "@octokit/core": ^3.0.0
+    "@octokit/plugin-paginate-rest": ^2.2.0
+    "@octokit/plugin-request-log": ^1.0.0
+    "@octokit/plugin-rest-endpoint-methods": 4.2.0
+  checksum: 3353b232ff80619cf8c976338ee581e29910771931534e5b7937e2e96f541d5c9606d42c62742635f0229a6f51cd6785ed037a0389b51cd972cae1443659550b
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^5.0.0, @octokit/types@npm:^5.0.1, @octokit/types@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@octokit/types@npm:5.5.0"
+  dependencies:
+    "@types/node": ">= 8"
+  checksum: ef5429c90b6d8d4a8816611f39ae469f238f0de76085818081b6185c9a53c9dd8e1e024000c633f935920bdb8075c18cea6475bb2c1fc67aa5d0f50c8e104a12
   languageName: node
   linkType: hard
 
@@ -5074,6 +5213,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jsonwebtoken@npm:^8.3.3":
+  version: 8.5.0
+  resolution: "@types/jsonwebtoken@npm:8.5.0"
+  dependencies:
+    "@types/node": "*"
+  checksum: d1a6b28f826898bc4f5596d91705aa864419c4a5ca49215507260644af8ceff9edb6db1901a108207cfb22558d035655b55309f38b75fa081da01be9f5408b21
+  languageName: node
+  linkType: hard
+
 "@types/keyv@npm:*, @types/keyv@npm:^3.1.1":
   version: 3.1.1
   resolution: "@types/keyv@npm:3.1.1"
@@ -5170,6 +5318,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lru-cache@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@types/lru-cache@npm:5.1.0"
+  checksum: 55bffcbc9589163e5c02896fbd658a9e7878527c12197576e1e9b8db5b27744cfabd3dd522939835740eccd9bf348064f0e32a13b9b3019a81c8f69666499590
+  languageName: node
+  linkType: hard
+
 "@types/mime@npm:*":
   version: 2.0.3
   resolution: "@types/mime@npm:2.0.3"
@@ -5191,7 +5346,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^14.0.13, @types/node@npm:^14.0.5":
+"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:^14.0.13, @types/node@npm:^14.0.5":
   version: 14.0.27
   resolution: "@types/node@npm:14.0.27"
   checksum: 54ecf408eb94f44685e12ef395d8d9d5789cb9e209f171153b6b951272af6b8da099778d09d66454aa5d35ce246f3922ebd7476ed768bf3bd4267306c12a6703
@@ -7427,6 +7582,13 @@ __metadata:
     nan: 2.14.0
     node-pre-gyp: 0.14.0
   checksum: 6abea1a9754f14ec43c6fcd099edb19f8c58da01b5eb1bc450df9af8c07c72bb5cdbcce421098495d784600a8dee5304240822daddd063e8a55e01c97e3d8cf8
+  languageName: node
+  linkType: hard
+
+"before-after-hook@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "before-after-hook@npm:2.1.0"
+  checksum: 4df7ef0992ef7c5d8689a50bba12349789ab6da12203cd92c78dd5eb22e725694fd3602cff15ab85285a744c5d6106f3fbdc203f0cb6262cd3bebe42a763c3fd
   languageName: node
   linkType: hard
 
@@ -10210,6 +10372,13 @@ __metadata:
   version: 0.1.6
   resolution: "deprecated-decorator@npm:0.1.6"
   checksum: 35a358b89b0ca582266b5a2ce73e088658af576508463f1f608f0e7e08bf2fe3395651209a2d431d2c6901ebfafc483bc7318b8bb82d3b3585fcbd6e6c3d65de
+  languageName: node
+  linkType: hard
+
+"deprecation@npm:^2.0.0, deprecation@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "deprecation@npm:2.3.1"
+  checksum: 59343a0b927c5b6f67abb899fda68bf42b132c05ef1a985952c1e220c41fe5035b2d54a28c7c2a8b5239075d1dc25c83340242ada75f1c06c1bb047176f05f9b
   languageName: node
   linkType: hard
 
@@ -14820,6 +14989,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"is-plain-object@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "is-plain-object@npm:5.0.0"
+  checksum: 92bd87f095036fb6ef21fcba4e66734bba1457fc4abece5873bd1fba130c44fa8a4df64a2ef7841da638680af18e1ad2e5fac1095bed3578d0da0afc1f04bcf3
+  languageName: node
+  linkType: hard
+
 "is-potential-custom-element-name@npm:^1.0.0":
   version: 1.0.0
   resolution: "is-potential-custom-element-name@npm:1.0.0"
@@ -17307,6 +17483,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "lru-cache@npm:6.0.0"
+  dependencies:
+    yallist: ^4.0.0
+  checksum: b8b78353d2391c0f135cdc245c4744ad41c2efb1a6d98f31bc57a2cf48ebf02de96e4876657c3026673576bf1f1f61fc3fdd77ab00ad1ead737537bf17d8019d
+  languageName: node
+  linkType: hard
+
 "lru-memoizer@npm:^2.1.2":
   version: 2.1.2
   resolution: "lru-memoizer@npm:2.1.2"
@@ -18446,6 +18631,13 @@ fsevents@^1.2.7:
     encoding: ^0.1.11
     is-stream: ^1.0.1
   checksum: d04afb2e328ffb974a5ac4800fe5714d7419243d72f089a6a2383d3b93368c61ae88954a4866c476c0d7f95d7af414c1b9a885e051971061efe4054d526e23ed
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "node-fetch@npm:2.6.1"
+  checksum: cbb171635e538162b977eac5dfe7a1e07a9a02e991924377a6435502291e2f823d306b95aabc455caebf4a118ccf836868462bc70ccc3095af02bb9da61fda37
   languageName: node
   linkType: hard
 
@@ -25973,6 +26165,23 @@ typescript@~3.7.2:
     unist-util-is: ^4.0.0
     unist-util-visit-parents: ^3.0.0
   checksum: 7af837673e377693cf4c7bd966d5e088b52bd4a9c6e92f9b16ae5760a31243f627fbf3432ada6541e2b9091b8096007cb22aa8439cbbf04613898773743302d3
+  languageName: node
+  linkType: hard
+
+"universal-github-app-jwt@npm:^1.0.1":
+  version: 1.1.0
+  resolution: "universal-github-app-jwt@npm:1.1.0"
+  dependencies:
+    "@types/jsonwebtoken": ^8.3.3
+    jsonwebtoken: ^8.5.1
+  checksum: e0e8e26cd4bcdb34fb630e278d6a36a564ad5a47207bd0f3eed235f7cb9e0776fa4b2949019e7155302805c87fbd6df92b8391e86c557a319e138fcc7ad4c03d
+  languageName: node
+  linkType: hard
+
+"universal-user-agent@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "universal-user-agent@npm:6.0.0"
+  checksum: 725797ab636f1786a824f805eca2b227019ae8e82fdbe03e3e26a7f2917669bfcf7ef723c7d4b2c60a5e1603108d32bec3987b4f52821360523cb609fb7ae782
   languageName: node
   linkType: hard
 

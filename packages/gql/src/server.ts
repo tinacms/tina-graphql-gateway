@@ -1,15 +1,14 @@
-import path from "path";
-import cors from "cors";
-import http from "http";
+import { GithubManager } from "./datasources/github-manager";
 import WebSocket from "ws";
-import express from "express";
 // @ts-ignore
 import bodyParser from "body-parser";
-
 import { builder } from "./builder";
 import { cacheInit } from "./cache";
+import cors from "cors";
+import express from "express";
 import { graphqlInit } from "./resolver";
-import { FileSystemManager } from "./datasources/filesystem-manager";
+import http from "http";
+import path from "path";
 
 const app = express();
 const server = http.createServer(app);
@@ -40,7 +39,7 @@ app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;
 
   const projectRoot = path.join(process.cwd(), `src/fixtures${req.path}`);
-  const datasource = new FileSystemManager(projectRoot);
+  const datasource = new GithubManager(projectRoot);
   const cache = cacheInit(datasource);
   const schema = await builder.schema({ cache });
   const result = await graphqlInit({
