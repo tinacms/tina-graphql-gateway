@@ -12,33 +12,40 @@ type BlockField = {
 };
 
 const handleInner = (values, field: Field & { fields: Field[] }) => {
+  const value = values[field.name];
+  if (!value) {
+    return;
+  }
+
   switch (field.component) {
     case "text":
-      return values[field.name];
+      return value;
     case "blocks":
       const blockField = field as BlockField;
-      const templates = Object.values(blockField.templates);
 
-      const acc: { [key: string]: any } = {};
-      values[field.name].map((v) => {
-        const template = templates.find((t) => t._template === v._template);
+      return value.map((v) => {
+        const acc: { [key: string]: any } = {};
+        const template = blockField.templates[v._template];
         if (!template) {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
-        acc[`${template.label}InputData`] = handleData(v, template);
+        acc[`${template.label}InputData`] = {
+          template: v._template,
+          ...handleData(v, template),
+        };
+
+        return acc;
       });
-      // Return an array of one value, tagged union pattern
-      return [acc];
+    // Return an array of one value, tagged union pattern
 
     case "group":
-      const val = values[field.name];
       // FIXME: this shouldn't be sent down for anything other than blocks
-      const { _template, ...rest } = val;
+      const { _template, ...rest } = value;
 
       return rest;
 
     default:
-      return values[field.name];
+      return value;
   }
 };
 
@@ -57,7 +64,7 @@ export const handle = (values, schema: { fields: Field[] }) => {
     accum[field.name] = handleInner(values, field);
   });
 
-  return { [`${values._template}Input`]: { data: accum } };
+  return { [`${schema.label}Input`]: { data: accum } };
 };
 
 interface AddProps {

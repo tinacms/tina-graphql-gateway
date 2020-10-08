@@ -101,7 +101,7 @@ export interface Resolve {
    *   template_types: [ 'section' ],
    *   component: 'blocks',
    *   templates: {
-   *     sectionTemplateFields: {
+   *     section: {
    *       __typename: 'Section',
    *       label: 'Section',
    *       hide_body: false,
@@ -128,7 +128,13 @@ export interface Resolve {
     datasource: DataSource;
     field: BlocksField;
     value: unknown;
-  }) => Promise<unknown>;
+  }) => Promise<
+    {
+      __typename: string;
+      _template: string;
+      [key: string]: unknown;
+    }[]
+  >;
   value: ({
     datasource,
     field,
@@ -146,7 +152,12 @@ export interface Resolve {
     datasource: DataSource;
     field: BlocksField;
     value: unknown;
-  }) => Promise<unknown>;
+  }) => Promise<
+    {
+      template: string;
+      [key: string]: unknown;
+    }[]
+  >;
 }
 
 export interface Blocks {
@@ -173,7 +184,7 @@ export const blocks: Blocks = {
       await Promise.all(
         field.template_types.map(async (templateSlug) => {
           const template = await cache.datasource.getTemplate(templateSlug);
-          templateForms[template.label] = {
+          templateForms[templateSlug] = {
             type: await builder.documentFormObject(cache, template),
           };
         })
@@ -210,6 +221,7 @@ export const blocks: Blocks = {
           await builder.initialValuesUnion({
             cache,
             templates: field.template_types,
+            returnTemplate: true,
           })
         ),
       };
@@ -220,6 +232,7 @@ export const blocks: Blocks = {
           await builder.documentDataUnion({
             cache,
             templates: field.template_types,
+            returnTemplate: true,
           })
         ),
       };
@@ -233,7 +246,7 @@ export const blocks: Blocks = {
 
       const templateTypes = await Promise.all(
         templates.map((template) => {
-          return builder.documentDataInputObject(cache, template);
+          return builder.documentDataInputObject(cache, template, true);
         })
       );
 
@@ -265,7 +278,7 @@ export const blocks: Blocks = {
       await Promise.all(
         field.template_types.map(async (templateSlug) => {
           const template = await datasource.getTemplate(templateSlug);
-          templates[template.label] = await resolver.documentFormObject(
+          templates[templateSlug] = await resolver.documentFormObject(
             datasource,
             template
           );
@@ -279,28 +292,20 @@ export const blocks: Blocks = {
         __typename: `${field.__namespace}${field.label}BlocksField`,
       };
     },
-
-    initialValue: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: BlocksField;
-      value: unknown;
-    }) => {
-      assertIsBlockValue(value);
+    initialValue: async ({ datasource, field, value }) => {
+      assertIsBlockValueArray(value);
       return await Promise.all(
         value.map(async (item) => {
-          const { template, ...rest } = item;
-          const templateData = await datasource.getTemplate(template);
-          return {
-            ...(await resolver.documentInitialValuesObject(
-              datasource,
-              templateData,
-              rest
-            )),
-          };
+          const templateData = await datasource.getTemplate(item.template);
+          const value = await resolver.documentInitialValuesObject(
+            datasource,
+            templateData,
+            item
+          );
+
+          assertIsBlockInitialValue(value);
+
+          return value;
         })
       );
     },
@@ -313,28 +318,27 @@ export const blocks: Blocks = {
       field: BlocksField;
       value: unknown;
     }) => {
-      assertIsBlockValue(value);
+      assertIsBlockValueArray(value);
 
       return await Promise.all(
         value.map(async (item) => {
-          const { template, ...rest } = item;
-          const templateData = await datasource.getTemplate(template);
-          return await resolver.documentDataObject(datasource, templateData, {
-            ...rest,
-            template,
-          });
+          const templateData = await datasource.getTemplate(item.template);
+          const data = await resolver.documentDataObject(
+            datasource,
+            templateData,
+            item
+          );
+          assertIsObject(data);
+
+          const value = { template: item.template, ...data };
+
+          assertIsBlockValue(value);
+
+          return value;
         })
       );
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: BlocksField;
-      value: unknown;
-    }) => {
+    input: async ({ datasource, field, value }) => {
       // FIXME: we should validate that only one key was passed
       assertIsArray(value);
 
@@ -342,15 +346,16 @@ export const blocks: Blocks = {
         value.map(async (item) => {
           assertIsBlockInput(item);
           const data = Object.values(item)[0];
-          const { _template, ...rest } = data;
-          const template = await datasource.getTemplate(
-            _.lowerCase(data._template)
-          );
-          return await resolver.documentDataInputObject({
-            rest,
+          const template = await datasource.getTemplate(data.template);
+          const meh = await resolver.documentDataInputObject({
+            data,
             template,
             datasource,
           });
+          return {
+            template: data.template,
+            ...meh,
+          };
         })
       );
     },
@@ -365,12 +370,12 @@ function assertIsArray(value: unknown): asserts value is unknown[] {
 
 function assertIsBlockInput(
   value: unknown
-): asserts value is { data: { _template: string } & object } {
+): asserts value is { data: { template: string } & object } {
   assertIsObject(value);
   const data = Object.values(value)[0];
   const schema = yup
     .object({
-      _template: yup.string().required(),
+      template: yup.string().required(),
     })
     .required();
   try {
@@ -389,11 +394,9 @@ function assertIsObject(value: unknown): asserts value is object {
 function assertIsBlockInitialValue(
   value: unknown
 ): asserts value is BlockInitialValue[] {
-  const schema = yup.array().of(
-    yup.object({
-      _template: yup.string().required(),
-    })
-  );
+  const schema = yup.object({
+    _template: yup.string().required(),
+  });
   try {
     schema.validateSync(value);
   } catch (e) {
@@ -401,7 +404,20 @@ function assertIsBlockInitialValue(
     throw new Error(`Failed to assertIsBlockInitialValue - ${e.message}`);
   }
 }
-function assertIsBlockValue(value: unknown): asserts value is BlockValue[] {
+function assertIsBlockValue(value: unknown): asserts value is BlockValue {
+  const schema = yup.object({
+    template: yup.string().required(),
+  });
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockValue - ${e.message}`);
+  }
+}
+function assertIsBlockValueArray(
+  value: unknown
+): asserts value is BlockValue[] {
   const schema = yup.array().of(
     yup.object({
       template: yup.string().required(),
@@ -411,7 +427,7 @@ function assertIsBlockValue(value: unknown): asserts value is BlockValue[] {
     schema.validateSync(value);
   } catch (e) {
     console.log(value);
-    throw new Error(`Failed to assertIsBlockValue - ${e.message}`);
+    throw new Error(`Failed to assertIsBlockValueArray - ${e.message}`);
   }
 }
 

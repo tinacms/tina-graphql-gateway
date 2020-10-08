@@ -13,7 +13,6 @@ type Post {
 
 type PostForm {
   label: String
-  _template: String
   fields: [PostFormFields]
 }
 
@@ -41,12 +40,11 @@ type PostSectionsBlocksField {
 }
 
 type PostSectionsBlocksFieldTemplates {
-  Section: SectionForm
+  section: SectionForm
 }
 
 type SectionForm {
   label: String
-  _template: String
   fields: [SectionFormFields]
 }
 
@@ -65,6 +63,7 @@ type ListField {
   name: String
   label: String
   component: String
+  defaultItem: String
   field: ListFormFieldItemField
 }
 
@@ -95,7 +94,6 @@ type Author {
 
 type AuthorForm {
   label: String
-  _template: String
   fields: [AuthorFormFields]
 }
 
@@ -123,7 +121,6 @@ type AccoladesData {
 }
 
 type AuthorInitialValues {
-  _template: String
   name: String
   role: String
   anecdotes: [String]
@@ -136,6 +133,7 @@ type SectionData {
   description: String
   cta: CtaData
   authors: AuthorsDocuments
+  template: String
 }
 
 type CtaData {
@@ -147,7 +145,6 @@ type AuthorsDocuments {
 }
 
 type PostInitialValues {
-  _template: String
   title: String
   author: String
   sections: [sectionInitialValuesUnion]
@@ -156,14 +153,13 @@ type PostInitialValues {
 union sectionInitialValuesUnion = SectionInitialValues
 
 type SectionInitialValues {
-  _template: String
   description: String
   authors: [String]
   cta: CtaInitialValues
+  _template: String
 }
 
 type CtaInitialValues {
-  _template: String
   header: String
 }
 
@@ -182,7 +178,6 @@ input PostInput {
 }
 
 input PostInputData {
-  _template: String
   title: String
   author: String
   sections: [PostSectionsBlocksInput]
@@ -193,14 +188,13 @@ input PostSectionsBlocksInput {
 }
 
 input SectionInputData {
-  _template: String
   description: String
   authors: [String]
   cta: CtaInputData
+  template: String
 }
 
 input CtaInputData {
-  _template: String
   header: String
 }
 
@@ -210,7 +204,6 @@ input AuthorInput {
 }
 
 input AuthorInputData {
-  _template: String
   name: String
   role: String
   anecdotes: [String]
@@ -218,7 +211,6 @@ input AuthorInputData {
 }
 
 input AccoladesInputData {
-  _template: String
   figure: String
   description: String
 }

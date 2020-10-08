@@ -153,3 +153,42 @@ Input resolvers don't do much (except in the case of blocks described later), si
 ## Architecture Diagram
 
 <iframe style="border:none" width="700" height="350" src="https://whimsical.com/embed/Kh28ULaAYKPRpeCLm3VG63@2Ux7TurymMtzhxz2sLxX"></iframe>
+
+## Caveats
+
+### Why do we use `GraphQLUnion` instead of `GraphQLInterface` for fields?
+
+Since `component`, `label`, & `name` are common across all fields, we'd only use a fragment to gather what's unique to that field type, so field definitions using an interface would allow our queries to look like this:
+
+```graphql
+fields {
+  component
+  label
+  name
+  ...on SelectField {
+    options
+  }
+}
+```
+
+Instead, we use a union - which requires us to load each key inside it's respective fragment:
+
+```graphql
+fields {
+  ... on TextareaField {
+    name
+    label
+    component
+  }
+  ... on SelectField {
+    name
+    label
+    component
+    options
+  }
+}
+```
+
+A GraphQL interface allows you to define a heterogeneous set of types, which have some fields in common. This is a textbook usecase for interfaces, and it's something that could change in the future. But the current reason we're using unions is because unions are exhaustive, and they allow us to scope down the possible field types for a given set of fields.
+
+An interface would be too broad for our needs, a collection of fields should only contain the types which are possible for that given template config. So while an `interface` would allow us to present **all** possible field types, a `union` gives us the ability to scope down the field list to only allow what the template defines. Using `unions` forces us to be explicit about that in a way that's clear (note: it may be possible to do this with interfaces but there would end up being an interface for each collection of possible fields - making the `interface` term somewhat misleading). Using unions also allows our auto-querybuilder to know that they have populated all possible types of a field, something that seems like it might be more difficult with interfaces.

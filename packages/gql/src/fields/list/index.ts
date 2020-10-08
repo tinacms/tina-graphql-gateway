@@ -24,6 +24,7 @@ export const list = {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
             component: { type: GraphQLString },
+            defaultItem: { type: GraphQLString },
             field: {
               type: new GraphQLUnionType({
                 name: "ListFormFieldItemField",
@@ -125,6 +126,7 @@ export const list = {
             ? "pages"
             : "simple";
       }
+      let defaultItem = "";
 
       // FIXME this should be a subset type of TinaField,
       // this property doesn't need most of these fields
@@ -153,6 +155,7 @@ export const list = {
             datasource,
             field: selectField,
           });
+          defaultItem = fieldComponent.options[0];
           break;
         case "simple":
           list = field as SimpleList;
@@ -164,6 +167,7 @@ export const list = {
         ...rest,
         component: "list",
         field: fieldComponent,
+        defaultItem,
         __typename: "ListField",
       };
     },
@@ -321,5 +325,6 @@ export type TinaListField = {
   name: string;
   component: "list";
   field: TinaField;
+  defaultItem: string;
   __typename: "ListField";
 };
