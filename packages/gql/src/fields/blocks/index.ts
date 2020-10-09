@@ -77,7 +77,7 @@ export interface Build {
   }: {
     cache: Cache;
     field: BlocksField;
-  }) => Promise<{ type: GraphQLList<GraphQLType> }>;
+  }) => Promise<GraphQLList<GraphQLType>>;
 }
 
 export interface Resolve {
