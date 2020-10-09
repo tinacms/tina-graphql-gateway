@@ -484,7 +484,17 @@ export const builder: Builder = {
 
     await Promise.all(
       template.fields.map(async (field) => {
-        fields[field.name] = await buildTemplateInputDataField(cache, field);
+        if (field.config?.required) {
+          fields[field.name] = {
+            type: GraphQLNonNull(
+              await buildTemplateInputDataField(cache, field)
+            ),
+          };
+        } else {
+          fields[field.name] = {
+            type: await buildTemplateInputDataField(cache, field),
+          };
+        }
       })
     );
     if (returnTemplate) {

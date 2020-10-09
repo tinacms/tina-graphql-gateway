@@ -31,7 +31,7 @@ export const textarea = {
       return { type: GraphQLString };
     },
     input: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
-      return { type: GraphQLString };
+      return GraphQLString;
     },
   },
 

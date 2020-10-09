@@ -330,6 +330,13 @@ export const resolver: Resolver = {
     await Promise.all(
       template.fields.map(async (field) => {
         const value = data[field.name];
+        // TODO: if value is undefined the function
+        // shouldn't be called, but this should probably
+        // be handled in the schema builder to decide if
+        // the field is required AND doesn't exist
+        if (!value) {
+          return null;
+        }
         accum[field.name] = await documentInputDataField({
           datasource,
           field,

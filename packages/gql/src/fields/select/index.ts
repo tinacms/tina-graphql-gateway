@@ -57,7 +57,7 @@ export const select = {
       }
     },
     input: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return { type: GraphQLString };
+      return GraphQLString;
     },
   },
   resolve: {

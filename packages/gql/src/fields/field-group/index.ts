@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import * as yup from "yup";
 
 import { builder } from "../../builder";
@@ -58,7 +58,7 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
-      return { type: await builder.documentDataInputObject(cache, field) };
+      return await builder.documentDataInputObject(cache, field);
     },
   },
   resolve: {
@@ -131,7 +131,7 @@ function assertIsData(
 ): asserts value is {
   [key: string]: unknown;
 } {
-  const schema = yup.object({});
+  const schema = yup.object({}).required();
   schema.validateSync(value);
 }
 

@@ -24,7 +24,7 @@ export const text = {
       return { type: GraphQLString };
     },
     input: ({ cache, field }: { cache: Cache; field: TextField }) => {
-      return { type: GraphQLString };
+      return GraphQLString;
     },
   },
   resolve: {

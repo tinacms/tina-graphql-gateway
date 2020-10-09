@@ -8,12 +8,12 @@ fields:
   - name: cta
     label: Cta
     type: field_group
+    config:
+      required: true
     fields:
       - name: header
         label: Header
         type: textarea
-        config:
-          required: false
   - name: authors
     label: Authors
     type: list
