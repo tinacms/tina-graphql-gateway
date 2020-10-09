@@ -203,7 +203,7 @@ export const blocks: Blocks = {
             templates: {
               type: cache.build(
                 new GraphQLObjectType({
-                  name: `${field.__namespace}_${field.name}_BlocksFieldTemplates`,
+                  name: friendlyName(field, "BlocksFieldTemplates"),
                   fields: templateForms,
                 })
               ),

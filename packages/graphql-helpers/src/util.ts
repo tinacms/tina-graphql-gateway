@@ -30,23 +30,23 @@ export const arrayToObject = <T>(
 
 export const friendlyName2 = (field = "", suffix = "") => {
   if (Array.isArray(field)) {
-    const meh = `${field.map((f) => upperFirst(f)).join("_")}${
+    const meh = `${field.map((f) => upperFirst(camelCase(f))).join("_")}${
       suffix && "_" + suffix
     }`;
     return meh;
   } else {
     if (typeof field === "string") {
       if (field) {
-        return `${upperFirst(field)}${suffix ? "_" + suffix : ""}`;
+        return `${upperFirst(camelCase(field))}${suffix ? "_" + suffix : ""}`;
       } else {
         return suffix;
       }
     } else {
       const meh = `${
         // @ts-ignore
-        field.__namespace ? upperFirst(field.__namespace) + "_" : ""
+        field.__namespace ? upperFirst(camelCase(field.__namespace)) + "_" : ""
         // @ts-ignore
-      }${upperFirst(field.name)}${suffix && "_" + suffix}`;
+      }${upperFirst(camelCase(field.name))}${suffix && "_" + suffix}`;
       return meh;
     }
   }

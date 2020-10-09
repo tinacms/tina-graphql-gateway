@@ -362,7 +362,7 @@ export const builder: Builder = {
     return schema;
   },
   documentUnion: async ({ cache, section }) => {
-    const name = `${section ? section : ""}DocumentUnion`;
+    const name = friendlyName(section, "DocumentUnion");
     return cache.build(
       new GraphQLUnionType({
         name,
@@ -399,7 +399,7 @@ export const builder: Builder = {
     );
     return cache.build(
       new GraphQLUnionType({
-        name: `${templates.join("")}DataUnion`,
+        name: friendlyName(templates, "DataUnion"),
         types,
       })
     );
