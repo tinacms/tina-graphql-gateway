@@ -40,7 +40,7 @@ export const select = {
           return {
             type: await cache.build(
               new GraphQLObjectType({
-                name: `${select.label}Document`,
+                name: `${select.name}_Document`,
                 fields: {
                   document: {
                     type: await builder.documentUnion({

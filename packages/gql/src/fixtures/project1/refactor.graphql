@@ -16,7 +16,7 @@ type PostForm {
   fields: [PostFormFields]
 }
 
-union PostFormFields = TextareaField | SelectField | PostSectionsBlocksField
+union PostFormFields = TextareaField | SelectField | Post_sections_BlocksField
 
 type TextareaField {
   name: String
@@ -32,14 +32,14 @@ type SelectField {
   options: [String]
 }
 
-type PostSectionsBlocksField {
+type Post_sections_BlocksField {
   name: String
   label: String
   component: String
-  templates: PostSectionsBlocksFieldTemplates
+  templates: Post_sections_BlocksFieldTemplates
 }
 
-type PostSectionsBlocksFieldTemplates {
+type Post_sections_BlocksFieldTemplates {
   section: SectionForm
 }
 
@@ -48,9 +48,9 @@ type SectionForm {
   fields: [SectionFormFields]
 }
 
-union SectionFormFields = TextareaField | SectionCtaGroupField | ListField
+union SectionFormFields = TextareaField | Section_cta_GroupField | ListField
 
-type SectionCtaGroupField {
+type Section_cta_GroupField {
   name: String
   label: String
   component: String
@@ -75,11 +75,11 @@ type TextField {
 
 type PostData {
   title: String
-  author: AuthorDocument
+  author: author_Document
   sections: [sectionDataUnion]
 }
 
-type AuthorDocument {
+type author_Document {
   document: authorsDocumentUnion
 }
 
@@ -97,9 +97,9 @@ type AuthorForm {
   fields: [AuthorFormFields]
 }
 
-union AuthorFormFields = TextareaField | SelectField | ListField | AuthorAccoladesGroupListField
+union AuthorFormFields = TextareaField | SelectField | ListField | Author_accolades_GroupListField
 
-type AuthorAccoladesGroupListField {
+type Author_accolades_GroupListField {
   name: String
   label: String
   component: String
@@ -132,7 +132,7 @@ union sectionDataUnion = SectionData
 type SectionData {
   description: String
   cta: CtaData
-  authors: AuthorsDocuments
+  authors: authors_Documents
   template: String
 }
 
@@ -140,7 +140,7 @@ type CtaData {
   header: String
 }
 
-type AuthorsDocuments {
+type authors_Documents {
   documents: [authorsDocumentUnion]
 }
 
@@ -180,10 +180,10 @@ input PostInput {
 input PostInputData {
   title: String
   author: String
-  sections: [PostSectionsBlocksInput]
+  sections: [Post_sections_BlocksInput]
 }
 
-input PostSectionsBlocksInput {
+input Post_sections_BlocksInput {
   SectionInputData: SectionInputData
 }
 
