@@ -1,4 +1,5 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql";
+import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
 
 import { builder } from "../../builder";
@@ -19,7 +20,7 @@ export const fieldGroup = {
     }) => {
       return cache.build(
         new GraphQLObjectType({
-          name: `${field.__namespace}_${field.name}_GroupField`,
+          name: friendlyName(field, "GroupField"),
           fields: {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
@@ -76,7 +77,7 @@ export const fieldGroup = {
         ...rest,
         ...template,
         component: "group",
-        __typename: `${field.__namespace}_${field.name}_GroupField`,
+        __typename: friendlyName(field, "GroupField"),
       };
     },
     initialValue: async ({

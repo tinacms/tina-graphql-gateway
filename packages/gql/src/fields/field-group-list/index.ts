@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { friendlyName } from "@forestryio/graphql-helpers";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
 import { builder } from "../../builder";
@@ -42,7 +43,7 @@ export const fieldGroupList = {
     }) => {
       return cache.build(
         new GraphQLObjectType({
-          name: `${field.__namespace}_${field.name}_GroupListField`,
+          name: friendlyName(field, "GroupListField"),
           fields: {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
@@ -102,7 +103,7 @@ export const fieldGroupList = {
         ...rest,
         ...template,
         component: "group-list",
-        __typename: `${field.__namespace}_${field.name}_GroupListField`,
+        __typename: friendlyName(field, "GroupListField"),
       };
     },
     initialValue: async ({

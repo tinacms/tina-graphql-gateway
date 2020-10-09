@@ -37,10 +37,10 @@ type Post_Sections_BlocksField {
   name: String
   label: String
   component: String
-  templates: post_sections_BlocksFieldTemplates
+  templates: Post_Sections_BlocksFieldTemplates
 }
 
-type post_sections_BlocksFieldTemplates {
+type Post_Sections_BlocksFieldTemplates {
   section: Section_Form
 }
 
@@ -50,9 +50,9 @@ type Section_Form {
   fields: [Section_FormFields]
 }
 
-union Section_FormFields = TextareaField | section_cta_GroupField | ListField
+union Section_FormFields = TextareaField | Section_Cta_GroupField | ListField
 
-type section_cta_GroupField {
+type Section_Cta_GroupField {
   name: String
   label: String
   component: String
@@ -78,14 +78,14 @@ type TextField {
 type Post_Data {
   title: String
   author: author_Document
-  sections: [sectionDataUnion]
+  sections: [Section_DataUnion]
 }
 
 type author_Document {
-  document: authorsDocumentUnion
+  document: Authors_DocumentUnion
 }
 
-union authorsDocumentUnion = Author
+union Authors_DocumentUnion = Author
 
 type Author {
   path: String
@@ -100,9 +100,9 @@ type Author_Form {
   fields: [Author_FormFields]
 }
 
-union Author_FormFields = TextareaField | SelectField | ListField | author_accolades_GroupListField
+union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
 
-type author_accolades_GroupListField {
+type Author_Accolades_GroupListField {
   name: String
   label: String
   component: String
@@ -130,7 +130,7 @@ type Author_InitialValues {
   accolades: [Author_Accolades_Data]
 }
 
-union sectionDataUnion = Section_Data
+union Section_DataUnion = Section_Data
 
 type Section_Data {
   description: String
@@ -144,7 +144,7 @@ type Section_Cta_Data {
 }
 
 type authors_Documents {
-  documents: [authorsDocumentUnion]
+  documents: [Authors_DocumentUnion]
 }
 
 type Post_InitialValues {
