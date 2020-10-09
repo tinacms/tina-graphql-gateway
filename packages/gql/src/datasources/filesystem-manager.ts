@@ -109,7 +109,7 @@ export class FileSystemManager implements DataSource {
       throw new Error(`Unable to find template for document ${args.path}`);
     }
 
-    return namespaceFields(template);
+    return template;
   };
   getTemplate = async (slug: string) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
@@ -122,10 +122,7 @@ export class FileSystemManager implements DataSource {
     }
     const { data } = await readFile<Template>(p.join(fullPath, template));
 
-    return {
-      name: slug,
-      ...namespaceFields(data),
-    };
+    return namespaceFields({ name: slug, ...data });
   };
   updateDocument = async ({
     path,
@@ -166,17 +163,18 @@ function isWithFields(t: object): t is WithFields {
 }
 
 const namespaceFields = (template: TemplateData): TemplateData => {
+  // console.log(template);
   return {
     ...template,
     fields: template.fields.map((f) => {
       if (isWithFields(f)) {
         return {
-          ...namespaceSubFields(f, template.label),
+          ...namespaceSubFields(f, template.name),
         };
       } else {
         return {
           ...f,
-          __namespace: `${template.label}`,
+          __namespace: `${template.name}`,
         };
       }
     }),

@@ -17,7 +17,7 @@ type postForm {
   fields: [postFormFields]
 }
 
-union postFormFields = TextareaField | SelectField | Post_sections_BlocksField
+union postFormFields = TextareaField | SelectField | post_sections_BlocksField
 
 type TextareaField {
   name: String
@@ -33,14 +33,14 @@ type SelectField {
   options: [String]
 }
 
-type Post_sections_BlocksField {
+type post_sections_BlocksField {
   name: String
   label: String
   component: String
-  templates: Post_sections_BlocksFieldTemplates
+  templates: post_sections_BlocksFieldTemplates
 }
 
-type Post_sections_BlocksFieldTemplates {
+type post_sections_BlocksFieldTemplates {
   section: sectionForm
 }
 
@@ -50,16 +50,16 @@ type sectionForm {
   fields: [sectionFormFields]
 }
 
-union sectionFormFields = TextareaField | Section_cta_GroupField | ListField
+union sectionFormFields = TextareaField | section_cta_GroupField | ListField
 
-type Section_cta_GroupField {
+type section_cta_GroupField {
   name: String
   label: String
   component: String
-  fields: [SectionctaFormFields]
+  fields: [sectionctaFormFields]
 }
 
-union SectionctaFormFields = TextareaField
+union sectionctaFormFields = TextareaField
 
 type ListField {
   name: String
@@ -100,16 +100,16 @@ type authorForm {
   fields: [authorFormFields]
 }
 
-union authorFormFields = TextareaField | SelectField | ListField | Author_accolades_GroupListField
+union authorFormFields = TextareaField | SelectField | ListField | author_accolades_GroupListField
 
-type Author_accolades_GroupListField {
+type author_accolades_GroupListField {
   name: String
   label: String
   component: String
-  fields: [AuthoraccoladesFormFields]
+  fields: [authoraccoladesFormFields]
 }
 
-union AuthoraccoladesFormFields = TextareaField
+union authoraccoladesFormFields = TextareaField
 
 type authorData {
   name: String
@@ -183,10 +183,10 @@ input postInput {
 input postInputData {
   title: String
   author: String
-  sections: [Post_sections_BlocksInput]
+  sections: [post_sections_BlocksInput]
 }
 
-input Post_sections_BlocksInput {
+input post_sections_BlocksInput {
   sectionInputData: sectionInputData
 }
 
