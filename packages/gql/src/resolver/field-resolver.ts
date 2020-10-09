@@ -8,6 +8,7 @@ import { blocks } from "../fields/blocks";
 import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
 import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
@@ -259,7 +260,7 @@ export const resolver: Resolver = {
     const template = await datasource.getTemplateForDocument(args);
 
     return {
-      __typename: template.name,
+      __typename: friendlyName(template),
       path: args.path,
       content: "\nSome content\n",
       form: await resolver.documentFormObject(datasource, template),
@@ -285,7 +286,7 @@ export const resolver: Resolver = {
       })
     );
     return {
-      __typename: `${resolvedTemplate.name}Data`,
+      __typename: friendlyName(template, "Data"),
       ...accum,
     };
   },
@@ -309,7 +310,7 @@ export const resolver: Resolver = {
       })
     );
     return {
-      __typename: `${resolvedTemplate.name}InitialValues`,
+      __typename: friendlyName(resolvedTemplate, "InitialValues"),
       _template: data.template,
       ...accum,
     };

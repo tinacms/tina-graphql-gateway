@@ -54,9 +54,11 @@ const UseIt = ({ schema, formConfig, onSubmit }: { schema: GraphQLSchema }) => {
   // Not sure if we have enough info to know if somethin is non-null
   // but GraphiQL seems to be able to do it without a network call so should be
   // possible
+  // HERE /Users/jeffsee/code/scratch/graphiql/packages/codemirror-graphql/variables/lint.js
   // const mutation = schema.getMutationType();
   // const mutations = mutation?.getFields();
   // const updateDocument = Object.values(mutations)[0];
+  // console.log(schema.getTypeMap());
   const [, form] = useForm({
     id: "tina-tutorial-index",
     validate: (values) => {
@@ -64,7 +66,7 @@ const UseIt = ({ schema, formConfig, onSubmit }: { schema: GraphQLSchema }) => {
       //   title: "oh no",
       //   author: "noooo",
       //   // TODO: raise an issue with OSS team to see how to do this
-      //   sections: [{ section: "ohhh" }],
+      //   sections: [null, "Oh noooo"],
       // };
       return undefined;
     },
