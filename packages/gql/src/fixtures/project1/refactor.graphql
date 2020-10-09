@@ -195,7 +195,7 @@ input SectionInputData {
 }
 
 input CtaInputData {
-  header: String
+  header: String!
 }
 
 input AuthorInput {

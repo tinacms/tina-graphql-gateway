@@ -84,9 +84,7 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      return {
-        type: GraphQLList(await builder.documentDataInputObject(cache, field)),
-      };
+      return GraphQLList(await builder.documentDataInputObject(cache, field));
     },
   },
   resolve: {

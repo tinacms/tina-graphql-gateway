@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as yup from "yup";
 import {
+  printType,
   GraphQLString,
   GraphQLInputObjectType,
   getNamedType,
@@ -245,7 +246,7 @@ export const blocks: Blocks = {
       );
 
       const templateTypes = await Promise.all(
-        templates.map((template) => {
+        templates.map(async (template) => {
           return builder.documentDataInputObject(cache, template, true);
         })
       );
@@ -254,16 +255,14 @@ export const blocks: Blocks = {
       templateTypes.forEach((template) => {
         accum[getNamedType(template).toString()] = { type: template };
       });
-      return {
-        type: cache.build(
-          GraphQLList(
-            new GraphQLInputObjectType({
-              name: `${field.__namespace}${field.label}BlocksInput`,
-              fields: accum,
-            })
-          )
-        ),
-      };
+      return cache.build(
+        GraphQLList(
+          new GraphQLInputObjectType({
+            name: `${field.__namespace}${field.label}BlocksInput`,
+            fields: accum,
+          })
+        )
+      );
     },
   },
   resolve: {
@@ -347,14 +346,14 @@ export const blocks: Blocks = {
           assertIsBlockInput(item);
           const data = Object.values(item)[0];
           const template = await datasource.getTemplate(data.template);
-          const meh = await resolver.documentDataInputObject({
+          const inputData = await resolver.documentDataInputObject({
             data,
             template,
             datasource,
           });
           return {
             template: data.template,
-            ...meh,
+            ...inputData,
           };
         })
       );

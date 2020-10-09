@@ -103,7 +103,7 @@ export const list = {
       }
     },
     input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-      return { type: GraphQLList(GraphQLString) };
+      return GraphQLList(GraphQLString);
     },
   },
   resolve: {

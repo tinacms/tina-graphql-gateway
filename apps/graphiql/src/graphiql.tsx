@@ -4,8 +4,20 @@ import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { Link, useParams } from "react-router-dom";
-import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import { TinaProvider, TinaCMS, useCMS, useForm, usePlugin } from "tinacms";
+import {
+  getIntrospectionQuery,
+  GraphQLSchema,
+  buildClientSchema,
+  print,
+} from "graphql";
+import {
+  TinaProvider,
+  TinaCMS,
+  useCMS,
+  useForm,
+  Form,
+  usePlugin,
+} from "tinacms";
 import { handle } from "./handler";
 
 // {
@@ -20,7 +32,7 @@ import { handle } from "./handler";
 // 	}
 // }
 
-const TinaWrap = ({ formConfig, onSubmit }) => {
+const TinaWrap = ({ schema, formConfig, onSubmit }) => {
   const cms = new TinaCMS({
     sidebar: true,
     enabled: true,
@@ -29,18 +41,33 @@ const TinaWrap = ({ formConfig, onSubmit }) => {
   return (
     <TinaProvider cms={cms}>
       {formConfig ? (
-        <UseIt onSubmit={onSubmit} formConfig={formConfig} />
+        <UseIt schema={schema} onSubmit={onSubmit} formConfig={formConfig} />
       ) : null}
       {/* <UseIt formConfig={formConfig} /> */}
     </TinaProvider>
   );
 };
 
-const UseIt = ({ formConfig, onSubmit }) => {
-  // console.log(formConfig.form.fields);
-  const cms = useCMS();
-  const formConfig2 = {
+const UseIt = ({ schema, formConfig, onSubmit }: { schema: GraphQLSchema }) => {
+  useCMS();
+  // TODO: use yup to build a validation schema based on the arg requirements
+  // Not sure if we have enough info to know if somethin is non-null
+  // but GraphiQL seems to be able to do it without a network call so should be
+  // possible
+  // const mutation = schema.getMutationType();
+  // const mutations = mutation?.getFields();
+  // const updateDocument = Object.values(mutations)[0];
+  const [, form] = useForm({
     id: "tina-tutorial-index",
+    validate: (values) => {
+      // return {
+      //   title: "oh no",
+      //   author: "noooo",
+      //   // TODO: raise an issue with OSS team to see how to do this
+      //   sections: [{ section: "ohhh" }],
+      // };
+      return undefined;
+    },
     label: "Edit Page",
     fields: formConfig.form.fields,
     initialValues: formConfig.initialValues,
@@ -48,8 +75,7 @@ const UseIt = ({ formConfig, onSubmit }) => {
       const payload = handle(values, formConfig.form);
       onSubmit(payload);
     },
-  };
-  const [editableData, form] = useForm(formConfig2);
+  });
   usePlugin(form);
 
   return <div />;
@@ -152,7 +178,11 @@ export const Explorer = () => {
   return (
     <div id="root" className="graphiql-container">
       {queryResult && (
-        <TinaWrap onSubmit={setVariables} formConfig={queryResult} />
+        <TinaWrap
+          onSubmit={setVariables}
+          schema={schema}
+          formConfig={queryResult}
+        />
       )}
       <React.Fragment>
         <GraphiQLExplorer
