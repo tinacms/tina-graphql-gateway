@@ -59,6 +59,7 @@ export type WithFields = {
  * ```
  */
 export type TemplateData = WithFields & {
+  name: string;
   hide_body?: boolean;
   display_field?: string;
   pages?: string[];

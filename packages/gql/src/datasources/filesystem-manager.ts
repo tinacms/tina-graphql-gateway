@@ -164,7 +164,7 @@ export const parseMatter = async <T>(data: Buffer): Promise<T> => {
   return res;
 };
 
-function isWithFields(t: TemplateData | Field): t is WithFields {
+function isWithFields(t: object): t is WithFields {
   return t.hasOwnProperty("fields");
 }
 
@@ -194,8 +194,8 @@ const namespaceSubFields = (
     fields: template.fields.map((f) => {
       if (isWithFields(f)) {
         return {
-          ...namespaceSubFields(f, template.label),
-          __namespace: `${parentNamespace}${template.label}`,
+          ...namespaceSubFields(f, template.name),
+          __namespace: `${parentNamespace}_${template.name}`,
         };
       } else {
         return {
