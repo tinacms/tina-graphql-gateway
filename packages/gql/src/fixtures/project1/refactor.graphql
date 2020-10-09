@@ -77,11 +77,11 @@ type TextField {
 
 type Post_Data {
   title: String
-  author: author_Document
+  author: Post_Author_Document
   sections: [Section_DataUnion]
 }
 
-type author_Document {
+type Post_Author_Document {
   document: Authors_DocumentUnion
 }
 
@@ -135,7 +135,7 @@ union Section_DataUnion = Section_Data
 type Section_Data {
   description: String
   cta: Section_Cta_Data
-  authors: authors_Documents
+  authors: Section_Authors_Documents
   template: String
 }
 
@@ -143,7 +143,7 @@ type Section_Cta_Data {
   header: String
 }
 
-type authors_Documents {
+type Section_Authors_Documents {
   documents: [Authors_DocumentUnion]
 }
 

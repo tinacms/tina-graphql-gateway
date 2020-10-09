@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { friendlyName } from "@forestryio/graphql-helpers";
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -86,7 +87,7 @@ export const list = {
           return {
             type: await cache.build(
               new GraphQLObjectType({
-                name: `${list.name}_Documents`,
+                name: friendlyName(list, "Documents"),
                 fields: {
                   documents: {
                     type: GraphQLList(
