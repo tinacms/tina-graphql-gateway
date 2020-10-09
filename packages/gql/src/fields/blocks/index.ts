@@ -132,6 +132,7 @@ export interface Resolve {
   }) => Promise<
     {
       __typename: string;
+      // FIXME: this should exist for blocks, but
       _template: string;
       [key: string]: unknown;
     }[]
@@ -296,15 +297,15 @@ export const blocks: Blocks = {
       return await Promise.all(
         value.map(async (item) => {
           const templateData = await datasource.getTemplate(item.template);
-          const value = await resolver.documentInitialValuesObject(
+          const itemValue = await resolver.documentInitialValuesObject(
             datasource,
             templateData,
             item
           );
 
-          assertIsBlockInitialValue(value);
+          assertIsBlockInitialValue(itemValue);
 
-          return value;
+          return itemValue;
         })
       );
     },
@@ -392,7 +393,7 @@ function assertIsObject(value: unknown): asserts value is object {
 
 function assertIsBlockInitialValue(
   value: unknown
-): asserts value is BlockInitialValue[] {
+): asserts value is BlockInitialValue {
   const schema = yup.object({
     _template: yup.string().required(),
   });
