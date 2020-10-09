@@ -242,8 +242,9 @@ export const blocks: Blocks = {
     },
     input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       const templates = await Promise.all(
-        field.template_types.map((templateSlug) =>
-          cache.datasource.getTemplate(templateSlug)
+        field.template_types.map(
+          async (templateSlug) =>
+            await cache.datasource.getTemplate(templateSlug)
         )
       );
 
