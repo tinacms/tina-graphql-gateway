@@ -190,12 +190,12 @@ input PostSectionsBlocksInput {
 input SectionInputData {
   description: String
   authors: [String]
-  cta: CtaInputData
+  cta: CtaInputData!
   template: String
 }
 
 input CtaInputData {
-  header: String!
+  header: String
 }
 
 input AuthorInput {
