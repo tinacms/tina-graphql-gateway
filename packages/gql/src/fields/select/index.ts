@@ -1,4 +1,5 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
 import { builder } from "../../builder";
 
@@ -40,7 +41,7 @@ export const select = {
           return {
             type: await cache.build(
               new GraphQLObjectType({
-                name: `${select.name}_Document`,
+                name: friendlyName(select, "Document"),
                 fields: {
                   document: {
                     type: await builder.documentUnion({
