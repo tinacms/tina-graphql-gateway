@@ -9,12 +9,12 @@ import type { DataSource } from "../datasources/datasource";
  *
  * ```js
  * // ex. Any other uses of "SomeName" will return the cached version
- * cache.build(new GraphQLObjectType({name: 'SomeName', fields: {...}})
+ * await cache.build(new GraphQLObjectType({name: 'SomeName', fields: {...}})
  * ```
  */
 export type Cache = {
   /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
-  build: <T extends GraphQLType>(gqlType: T) => T;
+  build: <T extends GraphQLType>(gqlType: T) => Promise<T>;
   datasource: DataSource;
 };
 
@@ -25,9 +25,9 @@ export type Cache = {
 export const cacheInit = (datasource: DataSource) => {
   const storage: { [key: string]: GraphQLType } = {};
   const cache: Cache = {
-    build: (gqlType) => {
+    build: async (gqlType) => {
       const name = getNamedType(gqlType).toString();
-      console.log("get it", name);
+      console.log("get it", name, storage);
       if (storage[name]) {
         return storage[name];
       } else {

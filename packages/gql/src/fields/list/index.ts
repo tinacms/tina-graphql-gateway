@@ -17,8 +17,8 @@ import type { DataSource } from "../../datasources/datasource";
 export const list = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: ({ cache, field }: { cache: Cache; field: ListField }) => {
-      return cache.build(
+    field: async ({ cache, field }: { cache: Cache; field: ListField }) => {
+      return await cache.build(
         new GraphQLObjectType({
           name: "ListField",
           fields: {
@@ -31,7 +31,7 @@ export const list = {
                 name: "ListFormFieldItemField",
                 types: [
                   // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
-                  cache.build(
+                  await cache.build(
                     new GraphQLObjectType({
                       name: "SelectField",
                       fields: {
@@ -40,7 +40,7 @@ export const list = {
                       },
                     })
                   ),
-                  cache.build(
+                  await cache.build(
                     new GraphQLObjectType({
                       name: "TextField",
                       fields: {

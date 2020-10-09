@@ -9,8 +9,8 @@ import type { Cache } from "../../cache";
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return cache.build(
+    field: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
+      return await cache.build(
         new GraphQLObjectType({
           name: "SelectField",
           fields: {

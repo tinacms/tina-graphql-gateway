@@ -193,7 +193,7 @@ export const blocks: Blocks = {
         })
       );
 
-      return cache.build(
+      return await cache.build(
         new GraphQLObjectType<BlocksField>({
           name: friendlyName(field, "BlocksField"),
           fields: {
@@ -201,7 +201,7 @@ export const blocks: Blocks = {
             label: { type: GraphQLString },
             component: { type: GraphQLString },
             templates: {
-              type: cache.build(
+              type: await cache.build(
                 new GraphQLObjectType({
                   name: friendlyName(field, "BlocksFieldTemplates"),
                   fields: templateForms,
@@ -257,7 +257,7 @@ export const blocks: Blocks = {
       templateTypes.forEach((template) => {
         accum[getNamedType(template).toString()] = { type: template };
       });
-      return cache.build(
+      return await cache.build(
         GraphQLList(
           new GraphQLInputObjectType({
             name: friendlyName(field, "BlocksInput"),

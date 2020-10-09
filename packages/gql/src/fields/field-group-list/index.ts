@@ -41,7 +41,7 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      return cache.build(
+      return await cache.build(
         new GraphQLObjectType({
           name: friendlyName(field, "GroupListField"),
           fields: {

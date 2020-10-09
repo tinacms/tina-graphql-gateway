@@ -5,8 +5,8 @@ import type { DataSource } from "../../datasources/datasource";
 
 export const textarea = {
   build: {
-    field: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
-      return cache.build(
+    field: async ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+      return await cache.build(
         new GraphQLObjectType({
           name: "TextareaField",
           fields: {
