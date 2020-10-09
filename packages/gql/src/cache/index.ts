@@ -27,7 +27,6 @@ export const cacheInit = (datasource: DataSource) => {
   const cache: Cache = {
     build: async (gqlType) => {
       const name = getNamedType(gqlType).toString();
-      console.log("get it", name, storage);
       if (storage[name]) {
         return storage[name];
       } else {
