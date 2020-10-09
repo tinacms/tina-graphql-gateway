@@ -5,8 +5,8 @@ import type { DataSource } from "../../datasources/datasource";
 
 export const text = {
   build: {
-    field: ({ cache, field }: { cache: Cache; field: TextField }) => {
-      return cache.build(
+    field: async ({ cache, field }: { cache: Cache; field: TextField }) => {
+      return await cache.build(
         new GraphQLObjectType({
           name: "TextField",
           fields: {

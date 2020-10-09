@@ -18,7 +18,7 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
-      return cache.build(
+      return await cache.build(
         new GraphQLObjectType({
           name: friendlyName(field, "GroupField"),
           fields: {
