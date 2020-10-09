@@ -10,6 +10,7 @@ import {
   GraphQLType,
 } from "graphql";
 
+import { friendlyName } from "@forestryio/graphql-helpers";
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 
@@ -194,7 +195,7 @@ export const blocks: Blocks = {
 
       return cache.build(
         new GraphQLObjectType<BlocksField>({
-          name: `${field.__namespace}_${field.name}_BlocksField`,
+          name: friendlyName(field, "BlocksField"),
           fields: {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
@@ -259,7 +260,7 @@ export const blocks: Blocks = {
       return cache.build(
         GraphQLList(
           new GraphQLInputObjectType({
-            name: `${field.__namespace}_${field.name}_BlocksInput`,
+            name: friendlyName(field, "BlocksInput"),
             fields: accum,
           })
         )
@@ -289,7 +290,7 @@ export const blocks: Blocks = {
         ...field,
         component: "blocks" as const,
         templates,
-        __typename: `${field.__namespace}_${field.name}_BlocksField`,
+        __typename: friendlyName(field, "BlocksField"),
       };
     },
     initialValue: async ({ datasource, field, value }) => {

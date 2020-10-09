@@ -8,6 +8,8 @@ fields:
   - name: cta
     label: Cta
     type: field_group
+    config:
+      required: true
     fields:
       - name: header
         label: Header

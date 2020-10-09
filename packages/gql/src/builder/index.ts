@@ -9,8 +9,6 @@ import {
   GraphQLType,
   GraphQLInputObjectType,
   GraphQLInputFieldConfigMap,
-  printType,
-  printSchema,
 } from "graphql";
 import _ from "lodash";
 
@@ -22,6 +20,7 @@ import { blocks } from "../fields/blocks";
 import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
 import type { GraphQLFieldConfigMap } from "graphql";
 import type { TemplateData } from "../types";
@@ -378,7 +377,7 @@ export const builder: Builder = {
   documentObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
-        name: template.name,
+        name: friendlyName(template),
         fields: {
           path: { type: GraphQLString },
           form: { type: await builder.documentFormObject(cache, template) },
@@ -420,7 +419,7 @@ export const builder: Builder = {
 
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.name}Data`,
+        name: friendlyName(template, "Data"),
         fields,
       })
     );
@@ -428,7 +427,7 @@ export const builder: Builder = {
   documentFormObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.name}Form`,
+        name: friendlyName(template, "Form"),
         fields: {
           label: { type: GraphQLString },
           name: { type: GraphQLString },
@@ -454,7 +453,7 @@ export const builder: Builder = {
 
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.name}InitialValues`,
+        name: friendlyName(template, "InitialValues"),
         fields: {
           ...fields,
         },
@@ -475,7 +474,7 @@ export const builder: Builder = {
     );
     return cache.build(
       new GraphQLUnionType({
-        name: `${templates.join("")}InitialValuesUnion`,
+        name: friendlyName(templates, "InitialValuesUnion"),
         types,
       })
     );
@@ -503,7 +502,7 @@ export const builder: Builder = {
     }
     return cache.build(
       new GraphQLInputObjectType({
-        name: `${template.name}InputData`,
+        name: friendlyName(template, "InputData"),
         fields,
       })
     );
@@ -511,7 +510,7 @@ export const builder: Builder = {
   documentInputObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLInputObjectType({
-        name: `${template.name}Input`,
+        name: friendlyName(template, "Input"),
         fields: {
           content: { type: GraphQLString },
           data: {
@@ -541,7 +540,7 @@ export const builder: Builder = {
     });
     return cache.build(
       new GraphQLInputObjectType({
-        name: `${section ? section : ""}DocumentInput`,
+        name: friendlyName(section, "DocumentInput"),
         fields: accum,
       })
     );
@@ -555,7 +554,7 @@ export const builder: Builder = {
     return cache.build(
       GraphQLList(
         new GraphQLUnionType({
-          name: `${template.__namespace || ""}${template.name}FormFields`,
+          name: friendlyName(template, "FormFields"),
           types: accum,
         })
       )

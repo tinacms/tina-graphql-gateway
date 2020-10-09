@@ -1,5 +1,5 @@
 import camelCase from "lodash.camelcase";
-import upperFist from "lodash.upperfirst";
+import upperFirst from "lodash.upperfirst";
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const shortFMTName = (path: string) => {
@@ -9,7 +9,7 @@ export const shortFMTName = (path: string) => {
 export const friendlyName = (name: string, options = { suffix: "" }) => {
   const delimiter = "_";
 
-  return upperFist(
+  return upperFirst(
     camelCase(
       shortFMTName(name) + (options.suffix && delimiter + options.suffix)
     )
@@ -26,4 +26,28 @@ export const arrayToObject = <T>(
   });
 
   return accumulator;
+};
+
+export const friendlyName2 = (field = "", suffix = "") => {
+  if (Array.isArray(field)) {
+    const meh = `${field.map((f) => upperFirst(f)).join("_")}${
+      suffix && "_" + suffix
+    }`;
+    return meh;
+  } else {
+    if (typeof field === "string") {
+      if (field) {
+        return `${upperFirst(field)}${suffix ? "_" + suffix : ""}`;
+      } else {
+        return suffix;
+      }
+    } else {
+      const meh = `${
+        // @ts-ignore
+        field.__namespace ? upperFirst(field.__namespace) + "_" : ""
+        // @ts-ignore
+      }${upperFirst(field.name)}${suffix && "_" + suffix}`;
+      return meh;
+    }
+  }
 };

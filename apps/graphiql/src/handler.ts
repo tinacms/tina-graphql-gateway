@@ -1,4 +1,8 @@
-import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import {
+  friendlyFMTName,
+  friendlyName,
+  queryBuilder,
+} from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 // import type { Field } from "tinacms";
 
@@ -29,7 +33,7 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
         if (!template) {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
-        acc[`${template.name}InputData`] = {
+        acc[friendlyName(template, "InputData")] = {
           template: v._template,
           ...handleData(v, template),
         };
@@ -64,7 +68,7 @@ export const handle = (values, schema: { fields: Field[] }) => {
     accum[field.name] = handleInner(values, field);
   });
 
-  return { [`${schema.name}Input`]: { data: accum } };
+  return { [friendlyName(schema, "Input")]: { data: accum } };
 };
 
 interface AddProps {
