@@ -2,21 +2,22 @@ type Query {
   document(path: String): DocumentUnion
 }
 
-union DocumentUnion = Post | Author
+union DocumentUnion = post | author
 
-type Post {
+type post {
   path: String
-  form: PostForm
-  data: PostData
-  initialValues: PostInitialValues
+  form: postForm
+  data: postData
+  initialValues: postInitialValues
 }
 
-type PostForm {
+type postForm {
   label: String
-  fields: [PostFormFields]
+  name: String
+  fields: [postFormFields]
 }
 
-union PostFormFields = TextareaField | SelectField | Post_sections_BlocksField
+union postFormFields = TextareaField | SelectField | Post_sections_BlocksField
 
 type TextareaField {
   name: String
@@ -40,24 +41,25 @@ type Post_sections_BlocksField {
 }
 
 type Post_sections_BlocksFieldTemplates {
-  section: SectionForm
+  section: sectionForm
 }
 
-type SectionForm {
+type sectionForm {
   label: String
-  fields: [SectionFormFields]
+  name: String
+  fields: [sectionFormFields]
 }
 
-union SectionFormFields = TextareaField | Section_cta_GroupField | ListField
+union sectionFormFields = TextareaField | Section_cta_GroupField | ListField
 
 type Section_cta_GroupField {
   name: String
   label: String
   component: String
-  fields: [SectionCtaFormFields]
+  fields: [SectionctaFormFields]
 }
 
-union SectionCtaFormFields = TextareaField
+union SectionctaFormFields = TextareaField
 
 type ListField {
   name: String
@@ -73,7 +75,7 @@ type TextField {
   component: String
 }
 
-type PostData {
+type postData {
   title: String
   author: author_Document
   sections: [sectionDataUnion]
@@ -83,60 +85,61 @@ type author_Document {
   document: authorsDocumentUnion
 }
 
-union authorsDocumentUnion = Author
+union authorsDocumentUnion = author
 
-type Author {
+type author {
   path: String
-  form: AuthorForm
-  data: AuthorData
-  initialValues: AuthorInitialValues
+  form: authorForm
+  data: authorData
+  initialValues: authorInitialValues
 }
 
-type AuthorForm {
+type authorForm {
   label: String
-  fields: [AuthorFormFields]
+  name: String
+  fields: [authorFormFields]
 }
 
-union AuthorFormFields = TextareaField | SelectField | ListField | Author_accolades_GroupListField
+union authorFormFields = TextareaField | SelectField | ListField | Author_accolades_GroupListField
 
 type Author_accolades_GroupListField {
   name: String
   label: String
   component: String
-  fields: [AuthorAccoladesFormFields]
+  fields: [AuthoraccoladesFormFields]
 }
 
-union AuthorAccoladesFormFields = TextareaField
+union AuthoraccoladesFormFields = TextareaField
 
-type AuthorData {
+type authorData {
   name: String
   role: String
   anecdotes: [String]
-  accolades: [AccoladesData]
+  accolades: [accoladesData]
 }
 
-type AccoladesData {
+type accoladesData {
   figure: String
   description: String
 }
 
-type AuthorInitialValues {
+type authorInitialValues {
   name: String
   role: String
   anecdotes: [String]
-  accolades: [AccoladesData]
+  accolades: [accoladesData]
 }
 
-union sectionDataUnion = SectionData
+union sectionDataUnion = sectionData
 
-type SectionData {
+type sectionData {
   description: String
-  cta: CtaData
+  cta: ctaData
   authors: authors_Documents
   template: String
 }
 
-type CtaData {
+type ctaData {
   header: String
 }
 
@@ -144,22 +147,22 @@ type authors_Documents {
   documents: [authorsDocumentUnion]
 }
 
-type PostInitialValues {
+type postInitialValues {
   title: String
   author: String
   sections: [sectionInitialValuesUnion]
 }
 
-union sectionInitialValuesUnion = SectionInitialValues
+union sectionInitialValuesUnion = sectionInitialValues
 
-type SectionInitialValues {
+type sectionInitialValues {
   description: String
   authors: [String]
-  cta: CtaInitialValues
+  cta: ctaInitialValues
   _template: String
 }
 
-type CtaInitialValues {
+type ctaInitialValues {
   header: String
 }
 
@@ -168,49 +171,49 @@ type Mutation {
 }
 
 input DocumentInput {
-  PostInput: PostInput
-  AuthorInput: AuthorInput
+  postInput: postInput
+  authorInput: authorInput
 }
 
-input PostInput {
+input postInput {
   content: String
-  data: PostInputData
+  data: postInputData
 }
 
-input PostInputData {
+input postInputData {
   title: String
   author: String
   sections: [Post_sections_BlocksInput]
 }
 
 input Post_sections_BlocksInput {
-  SectionInputData: SectionInputData
+  sectionInputData: sectionInputData
 }
 
-input SectionInputData {
+input sectionInputData {
   description: String
   authors: [String]
-  cta: CtaInputData!
+  cta: ctaInputData!
   template: String
 }
 
-input CtaInputData {
+input ctaInputData {
   header: String
 }
 
-input AuthorInput {
+input authorInput {
   content: String
-  data: AuthorInputData
+  data: authorInputData
 }
 
-input AuthorInputData {
+input authorInputData {
   name: String
   role: String
   anecdotes: [String]
-  accolades: [AccoladesInputData]
+  accolades: [accoladesInputData]
 }
 
-input AccoladesInputData {
+input accoladesInputData {
   figure: String
   description: String
 }

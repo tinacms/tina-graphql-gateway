@@ -29,7 +29,7 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
         if (!template) {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
-        acc[`${template.label}InputData`] = {
+        acc[`${template.name}InputData`] = {
           template: v._template,
           ...handleData(v, template),
         };
@@ -64,7 +64,7 @@ export const handle = (values, schema: { fields: Field[] }) => {
     accum[field.name] = handleInner(values, field);
   });
 
-  return { [`${schema.label}Input`]: { data: accum } };
+  return { [`${schema.name}Input`]: { data: accum } };
 };
 
 interface AddProps {
