@@ -65,6 +65,12 @@ export type TemplateData = WithFields & {
   pages?: string[];
 };
 
+export type TemplateDataWithNoName = WithFields & {
+  hide_body?: boolean;
+  display_field?: string;
+  pages?: string[];
+};
+
 export type TinaTemplateData = {
   label: string;
   fields: TinaField[];
@@ -72,4 +78,14 @@ export type TinaTemplateData = {
 
 export type Template = {
   data: TemplateData;
+};
+
+/**
+ * The 'name' field doesn't exist
+ * on the template definition, we use
+ * the file's basename as it's value
+ * after fetching
+ */
+export type RawTemplate = {
+  data: TemplateDataWithNoName;
 };
