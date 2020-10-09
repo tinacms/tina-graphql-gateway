@@ -259,7 +259,7 @@ export const resolver: Resolver = {
     const template = await datasource.getTemplateForDocument(args);
 
     return {
-      __typename: template.label,
+      __typename: template.name,
       path: args.path,
       content: "\nSome content\n",
       form: await resolver.documentFormObject(datasource, template),
@@ -285,7 +285,7 @@ export const resolver: Resolver = {
       })
     );
     return {
-      __typename: `${resolvedTemplate.label}Data`,
+      __typename: `${resolvedTemplate.name}Data`,
       ...accum,
     };
   },
@@ -309,7 +309,7 @@ export const resolver: Resolver = {
       })
     );
     return {
-      __typename: `${resolvedTemplate.label}InitialValues`,
+      __typename: `${resolvedTemplate.name}InitialValues`,
       _template: data.template,
       ...accum,
     };

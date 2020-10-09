@@ -74,13 +74,7 @@ export class FileSystemManager implements DataSource {
 
     return Promise.all(
       templates.map(async (templateBasename) => {
-        const fullPath = p.join(
-          this.rootPath,
-          ".tina/front_matter/templates",
-          `${templateBasename}.yml`
-        );
-        const { data } = await readFile<Template>(fullPath);
-        return namespaceFields(data);
+        return await this.getTemplate(templateBasename.replace(".yml", ""));
       })
     );
   };
@@ -100,7 +94,7 @@ export class FileSystemManager implements DataSource {
     const template = (
       await Promise.all(
         templates.map(async (template) => {
-          const { data } = await readFile<Template>(p.join(fullPath, template));
+          const data = await this.getTemplate(template.replace(".yml", ""));
 
           if (data.pages?.includes(args.path)) {
             return data;
@@ -128,7 +122,10 @@ export class FileSystemManager implements DataSource {
     }
     const { data } = await readFile<Template>(p.join(fullPath, template));
 
-    return namespaceFields(data);
+    return {
+      name: slug,
+      ...namespaceFields(data),
+    };
   };
   updateDocument = async ({
     path,

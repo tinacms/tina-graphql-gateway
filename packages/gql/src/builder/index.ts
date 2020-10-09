@@ -378,7 +378,7 @@ export const builder: Builder = {
   documentObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
-        name: template.label,
+        name: template.name,
         fields: {
           path: { type: GraphQLString },
           form: { type: await builder.documentFormObject(cache, template) },
@@ -420,7 +420,7 @@ export const builder: Builder = {
 
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.label}Data`,
+        name: `${template.name}Data`,
         fields,
       })
     );
@@ -428,9 +428,10 @@ export const builder: Builder = {
   documentFormObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.label}Form`,
+        name: `${template.name}Form`,
         fields: {
           label: { type: GraphQLString },
+          name: { type: GraphQLString },
           fields: {
             type: await builder.documentFormFieldsUnion(cache, template),
           },
@@ -453,7 +454,7 @@ export const builder: Builder = {
 
     return cache.build(
       new GraphQLObjectType({
-        name: `${template.label}InitialValues`,
+        name: `${template.name}InitialValues`,
         fields: {
           ...fields,
         },
@@ -502,7 +503,7 @@ export const builder: Builder = {
     }
     return cache.build(
       new GraphQLInputObjectType({
-        name: `${template.label}InputData`,
+        name: `${template.name}InputData`,
         fields,
       })
     );
@@ -510,7 +511,7 @@ export const builder: Builder = {
   documentInputObject: async (cache: Cache, template: TemplateData) => {
     return cache.build(
       new GraphQLInputObjectType({
-        name: `${template.label}Input`,
+        name: `${template.name}Input`,
         fields: {
           content: { type: GraphQLString },
           data: {
@@ -554,7 +555,7 @@ export const builder: Builder = {
     return cache.build(
       GraphQLList(
         new GraphQLUnionType({
-          name: `${template.__namespace || ""}${template.label}FormFields`,
+          name: `${template.__namespace || ""}${template.name}FormFields`,
           types: accum,
         })
       )
