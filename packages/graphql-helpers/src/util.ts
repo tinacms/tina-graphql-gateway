@@ -28,7 +28,10 @@ export const arrayToObject = <T>(
   return accumulator;
 };
 
-export const friendlyName2 = (field = "", suffix = "") => {
+export const friendlyName2 = (
+  field: { __namespace?: string; name: string } | string | string[] = "",
+  suffix = ""
+) => {
   if (Array.isArray(field)) {
     const meh = `${field.map((f) => upperFirst(camelCase(f))).join("_")}${
       suffix && "_" + suffix
@@ -43,9 +46,7 @@ export const friendlyName2 = (field = "", suffix = "") => {
       }
     } else {
       const meh = `${
-        // @ts-ignore
         field.__namespace ? upperFirst(camelCase(field.__namespace)) + "_" : ""
-        // @ts-ignore
       }${upperFirst(camelCase(field.name))}${suffix && "_" + suffix}`;
       return meh;
     }
