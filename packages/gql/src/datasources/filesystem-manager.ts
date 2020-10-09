@@ -10,7 +10,7 @@ import { FieldGroupListField } from "../fields/field-group-list";
 
 import type { Field } from "../fields";
 import type { DataSource } from "./datasource";
-import type { Settings, Template, TemplateData, WithFields } from "../types";
+import type { Settings, RawTemplate, TemplateData, WithFields } from "../types";
 
 export type DocumentArgs = {
   path: string;
@@ -54,6 +54,9 @@ export class FileSystemManager implements DataSource {
     const sections = data.sections.map((section) => {
       return {
         ...section,
+        // Pretty sure this is how we define 'section' values in list/select fields
+        // probably needs to be tested thoroughly to ensure the slugify function works
+        // as it does in Forestry
         slug: slugify(section.label),
       };
     });
@@ -120,7 +123,7 @@ export class FileSystemManager implements DataSource {
     if (!template) {
       throw new Error(`No template found for slug ${slug}`);
     }
-    const { data } = await readFile<Template>(p.join(fullPath, template));
+    const { data } = await readFile<RawTemplate>(p.join(fullPath, template));
 
     return namespaceFields({ name: slug, ...data });
   };
