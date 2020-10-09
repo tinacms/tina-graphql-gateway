@@ -86,7 +86,7 @@ export const list = {
           return {
             type: await cache.build(
               new GraphQLObjectType({
-                name: `${list.label}Documents`,
+                name: `${list.name}_Documents`,
                 fields: {
                   documents: {
                     type: GraphQLList(

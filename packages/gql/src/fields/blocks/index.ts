@@ -193,7 +193,7 @@ export const blocks: Blocks = {
 
       return cache.build(
         new GraphQLObjectType<BlocksField>({
-          name: `${field.__namespace}${field.label}BlocksField`,
+          name: `${field.__namespace}_${field.name}_BlocksField`,
           fields: {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
@@ -201,7 +201,7 @@ export const blocks: Blocks = {
             templates: {
               type: cache.build(
                 new GraphQLObjectType({
-                  name: `${field.__namespace}${field.label}BlocksFieldTemplates`,
+                  name: `${field.__namespace}_${field.name}_BlocksFieldTemplates`,
                   fields: templateForms,
                 })
               ),
@@ -258,7 +258,7 @@ export const blocks: Blocks = {
       return cache.build(
         GraphQLList(
           new GraphQLInputObjectType({
-            name: `${field.__namespace}${field.label}BlocksInput`,
+            name: `${field.__namespace}_${field.name}_BlocksInput`,
             fields: accum,
           })
         )
@@ -288,7 +288,7 @@ export const blocks: Blocks = {
         ...field,
         component: "blocks" as const,
         templates,
-        __typename: `${field.__namespace}${field.label}BlocksField`,
+        __typename: `${field.__namespace}_${field.name}_BlocksField`,
       };
     },
     initialValue: async ({ datasource, field, value }) => {

@@ -42,7 +42,7 @@ export const fieldGroupList = {
     }) => {
       return cache.build(
         new GraphQLObjectType({
-          name: `${field.__namespace}${field.label}GroupListField`,
+          name: `${field.__namespace}_${field.name}_GroupListField`,
           fields: {
             name: { type: GraphQLString },
             label: { type: GraphQLString },
@@ -102,7 +102,7 @@ export const fieldGroupList = {
         ...rest,
         ...template,
         component: "group-list",
-        __typename: `${field.__namespace}${field.label}GroupListField`,
+        __typename: `${field.__namespace}_${field.name}_GroupListField`,
       };
     },
     initialValue: async ({
