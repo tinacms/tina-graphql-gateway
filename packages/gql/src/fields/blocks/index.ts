@@ -13,6 +13,7 @@ import {
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
+import { sequential } from "../../util";
 
 import type { Cache } from "../../cache";
 import type { TinaTemplateData } from "../../types";
@@ -184,17 +185,9 @@ export const blocks: Blocks = {
       const templateForms: {
         [key: string]: { type: GraphQLObjectType<any, any> };
       } = {};
-      await Promise.all(
-        field.template_types.map(async (templateSlug) => {
-          const template = await cache.datasource.getTemplate(templateSlug);
-          templateForms[templateSlug] = {
-            type: await builder.documentFormObject(cache, template),
-          };
-        })
-      );
 
-      return await cache.build(
-        new GraphQLObjectType<BlocksField>({
+      return await cache.build(friendlyName(field, "BlocksField"), async () => {
+        return new GraphQLObjectType<BlocksField>({
           name: friendlyName(field, "BlocksField"),
           fields: {
             name: { type: GraphQLString },
@@ -202,15 +195,29 @@ export const blocks: Blocks = {
             component: { type: GraphQLString },
             templates: {
               type: await cache.build(
-                new GraphQLObjectType({
-                  name: friendlyName(field, "BlocksFieldTemplates"),
-                  fields: templateForms,
-                })
+                friendlyName(field, "BlocksFieldTemplates"),
+                async () => {
+                  await sequential(
+                    field.template_types,
+                    async (templateSlug) => {
+                      const template = await cache.datasource.getTemplate(
+                        templateSlug
+                      );
+                      templateForms[templateSlug] = {
+                        type: await builder.documentFormObject(cache, template),
+                      };
+                    }
+                  );
+                  return new GraphQLObjectType({
+                    name: friendlyName(field, "BlocksFieldTemplates"),
+                    fields: templateForms,
+                  });
+                }
               ),
             },
           },
-        })
-      );
+        });
+      });
     },
     initialValue: async ({
       cache,
@@ -241,31 +248,29 @@ export const blocks: Blocks = {
       };
     },
     input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-      const templates = await Promise.all(
-        field.template_types.map(
+      return await cache.build(friendlyName(field, "BlocksInput"), async () => {
+        const templates = await sequential(
+          field.template_types,
           async (templateSlug) =>
             await cache.datasource.getTemplate(templateSlug)
-        )
-      );
+        );
 
-      const templateTypes = await Promise.all(
-        templates.map(async (template) => {
+        const templateTypes = await sequential(templates, async (template) => {
           return builder.documentDataInputObject(cache, template, true);
-        })
-      );
+        });
 
-      const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-      templateTypes.forEach((template) => {
-        accum[getNamedType(template).toString()] = { type: template };
-      });
-      return await cache.build(
-        GraphQLList(
+        const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
+        templateTypes.forEach((template) => {
+          accum[getNamedType(template).toString()] = { type: template };
+        });
+
+        return GraphQLList(
           new GraphQLInputObjectType({
             name: friendlyName(field, "BlocksInput"),
             fields: accum,
           })
-        )
-      );
+        );
+      });
     },
   },
   resolve: {
@@ -277,15 +282,13 @@ export const blocks: Blocks = {
       field: BlocksField;
     }): Promise<TinaBlocksField> => {
       const templates: { [key: string]: TinaTemplateData } = {};
-      await Promise.all(
-        field.template_types.map(async (templateSlug) => {
-          const template = await datasource.getTemplate(templateSlug);
-          templates[templateSlug] = await resolver.documentFormObject(
-            datasource,
-            template
-          );
-        })
-      );
+      await sequential(field.template_types, async (templateSlug) => {
+        const template = await datasource.getTemplate(templateSlug);
+        templates[templateSlug] = await resolver.documentFormObject(
+          datasource,
+          template
+        );
+      });
 
       return {
         ...field,
@@ -296,20 +299,18 @@ export const blocks: Blocks = {
     },
     initialValue: async ({ datasource, field, value }) => {
       assertIsBlockValueArray(value);
-      return await Promise.all(
-        value.map(async (item) => {
-          const templateData = await datasource.getTemplate(item.template);
-          const itemValue = await resolver.documentInitialValuesObject(
-            datasource,
-            templateData,
-            item
-          );
+      return await sequential(value, async (item) => {
+        const templateData = await datasource.getTemplate(item.template);
+        const itemValue = await resolver.documentInitialValuesObject(
+          datasource,
+          templateData,
+          item
+        );
 
-          assertIsBlockInitialValue(itemValue);
+        assertIsBlockInitialValue(itemValue);
 
-          return itemValue;
-        })
-      );
+        return itemValue;
+      });
     },
     value: async ({
       datasource,
@@ -322,44 +323,40 @@ export const blocks: Blocks = {
     }) => {
       assertIsBlockValueArray(value);
 
-      return await Promise.all(
-        value.map(async (item) => {
-          const templateData = await datasource.getTemplate(item.template);
-          const data = await resolver.documentDataObject(
-            datasource,
-            templateData,
-            item
-          );
-          assertIsObject(data);
+      return await sequential(value, async (item) => {
+        const templateData = await datasource.getTemplate(item.template);
+        const data = await resolver.documentDataObject(
+          datasource,
+          templateData,
+          item
+        );
+        assertIsObject(data);
 
-          const value = { template: item.template, ...data };
+        const value = { template: item.template, ...data };
 
-          assertIsBlockValue(value);
+        assertIsBlockValue(value);
 
-          return value;
-        })
-      );
+        return value;
+      });
     },
     input: async ({ datasource, field, value }) => {
       // FIXME: we should validate that only one key was passed
       assertIsArray(value);
 
-      return await Promise.all(
-        value.map(async (item) => {
-          assertIsBlockInput(item);
-          const data = Object.values(item)[0];
-          const template = await datasource.getTemplate(data.template);
-          const inputData = await resolver.documentDataInputObject({
-            data,
-            template,
-            datasource,
-          });
-          return {
-            template: data.template,
-            ...inputData,
-          };
-        })
-      );
+      return await sequential(value, async (item) => {
+        assertIsBlockInput(item);
+        const data = Object.values(item)[0];
+        const template = await datasource.getTemplate(data.template);
+        const inputData = await resolver.documentDataInputObject({
+          data,
+          template,
+          datasource,
+        });
+        return {
+          template: data.template,
+          ...inputData,
+        };
+      });
     },
   },
 };

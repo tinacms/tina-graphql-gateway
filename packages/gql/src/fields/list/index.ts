@@ -19,40 +19,46 @@ export const list = {
     /** Returns one of 3 possible types of select options */
     field: async ({ cache, field }: { cache: Cache; field: ListField }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: "ListField",
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
-            defaultItem: { type: GraphQLString },
-            field: {
-              type: new GraphQLUnionType({
-                name: "ListFormFieldItemField",
-                types: [
-                  // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
-                  await cache.build(
-                    new GraphQLObjectType({
-                      name: "SelectField",
-                      fields: {
-                        component: { type: GraphQLString },
-                        options: { type: GraphQLList(GraphQLString) },
-                      },
-                    })
-                  ),
-                  await cache.build(
-                    new GraphQLObjectType({
-                      name: "TextField",
-                      fields: {
-                        component: { type: GraphQLString },
-                      },
-                    })
-                  ),
-                ],
-              }),
+        "ListField",
+        async () =>
+          new GraphQLObjectType({
+            name: "ListField",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              defaultItem: { type: GraphQLString },
+              field: {
+                type: new GraphQLUnionType({
+                  name: "ListFormFieldItemField",
+                  types: [
+                    // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
+                    await cache.build(
+                      "SelectField",
+                      async () =>
+                        new GraphQLObjectType({
+                          name: "SelectField",
+                          fields: {
+                            component: { type: GraphQLString },
+                            options: { type: GraphQLList(GraphQLString) },
+                          },
+                        })
+                    ),
+                    await cache.build(
+                      "TextField",
+                      async () =>
+                        new GraphQLObjectType({
+                          name: "TextField",
+                          fields: {
+                            component: { type: GraphQLString },
+                          },
+                        })
+                    ),
+                  ],
+                }),
+              },
             },
-          },
-        })
+          })
       );
     },
     initialValue: async ({
@@ -86,16 +92,18 @@ export const list = {
           const section = list.config.source.section;
           return {
             type: await cache.build(
-              new GraphQLObjectType({
-                name: friendlyName(list, "Documents"),
-                fields: {
-                  documents: {
-                    type: GraphQLList(
-                      await builder.documentUnion({ cache, section })
-                    ),
+              friendlyName(list, "Documents"),
+              async () =>
+                new GraphQLObjectType({
+                  name: friendlyName(list, "Documents"),
+                  fields: {
+                    documents: {
+                      type: GraphQLList(
+                        await builder.documentUnion({ cache, section })
+                      ),
+                    },
                   },
-                },
-              })
+                })
             ),
           };
         case "simple":

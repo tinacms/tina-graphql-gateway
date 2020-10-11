@@ -11,15 +11,17 @@ export const select = {
     /** Returns one of 3 possible types of select options */
     field: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: "SelectField",
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
-            options: { type: GraphQLList(GraphQLString) },
-          },
-        })
+        "SelectField",
+        async () =>
+          new GraphQLObjectType({
+            name: "SelectField",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              options: { type: GraphQLList(GraphQLString) },
+            },
+          })
       );
     },
     initialValue: async ({
@@ -40,17 +42,19 @@ export const select = {
           select = field as SectionSelect;
           return {
             type: await cache.build(
-              new GraphQLObjectType({
-                name: friendlyName(select, "Document"),
-                fields: {
-                  document: {
-                    type: await builder.documentUnion({
-                      cache,
-                      section: select.config.source.section,
-                    }),
+              friendlyName(select, "Document"),
+              async () =>
+                new GraphQLObjectType({
+                  name: friendlyName(select, "Document"),
+                  fields: {
+                    document: {
+                      type: await builder.documentUnion({
+                        cache,
+                        section: select.config.source.section,
+                      }),
+                    },
                   },
-                },
-              })
+                })
             ),
           };
         case "simple":

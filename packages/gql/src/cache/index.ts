@@ -3,6 +3,10 @@ import { getNamedType, GraphQLType } from "graphql";
 
 import type { DataSource } from "../datasources/datasource";
 
+const sleep = (milliseconds: number) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 /**
  * Holds an in-memory cache of GraphQL Objects which have been built, allowing
  * re-use and avoiding name collisions
@@ -14,7 +18,10 @@ import type { DataSource } from "../datasources/datasource";
  */
 export type Cache = {
   /** Pass any GraphQLType through and it will check the cache before creating a new one to avoid duplicates */
-  build: <T extends GraphQLType>(gqlType: T) => Promise<T>;
+  build: <T extends GraphQLType>(
+    name: string,
+    callback: () => Promise<T>
+  ) => Promise<T>;
   datasource: DataSource;
 };
 
@@ -22,18 +29,22 @@ export type Cache = {
  * Initialize the cache and datastore services, which keep in-memory
  * state when being used throughout the build process.
  */
+let count = 0;
 export const cacheInit = (datasource: DataSource) => {
   const storage: { [key: string]: GraphQLType } = {};
   const cache: Cache = {
-    build: async (gqlType) => {
-      const name = getNamedType(gqlType).toString();
+    build: async (name, gqlType) => {
+      count = count + 1;
+      await sleep(100);
+      console.log(count, name, storage[name]);
+
       if (storage[name]) {
-        return storage[name];
+        return () => storage[name]();
       } else {
         storage[name] = gqlType;
       }
 
-      return gqlType as any; // allows gqlType's internal type to pass through
+      return () => storage[name]() as any; // allows gqlType's internal type to pass through
     },
     datasource: datasource,
   };

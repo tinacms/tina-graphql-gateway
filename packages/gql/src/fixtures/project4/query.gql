@@ -1,0 +1,184 @@
+query DocumentQuery($path: String!) {
+  document(path: $path) {
+    __typename
+    ... on Post {
+      form {
+        label
+        _template
+        fields {
+          ... on TextareaField {
+            name
+            label
+            component
+            description
+          }
+          ... on SelectField {
+            name
+            label
+            component
+            options
+          }
+          ... on PostSectionsBlocksField {
+            name
+            label
+            component
+            templates {
+              Section {
+                label
+                _template
+                fields {
+                  ... on TextareaField {
+                    name
+                    label
+                    component
+                    description
+                  }
+                  ... on SectionCtaGroupField {
+                    name
+                    label
+                    component
+                    fields {
+                      ... on TextareaField {
+                        name
+                        label
+                        component
+                        description
+                      }
+                    }
+                  }
+                  ... on ListField {
+                    name
+                    label
+                    component
+                    field {
+                      ... on SelectField {
+                        name
+                        label
+                        component
+                        options
+                      }
+                      ... on TextField {
+                        component
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      path
+      data {
+        title
+        author {
+          document {
+            ... on Author {
+              path
+            }
+          }
+        }
+        sections {
+          ... on SectionData {
+            description
+            cta {
+              header
+            }
+            authors {
+              documents {
+                ... on Author {
+                  path
+                }
+              }
+            }
+          }
+        }
+      }
+      initialValues {
+        _template
+        title
+        author
+        sections {
+          ... on SectionInitialValues {
+            _template
+            description
+            authors
+            cta {
+              _template
+              header
+            }
+          }
+        }
+      }
+    }
+    ... on Author {
+      form {
+        label
+        _template
+        fields {
+          ... on TextareaField {
+            name
+            label
+            component
+            description
+          }
+          ... on SelectField {
+            name
+            label
+            component
+            options
+          }
+          ... on ListField {
+            name
+            label
+            component
+            field {
+              ... on SelectField {
+                name
+                label
+                component
+                options
+              }
+              ... on TextField {
+                component
+              }
+            }
+          }
+          ... on AuthorAccoladesGroupListField {
+            name
+            label
+            component
+            fields {
+              ... on TextareaField {
+                name
+                label
+                component
+                description
+              }
+            }
+          }
+        }
+      }
+      path
+      data {
+        name
+        role
+        anecdotes
+        accolades {
+          figure
+          description
+        }
+      }
+      initialValues {
+        _template
+        name
+        role
+        anecdotes
+        accolades {
+          figure
+          description
+        }
+      }
+    }
+  }
+}

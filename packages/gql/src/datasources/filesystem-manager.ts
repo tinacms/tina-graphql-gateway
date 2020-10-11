@@ -7,6 +7,7 @@ import { slugify } from "../util";
 import { byTypeWorks } from "../types";
 import { FieldGroupField } from "../fields/field-group";
 import { FieldGroupListField } from "../fields/field-group-list";
+import { sequential } from "../util";
 
 import type { Field } from "../fields";
 import type { DataSource } from "./datasource";
@@ -36,10 +37,9 @@ export class FileSystemManager implements DataSource {
     return _.flatten(pages);
   };
   getTemplates = async (templateSlugs: string[]) =>
-    await Promise.all(
-      templateSlugs.map(
-        async (templateSlug) => await this.getTemplate(templateSlug)
-      )
+    await sequential(
+      templateSlugs,
+      async (templateSlug) => await this.getTemplate(templateSlug)
     );
   getSettingsData = async () => {
     const { data } = await readFile<Settings>(
@@ -75,11 +75,9 @@ export class FileSystemManager implements DataSource {
       throw new Error(`No templates found for section`);
     }
 
-    return Promise.all(
-      templates.map(async (templateBasename) => {
-        return await this.getTemplate(templateBasename.replace(".yml", ""));
-      })
-    );
+    return await sequential(templates, async (templateBasename) => {
+      return await this.getTemplate(templateBasename.replace(".yml", ""));
+    });
   };
   getData = async ({ path }: DocumentArgs) => {
     const fullPath = p.join(this.rootPath, path);
@@ -95,17 +93,15 @@ export class FileSystemManager implements DataSource {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const templates = await fs.readdirSync(fullPath);
     const template = (
-      await Promise.all(
-        templates.map(async (template) => {
-          const data = await this.getTemplate(template.replace(".yml", ""));
+      await sequential(templates, async (template) => {
+        const data = await this.getTemplate(template.replace(".yml", ""));
 
-          if (data.pages?.includes(args.path)) {
-            return data;
-          } else {
-            return false;
-          }
-        })
-      )
+        if (data.pages?.includes(args.path)) {
+          return data;
+        } else {
+          return false;
+        }
+      })
     ).filter(Boolean)[0];
 
     if (!template) {

@@ -10,6 +10,7 @@ import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
 import { friendlyName } from "@forestryio/graphql-helpers";
 
+import { sequential } from "../util";
 import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
 import type { TemplateData, TinaTemplateData } from "../types";
@@ -241,14 +242,12 @@ export const resolver: Resolver = {
           };
         case "_nested_sources":
           return {
-            documents: await Promise.all(
-              value._args.paths.map(async (p) => {
-                return await resolver.documentObject({
-                  args: { path: p },
-                  datasource,
-                });
-              })
-            ),
+            documents: await sequential(value._args.paths, async (p) => {
+              return await resolver.documentObject({
+                args: { path: p },
+                datasource,
+              });
+            }),
           };
       }
     } else {
@@ -279,12 +278,10 @@ export const resolver: Resolver = {
   ) => {
     const accum: { [key: string]: unknown } = {};
     const { template, ...rest } = data;
-    await Promise.all(
-      Object.keys(rest).map(async (key) => {
-        const field = findField(resolvedTemplate.fields, key);
-        return (accum[key] = await dataValue(datasource, field, rest[key]));
-      })
-    );
+    await sequential(Object.keys(rest), async (key) => {
+      const field = findField(resolvedTemplate.fields, key);
+      return (accum[key] = await dataValue(datasource, field, rest[key]));
+    });
     return {
       __typename: friendlyName(template, "Data"),
       ...accum,
@@ -299,16 +296,14 @@ export const resolver: Resolver = {
 
     const { template, ...rest } = data;
 
-    await Promise.all(
-      Object.keys(rest).map(async (key) => {
-        const field = findField(resolvedTemplate.fields, key);
-        return (accum[key] = await dataInitialValuesField(
-          datasource,
-          field,
-          data[key]
-        ));
-      })
-    );
+    await sequential(Object.keys(rest), async (key) => {
+      const field = findField(resolvedTemplate.fields, key);
+      return (accum[key] = await dataInitialValuesField(
+        datasource,
+        field,
+        data[key]
+      ));
+    });
     return {
       __typename: friendlyName(resolvedTemplate, "InitialValues"),
       _template: data.template,
@@ -321,30 +316,28 @@ export const resolver: Resolver = {
   ) => {
     return {
       ...template,
-      fields: await Promise.all(
-        template.fields.map(async (field) => dataField(datasource, field))
+      fields: await sequential(template.fields, async (field) =>
+        dataField(datasource, field)
       ),
     };
   },
   documentDataInputObject: async ({ data, template, datasource }) => {
     const accum: { [key: string]: unknown } = {};
-    await Promise.all(
-      template.fields.map(async (field) => {
-        const value = data[field.name];
-        // TODO: if value is undefined the function
-        // shouldn't be called, but this should probably
-        // be handled in the schema builder to decide if
-        // the field is required AND doesn't exist
-        if (!value) {
-          return null;
-        }
-        accum[field.name] = await documentInputDataField({
-          datasource,
-          field,
-          value,
-        });
-      })
-    );
+    await sequential(template.fields, async (field) => {
+      const value = data[field.name];
+      // TODO: if value is undefined the function
+      // shouldn't be called, but this should probably
+      // be handled in the schema builder to decide if
+      // the field is required AND doesn't exist
+      if (!value) {
+        return null;
+      }
+      accum[field.name] = await documentInputDataField({
+        datasource,
+        field,
+        value,
+      });
+    });
     return accum;
   },
   documentInputObject: async ({

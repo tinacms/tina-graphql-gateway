@@ -7,14 +7,16 @@ export const text = {
   build: {
     field: async ({ cache, field }: { cache: Cache; field: TextField }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: "TextField",
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
-          },
-        })
+        "TextField",
+        async () =>
+          new GraphQLObjectType({
+            name: "TextField",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+            },
+          })
       );
     },
     initialValue: ({ cache, field }: { cache: Cache; field: TextField }) => {
