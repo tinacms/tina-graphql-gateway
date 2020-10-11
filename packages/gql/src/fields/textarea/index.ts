@@ -7,15 +7,17 @@ export const textarea = {
   build: {
     field: async ({ cache, field }: { cache: Cache; field: TextareaField }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: "TextareaField",
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
-            description: { type: GraphQLString },
-          },
-        })
+        "TextareaField",
+        async () =>
+          new GraphQLObjectType({
+            name: "TextareaField",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              description: { type: GraphQLString },
+            },
+          })
       );
     },
     initialValue: ({

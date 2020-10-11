@@ -6,13 +6,18 @@ import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql, assertSchema } from "../fields/test-util";
 import { printSchema } from "graphql";
 
+const sleep = (milliseconds: number) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 describe("Schema builder", () => {
   test("does it", async () => {
-    const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
+    const projectRoot = path.join(process.cwd(), "src/fixtures/project4");
 
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
+    expect(true).toBeTruthy();
 
     await fs.writeFileSync(
       path.join(projectRoot, "refactor.graphql"),

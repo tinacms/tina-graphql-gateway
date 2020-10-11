@@ -11,6 +11,10 @@ import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
+const sleep = (milliseconds: number) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 const app = express();
 const server = http.createServer(app);
 
@@ -34,6 +38,7 @@ app.get("/list-projects", async (req, res) => {
     { label: "Project 1", value: "project1" },
     { label: "Project 2", value: "project2" },
     { label: "Project 3", value: "project3" },
+    { label: "Project 4", value: "project4" },
   ]);
 });
 

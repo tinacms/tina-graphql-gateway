@@ -1,0 +1,127 @@
+type Query {
+  document(path: String): DocumentUnion
+}
+
+union DocumentUnion = Post | Author
+
+type Post {
+  form: PostForm
+  path: String
+  data: PostData
+}
+
+type PostForm {
+  fields: [undefinedPostFormFields]
+}
+
+union undefinedPostFormFields = TextareaField | SelectField | PostSectionsBlocksField
+
+type TextareaField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
+type SelectField {
+  name: String
+  label: String
+  component: String
+  options: [String]
+}
+
+type PostSectionsBlocksField {
+  name: String
+  label: String
+  component: String
+  templates: PostSectionsBlocksFieldTemplates
+}
+
+type PostSectionsBlocksFieldTemplates {
+  sectionTemplateFields: SectionForm
+}
+
+type SectionForm {
+  fields: [undefinedSectionFormFields]
+}
+
+union undefinedSectionFormFields = TextareaField | SectionCtaGroupField | ListField
+
+type SectionCtaGroupField {
+  name: String
+  label: String
+  component: String
+  fields: [SectionCtaFormFields]
+}
+
+union SectionCtaFormFields = TextareaField
+
+type ListField {
+  name: String
+  label: String
+  component: String
+  field: ListFormFieldItemField
+}
+
+union ListFormFieldItemField = SelectField | TextareaField
+
+type PostData {
+  title: String
+  author: AuthorDocument
+  sections: [sectionDataUnion]
+}
+
+type AuthorDocument {
+  document: authorsDocumentUnion
+}
+
+union authorsDocumentUnion = Author
+
+type Author {
+  form: AuthorForm
+  path: String
+  data: AuthorData
+}
+
+type AuthorForm {
+  fields: [undefinedAuthorFormFields]
+}
+
+union undefinedAuthorFormFields = TextareaField | SelectField | ListField | AuthorAccoladesGroupListField
+
+type AuthorAccoladesGroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [AuthorAccoladesFormFields]
+}
+
+union AuthorAccoladesFormFields = TextareaField
+
+type AuthorData {
+  name: String
+  role: String
+  anecdotes: [String]
+  accolades: [AccoladesData]
+}
+
+type AccoladesData {
+  figure: String
+  description: String
+}
+
+union sectionDataUnion = SectionData
+
+type SectionData {
+  description: String
+  cta: CtaData
+  authors: AuthorsDocuments
+}
+
+type CtaData {
+  header: String
+}
+
+type AuthorsDocuments {
+  documents: [authorsDocumentUnion]
+}

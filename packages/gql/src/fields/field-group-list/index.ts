@@ -4,6 +4,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
+import { sequential } from "../../util";
 
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
@@ -42,18 +43,20 @@ export const fieldGroupList = {
       field: FieldGroupListField;
     }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: friendlyName(field, "GroupListField"),
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
+        friendlyName(field, "GroupListField"),
+        async () =>
+          new GraphQLObjectType({
+            name: friendlyName(field, "GroupListField"),
             fields: {
-              // field is structural subtyping TemplateData shape
-              type: await builder.documentFormFieldsUnion(cache, field),
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              fields: {
+                // field is structural subtyping TemplateData shape
+                type: await builder.documentFormFieldsUnion(cache, field),
+              },
             },
-          },
-        })
+          })
       );
     },
     initialValue: async ({
@@ -116,11 +119,10 @@ export const fieldGroupList = {
       value: unknown;
     }) => {
       assertIsDataArray(value);
-      return await Promise.all(
-        value.map(
-          async (v: any) =>
-            await resolver.documentInitialValuesObject(datasource, field, v)
-        )
+      return sequential(
+        value,
+        async (v: any) =>
+          await resolver.documentInitialValuesObject(datasource, field, v)
       );
     },
     value: async ({
@@ -133,11 +135,10 @@ export const fieldGroupList = {
       value: unknown;
     }) => {
       assertIsDataArray(value);
-      return await Promise.all(
-        value.map(
-          async (v: any) =>
-            await resolver.documentDataObject(datasource, field, v)
-        )
+      return sequential(
+        value,
+        async (v: any) =>
+          await resolver.documentDataObject(datasource, field, v)
       );
     },
     input: async ({
@@ -151,15 +152,13 @@ export const fieldGroupList = {
     }): Promise<unknown> => {
       assertIsDataArray(value);
 
-      return await Promise.all(
-        value.map(async (v) => {
-          return await resolver.documentDataInputObject({
-            data: v,
-            template: field,
-            datasource,
-          });
-        })
-      );
+      return sequential(value, async (v) => {
+        return await resolver.documentDataInputObject({
+          data: v,
+          template: field,
+          datasource,
+        });
+      });
     },
   },
 };

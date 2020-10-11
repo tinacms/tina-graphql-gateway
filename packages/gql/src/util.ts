@@ -39,3 +39,34 @@ export const friendlyName = (field = "", suffix = "") => {
     }
   }
 };
+
+export const sequential2 = async (promises: Promise<unknown>[]) => {
+  const reducePromises = async (previous: Promise<unknown>, endpoint) => {
+    await previous;
+    return endpoint;
+  };
+
+  return promises.reduce(reducePromises, Promise.resolve());
+};
+
+export const sequential = async <A, B>(
+  items: A[],
+  callback: (args: A) => Promise<B>
+) => {
+  const accum: B[] = [];
+
+  const reducePromises = async (previous: Promise<B>, endpoint: A) => {
+    const prev = await previous;
+    // initial value will be undefined
+    if (prev) {
+      accum.push(prev);
+    }
+
+    return callback(endpoint);
+  };
+
+  // @ts-ignore FIXME: this can be properly typed
+  accum.push(await items.reduce(reducePromises, Promise.resolve()));
+
+  return accum;
+};

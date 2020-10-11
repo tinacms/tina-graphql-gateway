@@ -19,17 +19,19 @@ export const fieldGroup = {
       field: FieldGroupField;
     }) => {
       return await cache.build(
-        new GraphQLObjectType({
-          name: friendlyName(field, "GroupField"),
-          fields: {
-            name: { type: GraphQLString },
-            label: { type: GraphQLString },
-            component: { type: GraphQLString },
+        friendlyName(field, "GroupField"),
+        async () =>
+          new GraphQLObjectType({
+            name: friendlyName(field, "GroupField"),
             fields: {
-              type: await builder.documentFormFieldsUnion(cache, field),
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              fields: {
+                type: await builder.documentFormFieldsUnion(cache, field),
+              },
             },
-          },
-        })
+          })
       );
     },
     initialValue: async ({
