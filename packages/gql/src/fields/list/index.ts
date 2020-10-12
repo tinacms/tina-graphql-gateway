@@ -14,22 +14,6 @@ import type { Cache } from "../../cache";
 import type { TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
 
-const listSelectFieldType = new GraphQLObjectType({
-  name: "ListSelectField",
-  fields: {
-    component: { type: GraphQLString },
-    options: { type: GraphQLList(GraphQLString) },
-  },
-});
-
-const listTextFieldType = new GraphQLObjectType({
-  name: "ListTextField",
-  fields: {
-    component: { type: GraphQLString },
-    options: { type: GraphQLList(GraphQLString) },
-  },
-});
-
 export const list = {
   build: {
     /** Returns one of 3 possible types of select options */
@@ -47,31 +31,30 @@ export const list = {
               field: {
                 type: new GraphQLUnionType({
                   name: "ListFormFieldItemField",
-                  types: [listSelectFieldType, listTextFieldType],
-                  // types: [
-                  //   // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
-                  //   await cache.build(
-                  //     "SelectField",
-                  //     async () =>
-                  //       new GraphQLObjectType({
-                  //         name: "SelectField",
-                  //         fields: {
-                  //           component: { type: GraphQLString },
-                  //           options: { type: GraphQLList(GraphQLString) },
-                  //         },
-                  //       })
-                  //   ),
-                  //   await cache.build(
-                  //     "TextField",
-                  //     async () =>
-                  //       new GraphQLObjectType({
-                  //         name: "TextField",
-                  //         fields: {
-                  //           component: { type: GraphQLString },
-                  //         },
-                  //       })
-                  //   ),
-                  // ],
+                  types: [
+                    // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
+                    await cache.build(
+                      "SelectField",
+                      async () =>
+                        new GraphQLObjectType({
+                          name: "SelectField",
+                          fields: {
+                            component: { type: GraphQLString },
+                            options: { type: GraphQLList(GraphQLString) },
+                          },
+                        })
+                    ),
+                    await cache.build(
+                      "TextField",
+                      async () =>
+                        new GraphQLObjectType({
+                          name: "TextField",
+                          fields: {
+                            component: { type: GraphQLString },
+                          },
+                        })
+                    ),
+                  ],
                 }),
               },
             },

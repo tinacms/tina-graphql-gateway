@@ -6,21 +6,23 @@ import { builder } from "../../builder";
 import type { DataSource } from "../../datasources/datasource";
 import type { Cache } from "../../cache";
 
-const selectFieldType = new GraphQLObjectType({
-  name: "SelectField",
-  fields: {
-    name: { type: GraphQLString },
-    label: { type: GraphQLString },
-    component: { type: GraphQLString },
-    options: { type: GraphQLList(GraphQLString) },
-  },
-});
-
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return selectFieldType;
+      return await cache.build(
+        "SelectField",
+        async () =>
+          new GraphQLObjectType({
+            name: "SelectField",
+            fields: {
+              name: { type: GraphQLString },
+              label: { type: GraphQLString },
+              component: { type: GraphQLString },
+              options: { type: GraphQLList(GraphQLString) },
+            },
+          })
+      );
     },
     initialValue: async ({
       cache,
