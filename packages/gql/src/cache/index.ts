@@ -35,16 +35,16 @@ export const cacheInit = (datasource: DataSource) => {
   const cache: Cache = {
     build: async (name, gqlType) => {
       count = count + 1;
-      await sleep(100);
+      // await sleep(100);
       console.log(count, name, storage[name]);
 
       if (storage[name]) {
-        return () => storage[name]();
+        return storage[name];
       } else {
-        storage[name] = gqlType;
+        storage[name] = await gqlType();
       }
 
-      return () => storage[name]() as any; // allows gqlType's internal type to pass through
+      return storage[name] as any; // allows gqlType's internal type to pass through
     },
     datasource: datasource,
   };
