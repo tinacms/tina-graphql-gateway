@@ -3,9 +3,19 @@ import { GraphQLString, GraphQLObjectType } from "graphql";
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
 
+const textFieldType = new GraphQLObjectType({
+  name: "TextField",
+  fields: {
+    name: { type: GraphQLString },
+    label: { type: GraphQLString },
+    component: { type: GraphQLString },
+  },
+});
+
 export const text = {
   build: {
     field: async ({ cache, field }: { cache: Cache; field: TextField }) => {
+      return textFieldType;
       return await cache.build(
         "TextField",
         async () =>

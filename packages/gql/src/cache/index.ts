@@ -1,5 +1,10 @@
 import _ from "lodash";
-import { getNamedType, GraphQLType } from "graphql";
+import {
+  getNamedType,
+  GraphQLType,
+  GraphQLString,
+  GraphQLObjectType,
+} from "graphql";
 
 import type { DataSource } from "../datasources/datasource";
 
@@ -32,19 +37,21 @@ export type Cache = {
 let count = 0;
 export const cacheInit = (datasource: DataSource) => {
   const storage: { [key: string]: GraphQLType } = {};
+  const storageThing: { [key: string]: boolean } = {};
   const cache: Cache = {
     build: async (name, gqlType) => {
       count = count + 1;
-      await sleep(100);
+      // await sleep(100);
       console.log(count, name, storage[name]);
 
       if (storage[name]) {
-        return () => storage[name]();
+        return storage[name];
       } else {
-        storage[name] = gqlType;
+        storageThing[name] = true;
+        storage[name] = await gqlType();
       }
 
-      return () => storage[name]() as any; // allows gqlType's internal type to pass through
+      return storage[name] as any; // allows gqlType's internal type to pass through
     },
     datasource: datasource,
   };

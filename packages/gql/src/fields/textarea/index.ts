@@ -3,9 +3,20 @@ import { GraphQLString, GraphQLObjectType } from "graphql";
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
 
+const textareaFieldType = new GraphQLObjectType({
+  name: "TextareaField",
+  fields: {
+    name: { type: GraphQLString },
+    label: { type: GraphQLString },
+    component: { type: GraphQLString },
+    description: { type: GraphQLString },
+  },
+});
+
 export const textarea = {
   build: {
     field: async ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+      return textareaFieldType;
       return await cache.build(
         "TextareaField",
         async () =>
