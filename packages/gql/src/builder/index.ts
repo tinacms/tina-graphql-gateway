@@ -27,6 +27,7 @@ import type { GraphQLFieldConfigMap } from "graphql";
 import type { TemplateData } from "../types";
 import type { Field } from "../fields";
 import type { ContextT } from "../resolver";
+import { Definitions } from "./ast-builder";
 
 /**
  * The builder holds all the functions which are required to build the schema, everything
@@ -585,23 +586,27 @@ export const builder: Builder = {
   },
 };
 
-const buildTemplateFormFields = async (cache: Cache, fields: Field[]) => {
+const buildTemplateFormFields = async (
+  cache: Cache,
+  fields: Field[],
+  accumulator: Definitions[]
+) => {
   return await sequential(fields, async (field) => {
     switch (field.type) {
       case "text":
-        return text.build.field({ cache, field });
+        return text.build.field({ cache, field, accumulator });
       case "textarea":
-        return textarea.build.field({ cache, field });
+        return textarea.build.field({ cache, field, accumulator });
       case "select":
-        return select.build.field({ cache, field });
+        return select.build.field({ cache, field, accumulator });
       case "blocks":
-        return blocks.build.field({ cache, field });
+        return blocks.build.field({ cache, field, accumulator });
       case "field_group_list":
-        return fieldGroupList.build.field({ cache, field });
+        return fieldGroupList.build.field({ cache, field, accumulator });
       case "field_group":
-        return fieldGroup.build.field({ cache, field });
+        return fieldGroup.build.field({ cache, field, accumulator });
       case "list":
-        return list.build.field({ cache, field });
+        return list.build.field({ cache, field, accumulator });
     }
   });
 };

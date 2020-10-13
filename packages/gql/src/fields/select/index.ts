@@ -28,24 +28,15 @@ export const select = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+          gql.string("options", { list: true }),
+        ],
       });
 
       return "SelectField";
-
-      // return await cache.build(
-      //   "SelectField",
-      //   async () =>
-      //     new GraphQLObjectType({
-      //       name: "SelectField",
-      //       fields: {
-      //         name: { type: GraphQLString },
-      //         label: { type: GraphQLString },
-      //         component: { type: GraphQLString },
-      //         options: { type: GraphQLList(GraphQLString) },
-      //       },
-      //     })
-      // );
     },
     initialValue: async ({
       cache,

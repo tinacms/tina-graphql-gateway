@@ -23,23 +23,14 @@ export const textarea = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+        ],
       });
 
       return "TextareaField";
-      // return await cache.build(
-      //   "TextareaField",
-      //   async () =>
-      //     new GraphQLObjectType({
-      //       name: "TextareaField",
-      //       fields: {
-      //         name: { type: GraphQLString },
-      //         label: { type: GraphQLString },
-      //         component: { type: GraphQLString },
-      //         description: { type: GraphQLString },
-      //       },
-      //     })
-      // );
     },
     initialValue: ({
       cache,

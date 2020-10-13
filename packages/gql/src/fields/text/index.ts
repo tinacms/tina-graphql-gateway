@@ -24,7 +24,11 @@ export const text = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+        ],
       });
 
       return "TextField";

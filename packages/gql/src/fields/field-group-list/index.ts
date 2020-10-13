@@ -3,7 +3,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
+import { builder } from "../../builder/ast-builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -48,6 +48,12 @@ export const fieldGroupList = {
     }) => {
       const name = friendlyName(field, "GroupListField");
 
+      const fieldsUnionName = await builder.documentFormFieldsUnion(
+        cache,
+        field,
+        accumulator
+      );
+
       accumulator.push({
         kind: "ObjectTypeDefinition",
         name: {
@@ -56,7 +62,30 @@ export const fieldGroupList = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "fields",
+            },
+            arguments: [],
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: fieldsUnionName,
+                },
+              },
+            },
+            directives: [],
+          },
+        ],
       });
 
       return name;
@@ -109,7 +138,7 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      return GraphQLList(await builder.documentDataInputObject(cache, field));
+      // return GraphQLList(await builder.documentDataInputObject(cache, field));
     },
   },
   resolve: {
