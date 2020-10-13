@@ -7,7 +7,7 @@ import express from "express";
 // @ts-ignore
 import bodyParser from "body-parser";
 
-import { builder } from "./builder/index2";
+import { builder } from "./builder/ast-builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema, printSchema } from "graphql";

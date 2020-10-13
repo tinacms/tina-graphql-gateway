@@ -426,6 +426,30 @@ export const builder = {
 
     return name;
   },
+  buildTemplateFormFields: async (
+    cache: Cache,
+    fields: Field[],
+    accumulator: Definitions[]
+  ): Promise<string[]> => {
+    return await sequential(fields, async (field) => {
+      switch (field.type) {
+        case "text":
+          return text.build.field({ cache, field, accumulator });
+        case "textarea":
+          return textarea.build.field({ cache, field, accumulator });
+        case "select":
+          return select.build.field({ cache, field, accumulator });
+        case "blocks":
+          return blocks.build.field({ cache, field, accumulator });
+        case "field_group_list":
+          return fieldGroupList.build.field({ cache, field, accumulator });
+        case "field_group":
+          return fieldGroup.build.field({ cache, field, accumulator });
+        case "list":
+          return list.build.field({ cache, field, accumulator });
+      }
+    });
+  },
 };
 
 const buildTemplateFormFields = async (

@@ -2,11 +2,51 @@ type Query {
   document(path: String): DocumentUnion
 }
 
-type TextareaField
+type TextareaField {
+  name: String
+  label: String
+  component: String
+}
 
-type SelectField
+type SelectField {
+  name: String
+  label: String
+  component: String
+  options: [String]
+}
 
-type Post_Sections_BlocksField
+type Section_Cta_GroupField
+
+union Section_Cta_FormFields = TextareaField
+
+union List_FormFieldsUnion = TextareaField | SelectField
+
+type ListField {
+  name: String
+  label: String
+  component: String
+  defaultItem: String
+  field: List_FormFieldsUnion
+}
+
+union Section_FormFields = TextareaField | Section_Cta_GroupField | ListField
+
+type Section_Form {
+  label: String
+  name: String
+  fields: [Section_FormFields]
+}
+
+type Post_Sections_BlocksFieldTemplates {
+  Section_Form: Section_Form
+}
+
+type Post_Sections_BlocksField {
+  name: String
+  label: String
+  component: String
+  templates: Post_Sections_BlocksFieldTemplates
+}
 
 union Post_FormFields = TextareaField | SelectField | Post_Sections_BlocksField
 
@@ -35,9 +75,14 @@ type Post {
   initialValues: Post_InitialValues
 }
 
-type ListField
+union Author_Accolades_FormFields = TextareaField
 
-type Author_Accolades_GroupListField
+type Author_Accolades_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_Accolades_FormFields]
+}
 
 union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
 

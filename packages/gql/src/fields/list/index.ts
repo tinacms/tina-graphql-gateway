@@ -29,6 +29,31 @@ export const list = {
       accumulator: Definitions[];
     }) => {
       accumulator.push({
+        kind: "UnionTypeDefinition" as const,
+        name: {
+          kind: "Name",
+          value: "List_FormFieldsUnion",
+        },
+        directives: [],
+        types: [
+          {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "TextareaField",
+            },
+          },
+          {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "SelectField",
+            },
+          },
+        ],
+      });
+
+      accumulator.push({
         kind: "ObjectTypeDefinition",
         name: {
           kind: "Name",
@@ -36,7 +61,28 @@ export const list = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+          gql.string("defaultItem"),
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "field",
+            },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "List_FormFieldsUnion",
+              },
+            },
+            directives: [],
+          },
+        ],
       });
 
       return "ListField";

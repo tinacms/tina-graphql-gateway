@@ -3,7 +3,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
+import { builder } from "../../builder/ast-builder";
 import { resolver } from "../../resolver/field-resolver";
 
 import type { Cache } from "../../cache";
@@ -33,6 +33,43 @@ export const fieldGroup = {
         interfaces: [],
         directives: [],
         fields: [],
+      });
+
+      const fieldsUnionName = await builder.documentFormFieldsUnion(
+        cache,
+        field,
+        accumulator
+      );
+
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: name,
+        },
+        interfaces: [],
+        directives: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "fields",
+            },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: fieldsUnionName,
+              },
+            },
+            directives: [],
+          },
+        ],
       });
 
       return name;
@@ -97,7 +134,7 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
-      return await builder.documentDataInputObject(cache, field);
+      // return await builder.documentDataInputObject(cache, field);
     },
   },
   resolve: {

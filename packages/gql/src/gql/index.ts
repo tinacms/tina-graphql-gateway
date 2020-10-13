@@ -41,25 +41,4 @@ export const gql = {
       };
     }
   },
-  list: (item) => {
-    return {
-      kind: "FieldDefinition",
-      name: {
-        kind: "Name",
-        value: field.name,
-      },
-      arguments: [],
-      type: {
-        kind: "ListType",
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-      },
-      directives: [],
-    };
-  },
 };

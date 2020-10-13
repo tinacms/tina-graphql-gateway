@@ -10,9 +10,10 @@ import {
   GraphQLType,
   FieldDefinitionNode,
 } from "graphql";
+import { gql } from "../../gql";
 
 import { friendlyName } from "@forestryio/graphql-helpers";
-import { builder } from "../../builder";
+import { builder } from "../../builder/ast-builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -182,10 +183,49 @@ export interface Blocks {
 export const blocks: Blocks = {
   build: {
     field: async ({ cache, field, accumulator }) => {
-      const templateForms: {
-        [key: string]: { type: GraphQLObjectType<any, any> };
-      } = {};
       const name = friendlyName(field, "BlocksField");
+
+      const templateName = friendlyName(field, "BlocksFieldTemplates");
+      const possibleTemplates = await sequential(
+        field.template_types,
+        async (templateSlug) => {
+          const template = await cache.datasource.getTemplate(templateSlug);
+          const names = await builder.documentFormObject(
+            cache,
+            template,
+            accumulator
+          );
+          return names;
+        }
+      );
+
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: templateName,
+        },
+        interfaces: [],
+        directives: [],
+        fields: _.flatten(possibleTemplates).map((name) => {
+          return {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: name,
+            },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: name,
+              },
+            },
+            directives: [],
+          };
+        }),
+      });
 
       accumulator.push({
         kind: "ObjectTypeDefinition",
@@ -195,7 +235,27 @@ export const blocks: Blocks = {
         },
         interfaces: [],
         directives: [],
-        fields: [],
+        fields: [
+          gql.string("name"),
+          gql.string("label"),
+          gql.string("component"),
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "templates",
+            },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: templateName,
+              },
+            },
+            directives: [],
+          },
+        ],
       });
 
       return name;
