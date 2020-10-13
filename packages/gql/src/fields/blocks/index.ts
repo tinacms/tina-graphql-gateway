@@ -190,12 +190,12 @@ export const blocks: Blocks = {
         field.template_types,
         async (templateSlug) => {
           const template = await cache.datasource.getTemplate(templateSlug);
-          const names = await builder.documentFormObject(
+          const name = await builder.documentFormObject(
             cache,
             template,
             accumulator
           );
-          return names;
+          return { name: templateSlug, value: name };
         }
       );
 
@@ -207,19 +207,19 @@ export const blocks: Blocks = {
         },
         interfaces: [],
         directives: [],
-        fields: _.flatten(possibleTemplates).map((name) => {
+        fields: _.flatten(possibleTemplates).map((formObject) => {
           return {
             kind: "FieldDefinition",
             name: {
               kind: "Name",
-              value: name,
+              value: formObject.name,
             },
             arguments: [],
             type: {
               kind: "NamedType",
               name: {
                 kind: "Name",
-                value: name,
+                value: formObject.value,
               },
             },
             directives: [],
@@ -296,10 +296,18 @@ export const blocks: Blocks = {
     initialValue: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: BlocksField;
+      accumulator: Definitions[];
     }) => {
+      const fieldUnionName = await builder.initialValuesUnion({
+        cache,
+        templates: field.template_types,
+        returnTemplate: true,
+        accumulator,
+      });
       return {
         kind: "FieldDefinition",
         name: {
@@ -313,21 +321,12 @@ export const blocks: Blocks = {
             kind: "NamedType",
             name: {
               kind: "Name",
-              value: "String",
+              value: fieldUnionName,
             },
           },
         },
         directives: [],
       };
-      // return {
-      //   type: GraphQLList(
-      //     await builder.initialValuesUnion({
-      //       cache,
-      //       templates: field.template_types,
-      //       returnTemplate: true,
-      //     })
-      //   ),
-      // };
     },
     value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return {
