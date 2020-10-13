@@ -55,16 +55,16 @@ app.post("/:schema", async (req, res) => {
     path.join(projectRoot, "ast-schema.graphql"),
     printSchema(buildASTSchema(schema))
   );
-  // const result = await graphqlInit({
-  //   schema,
-  //   source: query,
-  //   contextValue: { datasource },
-  //   variableValues: variables,
-  // });
-  // if (result.errors) {
-  //   console.error(result.errors);
-  // }
-  // return res.json(result);
+  const result = await graphqlInit({
+    schema: buildASTSchema(schema),
+    source: query,
+    contextValue: { datasource },
+    variableValues: variables,
+  });
+  if (result.errors) {
+    console.error(result.errors);
+  }
+  return res.json(result);
 });
 
 server.listen(4000, () => {

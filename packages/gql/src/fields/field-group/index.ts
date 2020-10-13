@@ -24,16 +24,16 @@ export const fieldGroup = {
     }) => {
       const name = friendlyName(field, "GroupField");
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: name,
-        },
-        interfaces: [],
-        directives: [],
-        fields: [],
-      });
+      // accumulator.push({
+      //   kind: "ObjectTypeDefinition",
+      //   name: {
+      //     kind: "Name",
+      //     value: name,
+      //   },
+      //   interfaces: [],
+      //   directives: [],
+      //   fields: [],
+      // });
 
       const fieldsUnionName = await builder.documentFormFieldsUnion(
         cache,
