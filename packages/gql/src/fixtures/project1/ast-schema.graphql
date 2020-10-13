@@ -15,9 +15,14 @@ type SelectField {
   options: [String]
 }
 
-type Section_Cta_GroupField
-
 union Section_Cta_FormFields = TextareaField
+
+type Section_Cta_GroupField {
+  name: String
+  label: String
+  component: String
+  fields: Section_Cta_FormFields
+}
 
 union List_FormFieldsUnion = TextareaField | SelectField
 
