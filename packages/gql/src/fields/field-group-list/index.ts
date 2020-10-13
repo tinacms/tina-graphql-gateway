@@ -9,6 +9,7 @@ import { sequential } from "../../util";
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
+import type { Definitions } from "../../builder/ast-builder";
 
 export type FieldGroupListField = {
   label: string;
@@ -38,10 +39,26 @@ export const fieldGroupList = {
     field: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupListField;
+      accumulator: Definitions[];
     }) => {
+      const name = friendlyName(field, "GroupListField");
+
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: name,
+        },
+        interfaces: [],
+        directives: [],
+        fields: [],
+      });
+
+      return name;
       return await cache.build(
         friendlyName(field, "GroupListField"),
         async () =>
@@ -67,6 +84,25 @@ export const fieldGroupList = {
       field: FieldGroupListField;
     }) => {
       return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        },
+        directives: [],
+      };
+      return {
         type: GraphQLList(await builder.documentDataObject(cache, field)),
       };
     },
@@ -77,6 +113,25 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        },
+        directives: [],
+      };
       return {
         type: GraphQLList(await builder.documentDataObject(cache, field)),
       };

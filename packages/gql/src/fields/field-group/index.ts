@@ -8,16 +8,34 @@ import { resolver } from "../../resolver/field-resolver";
 import type { Cache } from "../../cache";
 import type { Field, TinaField } from "../index";
 import type { DataSource } from "../../datasources/datasource";
+import type { Definitions } from "../../builder/ast-builder";
 
 export const fieldGroup = {
   build: {
     field: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupField;
+      accumulator: Definitions[];
     }) => {
+      const name = friendlyName(field, "GroupField");
+
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: name,
+        },
+        interfaces: [],
+        directives: [],
+        fields: [],
+      });
+
+      return name;
+
       return await cache.build(
         friendlyName(field, "GroupField"),
         async () =>
@@ -41,6 +59,22 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+        directives: [],
+      };
       return {
         type: await builder.documentInitialValuesObject(cache, field),
       };

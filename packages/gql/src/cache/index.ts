@@ -1,10 +1,23 @@
 import _ from "lodash";
-import { getNamedType, GraphQLType } from "graphql";
+import {
+  getNamedType,
+  GraphQLType,
+  ObjectTypeDefinitionNode,
+  UnionTypeDefinitionNode,
+  GraphQLObjectType,
+  valueFromAST,
+  astFromValue,
+  valueFromASTUntyped,
+  FieldDefinitionNode,
+  ASTNode,
+  NameNode,
+  GraphQLIsTypeOfFn,
+} from "graphql";
 
 import type { DataSource } from "../datasources/datasource";
 
 const sleep = (milliseconds: number) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
 /**
@@ -22,6 +35,18 @@ export type Cache = {
     name: string,
     callback: () => Promise<T>
   ) => Promise<T>;
+  gql: {
+    object: (
+      name: string,
+      def: Omit<ObjectTypeDefinitionNode, "kind" | "name">
+    ) => ObjectTypeDefinitionNode;
+    union: (
+      name: string,
+      def: Omit<UnionTypeDefinitionNode, "kind" | "name">
+    ) => UnionTypeDefinitionNode;
+    name: (name: string) => NameNode;
+    string: (name: string) => FieldDefinitionNode;
+  };
   datasource: DataSource;
 };
 
@@ -33,6 +58,42 @@ let count = 0;
 export const cacheInit = (datasource: DataSource) => {
   const storage: { [key: string]: GraphQLType } = {};
   const cache: Cache = {
+    gql: {
+      object: (name, def) => {
+        return {
+          kind: "ObjectTypeDefinition",
+          name: cache.gql.name(name),
+          ...def,
+        };
+      },
+      union: (name, def) => {
+        return {
+          kind: "UnionTypeDefinition",
+          name: {
+            kind: "Name",
+            value: "DocumentUnion",
+          },
+        };
+      },
+      name: (name) => ({ kind: "Name", value: name }),
+      string: (name) => {
+        return {
+          kind: "FieldDefinition",
+          name: {
+            kind: "Name",
+            value: name,
+          },
+          arguments: [],
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        };
+      },
+    },
     build: async (name, gqlType) => {
       count = count + 1;
       // await sleep(100);
