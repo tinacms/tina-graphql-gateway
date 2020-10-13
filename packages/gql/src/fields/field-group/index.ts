@@ -1,6 +1,7 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
+import { gql } from "../../gql";
 
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
@@ -36,21 +37,21 @@ export const fieldGroup = {
 
       return name;
 
-      return await cache.build(
-        friendlyName(field, "GroupField"),
-        async () =>
-          new GraphQLObjectType({
-            name: friendlyName(field, "GroupField"),
-            fields: {
-              name: { type: GraphQLString },
-              label: { type: GraphQLString },
-              component: { type: GraphQLString },
-              fields: {
-                type: await builder.documentFormFieldsUnion(cache, field),
-              },
-            },
-          })
-      );
+      // return await cache.build(
+      //   friendlyName(field, "GroupField"),
+      //   async () =>
+      //     new GraphQLObjectType({
+      //       name: friendlyName(field, "GroupField"),
+      //       fields: {
+      //         name: { type: GraphQLString },
+      //         label: { type: GraphQLString },
+      //         component: { type: GraphQLString },
+      //         fields: {
+      //           type: await builder.documentFormFieldsUnion(cache, field),
+      //         },
+      //       },
+      //     })
+      // );
     },
     initialValue: async ({
       cache,
@@ -60,24 +61,24 @@ export const fieldGroup = {
       field: FieldGroupField;
     }) => {
       return {
-        kind: "FieldDefinition",
+        kind: "FieldDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         arguments: [],
         type: {
-          kind: "NamedType",
+          kind: "NamedType" as const,
           name: {
-            kind: "Name",
+            kind: "Name" as const,
             value: "String",
           },
         },
         directives: [],
       };
-      return {
-        type: await builder.documentInitialValuesObject(cache, field),
-      };
+      // return {
+      //   type: await builder.documentInitialValuesObject(cache, field),
+      // };
     },
     value: async ({
       cache,
@@ -86,7 +87,8 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
-      return { type: await builder.documentDataObject(cache, field) };
+      return gql.string(field.name);
+      // return { type: await builder.documentDataObject(cache, field) };
     },
     input: async ({
       cache,

@@ -1,4 +1,5 @@
 import { GraphQLString, GraphQLObjectType } from "graphql";
+import { gql } from "../../gql";
 
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
@@ -41,41 +42,10 @@ export const text = {
       // );
     },
     initialValue: ({ cache, field }: { cache: Cache; field: TextField }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-        directives: [],
-      };
+      return gql.string(field.name);
     },
     value: ({ cache, field }: { cache: Cache; field: TextField }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-        directives: [],
-      };
-      return { type: GraphQLString };
+      return gql.string(field.name);
     },
     input: ({ cache, field }: { cache: Cache; field: TextField }) => {
       return GraphQLString;

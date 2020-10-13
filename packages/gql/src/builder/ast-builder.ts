@@ -10,6 +10,7 @@ import {
   GraphQLInputObjectType,
   GraphQLInputFieldConfigMap,
   InputObjectTypeDefinitionNode,
+  FieldDefinitionNode,
 } from "graphql";
 import _ from "lodash";
 
@@ -236,9 +237,9 @@ export const builder = {
     return name;
   },
   documentDataObject: async (
-    cache,
-    template,
-    returnTemplate,
+    cache: Cache,
+    template: TemplateData,
+    returnTemplate: boolean,
     accumulator: Definitions[]
   ) => {
     const name = friendlyName(template, "Data");
@@ -431,7 +432,7 @@ const buildTemplateFormFields = async (
   cache: Cache,
   fields: Field[],
   accumulator: Definitions[]
-) => {
+): Promise<string[]> => {
   return await sequential(fields, async (field) => {
     switch (field.type) {
       case "text":
@@ -456,7 +457,7 @@ const buildTemplateInitialValueField = async (
   cache: Cache,
   field: Field,
   accumulator: Definitions[]
-) => {
+): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
       return text.build.initialValue({ cache, field });
@@ -475,7 +476,10 @@ const buildTemplateInitialValueField = async (
   }
 };
 
-const buildTemplateDataField = async (cache: Cache, field: Field) => {
+const buildTemplateDataField = async (
+  cache: Cache,
+  field: Field
+): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
       return text.build.value({ cache, field });

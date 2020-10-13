@@ -529,13 +529,10 @@
           },
           "arguments": [],
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "String"
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []
@@ -608,13 +605,10 @@
           },
           "arguments": [],
           "type": {
-            "kind": "ListType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "String"
-              }
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
             }
           },
           "directives": []

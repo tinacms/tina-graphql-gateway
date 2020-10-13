@@ -6,6 +6,7 @@ import {
   GraphQLList,
   GraphQLUnionType,
 } from "graphql";
+import { gql } from "../../gql";
 
 import { select } from "../select";
 import { builder } from "../../builder";
@@ -90,46 +91,10 @@ export const list = {
       cache: Cache;
       field: ListField;
     }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-        },
-        directives: [],
-      };
+      return gql.string(field.name);
     },
     value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-        },
-        directives: [],
-      };
+      return gql.string(field.name);
 
       // let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
       // const isSimple = field.config.use_select ? false : true;

@@ -50,14 +50,14 @@ type Author_Form {
 type Author_Data {
   name: String
   role: String
-  anecdotes: [String]
+  anecdotes: String
   accolades: [String]
 }
 
 type Author_InitialValues {
   name: String
   role: String
-  anecdotes: [String]
+  anecdotes: String
   accolades: [String]
 }
 

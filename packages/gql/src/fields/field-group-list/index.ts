@@ -1,6 +1,7 @@
 import * as yup from "yup";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
+import { gql } from "../../gql";
 
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
@@ -59,22 +60,22 @@ export const fieldGroupList = {
       });
 
       return name;
-      return await cache.build(
-        friendlyName(field, "GroupListField"),
-        async () =>
-          new GraphQLObjectType({
-            name: friendlyName(field, "GroupListField"),
-            fields: {
-              name: { type: GraphQLString },
-              label: { type: GraphQLString },
-              component: { type: GraphQLString },
-              fields: {
-                // field is structural subtyping TemplateData shape
-                type: await builder.documentFormFieldsUnion(cache, field),
-              },
-            },
-          })
-      );
+      // return await cache.build(
+      //   friendlyName(field, "GroupListField"),
+      //   async () =>
+      //     new GraphQLObjectType({
+      //       name: friendlyName(field, "GroupListField"),
+      //       fields: {
+      //         name: { type: GraphQLString },
+      //         label: { type: GraphQLString },
+      //         component: { type: GraphQLString },
+      //         fields: {
+      //           // field is structural subtyping TemplateData shape
+      //           type: await builder.documentFormFieldsUnion(cache, field),
+      //         },
+      //       },
+      //     })
+      // );
     },
     initialValue: async ({
       cache,
@@ -83,28 +84,10 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-        },
-        directives: [],
-      };
-      return {
-        type: GraphQLList(await builder.documentDataObject(cache, field)),
-      };
+      return gql.string(field.name, { list: true });
+      // return {
+      //   type: GraphQLList(await builder.documentDataObject(cache, field)),
+      // };
     },
     value: async ({
       cache,
@@ -113,28 +96,11 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-        },
-        directives: [],
-      };
-      return {
-        type: GraphQLList(await builder.documentDataObject(cache, field)),
-      };
+      return gql.string(field.name, { list: true });
+
+      // return {
+      //   type: GraphQLList(await builder.documentDataObject(cache, field)),
+      // };
     },
     input: async ({
       cache,
