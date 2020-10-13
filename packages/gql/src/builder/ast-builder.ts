@@ -13,6 +13,7 @@ import {
   FieldDefinitionNode,
 } from "graphql";
 import _ from "lodash";
+import { gql } from "../gql";
 
 import { Cache } from "../cache";
 import { text } from "../fields/text";
@@ -415,16 +416,41 @@ export const builder = {
       return await buildTemplateInitialValueField(cache, field, accumulator);
     });
 
+    let additionalFields = [];
+    if (returnTemplate) {
+      additionalFields.push(gql.string("template"));
+    }
+
     accumulator.push({
       kind: "ObjectTypeDefinition",
       name: {
         kind: "Name",
         value: name,
       },
-      fields: fieldNames,
+      fields: [...additionalFields, ...fieldNames],
     });
 
     return name;
+  },
+  initialValuesUnion: async ({
+    cache,
+    templates,
+    returnTemplate,
+    accumulator,
+  }) => {
+    const name = friendlyName(templates, "InitialValuesUnion");
+    const templateObjects = await cache.datasource.getTemplates(templates);
+    const types = await sequential(
+      templateObjects,
+      async (template) =>
+        await builder.documentInitialValuesObject(
+          cache,
+          template,
+          returnTemplate,
+          accumulator
+        )
+    );
+    return types;
   },
   buildTemplateFormFields: async (
     cache: Cache,
@@ -490,7 +516,7 @@ const buildTemplateInitialValueField = async (
     case "select":
       return select.build.initialValue({ cache, field });
     case "blocks":
-      return blocks.build.initialValue({ cache, field });
+      return blocks.build.initialValue({ cache, field, accumulator });
     case "field_group":
       return fieldGroup.build.initialValue({ cache, field });
     case "field_group_list":

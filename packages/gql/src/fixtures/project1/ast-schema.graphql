@@ -43,7 +43,7 @@ type Section_Form {
 }
 
 type Post_Sections_BlocksFieldTemplates {
-  Section_Form: Section_Form
+  section: Section_Form
 }
 
 type Post_Sections_BlocksField {
@@ -67,10 +67,17 @@ type Post_Data {
   sections: [String]
 }
 
+type Section_InitialValues {
+  template: String
+  description: String
+  cta: String
+  authors: String
+}
+
 type Post_InitialValues {
   title: String
   author: String
-  sections: [String]
+  sections: [Section_InitialValues]
 }
 
 type Post {
