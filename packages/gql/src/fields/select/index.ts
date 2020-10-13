@@ -1,5 +1,6 @@
 import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import { friendlyName } from "@forestryio/graphql-helpers";
+import { gql } from "../../gql";
 
 import { builder } from "../../builder";
 
@@ -32,19 +33,19 @@ export const select = {
 
       return "SelectField";
 
-      return await cache.build(
-        "SelectField",
-        async () =>
-          new GraphQLObjectType({
-            name: "SelectField",
-            fields: {
-              name: { type: GraphQLString },
-              label: { type: GraphQLString },
-              component: { type: GraphQLString },
-              options: { type: GraphQLList(GraphQLString) },
-            },
-          })
-      );
+      // return await cache.build(
+      //   "SelectField",
+      //   async () =>
+      //     new GraphQLObjectType({
+      //       name: "SelectField",
+      //       fields: {
+      //         name: { type: GraphQLString },
+      //         label: { type: GraphQLString },
+      //         component: { type: GraphQLString },
+      //         options: { type: GraphQLList(GraphQLString) },
+      //       },
+      //     })
+      // );
     },
     initialValue: async ({
       cache,
@@ -53,40 +54,10 @@ export const select = {
       cache: Cache;
       field: SelectField;
     }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-        directives: [],
-      };
+      return gql.string(field.name);
     },
     value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-        directives: [],
-      };
+      return gql.string(field.name);
       // let select;
       // switch (field.config.source.type) {
       //   case "documents":
