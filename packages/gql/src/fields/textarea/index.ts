@@ -5,20 +5,40 @@ import type { DataSource } from "../../datasources/datasource";
 
 export const textarea = {
   build: {
-    field: async ({ cache, field }: { cache: Cache; field: TextareaField }) => {
-      return await cache.build(
-        "TextareaField",
-        async () =>
-          new GraphQLObjectType({
-            name: "TextareaField",
-            fields: {
-              name: { type: GraphQLString },
-              label: { type: GraphQLString },
-              component: { type: GraphQLString },
-              description: { type: GraphQLString },
-            },
-          })
-      );
+    field: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextareaField;
+      accumulator: any[];
+    }) => {
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: "TextareaField",
+        },
+        interfaces: [],
+        directives: [],
+        fields: [],
+      });
+
+      return "TextareaField";
+      // return await cache.build(
+      //   "TextareaField",
+      //   async () =>
+      //     new GraphQLObjectType({
+      //       name: "TextareaField",
+      //       fields: {
+      //         name: { type: GraphQLString },
+      //         label: { type: GraphQLString },
+      //         component: { type: GraphQLString },
+      //         description: { type: GraphQLString },
+      //       },
+      //     })
+      // );
     },
     initialValue: ({
       cache,
@@ -27,9 +47,40 @@ export const textarea = {
       cache: Cache;
       field: TextareaField;
     }) => {
-      return { type: GraphQLString };
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+        directives: [],
+      };
     },
     value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+        directives: [],
+      };
       return { type: GraphQLString };
     },
     input: ({ cache, field }: { cache: Cache; field: TextareaField }) => {

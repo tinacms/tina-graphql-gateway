@@ -1,0 +1,71 @@
+type Query {
+  document(path: String): DocumentUnion
+}
+
+type TextareaField
+
+type SelectField
+
+type Post_Sections_BlocksField
+
+union Post_FormFields = TextareaField | SelectField | Post_Sections_BlocksField
+
+type Post_Form {
+  label: String
+  name: String
+  fields: [Post_FormFields]
+}
+
+type Post_Data {
+  title: String
+  author: String
+  sections: [String]
+}
+
+type Post_InitialValues {
+  title: String
+  author: String
+  sections: [String]
+}
+
+type Post {
+  path: String
+  form: Post_Form
+  data: Post_Data
+  initialValues: Post_InitialValues
+}
+
+type ListField
+
+type Author_Accolades_GroupListField
+
+union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
+
+type Author_Form {
+  label: String
+  name: String
+  fields: [Author_FormFields]
+}
+
+type Author_Data {
+  name: String
+  role: String
+  anecdotes: [String]
+  accolades: [String]
+}
+
+type Author_InitialValues {
+  name: String
+  role: String
+  anecdotes: [String]
+  accolades: [String]
+}
+
+type Author {
+  path: String
+  form: Author_Form
+  data: Author_Data
+  initialValues: Author_InitialValues
+}
+
+union DocumentUnion = Post | Author
