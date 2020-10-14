@@ -16,10 +16,10 @@ input Post_Input {
 input Author_InputData {
   name: String
   role: String
-  anecdotes: String
-  favorite_posts: String
+  anecdotes: [String]
+  favorite_posts: [String]
   all_time_post: String
-  accolades: String
+  accolades: [String]
 }
 
 input Author_Input {
