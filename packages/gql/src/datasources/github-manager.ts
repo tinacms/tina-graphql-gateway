@@ -8,7 +8,6 @@ import { FieldGroupListField } from "../fields/field-group-list";
 import { Octokit } from "@octokit/rest";
 import { byTypeWorks } from "../types";
 import { createAppAuth } from "@octokit/auth-app";
-import fs from "fs";
 import matter from "gray-matter";
 import p from "path";
 
