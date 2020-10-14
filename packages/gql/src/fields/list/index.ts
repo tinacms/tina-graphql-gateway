@@ -9,7 +9,7 @@ import {
 import { gql } from "../../gql";
 
 import { select } from "../select";
-import { builder } from "../../builder";
+import { builder } from "../../builder/ast-builder";
 
 import type { Cache } from "../../cache";
 import type { TinaField } from "../index";
@@ -86,49 +86,6 @@ export const list = {
       });
 
       return "ListField";
-
-      // return await cache.build(
-      //   "ListField",
-      //   async () =>
-      //     new GraphQLObjectType({
-      //       name: "ListField",
-      //       fields: {
-      //         name: { type: GraphQLString },
-      //         label: { type: GraphQLString },
-      //         component: { type: GraphQLString },
-      //         defaultItem: { type: GraphQLString },
-      //         field: {
-      //           type: new GraphQLUnionType({
-      //             name: "ListFormFieldItemField",
-      //             types: [
-      //               // FIXME: this should pass the fields ('text' | 'textarea' | 'number' | 'select') through to buildTemplateFormFields
-      //               await cache.build(
-      //                 "SelectField",
-      //                 async () =>
-      //                   new GraphQLObjectType({
-      //                     name: "SelectField",
-      //                     fields: {
-      //                       component: { type: GraphQLString },
-      //                       options: { type: GraphQLList(GraphQLString) },
-      //                     },
-      //                   })
-      //               ),
-      //               await cache.build(
-      //                 "TextField",
-      //                 async () =>
-      //                   new GraphQLObjectType({
-      //                     name: "TextField",
-      //                     fields: {
-      //                       component: { type: GraphQLString },
-      //                     },
-      //                   })
-      //               ),
-      //             ],
-      //           }),
-      //         },
-      //       },
-      //     })
-      // );
     },
     initialValue: async ({
       cache,
@@ -137,50 +94,66 @@ export const list = {
       cache: Cache;
       field: ListField;
     }) => {
-      return gql.string(field.name);
+      return gql.string(field.name, { list: true });
     },
-    value: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-      return gql.string(field.name);
+    value: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: ListField;
+      accumulator: Definitions[];
+    }) => {
+      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+      const isSimple = field.config.use_select ? false : true;
+      if (!isSimple) {
+        listTypeIdentifier =
+          field.config?.source?.type === "documents"
+            ? "documents"
+            : field.config?.source?.type === "pages"
+            ? "pages"
+            : "simple";
+      }
 
-      // let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      // const isSimple = field.config.use_select ? false : true;
-      // if (!isSimple) {
-      //   listTypeIdentifier =
-      //     field.config?.source?.type === "documents"
-      //       ? "documents"
-      //       : field.config?.source?.type === "pages"
-      //       ? "pages"
-      //       : "simple";
-      // }
+      let list;
+      switch (listTypeIdentifier) {
+        case "documents":
+          list = field as DocumentList;
+          throw new Error(`document select not implemented`);
+        case "pages":
+          list = field as SectionList;
+          const section = list.config.source.section;
 
-      // let list;
-      // switch (listTypeIdentifier) {
-      //   case "documents":
-      //     list = field as DocumentList;
-      //     throw new Error(`document select not implemented`);
-      //   case "pages":
-      //     list = field as SectionList;
-      //     const section = list.config.source.section;
-      //     return {
-      //       type: await cache.build(
-      //         friendlyName(list, "Documents"),
-      //         async () =>
-      //           new GraphQLObjectType({
-      //             name: friendlyName(list, "Documents"),
-      //             fields: {
-      //               documents: {
-      //                 type: GraphQLList(
-      //                   await builder.documentUnion({ cache, section })
-      //                 ),
-      //               },
-      //             },
-      //           })
-      //       ),
-      //     };
-      //   case "simple":
-      //     list = field as SimpleList;
-      //     return { type: GraphQLList(GraphQLString) };
-      // }
+          const fieldUnionName = await builder.documentUnion({
+            cache,
+            section,
+            accumulator,
+          });
+
+          return {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: field.name,
+            },
+            arguments: [],
+            type: {
+              kind: "ListType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: fieldUnionName,
+                },
+              },
+            },
+            directives: [],
+          };
+        case "simple":
+          list = field as SimpleList;
+          return gql.string(field.name, { list: true });
+      }
     },
     input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
       return GraphQLList(GraphQLString);
