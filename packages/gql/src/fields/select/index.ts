@@ -93,7 +93,20 @@ export const select = {
       }
     },
     input: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return GraphQLString;
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      };
     },
   },
   resolve: {

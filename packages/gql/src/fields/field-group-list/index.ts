@@ -166,7 +166,23 @@ export const fieldGroupList = {
       cache: Cache;
       field: FieldGroupListField;
     }) => {
-      // return GraphQLList(await builder.documentDataInputObject(cache, field));
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        },
+      };
     },
   },
   resolve: {

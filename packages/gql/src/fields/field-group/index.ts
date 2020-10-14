@@ -132,7 +132,20 @@ export const fieldGroup = {
       cache: Cache;
       field: FieldGroupField;
     }) => {
-      // return await builder.documentDataInputObject(cache, field);
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      };
     },
   },
   resolve: {

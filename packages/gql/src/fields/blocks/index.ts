@@ -331,29 +331,43 @@ export const blocks: Blocks = {
       };
     },
     input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
-      return await cache.build(friendlyName(field, "BlocksInput"), async () => {
-        const templates = await sequential(
-          field.template_types,
-          async (templateSlug) =>
-            await cache.datasource.getTemplate(templateSlug)
-        );
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      };
+      // return await cache.build(friendlyName(field, "BlocksInput"), async () => {
+      //   const templates = await sequential(
+      //     field.template_types,
+      //     async (templateSlug) =>
+      //       await cache.datasource.getTemplate(templateSlug)
+      //   );
 
-        const templateTypes = await sequential(templates, async (template) => {
-          return builder.documentDataInputObject(cache, template, true);
-        });
+      //   const templateTypes = await sequential(templates, async (template) => {
+      //     return builder.documentDataInputObject(cache, template, true);
+      //   });
 
-        const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-        templateTypes.forEach((template) => {
-          accum[getNamedType(template).toString()] = { type: template };
-        });
+      //   const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
+      //   templateTypes.forEach((template) => {
+      //     accum[getNamedType(template).toString()] = { type: template };
+      //   });
 
-        return GraphQLList(
-          new GraphQLInputObjectType({
-            name: friendlyName(field, "BlocksInput"),
-            fields: accum,
-          })
-        );
-      });
+      //   return GraphQLList(
+      //     new GraphQLInputObjectType({
+      //       name: friendlyName(field, "BlocksInput"),
+      //       fields: accum,
+      //     })
+      //   );
+      // });
     },
   },
   resolve: {

@@ -132,6 +132,7 @@ export const list = {
             build: false,
           });
 
+          // TODO: refactor this to use the select
           return {
             kind: "FieldDefinition",
             name: {
@@ -157,7 +158,23 @@ export const list = {
       }
     },
     input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
-      return GraphQLList(GraphQLString);
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        },
+      };
     },
   },
   resolve: {
