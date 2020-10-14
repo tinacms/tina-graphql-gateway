@@ -73,16 +73,16 @@ export const select = {
           });
 
           return {
-            kind: "FieldDefinition",
+            kind: "FieldDefinition" as const,
             name: {
-              kind: "Name",
+              kind: "Name" as const,
               value: field.name,
             },
             arguments: [],
             type: {
-              kind: "NamedType",
+              kind: "NamedType" as const,
               name: {
-                kind: "Name",
+                kind: "Name" as const,
                 value: fieldUnionName,
               },
             },
@@ -92,18 +92,26 @@ export const select = {
           return gql.string(field.name);
       }
     },
-    input: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
+    input: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: SelectField;
+      accumulator: Definitions[];
+    }) => {
       return {
-        kind: "InputValueDefinition",
+        kind: "InputValueDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         type: {
-          kind: "NamedType",
+          kind: "NamedType" as const,
           name: {
-            kind: "Name",
-            value: "String",
+            kind: "Name" as const,
+            value: "String" as const,
           },
         },
       };

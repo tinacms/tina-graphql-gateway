@@ -421,9 +421,9 @@ const dataValue = async (
 const dataField = async (datasource: DataSource, field: Field) => {
   switch (field.type) {
     case "text":
-      return await text.resolve.field({ field });
+      return await text.resolve.field({ datasource, field });
     case "textarea":
-      return await textarea.resolve.field({ field });
+      return await textarea.resolve.field({ datasource, field });
     case "blocks":
       return await blocks.resolve.field({ datasource, field });
     case "select":

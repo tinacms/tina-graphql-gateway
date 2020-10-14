@@ -32,23 +32,27 @@ export const text = {
       });
 
       return "TextField";
-      // return await cache.build(
-      //   "TextField",
-      //   async () =>
-      //     new GraphQLObjectType({
-      //       name: "TextField",
-      //       fields: {
-      //         name: { type: GraphQLString },
-      //         label: { type: GraphQLString },
-      //         component: { type: GraphQLString },
-      //       },
-      //     })
-      // );
     },
-    initialValue: ({ cache, field }: { cache: Cache; field: TextField }) => {
+    initialValue: ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextField;
+      accumulator: Definitions[];
+    }) => {
       return gql.string(field.name);
     },
-    value: ({ cache, field }: { cache: Cache; field: TextField }) => {
+    value: ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextField;
+      accumulator: Definitions[];
+    }) => {
       return gql.string(field.name);
     },
     input: ({
@@ -64,7 +68,13 @@ export const text = {
     },
   },
   resolve: {
-    field: ({ field }: { field: TextField }): TinaTextField => {
+    field: ({
+      datasource,
+      field,
+    }: {
+      datasource: DataSource;
+      field: TextField;
+    }): TinaTextField => {
       const { type, ...rest } = field;
       return {
         ...rest,

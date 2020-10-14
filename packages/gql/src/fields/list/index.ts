@@ -90,9 +90,11 @@ export const list = {
     initialValue: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: ListField;
+      accumulator: Definitions[];
     }) => {
       return gql.string(field.name, { list: true });
     },
@@ -134,18 +136,18 @@ export const list = {
 
           // TODO: refactor this to use the select
           return {
-            kind: "FieldDefinition",
+            kind: "FieldDefinition" as const,
             name: {
-              kind: "Name",
+              kind: "Name" as const,
               value: field.name,
             },
             arguments: [],
             type: {
-              kind: "ListType",
+              kind: "ListType" as const,
               type: {
-                kind: "NamedType",
+                kind: "NamedType" as const,
                 name: {
-                  kind: "Name",
+                  kind: "Name" as const,
                   value: fieldUnionName,
                 },
               },
@@ -157,20 +159,28 @@ export const list = {
           return gql.string(field.name, { list: true });
       }
     },
-    input: async ({ cache, field }: { cache: Cache; field: ListField }) => {
+    input: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: ListField;
+      accumulator: Definitions[];
+    }) => {
       return {
-        kind: "InputValueDefinition",
+        kind: "InputValueDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         type: {
-          kind: "ListType",
+          kind: "ListType" as const,
           type: {
-            kind: "NamedType",
+            kind: "NamedType" as const,
             name: {
-              kind: "Name",
-              value: "String",
+              kind: "Name" as const,
+              value: "String" as const,
             },
           },
         },
