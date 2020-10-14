@@ -49,10 +49,13 @@ export const fieldGroup = {
             },
             arguments: [],
             type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: fieldsUnionName,
+              kind: "ListType",
+              type: {
+                kind: "NamedType",
+                name: {
+                  kind: "Name",
+                  value: fieldsUnionName,
+                },
               },
             },
             directives: [],

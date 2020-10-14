@@ -234,21 +234,17 @@ export const resolver: Resolver = {
             datasource,
           });
         case "_nested_source":
-          return {
-            document: await resolver.documentObject({
-              args: value._args,
-              datasource,
-            }),
-          };
+          return await resolver.documentObject({
+            args: value._args,
+            datasource,
+          });
         case "_nested_sources":
-          return {
-            documents: await sequential(value._args.paths, async (p) => {
-              return await resolver.documentObject({
-                args: { path: p },
-                datasource,
-              });
-            }),
-          };
+          return await sequential(value._args.paths, async (p) => {
+            return await resolver.documentObject({
+              args: { path: p },
+              datasource,
+            });
+          });
       }
     } else {
       return value;
