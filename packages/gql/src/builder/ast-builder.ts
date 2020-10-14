@@ -11,8 +11,9 @@ import {
   GraphQLInputFieldConfigMap,
   InputObjectTypeDefinitionNode,
   FieldDefinitionNode,
+  InputValueDefinitionNode,
 } from "graphql";
-import _ from "lodash";
+import _, { template } from "lodash";
 import { gql } from "../gql";
 
 import { Cache } from "../cache";
@@ -87,6 +88,10 @@ export const builder = {
       },
     ];
 
+    await builder.documentTaggedUnionInputObject({
+      cache,
+      accumulator,
+    });
     await builder.documentUnion({ cache, accumulator });
 
     const schema: DocumentNode = {
@@ -137,6 +142,125 @@ export const builder = {
           value: name,
         },
       })),
+    });
+
+    return name;
+  },
+  documentTaggedUnionInputObject: async ({
+    cache,
+    section,
+    accumulator,
+  }: {
+    cache: Cache;
+    section?: string;
+    accumulator: Definitions[];
+  }) => {
+    const name = friendlyName(section, "DocumentInput");
+
+    const templates = await sequential(
+      await cache.datasource.getTemplatesForSection(section),
+      async (template) => {
+        return await builder.documentInputObject(cache, template, accumulator);
+      }
+    );
+
+    accumulator.push({
+      kind: "InputObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      fields: templates.map((templateName) => ({
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: templateName,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: templateName,
+          },
+        },
+      })),
+    });
+    return name;
+  },
+  documentInputObject: async (
+    cache: Cache,
+    template: TemplateData,
+    accumulator: Definitions[]
+  ) => {
+    const name = friendlyName(template, "Input");
+
+    const dataInputName = await builder.documentDataInputObject(
+      cache,
+      template,
+      false,
+      accumulator
+    );
+
+    accumulator.push({
+      kind: "InputObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      fields: [
+        {
+          kind: "InputValueDefinition",
+          name: {
+            kind: "Name",
+            value: "data",
+          },
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: dataInputName,
+            },
+          },
+        },
+        {
+          kind: "InputValueDefinition",
+          name: {
+            kind: "Name",
+            value: "content",
+          },
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: "String",
+            },
+          },
+        },
+      ],
+    });
+
+    return name;
+  },
+  documentDataInputObject: async (
+    cache: Cache,
+    template: TemplateData,
+    returnTemplate: boolean,
+    accumulator: Definitions[]
+  ) => {
+    const name = friendlyName(template, "InputData");
+
+    const fieldNames = await sequential(template.fields, async (field) => {
+      // TODO: this is where non-null criteria can be set
+      return await buildTemplateInputDataField(cache, field, accumulator);
+    });
+
+    accumulator.push({
+      kind: "InputObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      fields: fieldNames,
     });
 
     return name;
@@ -518,5 +642,43 @@ const buildTemplateDataField = async (
       return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
       return list.build.value({ cache, field, accumulator });
+  }
+};
+
+const buildTemplateInputDataField = async (
+  cache: Cache,
+  field: Field,
+  accumulator: Definitions[]
+): Promise<InputValueDefinitionNode> => {
+  return {
+    kind: "InputValueDefinition",
+    name: {
+      kind: "Name",
+      value: field.name,
+    },
+    type: {
+      kind: "NamedType",
+      name: {
+        kind: "Name",
+        value: "String",
+      },
+    },
+  };
+
+  switch (field.type) {
+    case "text":
+      return text.build.input({ cache, field });
+    case "textarea":
+      return textarea.build.input({ cache, field });
+    case "select":
+      return select.build.input({ cache, field });
+    case "blocks":
+      return await blocks.build.input({ cache, field });
+    case "field_group":
+      return fieldGroup.build.input({ cache, field });
+    case "field_group_list":
+      return fieldGroupList.build.input({ cache, field });
+    case "list":
+      return list.build.input({ cache, field });
   }
 };

@@ -2,6 +2,36 @@ type Query {
   document(path: String): DocumentUnion
 }
 
+input Post_InputData {
+  title: String
+  author: String
+  sections: String
+}
+
+input Post_Input {
+  data: Post_InputData
+  content: String
+}
+
+input Author_InputData {
+  name: String
+  role: String
+  anecdotes: String
+  favorite_posts: String
+  all_time_post: String
+  accolades: String
+}
+
+input Author_Input {
+  data: Author_InputData
+  content: String
+}
+
+input DocumentInput {
+  Post_Input: Post_Input
+  Author_Input: Author_Input
+}
+
 type TextareaField {
   name: String
   label: String
