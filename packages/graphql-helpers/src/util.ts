@@ -30,24 +30,30 @@ export const arrayToObject = <T>(
 
 export const friendlyName2 = (
   field: { __namespace?: string; name: string } | string | string[] = "",
-  suffix = ""
+  suffix = "",
+  lowerCase = false
 ) => {
+  let transform = (word: string) => upperFirst(camelCase(word));
+  if (lowerCase) {
+    transform = (word: string) => camelCase(word);
+  }
+
   if (Array.isArray(field)) {
-    const meh = `${field.map((f) => upperFirst(camelCase(f))).join("_")}${
+    const meh = `${field.map((f) => transform(f)).join("_")}${
       suffix && "_" + suffix
     }`;
     return meh;
   } else {
     if (typeof field === "string") {
       if (field) {
-        return `${upperFirst(camelCase(field))}${suffix ? "_" + suffix : ""}`;
+        return `${transform(field)}${suffix ? "_" + suffix : ""}`;
       } else {
         return suffix;
       }
     } else {
       const meh = `${
-        field.__namespace ? upperFirst(camelCase(field.__namespace)) + "_" : ""
-      }${upperFirst(camelCase(field.name))}${suffix && "_" + suffix}`;
+        field.__namespace ? transform(field.__namespace) + "_" : ""
+      }${transform(field.name)}${suffix && "_" + suffix}`;
       return meh;
     }
   }

@@ -202,7 +202,9 @@ export const blocks: Blocks = {
             template,
             accumulator
           );
-          return { name: friendlyName(templateSlug), value: name };
+          // This might cause issues, need to make sure the resolver which is looking
+          // for the template field uses the same formatting
+          return { name: friendlyName(templateSlug, "", true), value: name };
         }
       );
 

@@ -249,9 +249,9 @@ type ActionPageReference_Form {
 }
 
 type Sidecar_Actions_BlocksFieldTemplates {
-  ActionVideo: ActionVideo_Form
-  ActionNewsletter: ActionNewsletter_Form
-  ActionPageReference: ActionPageReference_Form
+  actionVideo: ActionVideo_Form
+  actionNewsletter: ActionNewsletter_Form
+  actionPageReference: ActionPageReference_Form
 }
 
 type Sidecar_Actions_BlocksField {
@@ -369,14 +369,14 @@ type SectionIndex_Form {
 }
 
 type BlockPage_Blocks_BlocksFieldTemplates {
-  Sidecar: Sidecar_Form
-  ExcerptPost: ExcerptPost_Form
-  PostList: PostList_Form
-  PriceList: PriceList_Form
-  AuthorList: AuthorList_Form
-  SponsorList: SponsorList_Form
-  PageReference: PageReference_Form
-  SectionIndex: SectionIndex_Form
+  sidecar: Sidecar_Form
+  excerptPost: ExcerptPost_Form
+  postList: PostList_Form
+  priceList: PriceList_Form
+  authorList: AuthorList_Form
+  sponsorList: SponsorList_Form
+  pageReference: PageReference_Form
+  sectionIndex: SectionIndex_Form
 }
 
 type BlockPage_Blocks_BlocksField {

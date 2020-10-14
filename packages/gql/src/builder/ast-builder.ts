@@ -92,6 +92,59 @@ export const builder = {
           },
         ],
       },
+      {
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: "Mutation",
+        },
+        fields: [
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "updateDocument",
+            },
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "DocumentUnion",
+              },
+            },
+            arguments: [
+              {
+                kind: "InputValueDefinition",
+                name: {
+                  kind: "Name",
+                  value: "path",
+                },
+                type: {
+                  kind: "NamedType",
+                  name: {
+                    kind: "Name",
+                    value: "String",
+                  },
+                },
+              },
+              {
+                kind: "InputValueDefinition",
+                name: {
+                  kind: "Name",
+                  value: "params",
+                },
+                type: {
+                  kind: "NamedType",
+                  name: {
+                    kind: "Name",
+                    value: "DocumentInput",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
     ];
 
     await builder.documentTaggedUnionInputObject({
