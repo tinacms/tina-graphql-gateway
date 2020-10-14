@@ -67,7 +67,6 @@ export const textarea = {
       return gql.inputString(field.name);
     },
   },
-
   resolve: {
     field: ({
       datasource,

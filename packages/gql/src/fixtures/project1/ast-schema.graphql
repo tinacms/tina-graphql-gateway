@@ -78,7 +78,13 @@ type Section_Cta_GroupField {
   fields: [Section_Cta_FormFields]
 }
 
-union List_FormFieldsUnion = TextareaField | SelectField
+type TextField {
+  name: String
+  label: String
+  component: String
+}
+
+union List_FormFieldsUnion = TextField | SelectField
 
 type ListField {
   name: String
@@ -195,7 +201,6 @@ type Author_Data {
 }
 
 type Author_Accolades_InitialValues {
-  _template: String
   figure: String
   description: String
 }

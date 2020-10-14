@@ -2,6 +2,10 @@ type Query {
   document(path: String): DocumentUnion
 }
 
+type Mutation {
+  updateDocument(path: String, params: DocumentInput): DocumentUnion
+}
+
 input Post_InputData {
   title: String
   author: String

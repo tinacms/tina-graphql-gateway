@@ -102,7 +102,7 @@ export const fieldGroupList = {
       const initialValueName = await builder.documentInitialValuesObject(
         cache,
         field,
-        true,
+        false,
         accumulator
       );
       return {
