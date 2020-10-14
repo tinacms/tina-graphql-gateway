@@ -14,7 +14,7 @@ export const textarea = {
     }: {
       cache: Cache;
       field: TextareaField;
-      accumulator: any[];
+      accumulator: Definitions[];
     }) => {
       accumulator.push({
         kind: "ObjectTypeDefinition",
@@ -36,13 +36,23 @@ export const textarea = {
     initialValue: ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: TextareaField;
+      accumulator: Definitions[];
     }) => {
       return gql.string(field.name);
     },
-    value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
+    value: ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextareaField;
+      accumulator: Definitions[];
+    }) => {
       return gql.string(field.name);
     },
     input: ({
@@ -59,7 +69,13 @@ export const textarea = {
   },
 
   resolve: {
-    field: ({ field }: { field: TextareaField }): TinaTextareaField => {
+    field: ({
+      datasource,
+      field,
+    }: {
+      datasource: DataSource;
+      field: TextareaField;
+    }): TinaTextareaField => {
       const { type, ...rest } = field;
       return {
         ...rest,

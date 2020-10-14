@@ -113,7 +113,7 @@ export const fieldGroupList = {
         },
         arguments: [],
         type: {
-          kind: "ListType",
+          kind: "ListType" as const,
           type: {
             kind: "NamedType" as const,
             name: {
@@ -135,18 +135,18 @@ export const fieldGroupList = {
       accumulator: Definitions[];
     }) => {
       return {
-        kind: "FieldDefinition",
+        kind: "FieldDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         arguments: [],
         type: {
-          kind: "ListType",
+          kind: "ListType" as const,
           type: {
-            kind: "NamedType",
+            kind: "NamedType" as const,
             name: {
-              kind: "Name",
+              kind: "Name" as const,
               value: await builder.documentDataObject(
                 cache,
                 field,
@@ -162,23 +162,30 @@ export const fieldGroupList = {
     input: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupListField;
+      accumulator: Definitions[];
     }) => {
       return {
-        kind: "InputValueDefinition",
+        kind: "InputValueDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         type: {
-          kind: "ListType",
+          kind: "ListType" as const,
           type: {
-            kind: "NamedType",
+            kind: "NamedType" as const,
             name: {
-              kind: "Name",
-              value: "String",
+              kind: "Name" as const,
+              value: await builder.documentDataInputObject(
+                cache,
+                field,
+                false,
+                accumulator
+              ),
             },
           },
         },

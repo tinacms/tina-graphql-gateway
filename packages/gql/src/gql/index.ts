@@ -42,15 +42,15 @@ export const gql = {
     }
   },
   inputString: (name: string) => ({
-    kind: "InputValueDefinition",
+    kind: "InputValueDefinition" as const,
     name: {
-      kind: "Name",
+      kind: "Name" as const,
       value: name,
     },
     type: {
-      kind: "NamedType",
+      kind: "NamedType" as const,
       name: {
-        kind: "Name",
+        kind: "Name" as const,
         value: "String",
       },
     },

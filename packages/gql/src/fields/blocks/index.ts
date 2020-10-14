@@ -9,6 +9,7 @@ import {
   GraphQLList,
   GraphQLType,
   FieldDefinitionNode,
+  InputValueDefinitionNode,
 } from "graphql";
 import { gql } from "../../gql";
 
@@ -66,24 +67,30 @@ export interface Build {
   initialValue: ({
     cache,
     field,
+    accumulator,
   }: {
     cache: Cache;
     field: BlocksField;
+    accumulator: Definitions[];
   }) => Promise<FieldDefinitionNode>;
   value: ({
     cache,
     field,
+    accumulator,
   }: {
     cache: Cache;
     field: BlocksField;
+    accumulator: Definitions[];
   }) => Promise<FieldDefinitionNode>;
   input: ({
     cache,
     field,
+    accumulator,
   }: {
     cache: Cache;
     field: BlocksField;
-  }) => Promise<GraphQLList<GraphQLType>>;
+    accumulator: Definitions[];
+  }) => Promise<InputValueDefinitionNode>;
 }
 
 export interface Resolve {
@@ -260,21 +267,14 @@ export const blocks: Blocks = {
 
       return name;
     },
-    initialValue: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BlocksField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: async ({ cache, field, accumulator }) => {
       const fieldUnionName = await builder.initialValuesUnion({
         cache,
         templates: field.template_types,
         returnTemplate: true,
         accumulator,
       });
+
       return {
         kind: "FieldDefinition",
         name: {
@@ -295,15 +295,7 @@ export const blocks: Blocks = {
         directives: [],
       };
     },
-    value: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BlocksField;
-      accumulator: Definitions[];
-    }) => {
+    value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = await builder.documentDataUnion({
         cache,
         templates: field.template_types,
@@ -330,7 +322,13 @@ export const blocks: Blocks = {
         directives: [],
       };
     },
-    input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+    input: async ({ cache, field, accumulator }) => {
+      const name = await builder.documentDataTaggedUnionInputObject({
+        cache,
+        templateSlugs: field.template_types,
+        accumulator,
+      });
+
       return {
         kind: "InputValueDefinition",
         name: {
@@ -338,36 +336,16 @@ export const blocks: Blocks = {
           value: field.name,
         },
         type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: name,
+            },
           },
         },
       };
-      // return await cache.build(friendlyName(field, "BlocksInput"), async () => {
-      //   const templates = await sequential(
-      //     field.template_types,
-      //     async (templateSlug) =>
-      //       await cache.datasource.getTemplate(templateSlug)
-      //   );
-
-      //   const templateTypes = await sequential(templates, async (template) => {
-      //     return builder.documentDataInputObject(cache, template, true);
-      //   });
-
-      //   const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-      //   templateTypes.forEach((template) => {
-      //     accum[getNamedType(template).toString()] = { type: template };
-      //   });
-
-      //   return GraphQLList(
-      //     new GraphQLInputObjectType({
-      //       name: friendlyName(field, "BlocksInput"),
-      //       fields: accum,
-      //     })
-      //   );
-      // });
     },
   },
   resolve: {

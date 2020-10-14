@@ -112,7 +112,7 @@ export const builder = {
     cache: Cache;
     section?: string;
     accumulator: Definitions[];
-    build: boolean;
+    build?: boolean;
   }) => {
     const name = friendlyName(section, "DocumentUnion");
 
@@ -163,6 +163,54 @@ export const builder = {
         return await builder.documentInputObject(cache, template, accumulator);
       }
     );
+
+    accumulator.push({
+      kind: "InputObjectTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      fields: templates.map((templateName) => ({
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: templateName,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: templateName,
+          },
+        },
+      })),
+    });
+    return name;
+  },
+  documentDataTaggedUnionInputObject: async ({
+    cache,
+    templateSlugs,
+    accumulator,
+  }: {
+    cache: Cache;
+    templateSlugs: string[];
+    accumulator: Definitions[];
+  }) => {
+    const name = friendlyName(templateSlugs.join("_"), "DocumentInput");
+
+    const templateData = await sequential(
+      templateSlugs,
+      async (templateSlug) => await cache.datasource.getTemplate(templateSlug)
+    );
+    const templates = await sequential(await templateData, async (template) => {
+      return await builder.documentDataInputObject(
+        cache,
+        template,
+        true,
+        accumulator,
+        true
+      );
+    });
 
     accumulator.push({
       kind: "InputObjectTypeDefinition",
@@ -245,23 +293,32 @@ export const builder = {
     cache: Cache,
     template: TemplateData,
     returnTemplate: boolean,
-    accumulator: Definitions[]
+    accumulator: Definitions[],
+    build: boolean = true
   ) => {
     const name = friendlyName(template, "InputData");
 
-    const fieldNames = await sequential(template.fields, async (field) => {
-      // TODO: this is where non-null criteria can be set
-      return await buildTemplateInputDataField(cache, field, accumulator);
-    });
+    if (build) {
+      const fieldNames = await sequential(template.fields, async (field) => {
+        // TODO: this is where non-null criteria can be set
+        return await buildTemplateInputDataField(cache, field, accumulator);
+      });
 
-    accumulator.push({
-      kind: "InputObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      fields: fieldNames,
-    });
+      let additionalFields: InputValueDefinitionNode[] = [];
+      if (returnTemplate) {
+        additionalFields.push(gql.inputString("template"));
+      }
+
+      if (build)
+        accumulator.push({
+          kind: "InputObjectTypeDefinition",
+          name: {
+            kind: "Name",
+            value: name,
+          },
+          fields: [...additionalFields, ...fieldNames],
+        });
+    }
 
     return name;
   },
@@ -536,6 +593,11 @@ export const builder = {
     templates,
     returnTemplate,
     accumulator,
+  }: {
+    cache: Cache;
+    templates: string[];
+    returnTemplate: boolean;
+    accumulator: Definitions[];
   }) => {
     const name = friendlyName(templates, "InitialValuesUnion");
     const templateObjects = await cache.datasource.getTemplates(templates);
@@ -549,13 +611,36 @@ export const builder = {
           accumulator
         )
     );
-    return types;
+    accumulator.push({
+      kind: "UnionTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      directives: [],
+      types: types.map((fieldName) => {
+        return {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: fieldName,
+          },
+        };
+      }),
+    });
+
+    return name;
   },
   documentDataUnion: async ({
     cache,
     templates,
     returnTemplate,
     accumulator,
+  }: {
+    cache: Cache;
+    templates: string[];
+    returnTemplate: boolean;
+    accumulator: Definitions[];
   }) => {
     const name = friendlyName(templates, "DataUnion");
     const templateObjects = await cache.datasource.getTemplates(templates);
@@ -569,8 +654,25 @@ export const builder = {
           accumulator
         )
     );
+    accumulator.push({
+      kind: "UnionTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      directives: [],
+      types: types.map((fieldName) => {
+        return {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: fieldName,
+          },
+        };
+      }),
+    });
 
-    return types;
+    return name;
   },
 };
 
@@ -660,10 +762,10 @@ const buildTemplateInputDataField = async (
     case "blocks":
       return await blocks.build.input({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.input({ cache, field });
+      return fieldGroup.build.input({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.input({ cache, field });
+      return fieldGroupList.build.input({ cache, field, accumulator });
     case "list":
-      return list.build.input({ cache, field });
+      return list.build.input({ cache, field, accumulator });
   }
 };

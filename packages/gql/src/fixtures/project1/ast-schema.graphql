@@ -2,15 +2,35 @@ type Query {
   document(path: String): DocumentUnion
 }
 
+input Section_Cta_InputData {
+  header: String
+}
+
+input Section_InputData {
+  template: String
+  description: String
+  cta: Section_Cta_InputData
+  authors: [String]
+}
+
+input Section_DocumentInput {
+  Section_InputData: Section_InputData
+}
+
 input Post_InputData {
   title: String
   author: String
-  sections: String
+  sections: [Section_DocumentInput]
 }
 
 input Post_Input {
   data: Post_InputData
   content: String
+}
+
+input Author_Accolades_InputData {
+  figure: String
+  description: String
 }
 
 input Author_InputData {
@@ -19,7 +39,7 @@ input Author_InputData {
   anecdotes: [String]
   favorite_posts: [String]
   all_time_post: String
-  accolades: [String]
+  accolades: [Author_Accolades_InputData]
 }
 
 input Author_Input {
@@ -103,14 +123,15 @@ type Section_Data {
   authors: [Authors_DocumentUnion]
 }
 
+union Section_DataUnion = Section_Data
+
 type Post_Data {
   title: String
   author: Authors_DocumentUnion
-  sections: [Section_Data]
+  sections: [Section_DataUnion]
 }
 
 type Section_Cta_InitialValues {
-  template: String
   header: String
 }
 
@@ -121,10 +142,12 @@ type Section_InitialValues {
   authors: [String]
 }
 
+union Section_InitialValuesUnion = Section_InitialValues
+
 type Post_InitialValues {
   title: String
   author: String
-  sections: [Section_InitialValues]
+  sections: [Section_InitialValuesUnion]
 }
 
 type Post {

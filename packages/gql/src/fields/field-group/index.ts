@@ -74,7 +74,7 @@ export const fieldGroup = {
       const initialValueName = await builder.documentInitialValuesObject(
         cache,
         field,
-        true,
+        false,
         accumulator
       );
       return {
@@ -104,16 +104,16 @@ export const fieldGroup = {
       accumulator: Definitions[];
     }) => {
       return {
-        kind: "FieldDefinition",
+        kind: "FieldDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         arguments: [],
         type: {
-          kind: "NamedType",
+          kind: "NamedType" as const,
           name: {
-            kind: "Name",
+            kind: "Name" as const,
             value: await builder.documentDataObject(
               cache,
               field,
@@ -128,21 +128,28 @@ export const fieldGroup = {
     input: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupField;
+      accumulator: Definitions[];
     }) => {
       return {
-        kind: "InputValueDefinition",
+        kind: "InputValueDefinition" as const,
         name: {
-          kind: "Name",
+          kind: "Name" as const,
           value: field.name,
         },
         type: {
-          kind: "NamedType",
+          kind: "NamedType" as const,
           name: {
-            kind: "Name",
-            value: "String",
+            kind: "Name" as const,
+            value: await builder.documentDataInputObject(
+              cache,
+              field,
+              false,
+              accumulator
+            ),
           },
         },
       };
