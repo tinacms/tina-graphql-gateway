@@ -18,7 +18,9 @@ const App = () => {
           <Redirect to="/project1" />
         </Route>
         <Route path="/:project" exact>
-          <Explorer />;
+          <Shell>
+            <Explorer />
+          </Shell>
         </Route>
       </Switch>
     </Router>
@@ -26,3 +28,12 @@ const App = () => {
 };
 
 export default App;
+
+const Shell = ({ children }) => {
+  return (
+    <div>
+      Shlle
+      {children}
+    </div>
+  );
+};

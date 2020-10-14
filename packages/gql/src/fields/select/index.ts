@@ -139,15 +139,18 @@ export const select = {
           select = field as SectionSelect;
           return {
             ...f,
-            options: await datasource.getDocumentsForSection(
-              select.config.source.section
-            ),
+            options: [
+              "",
+              ...(await datasource.getDocumentsForSection(
+                select.config.source.section
+              )),
+            ],
           };
         case "simple":
           select = field as SimpleSelect;
           return {
             ...f,
-            options: select.config.options,
+            options: ["", ...select.config.options],
           };
       }
     },

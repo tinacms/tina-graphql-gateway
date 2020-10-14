@@ -205,6 +205,8 @@ export const Explorer = () => {
           query={query}
           variables={JSON.stringify(vars, null, 2)}
         >
+          {/* Hide GraphiQL logo */}
+          <GraphiQL.Logo>{` `}</GraphiQL.Logo>
           <GraphiQL.Toolbar>
             {projects.map((project) => {
               return (
