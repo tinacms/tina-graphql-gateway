@@ -473,11 +473,11 @@ const buildTemplateInitialValueField = async (
 ): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
-      return text.build.initialValue({ cache, field });
+      return text.build.initialValue({ cache, field, accumulator });
     case "textarea":
-      return textarea.build.initialValue({ cache, field });
+      return textarea.build.initialValue({ cache, field, accumulator });
     case "select":
-      return select.build.initialValue({ cache, field });
+      return select.build.initialValue({ cache, field, accumulator });
     case "blocks":
       return blocks.build.initialValue({ cache, field, accumulator });
     case "field_group":
@@ -506,7 +506,7 @@ const buildTemplateDataField = async (
     case "field_group":
       return fieldGroup.build.value({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.value({ cache, field });
+      return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
       return list.build.value({ cache, field });
   }
