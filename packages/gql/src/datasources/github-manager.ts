@@ -46,13 +46,7 @@ Tduo3FzwdlmciYswDLA52g0Hug==
 -----END PRIVATE KEY-----
 `;
 
-const auth = createAppAuth({
-  id: 83861,
-  privateKey: pk,
-  installationId: "12264194",
-  clientId: GH_CLIENT,
-  clientSecret: GH_SECRET,
-});
+
 
 const appOctokit = new Octokit({
   authStrategy: createAppAuth,
@@ -107,6 +101,28 @@ export class GithubManager implements DataSource {
 
     // TODO: An error I suppose
     return []
+  }
+
+  async writeToFile(path: string, content: string){
+    // check if the file exists
+    const fileContent = await appOctokit.repos.getContent({
+      owner: "mittonface",
+      repo: "tina-teams-demo-site",
+      path: path,
+    });
+
+    const fileSha = fileContent.data.sha;
+
+    const response = await appOctokit.repos.createOrUpdateFileContents({
+      owner: "mittonface",
+      repo: "tina-teams-demo-site",
+      path: path,
+      message: "Update from GraphQL client",
+      content: new Buffer(content).toString('base64'),
+      sha: fileSha
+    })
+
+    return response
   }
 
   getDocumentsForSection = async (section?: string) => {
@@ -207,7 +223,8 @@ export class GithubManager implements DataSource {
   }) => {
     const fullPath = p.join(this.rootPath, path);
     const string = matter.stringify("", params.data);
-    await fs.writeFileSync(fullPath, string);
+
+    await this.writeToFile(path, string)
   };
 }
 
