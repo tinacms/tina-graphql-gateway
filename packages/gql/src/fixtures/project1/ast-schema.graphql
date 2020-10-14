@@ -136,7 +136,7 @@ type Section_Cta_InitialValues {
 }
 
 type Section_InitialValues {
-  template: String
+  _template: String
   description: String
   cta: Section_Cta_InitialValues
   authors: [String]
@@ -191,7 +191,7 @@ type Author_Data {
 }
 
 type Author_Accolades_InitialValues {
-  template: String
+  _template: String
   figure: String
   description: String
 }
