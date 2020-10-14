@@ -23,18 +23,6 @@ export const fieldGroup = {
       accumulator: Definitions[];
     }) => {
       const name = friendlyName(field, "GroupField");
-
-      // accumulator.push({
-      //   kind: "ObjectTypeDefinition",
-      //   name: {
-      //     kind: "Name",
-      //     value: name,
-      //   },
-      //   interfaces: [],
-      //   directives: [],
-      //   fields: [],
-      // });
-
       const fieldsUnionName = await builder.documentFormFieldsUnion(
         cache,
         field,
@@ -115,9 +103,27 @@ export const fieldGroup = {
       field: FieldGroupField;
       accumulator: Definitions[];
     }) => {
-      return gql.string(
-        await builder.documentDataObject(cache, field, false, accumulator)
-      );
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: await builder.documentDataObject(
+              cache,
+              field,
+              false,
+              accumulator
+            ),
+          },
+        },
+        directives: [],
+      };
     },
     input: async ({
       cache,

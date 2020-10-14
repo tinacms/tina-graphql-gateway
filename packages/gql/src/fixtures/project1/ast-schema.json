@@ -728,14 +728,14 @@
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "Section_Cta_Data"
+            "value": "cta"
           },
           "arguments": [],
           "type": {
             "kind": "NamedType",
             "name": {
               "kind": "Name",
-              "value": "String"
+              "value": "Section_Cta_Data"
             }
           },
           "directives": []
