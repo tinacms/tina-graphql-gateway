@@ -89,47 +89,75 @@ export const fieldGroupList = {
       });
 
       return name;
-      // return await cache.build(
-      //   friendlyName(field, "GroupListField"),
-      //   async () =>
-      //     new GraphQLObjectType({
-      //       name: friendlyName(field, "GroupListField"),
-      //       fields: {
-      //         name: { type: GraphQLString },
-      //         label: { type: GraphQLString },
-      //         component: { type: GraphQLString },
-      //         fields: {
-      //           // field is structural subtyping TemplateData shape
-      //           type: await builder.documentFormFieldsUnion(cache, field),
-      //         },
-      //       },
-      //     })
-      // );
     },
     initialValue: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupListField;
+      accumulator: Definitions[];
     }) => {
-      return gql.string(field.name, { list: true });
-      // return {
-      //   type: GraphQLList(await builder.documentDataObject(cache, field)),
-      // };
+      const initialValueName = await builder.documentInitialValuesObject(
+        cache,
+        field,
+        true,
+        accumulator
+      );
+      return {
+        kind: "FieldDefinition" as const,
+        name: {
+          kind: "Name" as const,
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType" as const,
+            name: {
+              kind: "Name" as const,
+              value: initialValueName,
+            },
+          },
+        },
+        directives: [],
+      };
     },
     value: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: FieldGroupListField;
+      accumulator: Definitions[];
     }) => {
-      return gql.string(field.name, { list: true });
-
-      // return {
-      //   type: GraphQLList(await builder.documentDataObject(cache, field)),
-      // };
+      return {
+        kind: "FieldDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        arguments: [],
+        type: {
+          kind: "ListType",
+          type: {
+            kind: "NamedType",
+            name: {
+              kind: "Name",
+              value: await builder.documentDataObject(
+                cache,
+                field,
+                false,
+                accumulator
+              ),
+            },
+          },
+        },
+        directives: [],
+      };
     },
     input: async ({
       cache,

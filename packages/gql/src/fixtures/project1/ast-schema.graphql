@@ -119,18 +119,29 @@ type Author_Form {
   fields: [Author_FormFields]
 }
 
+type Author_Accolades_Data {
+  figure: String
+  description: String
+}
+
 type Author_Data {
   name: String
   role: String
   anecdotes: String
-  accolades: [String]
+  accolades: [Author_Accolades_Data]
+}
+
+type Author_Accolades_InitialValues {
+  template: String
+  figure: String
+  description: String
 }
 
 type Author_InitialValues {
   name: String
   role: String
   anecdotes: String
-  accolades: [String]
+  accolades: [Author_Accolades_InitialValues]
 }
 
 type Author {
