@@ -8,6 +8,12 @@ import { blocks } from "../fields/blocks";
 import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
+import { boolean } from "../fields/boolean";
+import { datetime } from "../fields/datetime";
+import { file } from "../fields/file";
+import { imageGallery } from "../fields/image-gallery";
+import { number } from "../fields/number";
+import { tag_list } from "../fields/tag-list";
 import { friendlyName } from "@forestryio/graphql-helpers";
 
 import { sequential } from "../util";
@@ -386,6 +392,22 @@ const dataInitialValuesField = async (
         field,
         value,
       });
+    case "boolean":
+      return await boolean.resolve.initialValue({ datasource, field, value });
+    case "datetime":
+      return await datetime.resolve.initialValue({ datasource, field, value });
+    case "file":
+      return await file.resolve.initialValue({ datasource, field, value });
+    case "image_gallery":
+      return await imageGallery.resolve.initialValue({
+        datasource,
+        field,
+        value,
+      });
+    case "number":
+      return await number.resolve.initialValue({ datasource, field, value });
+    case "tag_list":
+      return await tag_list.resolve.initialValue({ datasource, field, value });
   }
 };
 const dataValue = async (
@@ -412,6 +434,18 @@ const dataValue = async (
         field,
         value,
       });
+    case "boolean":
+      return await boolean.resolve.value({ datasource, field, value });
+    case "datetime":
+      return await datetime.resolve.value({ datasource, field, value });
+    case "file":
+      return await file.resolve.value({ datasource, field, value });
+    case "image_gallery":
+      return await imageGallery.resolve.value({ datasource, field, value });
+    case "number":
+      return await number.resolve.value({ datasource, field, value });
+    case "tag_list":
+      return await tag_list.resolve.value({ datasource, field, value });
   }
 };
 const dataField = async (datasource: DataSource, field: Field) => {
@@ -433,6 +467,18 @@ const dataField = async (datasource: DataSource, field: Field) => {
         datasource,
         field,
       });
+    case "boolean":
+      return await boolean.resolve.field({ datasource, field });
+    case "datetime":
+      return await datetime.resolve.field({ datasource, field });
+    case "file":
+      return await file.resolve.field({ datasource, field });
+    case "image_gallery":
+      return await imageGallery.resolve.field({ datasource, field });
+    case "number":
+      return await number.resolve.field({ datasource, field });
+    case "tag_list":
+      return await tag_list.resolve.field({ datasource, field });
   }
 };
 const documentInputDataField = async ({
@@ -459,6 +505,18 @@ const documentInputDataField = async ({
       return await fieldGroup.resolve.input({ datasource, field, value });
     case "field_group_list":
       return await fieldGroupList.resolve.input({ datasource, field, value });
+    case "boolean":
+      return await boolean.resolve.input({ datasource, field, value });
+    case "datetime":
+      return await datetime.resolve.input({ datasource, field, value });
+    case "file":
+      return await file.resolve.input({ datasource, field, value });
+    case "image_gallery":
+      return await imageGallery.resolve.input({ datasource, field, value });
+    case "number":
+      return await number.resolve.input({ datasource, field, value });
+    case "tag_list":
+      return await tag_list.resolve.input({ datasource, field, value });
   }
 };
 

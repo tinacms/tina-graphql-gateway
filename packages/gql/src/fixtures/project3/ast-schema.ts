@@ -2298,7 +2298,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "ActionVideo"
+            "value": "actionVideo"
           },
           "arguments": [],
           "type": {
@@ -2314,7 +2314,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "ActionNewsletter"
+            "value": "actionNewsletter"
           },
           "arguments": [],
           "type": {
@@ -2330,7 +2330,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "ActionPageReference"
+            "value": "actionPageReference"
           },
           "arguments": [],
           "type": {
@@ -3610,7 +3610,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "Sidecar"
+            "value": "sidecar"
           },
           "arguments": [],
           "type": {
@@ -3626,7 +3626,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "ExcerptPost"
+            "value": "excerptPost"
           },
           "arguments": [],
           "type": {
@@ -3642,7 +3642,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "PostList"
+            "value": "postList"
           },
           "arguments": [],
           "type": {
@@ -3658,7 +3658,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "PriceList"
+            "value": "priceList"
           },
           "arguments": [],
           "type": {
@@ -3674,7 +3674,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "AuthorList"
+            "value": "authorList"
           },
           "arguments": [],
           "type": {
@@ -3690,7 +3690,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "SponsorList"
+            "value": "sponsorList"
           },
           "arguments": [],
           "type": {
@@ -3706,7 +3706,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "PageReference"
+            "value": "pageReference"
           },
           "arguments": [],
           "type": {
@@ -3722,7 +3722,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "SectionIndex"
+            "value": "sectionIndex"
           },
           "arguments": [],
           "type": {

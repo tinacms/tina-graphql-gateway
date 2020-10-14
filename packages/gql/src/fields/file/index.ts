@@ -78,7 +78,7 @@ export const file = {
       const { type, ...rest } = field;
       return {
         ...rest,
-        component: "file",
+        component: "image",
         config: rest.config || {
           required: false,
         },
