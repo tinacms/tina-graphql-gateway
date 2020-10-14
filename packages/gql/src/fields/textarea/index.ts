@@ -3,6 +3,7 @@ import { gql } from "../../gql";
 
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
+import type { Definitions } from "../../builder/ast-builder";
 
 export const textarea = {
   build: {
@@ -44,8 +45,16 @@ export const textarea = {
     value: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
       return gql.string(field.name);
     },
-    input: ({ cache, field }: { cache: Cache; field: TextareaField }) => {
-      return GraphQLString;
+    input: ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextareaField;
+      accumulator: Definitions[];
+    }) => {
+      return gql.inputString(field.name);
     },
   },
 

@@ -51,8 +51,16 @@ export const text = {
     value: ({ cache, field }: { cache: Cache; field: TextField }) => {
       return gql.string(field.name);
     },
-    input: ({ cache, field }: { cache: Cache; field: TextField }) => {
-      return GraphQLString;
+    input: ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: TextField;
+      accumulator: Definitions[];
+    }) => {
+      return gql.inputString(field.name);
     },
   },
   resolve: {
