@@ -67,7 +67,7 @@ type Section_Cta_Data {
 
 type Section_Data {
   description: String
-  Section_Cta_Data: String
+  cta: Section_Cta_Data
   authors: String
 }
 
