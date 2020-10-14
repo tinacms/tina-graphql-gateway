@@ -574,7 +574,7 @@ export const builder = {
 
     let additionalFields = [];
     if (returnTemplate) {
-      additionalFields.push(gql.string("template"));
+      additionalFields.push(gql.string("_template"));
     }
 
     accumulator.push({
