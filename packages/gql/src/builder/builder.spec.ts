@@ -18,14 +18,14 @@ describe("Schema builder", () => {
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
 
-    await fs.writeFileSync(
-      path.join(projectRoot, "ast-schema.json"),
-      JSON.stringify(schema, null, 2)
-    );
-    await fs.writeFileSync(
-      path.join(projectRoot, "ast-schema.graphql"),
-      printSchema(buildASTSchema(schema))
-    );
+    // await fs.writeFileSync(
+    //   path.join(projectRoot, "ast-schema.json"),
+    //   JSON.stringify(schema, null, 2)
+    // );
+    // await fs.writeFileSync(
+    //   path.join(projectRoot, "ast-schema.graphql"),
+    //   printSchema(buildASTSchema(schema))
+    // );
 
     // await fs.writeFileSync(
     //   path.join(projectRoot, "refactor.graphql"),

@@ -34,39 +34,38 @@ wss.on("connection", (ws: WebSocket) => {
 app.use(cors());
 app.use(bodyParser.json());
 
+const fixturePath = path.join(process.cwd(), `src/fixtures`);
 app.get("/list-projects", async (req, res) => {
-  return res.json([
-    // TODO: look up fixtures and provide them here for testing
-    { label: "Project 1", value: "project1" },
-    { label: "Project 2", value: "project2" },
-    { label: "Project 3", value: "project3" },
-    { label: "Project 4", value: "project4" },
-  ]);
+  return res.json(
+    await fs.readdirSync(fixturePath).map((folderName) => {
+      return { label: folderName, value: folderName };
+    })
+  );
 });
 
 app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;
 
-  const projectRoot = path.join(process.cwd(), `src/fixtures${req.path}`);
+  const projectRoot = path.join(fixturePath, req.path);
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
   const schema = await builder.schema({ cache });
 
-  await fs.writeFileSync(
-    path.join(projectRoot, "ast-schema.ts"),
-    `import type {
-      DocumentNode,
-      GraphQLFieldConfigMap,
-      UnionTypeDefinitionNode,
-      ObjectTypeDefinitionNode,
-    } from "graphql";
+  // await fs.writeFileSync(
+  //   path.join(projectRoot, "ast-schema.ts"),
+  //   `import type {
+  //     DocumentNode,
+  //     GraphQLFieldConfigMap,
+  //     UnionTypeDefinitionNode,
+  //     ObjectTypeDefinitionNode,
+  //   } from "graphql";
 
-    const d: DocumentNode = ${JSON.stringify(schema, null, 2)}`
-  );
-  await fs.writeFileSync(
-    path.join(projectRoot, "ast-schema.graphql"),
-    printSchema(buildASTSchema(schema))
-  );
+  //   const d: DocumentNode = ${JSON.stringify(schema, null, 2)}`
+  // );
+  // await fs.writeFileSync(
+  //   path.join(projectRoot, "ast-schema.graphql"),
+  //   printSchema(buildASTSchema(schema))
+  // );
   const result = await graphqlInit({
     schema: buildASTSchema(schema),
     source: query,

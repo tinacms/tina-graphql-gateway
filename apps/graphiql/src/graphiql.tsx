@@ -34,7 +34,9 @@ import { handle } from "./handler";
 
 const TinaWrap = ({ schema, formConfig, onSubmit }) => {
   const cms = new TinaCMS({
-    sidebar: true,
+    sidebar: {
+      position: "overlay",
+    },
     enabled: true,
   });
 
