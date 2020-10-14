@@ -1,0 +1,13 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+div.graphiql-explorer-root > div:last-child {
+  display: none;
+}
+
+.graphiql-container {
+  height: 100vh !important;
+}
