@@ -259,39 +259,6 @@ export const blocks: Blocks = {
       });
 
       return name;
-
-      // return await cache.build(friendlyName(field, "BlocksField"), async () => {
-      //   return new GraphQLObjectType<BlocksField>({
-      //     name: friendlyName(field, "BlocksField"),
-      //     fields: {
-      //       name: { type: GraphQLString },
-      //       label: { type: GraphQLString },
-      //       component: { type: GraphQLString },
-      //       templates: {
-      //         type: await cache.build(
-      //           friendlyName(field, "BlocksFieldTemplates"),
-      //           async () => {
-      //             await sequential(
-      //               field.template_types,
-      //               async (templateSlug) => {
-      //                 const template = await cache.datasource.getTemplate(
-      //                   templateSlug
-      //                 );
-      //                 templateForms[templateSlug] = {
-      //                   type: await builder.documentFormObject(cache, template),
-      //                 };
-      //               }
-      //             );
-      //             return new GraphQLObjectType({
-      //               name: friendlyName(field, "BlocksFieldTemplates"),
-      //               fields: templateForms,
-      //             });
-      //           }
-      //         ),
-      //       },
-      //     },
-      //   });
-      // });
     },
     initialValue: async ({
       cache,
@@ -328,7 +295,21 @@ export const blocks: Blocks = {
         directives: [],
       };
     },
-    value: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
+    value: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: BlocksField;
+      accumulator: Definitions[];
+    }) => {
+      const fieldUnionName = await builder.documentDataUnion({
+        cache,
+        templates: field.template_types,
+        returnTemplate: true,
+        accumulator,
+      });
       return {
         kind: "FieldDefinition",
         name: {
@@ -342,21 +323,12 @@ export const blocks: Blocks = {
             kind: "NamedType",
             name: {
               kind: "Name",
-              value: "String",
+              value: fieldUnionName,
             },
           },
         },
         directives: [],
       };
-      // return {
-      //   type: GraphQLList(
-      //     await builder.documentDataUnion({
-      //       cache,
-      //       templates: field.template_types,
-      //       returnTemplate: true,
-      //     })
-      //   ),
-      // };
     },
     input: async ({ cache, field }: { cache: Cache; field: BlocksField }) => {
       return await cache.build(friendlyName(field, "BlocksInput"), async () => {
