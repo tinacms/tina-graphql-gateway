@@ -129,6 +129,7 @@ export const list = {
             cache,
             section,
             accumulator,
+            build: false,
           });
 
           return {

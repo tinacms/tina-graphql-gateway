@@ -102,10 +102,12 @@ export const builder = {
     cache,
     section,
     accumulator,
+    build = true,
   }: {
     cache: Cache;
     section?: string;
     accumulator: Definitions[];
+    build: boolean;
   }) => {
     const name = friendlyName(section, "DocumentUnion");
 
@@ -113,10 +115,14 @@ export const builder = {
     const templateNames = await sequential(
       templates,
       async (template: TemplateData) => {
-        return await builder.documentObject(cache, template, accumulator);
+        return await builder.documentObject(
+          cache,
+          template,
+          accumulator,
+          build
+        );
       }
     );
-
     accumulator.push({
       kind: "UnionTypeDefinition",
       name: {
@@ -138,102 +144,105 @@ export const builder = {
   documentObject: async (
     cache: Cache,
     template: TemplateData,
-    accumulator: Definitions[]
+    accumulator: Definitions[],
+    build: boolean
   ) => {
     const name = friendlyName(template);
-    const formName = await builder.documentFormObject(
-      cache,
-      template,
-      accumulator
-    );
-    const dataName = await builder.documentDataObject(
-      cache,
-      template,
-      false,
-      accumulator
-    );
-    const initialValuesName = await builder.documentInitialValuesObject(
-      cache,
-      template,
-      false,
-      accumulator
-    );
+    if (build) {
+      const formName = await builder.documentFormObject(
+        cache,
+        template,
+        accumulator
+      );
+      const dataName = await builder.documentDataObject(
+        cache,
+        template,
+        false,
+        accumulator
+      );
+      const initialValuesName = await builder.documentInitialValuesObject(
+        cache,
+        template,
+        false,
+        accumulator
+      );
 
-    accumulator.push({
-      kind: "ObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      interfaces: [],
-      directives: [],
-      fields: [
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "path",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: name,
+        },
+        interfaces: [],
+        directives: [],
+        fields: [
+          {
+            kind: "FieldDefinition",
             name: {
               kind: "Name",
-              value: "String",
+              value: "path",
             },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "String",
+              },
+            },
+            directives: [],
           },
-          directives: [],
-        },
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "form",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
+          {
+            kind: "FieldDefinition",
             name: {
               kind: "Name",
-              value: formName,
+              value: "form",
             },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: formName,
+              },
+            },
+            directives: [],
           },
-          directives: [],
-        },
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "data",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
+          {
+            kind: "FieldDefinition",
             name: {
               kind: "Name",
-              value: dataName,
+              value: "data",
             },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: dataName,
+              },
+            },
+            directives: [],
           },
-          directives: [],
-        },
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "initialValues",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
+          {
+            kind: "FieldDefinition",
             name: {
               kind: "Name",
-              value: initialValuesName,
+              value: "initialValues",
             },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: initialValuesName,
+              },
+            },
+            directives: [],
           },
-          directives: [],
-        },
-      ],
-    });
+        ],
+      });
+    }
 
     return name;
   },

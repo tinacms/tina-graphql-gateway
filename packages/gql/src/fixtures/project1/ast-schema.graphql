@@ -61,55 +61,6 @@ type Post_Form {
   fields: [Post_FormFields]
 }
 
-union Author_Accolades_FormFields = TextareaField
-
-type Author_Accolades_GroupListField {
-  name: String
-  label: String
-  component: String
-  fields: [Author_Accolades_FormFields]
-}
-
-union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
-
-type Author_Form {
-  label: String
-  name: String
-  fields: [Author_FormFields]
-}
-
-type Author_Accolades_Data {
-  figure: String
-  description: String
-}
-
-type Author_Data {
-  name: String
-  role: String
-  anecdotes: [String]
-  accolades: [Author_Accolades_Data]
-}
-
-type Author_Accolades_InitialValues {
-  template: String
-  figure: String
-  description: String
-}
-
-type Author_InitialValues {
-  name: String
-  role: String
-  anecdotes: [String]
-  accolades: [Author_Accolades_InitialValues]
-}
-
-type Author {
-  path: String
-  form: Author_Form
-  data: Author_Data
-  initialValues: Author_InitialValues
-}
-
 union Authors_DocumentUnion = Author
 
 type Section_Cta_Data {
@@ -151,6 +102,61 @@ type Post {
   form: Post_Form
   data: Post_Data
   initialValues: Post_InitialValues
+}
+
+union Author_Accolades_FormFields = TextareaField
+
+type Author_Accolades_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_Accolades_FormFields]
+}
+
+union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
+
+type Author_Form {
+  label: String
+  name: String
+  fields: [Author_FormFields]
+}
+
+union Posts_DocumentUnion = Post
+
+type Author_Accolades_Data {
+  figure: String
+  description: String
+}
+
+type Author_Data {
+  name: String
+  role: String
+  anecdotes: [String]
+  favorite_posts: [Authors_DocumentUnion]
+  all_time_post: Posts_DocumentUnion
+  accolades: [Author_Accolades_Data]
+}
+
+type Author_Accolades_InitialValues {
+  template: String
+  figure: String
+  description: String
+}
+
+type Author_InitialValues {
+  name: String
+  role: String
+  anecdotes: [String]
+  favorite_posts: [String]
+  all_time_post: String
+  accolades: [Author_Accolades_InitialValues]
+}
+
+type Author {
+  path: String
+  form: Author_Form
+  data: Author_Data
+  initialValues: Author_InitialValues
 }
 
 union DocumentUnion = Post | Author
