@@ -41,4 +41,18 @@ export const gql = {
       };
     }
   },
+  inputString: (name: string) => ({
+    kind: "InputValueDefinition",
+    name: {
+      kind: "Name",
+      value: name,
+    },
+    type: {
+      kind: "NamedType",
+      name: {
+        kind: "Name",
+        value: "String",
+      },
+    },
+  }),
 };

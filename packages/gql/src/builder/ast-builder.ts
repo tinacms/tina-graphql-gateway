@@ -650,35 +650,35 @@ const buildTemplateInputDataField = async (
   field: Field,
   accumulator: Definitions[]
 ): Promise<InputValueDefinitionNode> => {
-  return {
-    kind: "InputValueDefinition",
-    name: {
-      kind: "Name",
-      value: field.name,
-    },
-    type: {
-      kind: "NamedType",
-      name: {
-        kind: "Name",
-        value: "String",
-      },
-    },
-  };
-
   switch (field.type) {
     case "text":
-      return text.build.input({ cache, field });
+      return text.build.input({ cache, field, accumulator });
     case "textarea":
       return textarea.build.input({ cache, field });
-    case "select":
-      return select.build.input({ cache, field });
-    case "blocks":
-      return await blocks.build.input({ cache, field });
-    case "field_group":
-      return fieldGroup.build.input({ cache, field });
-    case "field_group_list":
-      return fieldGroupList.build.input({ cache, field });
-    case "list":
-      return list.build.input({ cache, field });
+    // case "select":
+    //   return select.build.input({ cache, field });
+    // case "blocks":
+    //   return await blocks.build.input({ cache, field });
+    // case "field_group":
+    //   return fieldGroup.build.input({ cache, field });
+    // case "field_group_list":
+    //   return fieldGroupList.build.input({ cache, field });
+    // case "list":
+    //   return list.build.input({ cache, field });
+    default:
+      return {
+        kind: "InputValueDefinition",
+        name: {
+          kind: "Name",
+          value: field.name,
+        },
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      };
   }
 };
