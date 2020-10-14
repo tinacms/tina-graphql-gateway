@@ -181,7 +181,19 @@ type TextField {
   component: String
 }
 
+type DatetimeField {
+  name: String
+  label: String
+  component: String
+}
+
 type TextareaField {
+  name: String
+  label: String
+  component: String
+}
+
+type FileField {
   name: String
   label: String
   component: String
@@ -237,9 +249,9 @@ type ActionPageReference_Form {
 }
 
 type Sidecar_Actions_BlocksFieldTemplates {
-  action-video: ActionVideo_Form
-  action-newsletter: ActionNewsletter_Form
-  action-page-reference: ActionPageReference_Form
+  ActionVideo: ActionVideo_Form
+  ActionNewsletter: ActionNewsletter_Form
+  ActionPageReference: ActionPageReference_Form
 }
 
 type Sidecar_Actions_BlocksField {
@@ -249,7 +261,7 @@ type Sidecar_Actions_BlocksField {
   templates: Sidecar_Actions_BlocksFieldTemplates
 }
 
-union Sidecar_FormFields = TextareaField | TextField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
+union Sidecar_FormFields = TextareaField | FileField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
 
 type Sidecar_Form {
   label: String
@@ -317,7 +329,7 @@ type AuthorList_Form {
   fields: [AuthorList_FormFields]
 }
 
-union SponsorList_Sponsor_FormFields = TextField | TextField
+union SponsorList_Sponsor_FormFields = TextField | FileField
 
 type SponsorList_Sponsor_GroupListField {
   name: String
@@ -342,7 +354,13 @@ type PageReference_Form {
   fields: [PageReference_FormFields]
 }
 
-union SectionIndex_FormFields = TextareaField | TextField | SelectField
+type NumberField {
+  name: String
+  label: String
+  component: String
+}
+
+union SectionIndex_FormFields = TextareaField | NumberField | SelectField
 
 type SectionIndex_Form {
   label: String
@@ -351,14 +369,14 @@ type SectionIndex_Form {
 }
 
 type BlockPage_Blocks_BlocksFieldTemplates {
-  sidecar: Sidecar_Form
-  excerpt-post: ExcerptPost_Form
-  post-list: PostList_Form
-  price-list: PriceList_Form
-  author-list: AuthorList_Form
-  sponsor-list: SponsorList_Form
-  page-reference: PageReference_Form
-  section-index: SectionIndex_Form
+  Sidecar: Sidecar_Form
+  ExcerptPost: ExcerptPost_Form
+  PostList: PostList_Form
+  PriceList: PriceList_Form
+  AuthorList: AuthorList_Form
+  SponsorList: SponsorList_Form
+  PageReference: PageReference_Form
+  SectionIndex: SectionIndex_Form
 }
 
 type BlockPage_Blocks_BlocksField {
@@ -368,7 +386,7 @@ type BlockPage_Blocks_BlocksField {
   templates: BlockPage_Blocks_BlocksFieldTemplates
 }
 
-union BlockPage_FormFields = TextField | TextField | BlockPage_Blocks_BlocksField
+union BlockPage_FormFields = TextField | DatetimeField | BlockPage_Blocks_BlocksField
 
 type BlockPage_Form {
   label: String
@@ -587,7 +605,13 @@ type BlockPage {
   initialValues: BlockPage_InitialValues
 }
 
-union Post_FormFields = TextField | SelectField | TextField | TextField
+type TagListField {
+  name: String
+  label: String
+  component: String
+}
+
+union Post_FormFields = TextField | SelectField | FileField | TagListField
 
 type Post_Form {
   label: String
@@ -616,6 +640,12 @@ type Post {
   initialValues: Post_InitialValues
 }
 
+type ImageGalleryField {
+  name: String
+  label: String
+  component: String
+}
+
 union Author_Accolades_FormFields = TextField
 
 type Author_Accolades_GroupListField {
@@ -625,7 +655,7 @@ type Author_Accolades_GroupListField {
   fields: [Author_Accolades_FormFields]
 }
 
-union Author_FormFields = TextField | TextField | TextField | ListField | Author_Accolades_GroupListField
+union Author_FormFields = TextField | FileField | ImageGalleryField | ListField | Author_Accolades_GroupListField
 
 type Author_Form {
   label: String
@@ -676,7 +706,7 @@ type Menu_MenuItem_GroupListField {
   fields: [Menu_MenuItem_FormFields]
 }
 
-union Menu_FormFields = TextField | Menu_MenuItem_GroupListField
+union Menu_FormFields = FileField | Menu_MenuItem_GroupListField
 
 type Menu_Form {
   label: String

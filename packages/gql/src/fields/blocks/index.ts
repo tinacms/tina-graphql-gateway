@@ -202,7 +202,7 @@ export const blocks: Blocks = {
             template,
             accumulator
           );
-          return { name: templateSlug, value: name };
+          return { name: friendlyName(templateSlug), value: name };
         }
       );
 

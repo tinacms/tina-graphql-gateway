@@ -24,6 +24,12 @@ import { blocks } from "../fields/blocks";
 import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
+import { boolean } from "../fields/boolean";
+import { datetime } from "../fields/datetime";
+import { file } from "../fields/file";
+import { imageGallery } from "../fields/image-gallery";
+import { number } from "../fields/number";
+import { tag_list } from "../fields/tag-list";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { sequential } from "../util";
 
@@ -546,7 +552,6 @@ export const builder = {
         kind: "Name",
         value: name,
       },
-      directives: [],
       types: fieldNames.map((fieldName) => {
         return {
           kind: "NamedType",
@@ -697,8 +702,18 @@ const buildTemplateFormFields = async (
         return fieldGroup.build.field({ cache, field, accumulator });
       case "list":
         return list.build.field({ cache, field, accumulator });
-      default:
-        return text.build.field({ cache, field, accumulator });
+      case "boolean":
+        return boolean.build.field({ cache, field, accumulator });
+      case "datetime":
+        return datetime.build.field({ cache, field, accumulator });
+      case "file":
+        return file.build.field({ cache, field, accumulator });
+      case "image_gallery":
+        return imageGallery.build.field({ cache, field, accumulator });
+      case "number":
+        return number.build.field({ cache, field, accumulator });
+      case "tag_list":
+        return tag_list.build.field({ cache, field, accumulator });
     }
   });
 };
@@ -723,8 +738,18 @@ const buildTemplateInitialValueField = async (
       return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
       return list.build.initialValue({ cache, field, accumulator });
-    default:
-      return text.build.initialValue({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.initialValue({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.initialValue({ cache, field, accumulator });
+    case "file":
+      return file.build.initialValue({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.initialValue({ cache, field, accumulator });
+    case "number":
+      return number.build.initialValue({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.initialValue({ cache, field, accumulator });
   }
 };
 
@@ -748,8 +773,18 @@ const buildTemplateDataField = async (
       return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
       return list.build.value({ cache, field, accumulator });
-    default:
-      return text.build.value({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.value({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.value({ cache, field, accumulator });
+    case "file":
+      return file.build.value({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.value({ cache, field, accumulator });
+    case "number":
+      return number.build.value({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.value({ cache, field, accumulator });
   }
 };
 
@@ -773,7 +808,17 @@ const buildTemplateInputDataField = async (
       return fieldGroupList.build.input({ cache, field, accumulator });
     case "list":
       return list.build.input({ cache, field, accumulator });
-    default:
-      return text.build.input({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.input({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.input({ cache, field, accumulator });
+    case "file":
+      return file.build.input({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.input({ cache, field, accumulator });
+    case "number":
+      return number.build.input({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.input({ cache, field, accumulator });
   }
 };
