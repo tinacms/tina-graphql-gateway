@@ -245,7 +245,7 @@ export const builder = {
   ) => {
     const name = friendlyName(template, "Data");
     const fields = await sequential(template.fields, async (field) => {
-      return await buildTemplateDataField(cache, field);
+      return await buildTemplateDataField(cache, field, accumulator);
     });
     accumulator.push({
       kind: "ObjectTypeDefinition",
@@ -256,40 +256,6 @@ export const builder = {
       interfaces: [],
       directives: [],
       fields,
-      // fields: [
-      //   {
-      //     kind: "FieldDefinition",
-      //     name: {
-      //       kind: "Name",
-      //       value: "title",
-      //     },
-      //     arguments: [],
-      //     type: {
-      //       kind: "NamedType",
-      //       name: {
-      //         kind: "Name",
-      //         value: "String",
-      //       },
-      //     },
-      //     directives: [],
-      //   },
-      //   // {
-      //   //   kind: "FieldDefinition",
-      //   //   name: {
-      //   //     kind: "Name",
-      //   //     value: "author",
-      //   //   },
-      //   //   arguments: [],
-      //   //   type: {
-      //   //     kind: "NamedType",
-      //   //     name: {
-      //   //       kind: "Name",
-      //   //       value: "Post_Author_Document",
-      //   //     },
-      //   //   },
-      //   //   directives: [],
-      //   // },
-      // ],
     });
 
     return name;
@@ -452,29 +418,26 @@ export const builder = {
     );
     return types;
   },
-  buildTemplateFormFields: async (
-    cache: Cache,
-    fields: Field[],
-    accumulator: Definitions[]
-  ): Promise<string[]> => {
-    return await sequential(fields, async (field) => {
-      switch (field.type) {
-        case "text":
-          return text.build.field({ cache, field, accumulator });
-        case "textarea":
-          return textarea.build.field({ cache, field, accumulator });
-        case "select":
-          return select.build.field({ cache, field, accumulator });
-        case "blocks":
-          return blocks.build.field({ cache, field, accumulator });
-        case "field_group_list":
-          return fieldGroupList.build.field({ cache, field, accumulator });
-        case "field_group":
-          return fieldGroup.build.field({ cache, field, accumulator });
-        case "list":
-          return list.build.field({ cache, field, accumulator });
-      }
-    });
+  documentDataUnion: async ({
+    cache,
+    templates,
+    returnTemplate,
+    accumulator,
+  }) => {
+    const name = friendlyName(templates, "DataUnion");
+    const templateObjects = await cache.datasource.getTemplates(templates);
+    const types = await sequential(
+      templateObjects,
+      async (template) =>
+        await builder.documentDataObject(
+          cache,
+          template,
+          returnTemplate,
+          accumulator
+        )
+    );
+
+    return types;
   },
 };
 
@@ -518,9 +481,9 @@ const buildTemplateInitialValueField = async (
     case "blocks":
       return blocks.build.initialValue({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.initialValue({ cache, field });
+      return fieldGroup.build.initialValue({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.initialValue({ cache, field });
+      return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
       return list.build.initialValue({ cache, field });
   }
@@ -529,6 +492,7 @@ const buildTemplateInitialValueField = async (
 const buildTemplateDataField = async (
   cache: Cache,
   field: Field
+  accumulator: Definitions[]
 ): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
@@ -538,9 +502,9 @@ const buildTemplateDataField = async (
     case "select":
       return select.build.value({ cache, field });
     case "blocks":
-      return blocks.build.value({ cache, field });
+      return blocks.build.value({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.value({ cache, field });
+      return fieldGroup.build.value({ cache, field, accumulator });
     case "field_group_list":
       return fieldGroupList.build.value({ cache, field });
     case "list":

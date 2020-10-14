@@ -61,16 +61,31 @@ type Post_Form {
   fields: [Post_FormFields]
 }
 
+type Section_Cta_Data {
+  header: String
+}
+
+type Section_Data {
+  description: String
+  Section_Cta_Data: String
+  authors: String
+}
+
 type Post_Data {
   title: String
   author: String
-  sections: [String]
+  sections: [Section_Data]
+}
+
+type Section_Cta_InitialValues {
+  template: String
+  header: String
 }
 
 type Section_InitialValues {
   template: String
   description: String
-  cta: String
+  cta: Section_Cta_InitialValues
   authors: String
 }
 
