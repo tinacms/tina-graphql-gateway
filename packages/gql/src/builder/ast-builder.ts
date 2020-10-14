@@ -34,8 +34,6 @@ import type {
 } from "graphql";
 import type { TemplateData } from "../types";
 import type { Field } from "../fields";
-import type { ContextT } from "../resolver";
-import { gql } from "../fields/test-util";
 
 export type Definitions =
   | ObjectTypeDefinitionNode
@@ -134,6 +132,8 @@ export const builder = {
         },
       })),
     });
+
+    return name;
   },
   documentObject: async (
     cache: Cache,
@@ -485,22 +485,22 @@ const buildTemplateInitialValueField = async (
     case "field_group_list":
       return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
-      return list.build.initialValue({ cache, field });
+      return list.build.initialValue({ cache, field, accumulator });
   }
 };
 
 const buildTemplateDataField = async (
   cache: Cache,
-  field: Field
+  field: Field,
   accumulator: Definitions[]
 ): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
-      return text.build.value({ cache, field });
+      return text.build.value({ cache, field, accumulator });
     case "textarea":
-      return textarea.build.value({ cache, field });
+      return textarea.build.value({ cache, field, accumulator });
     case "select":
-      return select.build.value({ cache, field });
+      return select.build.value({ cache, field, accumulator });
     case "blocks":
       return blocks.build.value({ cache, field, accumulator });
     case "field_group":
@@ -508,6 +508,6 @@ const buildTemplateDataField = async (
     case "field_group_list":
       return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
-      return list.build.value({ cache, field });
+      return list.build.value({ cache, field, accumulator });
   }
 };

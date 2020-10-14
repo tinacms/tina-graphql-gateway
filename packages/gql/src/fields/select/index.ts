@@ -2,7 +2,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
+import { builder } from "../../builder/ast-builder";
 
 import type { DataSource } from "../../datasources/datasource";
 import type { Cache } from "../../cache";
@@ -41,40 +41,55 @@ export const select = {
     initialValue: async ({
       cache,
       field,
+      accumulator,
     }: {
       cache: Cache;
       field: SelectField;
+      accumulator: Definitions[];
     }) => {
       return gql.string(field.name);
     },
-    value: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
-      return gql.string(field.name);
-      // let select;
-      // switch (field.config.source.type) {
-      //   case "documents":
-      //     throw new Error(`document select not implemented`);
-      //   case "pages":
-      //     select = field as SectionSelect;
-      //     return {
-      //       type: await cache.build(
-      //         friendlyName(select, "Document"),
-      //         async () =>
-      //           new GraphQLObjectType({
-      //             name: friendlyName(select, "Document"),
-      //             fields: {
-      //               document: {
-      //                 type: await builder.documentUnion({
-      //                   cache,
-      //                   section: select.config.source.section,
-      //                 }),
-      //               },
-      //             },
-      //           })
-      //       ),
-      //     };
-      //   case "simple":
-      //     return { type: GraphQLString };
-      // }
+    value: async ({
+      cache,
+      field,
+      accumulator,
+    }: {
+      cache: Cache;
+      field: SelectField;
+      accumulator: Definitions[];
+    }) => {
+      let select;
+      switch (field.config.source.type) {
+        case "documents":
+          throw new Error(`document select not implemented`);
+        case "pages":
+          select = field as SectionSelect;
+
+          const fieldUnionName = await builder.documentUnion({
+            cache,
+            section: select.config.source.section,
+            accumulator,
+          });
+
+          return {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: field.name,
+            },
+            arguments: [],
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: fieldUnionName,
+              },
+            },
+            directives: [],
+          };
+        case "simple":
+          return gql.string(field.name);
+      }
     },
     input: async ({ cache, field }: { cache: Cache; field: SelectField }) => {
       return GraphQLString;
