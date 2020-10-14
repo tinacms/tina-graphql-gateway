@@ -51,6 +51,18 @@ app.post("/:schema", async (req, res) => {
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
   const schema = await builder.schema({ cache });
+
+  await fs.writeFileSync(
+    path.join(projectRoot, "ast-schema.ts"),
+    `import type {
+      DocumentNode,
+      GraphQLFieldConfigMap,
+      UnionTypeDefinitionNode,
+      ObjectTypeDefinitionNode,
+    } from "graphql";
+
+    const d: DocumentNode = ${JSON.stringify(schema, null, 2)}`
+  );
   await fs.writeFileSync(
     path.join(projectRoot, "ast-schema.graphql"),
     printSchema(buildASTSchema(schema))

@@ -697,6 +697,8 @@ const buildTemplateFormFields = async (
         return fieldGroup.build.field({ cache, field, accumulator });
       case "list":
         return list.build.field({ cache, field, accumulator });
+      default:
+        return text.build.field({ cache, field, accumulator });
     }
   });
 };
@@ -721,6 +723,8 @@ const buildTemplateInitialValueField = async (
       return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
       return list.build.initialValue({ cache, field, accumulator });
+    default:
+      return text.build.initialValue({ cache, field, accumulator });
   }
 };
 
@@ -744,6 +748,8 @@ const buildTemplateDataField = async (
       return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
       return list.build.value({ cache, field, accumulator });
+    default:
+      return text.build.value({ cache, field, accumulator });
   }
 };
 
@@ -767,5 +773,7 @@ const buildTemplateInputDataField = async (
       return fieldGroupList.build.input({ cache, field, accumulator });
     case "list":
       return list.build.input({ cache, field, accumulator });
+    default:
+      return text.build.input({ cache, field, accumulator });
   }
 };
