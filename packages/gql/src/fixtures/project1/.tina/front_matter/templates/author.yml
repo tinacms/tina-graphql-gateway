@@ -24,6 +24,22 @@ fields:
       use_select: false
     label: Anecdotes
     description: Something simple about their high-level achievements
+  - name: favorite_posts
+    label: Favorite Posts
+    type: list
+    config:
+      use_select: true
+      source:
+        type: pages
+        section: authors
+  - name: all_time_post
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: posts
+    label: All-Time Favorite Post
   - name: accolades
     label: Accolades
     type: field_group_list

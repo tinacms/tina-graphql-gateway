@@ -69,6 +69,7 @@ export const select = {
             cache,
             section: select.config.source.section,
             accumulator,
+            build: false,
           });
 
           return {
