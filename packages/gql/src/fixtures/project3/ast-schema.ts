@@ -1605,7 +1605,125 @@ import type {
       "kind": "ObjectTypeDefinition",
       "name": {
         "kind": "Name",
+        "value": "DatetimeField"
+      },
+      "interfaces": [],
+      "directives": [],
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "label"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "component"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        }
+      ]
+    },
+    {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
         "value": "TextareaField"
+      },
+      "interfaces": [],
+      "directives": [],
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "label"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "component"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        }
+      ]
+    },
+    {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "FileField"
       },
       "interfaces": [],
       "directives": [],
@@ -1666,7 +1784,6 @@ import type {
         "kind": "Name",
         "value": "Sidecar_Cta_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -1761,7 +1878,6 @@ import type {
         "kind": "Name",
         "value": "ActionVideo_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -1840,7 +1956,6 @@ import type {
         "kind": "Name",
         "value": "ActionNewsletter_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -1997,7 +2112,6 @@ import type {
         "kind": "Name",
         "value": "ActionPageReference_ButtonSettings_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2092,7 +2206,6 @@ import type {
         "kind": "Name",
         "value": "ActionPageReference_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2185,7 +2298,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "action-video"
+            "value": "ActionVideo"
           },
           "arguments": [],
           "type": {
@@ -2201,7 +2314,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "action-newsletter"
+            "value": "ActionNewsletter"
           },
           "arguments": [],
           "type": {
@@ -2217,7 +2330,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "action-page-reference"
+            "value": "ActionPageReference"
           },
           "arguments": [],
           "type": {
@@ -2312,7 +2425,6 @@ import type {
         "kind": "Name",
         "value": "Sidecar_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2325,7 +2437,7 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "FileField"
           }
         },
         {
@@ -2419,7 +2531,6 @@ import type {
         "kind": "Name",
         "value": "ExcerptPost_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2505,7 +2616,6 @@ import type {
         "kind": "Name",
         "value": "PostList_Posts_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2600,7 +2710,6 @@ import type {
         "kind": "Name",
         "value": "PostList_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2794,7 +2903,6 @@ import type {
         "kind": "Name",
         "value": "PriceList_Prices_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2910,7 +3018,6 @@ import type {
         "kind": "Name",
         "value": "PriceList_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -2996,7 +3103,6 @@ import type {
         "kind": "Name",
         "value": "AuthorList_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3075,7 +3181,6 @@ import type {
         "kind": "Name",
         "value": "SponsorList_Sponsor_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3088,7 +3193,7 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "FileField"
           }
         }
       ]
@@ -3177,7 +3282,6 @@ import type {
         "kind": "Name",
         "value": "SponsorList_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3263,7 +3367,6 @@ import type {
         "kind": "Name",
         "value": "PageReference_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3344,12 +3447,70 @@ import type {
       ]
     },
     {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "NumberField"
+      },
+      "interfaces": [],
+      "directives": [],
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "label"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "component"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        }
+      ]
+    },
+    {
       "kind": "UnionTypeDefinition",
       "name": {
         "kind": "Name",
         "value": "SectionIndex_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3362,7 +3523,7 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "NumberField"
           }
         },
         {
@@ -3449,7 +3610,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "sidecar"
+            "value": "Sidecar"
           },
           "arguments": [],
           "type": {
@@ -3465,7 +3626,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "excerpt-post"
+            "value": "ExcerptPost"
           },
           "arguments": [],
           "type": {
@@ -3481,7 +3642,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "post-list"
+            "value": "PostList"
           },
           "arguments": [],
           "type": {
@@ -3497,7 +3658,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "price-list"
+            "value": "PriceList"
           },
           "arguments": [],
           "type": {
@@ -3513,7 +3674,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "author-list"
+            "value": "AuthorList"
           },
           "arguments": [],
           "type": {
@@ -3529,7 +3690,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "sponsor-list"
+            "value": "SponsorList"
           },
           "arguments": [],
           "type": {
@@ -3545,7 +3706,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "page-reference"
+            "value": "PageReference"
           },
           "arguments": [],
           "type": {
@@ -3561,7 +3722,7 @@ import type {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "section-index"
+            "value": "SectionIndex"
           },
           "arguments": [],
           "type": {
@@ -3656,7 +3817,6 @@ import type {
         "kind": "Name",
         "value": "BlockPage_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -3669,7 +3829,7 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "DatetimeField"
           }
         },
         {
@@ -5854,12 +6014,70 @@ import type {
       ]
     },
     {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "TagListField"
+      },
+      "interfaces": [],
+      "directives": [],
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "label"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "component"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        }
+      ]
+    },
+    {
       "kind": "UnionTypeDefinition",
       "name": {
         "kind": "Name",
         "value": "Post_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -5879,14 +6097,14 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "FileField"
           }
         },
         {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "TagListField"
           }
         }
       ]
@@ -6177,12 +6395,70 @@ import type {
       ]
     },
     {
+      "kind": "ObjectTypeDefinition",
+      "name": {
+        "kind": "Name",
+        "value": "ImageGalleryField"
+      },
+      "interfaces": [],
+      "directives": [],
+      "fields": [
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "name"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "label"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        },
+        {
+          "kind": "FieldDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "component"
+          },
+          "arguments": [],
+          "type": {
+            "kind": "NamedType",
+            "name": {
+              "kind": "Name",
+              "value": "String"
+            }
+          },
+          "directives": []
+        }
+      ]
+    },
+    {
       "kind": "UnionTypeDefinition",
       "name": {
         "kind": "Name",
         "value": "Author_Accolades_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -6277,7 +6553,6 @@ import type {
         "kind": "Name",
         "value": "Author_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -6290,14 +6565,14 @@ import type {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "FileField"
           }
         },
         {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "ImageGalleryField"
           }
         },
         {
@@ -6751,7 +7026,6 @@ import type {
         "kind": "Name",
         "value": "Menu_MenuItem_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
@@ -6853,13 +7127,12 @@ import type {
         "kind": "Name",
         "value": "Menu_FormFields"
       },
-      "directives": [],
       "types": [
         {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "TextField"
+            "value": "FileField"
           }
         },
         {

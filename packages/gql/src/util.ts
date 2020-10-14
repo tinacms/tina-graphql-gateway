@@ -1,7 +1,7 @@
 import { upperFirst, snakeCase, camelCase, toLower, kebabCase } from "lodash";
 
 export const slugify = (string: string) => {
-  return toLower(kebabCase(string));
+  return toLower(snakeCase(string));
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
