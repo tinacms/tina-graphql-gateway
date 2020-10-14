@@ -11,7 +11,6 @@ import { createAppAuth } from "@octokit/auth-app";
 import fs from "fs";
 import matter from "gray-matter";
 import p from "path";
-import { parse } from "graphql";
 
 // We'll need to figure out Auth
 const GH_CLIENT = "Iv1.ee9ca7853541fc37";
@@ -96,11 +95,26 @@ export class GithubManager implements DataSource {
     );
   }
 
+  async getDirContents<T>(dirPath: string) {
+    const dirContents = await appOctokit.repos.getContent({
+      owner: "mittonface",
+      repo: "tina-teams-demo-site",
+      path: dirPath,
+    })
+    if (Array.isArray(dirContents.data)){
+      return dirContents.data.map(t => t.name)
+    }
+
+    // TODO: An error I suppose
+    return []
+  }
+
   getDocumentsForSection = async (section?: string) => {
     const templates = await this.getTemplatesForSection(section);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
+
   getTemplates = async (templates: string[]) =>
     await Promise.all(
       templates.map(
@@ -147,8 +161,7 @@ export class GithubManager implements DataSource {
     };
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
-    const templates = await fs.readdirSync(fullPath);
+    const templates = await this.getDirContents(".tina/front_matter/templates")
     const template = (
       await Promise.all(
         templates.map(async (template) => {
@@ -172,8 +185,7 @@ export class GithubManager implements DataSource {
     return namespaceFields(template);
   };
   getTemplate = async ({ slug }: { slug: string }) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
-    const templates = await fs.readdirSync(fullPath);
+    const templates = await this.getDirContents(".tina/front_matter/templates")
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
     });
