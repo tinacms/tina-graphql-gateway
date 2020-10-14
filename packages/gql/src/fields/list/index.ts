@@ -9,6 +9,7 @@ import {
 import { gql } from "../../gql";
 
 import { select } from "../select";
+import { text } from "../text";
 import { builder } from "../../builder/ast-builder";
 
 import type { Cache } from "../../cache";
@@ -28,6 +29,29 @@ export const list = {
       field: ListField;
       accumulator: Definitions[];
     }) => {
+      // FIXME: shouldn't have to do this, but if a text or select field
+      // is otherwise not present in the schema we need to ensure it's built
+      text.build.field({
+        cache,
+        field: { name: "", label: "", type: "text", __namespace: "" },
+        accumulator,
+      });
+      select.build.field({
+        cache,
+        field: {
+          name: "",
+          label: "",
+          type: "select",
+          config: {
+            options: [""],
+            source: {
+              type: "simple",
+            },
+          },
+        },
+        accumulator,
+      });
+
       accumulator.push({
         kind: "UnionTypeDefinition" as const,
         name: {
@@ -40,7 +64,7 @@ export const list = {
             kind: "NamedType",
             name: {
               kind: "Name",
-              value: "TextareaField",
+              value: "TextField",
             },
           },
           {

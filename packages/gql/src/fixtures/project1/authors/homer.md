@@ -2,7 +2,7 @@
 name: Homer Simpson
 role: CFO
 anecdotes:
-  - Something simple
+  - Something simple!
 accolades:
   - figure: Some accollades
     description: Some description

@@ -740,6 +740,7 @@ const buildTemplateFormFields = async (
   accumulator: Definitions[]
 ): Promise<string[]> => {
   return await sequential(fields, async (field) => {
+    console.log("hi?", field.type);
     switch (field.type) {
       case "text":
         return text.build.field({ cache, field, accumulator });
