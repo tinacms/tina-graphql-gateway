@@ -9,7 +9,6 @@ describe("Schema builder", () => {
     const datasource = new FileSystemManager(projectRoot);
 
     const res = await datasource.getTemplate("author");
-    console.log(res);
 
     expect(res).toMatchObject({
       label: expect.any(String),

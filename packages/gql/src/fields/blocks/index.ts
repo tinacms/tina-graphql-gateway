@@ -384,7 +384,6 @@ export const blocks: Blocks = {
           item
         );
 
-        console.log(itemValue);
         assertIsBlockInitialValue(itemValue);
 
         return itemValue;

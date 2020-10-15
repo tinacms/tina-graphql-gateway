@@ -85,14 +85,12 @@ const UseIt = ({ schema, formConfig, onSubmit }: { schema: GraphQLSchema }) => {
   return <div />;
 };
 
-export const Explorer = () => {
+export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
   let { project } = useParams();
   const [vars, setVars] = React.useState();
   React.useEffect(() => {
-    if (!vars) {
-      setVars({ path: "posts/1.md" });
-    }
-  }, [vars]);
+    setVars({ path: pathVariable });
+  }, [pathVariable]);
   const [state, setState] = React.useState({
     schema: null,
     query: null,
