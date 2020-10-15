@@ -1,5 +1,8 @@
-import _ from "lodash";
+import _, { add } from "lodash";
 import * as yup from "yup";
+
+// @ts-ignore
+import mdx from "@forestryio/mdx";
 
 import { text } from "../fields/text";
 import { list } from "../fields/list";
@@ -79,7 +82,9 @@ export interface Resolver {
   documentDataObject: (
     datasource: DataSource,
     resolvedTemplate: TemplateData,
-    data: DocumentData
+    data: DocumentData,
+    includeContent: boolean,
+    content: string | undefined
   ) => Promise<unknown>;
   /**
    *
@@ -223,12 +228,22 @@ export const resolver: Resolver = {
         params: args.params,
         datasource,
       });
-      return await resolver.documentObject({ args: args, datasource });
+      return await resolver.documentObject({
+        args: args,
+        datasource,
+      });
     }
 
     if (!value) {
       return null;
     }
+    /**
+     * Field-level references return an object with "instructions" rather than the document themselves.
+     *
+     * The reason for this is if you have `post->author`, we don't want to actually fetch the author
+     * document until we know you need it, so when we come across the author reference in the post's
+     * frontmatter, we return instructions for how to retrieve that document
+     */
     if (isDocumentField(value)) {
       switch (value._resolver_kind) {
         case "_initial":
@@ -236,7 +251,7 @@ export const resolver: Resolver = {
             throw new Error(`Expected args for initial document request`);
           }
           return resolver.documentObject({
-            args: { path: args.path },
+            args: { path: args.path, ...args },
             datasource,
           });
         case "_nested_source":
@@ -247,17 +262,45 @@ export const resolver: Resolver = {
         case "_nested_sources":
           return await sequential(value._args.paths, async (p) => {
             return await resolver.documentObject({
-              args: { path: p },
+              args: { path: p, ...args },
               datasource,
             });
           });
       }
     } else {
+      /**
+       * This is where we support fields with arguments, we return `_value` along with the field
+       * type so we know which field to pass in for the argument format
+       */
+      if (isEnrichedValue(value)) {
+        switch (value.field.type) {
+          case "textarea":
+            if (args.format) {
+              if (args.format === "html") {
+                const contents = await mdx.plainCompile({
+                  contents: value._value,
+                });
+                // FIXME: not working
+                console.log(contents);
+                return value._value;
+              }
+              if (args.format === "markdown") {
+                const contents = await mdx.mdCompile({
+                  contents: value._value,
+                });
+                return JSON.stringify(contents, null, 2);
+              }
+            }
+            return value._value;
+          default:
+            return value._value;
+        }
+      }
       return value;
     }
   },
   documentObject: async ({ args, datasource }) => {
-    const { data } = await datasource.getData(args);
+    const { data, content } = await datasource.getData(args);
     const template = await datasource.getTemplateForDocument(args);
 
     return {
@@ -265,7 +308,13 @@ export const resolver: Resolver = {
       path: args.path,
       content: "\nSome content\n",
       form: await resolver.documentFormObject(datasource, template),
-      data: await resolver.documentDataObject(datasource, template, data),
+      data: await resolver.documentDataObject(
+        datasource,
+        template,
+        data,
+        true,
+        content
+      ),
       initialValues: await resolver.documentInitialValuesObject(
         datasource,
         template,
@@ -274,9 +323,11 @@ export const resolver: Resolver = {
     };
   },
   documentDataObject: async (
-    datasource: DataSource,
-    resolvedTemplate: TemplateData,
-    data: DocumentData
+    datasource,
+    resolvedTemplate,
+    data,
+    includeContent,
+    content
   ) => {
     const accum: { [key: string]: unknown } = {};
     const { template, ...rest } = data;
@@ -284,8 +335,18 @@ export const resolver: Resolver = {
       const field = findField(resolvedTemplate.fields, key);
       return (accum[key] = await dataValue(datasource, field, rest[key]));
     });
+
+    let additionalFields = {};
+    if (includeContent) {
+      additionalFields.content = {
+        _value: content,
+        field: textarea.contentField,
+      };
+    }
+
     return {
       __typename: friendlyName(template, "Data"),
+      ...additionalFields,
       ...accum,
     };
   },
@@ -571,6 +632,18 @@ function isDocumentField(
   } else {
     return false;
   }
+}
+
+function isEnrichedValue(
+  item: unknown
+): item is { _value: string; field: Field } {
+  if (typeof item === "object" && item !== null) {
+    if (item.hasOwnProperty("_value")) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function assertIsDocumentInputArgs(

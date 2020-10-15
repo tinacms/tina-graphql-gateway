@@ -43,6 +43,30 @@ app.get("/list-projects", async (req, res) => {
   );
 });
 
+app.get("/list-documents/:schema", async (req, res) => {
+  return res.json(
+    await Promise.all(
+      await fs
+        .readdirSync(
+          path.join(fixturePath, req.path.replace("/list-documents", ""))
+        )
+        .filter((folderName) => folderName !== ".tina")
+        .map(async (folderName) => {
+          return {
+            name: folderName,
+            files: await fs.readdirSync(
+              path.join(
+                fixturePath,
+                req.path.replace("/list-documents", ""),
+                folderName
+              )
+            ),
+          };
+        })
+    )
+  );
+});
+
 app.post("/:schema", async (req, res) => {
   const { query, variables } = req.body;
 

@@ -54,6 +54,8 @@ fields:
         type: textarea
         config:
           required: false
+          schema:
+            format: markdown
         label: Description
 
 pages:

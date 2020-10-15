@@ -1,11 +1,23 @@
 import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
+import mdx from "@forestryio/mdx";
 
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
 import type { Definitions } from "../../builder/ast-builder";
 
 export const textarea = {
+  contentField: {
+    type: "textarea" as const,
+    name: "content",
+    label: "Content",
+    config: {
+      schema: {
+        format: "markdown" as const,
+      },
+    },
+    __namespace: "",
+  },
   build: {
     field: async ({
       cache,
@@ -53,7 +65,71 @@ export const textarea = {
       field: TextareaField;
       accumulator: Definitions[];
     }) => {
-      return gql.string(field.name);
+      accumulator.push({
+        kind: "ObjectTypeDefinition",
+        name: {
+          kind: "Name",
+          value: "LongTextValue",
+        },
+        fields: [
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "raw",
+            },
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "String",
+              },
+            },
+          },
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "markdownAst",
+            },
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "String",
+              },
+            },
+          },
+          {
+            kind: "FieldDefinition",
+            name: {
+              kind: "Name",
+              value: "html",
+            },
+            type: {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "String",
+              },
+            },
+          },
+        ],
+      });
+      return {
+        kind: "FieldDefinition" as const,
+        name: {
+          kind: "Name" as const,
+          value: field.name,
+        },
+        type: {
+          kind: "NamedType" as const,
+          name: {
+            kind: "Name" as const,
+            value: "LongTextValue" as const,
+          },
+        },
+      };
     },
     input: ({
       cache,
@@ -109,13 +185,24 @@ export const textarea = {
       datasource: DataSource;
       field: TextareaField;
       value: unknown;
-    }): Promise<string> => {
+    }): Promise<
+      | string
+      | { raw: string; markdownAst: string }
+      | { _value: string; field: TextareaField }
+    > => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved textarea value`
         );
       }
-      return value;
+      const contents = await mdx.mdCompile({
+        contents: value,
+      });
+      const markdownAstString = JSON.stringify(contents);
+      return {
+        raw: value,
+        markdownAst: markdownAstString,
+      };
     },
     input: async ({
       datasource,
@@ -143,6 +230,9 @@ export type TextareaField = {
   default?: string;
   config?: {
     required?: boolean;
+    schema?: {
+      format: "markdown" | "html";
+    };
   };
   __namespace: string;
 };

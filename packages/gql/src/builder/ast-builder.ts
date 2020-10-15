@@ -11,6 +11,7 @@ import {
   GraphQLInputFieldConfigMap,
   InputObjectTypeDefinitionNode,
   FieldDefinitionNode,
+  EnumTypeDefinitionNode,
   InputValueDefinitionNode,
 } from "graphql";
 import _, { template } from "lodash";
@@ -45,7 +46,8 @@ import type { Field } from "../fields";
 export type Definitions =
   | ObjectTypeDefinitionNode
   | UnionTypeDefinitionNode
-  | InputObjectTypeDefinitionNode;
+  | InputObjectTypeDefinitionNode
+  | EnumTypeDefinitionNode;
 
 /**
  * @internal this is redundant in documentation
@@ -398,7 +400,8 @@ export const builder = {
         cache,
         template,
         false,
-        accumulator
+        accumulator,
+        true
       );
       const initialValuesName = await builder.documentInitialValuesObject(
         cache,
@@ -490,12 +493,24 @@ export const builder = {
     cache: Cache,
     template: TemplateData,
     returnTemplate: boolean,
-    accumulator: Definitions[]
+    accumulator: Definitions[],
+    includeContent: boolean = false
   ) => {
     const name = friendlyName(template, "Data");
     const fields = await sequential(template.fields, async (field) => {
       return await buildTemplateDataField(cache, field, accumulator);
     });
+
+    if (includeContent) {
+      fields.push(
+        textarea.build.value({
+          cache,
+          field: textarea.contentField,
+          accumulator,
+        })
+      );
+    }
+
     accumulator.push({
       kind: "ObjectTypeDefinition",
       name: {
