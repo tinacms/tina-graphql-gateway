@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
-import mdx from "@forestryio/mdx";
+import { toAst, toHTML } from "../../remark";
 
 import type { Cache } from "../../cache";
 import type { DataSource } from "../../datasources/datasource";
@@ -28,22 +28,20 @@ export const textarea = {
       field: TextareaField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "TextareaField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      const name = "TextareaField";
 
-      return "TextareaField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
+
+      return name;
     },
     initialValue: ({
       cache,
@@ -187,7 +185,7 @@ export const textarea = {
       value: unknown;
     }): Promise<
       | string
-      | { raw: string; markdownAst: string }
+      | { raw: string; markdownAst: string; html: string }
       | { _value: string; field: TextareaField }
     > => {
       if (typeof value !== "string") {
@@ -195,13 +193,12 @@ export const textarea = {
           `Unexpected value of type ${typeof value} for resolved textarea value`
         );
       }
-      const contents = await mdx.mdCompile({
+      const contents = await toAst({
         contents: value,
       });
-      const html = await mdx.plainCompile({
+      const html = await toHTML({
         contents: value,
       });
-      console.log(html);
       const markdownAstString = JSON.stringify(contents);
       return {
         raw: value,

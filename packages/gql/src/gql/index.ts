@@ -1,4 +1,4 @@
-import { GraphQLString } from "graphql";
+import { GraphQLString, FieldDefinitionNode } from "graphql";
 
 export const gql = {
   string: (name: string, options: { list?: boolean } = {}) => {
@@ -41,6 +41,20 @@ export const gql = {
       };
     }
   },
+  object: ({
+    name,
+    fields,
+  }: {
+    name: string;
+    fields: FieldDefinitionNode[];
+  }) => ({
+    kind: "ObjectTypeDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    fields,
+  }),
   inputString: (name: string) => ({
     kind: "InputValueDefinition" as const,
     name: {
