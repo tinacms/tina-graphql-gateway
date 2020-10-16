@@ -16,22 +16,19 @@ export const datetime = {
       field: DatetimeField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "DatetimeField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      const name = "DatetimeField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
 
-      return "DatetimeField";
+      return name;
     },
     initialValue: ({
       cache,

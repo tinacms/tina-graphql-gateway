@@ -54,39 +54,17 @@ export const fieldGroupList = {
         accumulator
       );
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: name,
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "fields",
-            },
-            arguments: [],
-            type: {
-              kind: "ListType",
-              type: {
-                kind: "NamedType",
-                name: {
-                  kind: "Name",
-                  value: fieldsUnionName,
-                },
-              },
-            },
-            directives: [],
-          },
-        ],
-      });
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+            gql.listField({ name: "fields", value: fieldsUnionName }),
+          ],
+        })
+      );
 
       return name;
     },
@@ -105,25 +83,7 @@ export const fieldGroupList = {
         false,
         accumulator
       );
-      return {
-        kind: "FieldDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType" as const,
-          type: {
-            kind: "NamedType" as const,
-            name: {
-              kind: "Name" as const,
-              value: initialValueName,
-            },
-          },
-        },
-        directives: [],
-      };
+      return gql.listField({ name: field.name, value: initialValueName });
     },
     value: async ({
       cache,
@@ -134,30 +94,13 @@ export const fieldGroupList = {
       field: FieldGroupListField;
       accumulator: Definitions[];
     }) => {
-      return {
-        kind: "FieldDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType" as const,
-          type: {
-            kind: "NamedType" as const,
-            name: {
-              kind: "Name" as const,
-              value: await builder.documentDataObject(
-                cache,
-                field,
-                false,
-                accumulator
-              ),
-            },
-          },
-        },
-        directives: [],
-      };
+      const valueName = await builder.documentDataObject(
+        cache,
+        field,
+        false,
+        accumulator
+      );
+      return gql.listField({ name: field.name, value: valueName });
     },
     input: async ({
       cache,
@@ -168,28 +111,15 @@ export const fieldGroupList = {
       field: FieldGroupListField;
       accumulator: Definitions[];
     }) => {
-      return {
-        kind: "InputValueDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        type: {
-          kind: "ListType" as const,
-          type: {
-            kind: "NamedType" as const,
-            name: {
-              kind: "Name" as const,
-              value: await builder.documentDataInputObject(
-                cache,
-                field,
-                false,
-                accumulator
-              ),
-            },
-          },
-        },
-      };
+      return gql.listInputValue({
+        name: field.name,
+        value: await builder.documentDataInputObject(
+          cache,
+          field,
+          false,
+          accumulator
+        ),
+      });
     },
   },
   resolve: {

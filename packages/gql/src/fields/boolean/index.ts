@@ -16,22 +16,19 @@ export const boolean = {
       field: BooleanField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "BooleanField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      const name = "BooleanField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
 
-      return "BooleanField";
+      return name;
     },
     initialValue: ({
       cache,

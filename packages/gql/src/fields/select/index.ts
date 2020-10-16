@@ -20,23 +20,20 @@ export const select = {
       field: SelectField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "SelectField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-          gql.string("options", { list: true }),
-        ],
-      });
+      const name = "SelectField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+            gql.string("options", { list: true }),
+          ],
+        })
+      );
 
-      return "SelectField";
+      return name;
     },
     initialValue: async ({
       cache,
@@ -72,22 +69,7 @@ export const select = {
             build: false,
           });
 
-          return {
-            kind: "FieldDefinition" as const,
-            name: {
-              kind: "Name" as const,
-              value: field.name,
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType" as const,
-              name: {
-                kind: "Name" as const,
-                value: fieldUnionName,
-              },
-            },
-            directives: [],
-          };
+          return gql.field({ name: field.name, value: fieldUnionName });
         case "simple":
           return gql.string(field.name);
       }
@@ -101,20 +83,7 @@ export const select = {
       field: SelectField;
       accumulator: Definitions[];
     }) => {
-      return {
-        kind: "InputValueDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: "String" as const,
-          },
-        },
-      };
+      return gql.input(field.name, "String");
     },
   },
   resolve: {

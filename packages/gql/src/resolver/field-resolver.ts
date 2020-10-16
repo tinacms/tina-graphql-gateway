@@ -79,8 +79,8 @@ export interface Resolver {
     datasource: DataSource,
     resolvedTemplate: TemplateData,
     data: DocumentData,
-    includeContent: boolean,
-    content: string | undefined
+    includeContent?: boolean,
+    content?: string | undefined
   ) => Promise<unknown>;
   /**
    *
