@@ -1,21 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs } from "../";
 
 export const tag_list = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TagListField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<TagListField>) => {
       const name = "TagListField";
       accumulator.push(
         gql.object({
@@ -30,48 +19,20 @@ export const tag_list = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TagListField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<TagListField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TagListField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<TagListField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TagListField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<TagListField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: TagListField;
-    }): TinaTagListField => {
+    }: Omit<ResolveArgs<TagListField>, "value">): TinaTagListField => {
       const { type, ...rest } = field;
       return {
         ...rest,
@@ -83,14 +44,8 @@ export const tag_list = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: TagListField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<TagListField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved tag_list value`
@@ -98,15 +53,7 @@ export const tag_list = {
       }
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: TagListField;
-      value: unknown;
-    }): Promise<string> => {
+    value: async ({ value }: ResolveArgs<TagListField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved tag_list value`
@@ -114,15 +61,7 @@ export const tag_list = {
       }
       return value;
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: TagListField;
-      value: unknown;
-    }): Promise<string> => {
+    input: async ({ value }: ResolveArgs<TagListField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved tag_list value`

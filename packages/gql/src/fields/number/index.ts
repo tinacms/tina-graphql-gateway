@@ -1,21 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
 export const number = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: NumberField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<NumberField>) => {
       const name = "NumberField";
       accumulator.push(
         gql.object({
@@ -30,48 +19,20 @@ export const number = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: NumberField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<NumberField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: NumberField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<NumberField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: NumberField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<NumberField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: NumberField;
-    }): TinaNumberField => {
+    }: Omit<ResolveArgs<NumberField>, "value">): TinaNumberField => {
       const { type, ...rest } = field;
       return {
         ...rest,
@@ -83,51 +44,20 @@ export const number = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: NumberField;
-      value: unknown;
-    }): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved number value`
-        );
-      }
+    }: ResolveArgs<NumberField>): Promise<string> => {
+      assertIsString(value, { source: "number field" });
+
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: NumberField;
-      value: unknown;
-    }): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved number value`
-        );
-      }
+    value: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
+      assertIsString(value, { source: "number field" });
+
       return value;
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: NumberField;
-      value: unknown;
-    }): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved number value`
-        );
-      }
+    input: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
+      assertIsString(value, { source: "number field" });
+
       return value;
     },
   },

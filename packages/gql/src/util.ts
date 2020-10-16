@@ -49,6 +49,16 @@ export const sequential2 = async (promises: Promise<unknown>[]) => {
   return promises.reduce(reducePromises, Promise.resolve());
 };
 
+/**
+ * Iterate through an array of promises sequentially, ensuring the order
+ * is preserved.
+ *
+ * ```js
+ * await sequential(templates, async (template) => {
+ *   await doSomething(template)
+ * })
+ * ```
+ */
 export const sequential = async <A, B>(
   items: A[],
   callback: (args: A) => Promise<B>

@@ -1,27 +1,15 @@
 import _ from "lodash";
 import * as yup from "yup";
-import {
-  printType,
-  GraphQLString,
-  GraphQLInputObjectType,
-  getNamedType,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLType,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-} from "graphql";
+import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
 import { friendlyName } from "@forestryio/graphql-helpers";
-import { builder } from "../../builder/ast-builder";
+import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
-import type { Cache } from "../../cache";
+import type { BuildArgs, ResolveArgs } from "../";
 import type { TinaTemplateData } from "../../types";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
 
 export interface Build {
   /**
@@ -63,34 +51,22 @@ export interface Build {
     cache,
     field,
     accumulator,
-  }: BuildArgs & { accumulator: Definitions[] }) => Promise<string>;
+  }: BuildArgs<BlocksField>) => Promise<string>;
   initialValue: ({
     cache,
     field,
     accumulator,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-    accumulator: Definitions[];
-  }) => Promise<FieldDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
   value: ({
     cache,
     field,
     accumulator,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-    accumulator: Definitions[];
-  }) => Promise<FieldDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
   input: ({
     cache,
     field,
     accumulator,
-  }: {
-    cache: Cache;
-    field: BlocksField;
-    accumulator: Definitions[];
-  }) => Promise<InputValueDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
 }
 
 export interface Resolve {
@@ -130,19 +106,12 @@ export interface Resolve {
   field: ({
     datasource,
     field,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-  }) => Promise<TinaBlocksField>;
+  }: Omit<ResolveArgs<BlocksField>, "value">) => Promise<TinaBlocksField>;
   initialValue: ({
     datasource,
     field,
     value,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-  }) => Promise<
+  }: ResolveArgs<BlocksField>) => Promise<
     {
       __typename: string;
       // FIXME: this should exist for blocks, but
@@ -154,20 +123,12 @@ export interface Resolve {
     datasource,
     field,
     value,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-  }) => Promise<unknown>;
+  }: ResolveArgs<BlocksField>) => Promise<unknown>;
   input: ({
     datasource,
     field,
     value,
-  }: {
-    datasource: DataSource;
-    field: BlocksField;
-    value: unknown;
-  }) => Promise<
+  }: ResolveArgs<BlocksField>) => Promise<
     {
       template: string;
       [key: string]: unknown;
@@ -212,7 +173,7 @@ export const blocks: Blocks = {
         gql.object({
           name: templateName,
           fields: _.flatten(possibleTemplates).map((formObject) =>
-            gql.field({ name: formObject.name, value: formObject.value })
+            gql.field({ name: formObject.name, type: formObject.value })
           ),
         })
       );
@@ -224,7 +185,7 @@ export const blocks: Blocks = {
             gql.string("name"),
             gql.string("label"),
             gql.string("component"),
-            gql.field({ name: "templates", value: templateName }),
+            gql.field({ name: "templates", type: templateName }),
           ],
         })
       );
@@ -239,7 +200,7 @@ export const blocks: Blocks = {
         accumulator,
       });
 
-      return gql.listField({ name: field.name, value: fieldUnionName });
+      return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = await builder.documentDataUnion({
@@ -248,7 +209,7 @@ export const blocks: Blocks = {
         returnTemplate: true,
         accumulator,
       });
-      return gql.listField({ name: field.name, value: fieldUnionName });
+      return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
       const name = await builder.documentDataTaggedUnionInputObject({
@@ -257,17 +218,11 @@ export const blocks: Blocks = {
         accumulator,
       });
 
-      return gql.listInputValue({ name: field.name, value: name });
+      return gql.inputValueList(field.name, name);
     },
   },
   resolve: {
-    field: async ({
-      datasource,
-      field,
-    }: {
-      datasource: DataSource;
-      field: BlocksField;
-    }): Promise<TinaBlocksField> => {
+    field: async ({ datasource, field }): Promise<TinaBlocksField> => {
       const templates: { [key: string]: TinaTemplateData } = {};
       await sequential(field.template_types, async (templateSlug) => {
         const template = await datasource.getTemplate(templateSlug);
@@ -299,24 +254,16 @@ export const blocks: Blocks = {
         return itemValue;
       });
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: BlocksField;
-      value: unknown;
-    }) => {
+    value: async ({ datasource, field, value }) => {
       assertIsBlockValueArray(value);
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const data = await resolver.documentDataObject(
+        const data = await resolver.documentDataObject({
           datasource,
-          templateData,
-          item
-        );
+          resolvedTemplate: templateData,
+          data: item,
+        });
         assertIsObject(data);
 
         const value = { template: item.template, ...data };
@@ -450,5 +397,3 @@ type BlockInitialValue = {
   _template: string;
   [key: string]: unknown;
 };
-
-type BuildArgs = { cache: Cache; field: BlocksField };

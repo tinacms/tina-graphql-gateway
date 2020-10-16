@@ -1,34 +1,17 @@
 import * as yup from "yup";
-import { friendlyName } from "@forestryio/graphql-helpers";
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLUnionType,
-} from "graphql";
 import { gql } from "../../gql";
 
 import { select } from "../select";
 import { text } from "../text";
-import { builder } from "../../builder/ast-builder";
+import { builder } from "../../builder";
 
-import type { Cache } from "../../cache";
+import type { BuildArgs, ResolveArgs } from "../";
 import type { TinaField } from "../index";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
 
 export const list = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ListField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       // FIXME: shouldn't have to do this, but if a text or select field
       // is otherwise not present in the schema we need to ensure it's built
       text.build.field({
@@ -66,33 +49,17 @@ export const list = {
             gql.string("label"),
             gql.string("component"),
             gql.string("defaultItem"),
-            gql.field({ name: "field", value: unionName }),
+            gql.field({ name: "field", type: unionName }),
           ],
         })
       );
 
       return name;
     },
-    initialValue: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ListField;
-      accumulator: Definitions[];
-    }) => {
-      return gql.string(field.name, { list: true });
+    initialValue: async ({ field }: BuildArgs<ListField>) => {
+      return gql.stringList(field.name);
     },
-    value: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ListField;
-      accumulator: Definitions[];
-    }) => {
+    value: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
       const isSimple = field.config.use_select ? false : true;
       if (!isSimple) {
@@ -121,32 +88,21 @@ export const list = {
           });
 
           // TODO: refactor this to use the select
-          return gql.listField({ name: field.name, value: fieldUnionName });
+          return gql.fieldList({ name: field.name, type: fieldUnionName });
         case "simple":
           list = field as SimpleList;
-          return gql.string(field.name, { list: true });
+          return gql.stringList(field.name);
       }
     },
-    input: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ListField;
-      accumulator: Definitions[];
-    }) => {
-      return gql.listInputValue({ name: field.name, value: "String" });
+    input: async ({ field }: BuildArgs<ListField>) => {
+      return gql.inputValueList(field.name, "String");
     },
   },
   resolve: {
     field: async ({
       datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: ListField;
-    }): Promise<TinaListField> => {
+    }: Omit<ResolveArgs<ListField>, "value">): Promise<TinaListField> => {
       const { ...rest } = field;
 
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -205,14 +161,8 @@ export const list = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ListField;
-      value: unknown;
-    }): Promise<
+    }: ResolveArgs<ListField>): Promise<
       | {
           _resolver: "_resource";
           _resolver_kind: "_nested_sources";
@@ -224,14 +174,9 @@ export const list = {
       return value;
     },
     value: async ({
-      datasource,
       field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ListField;
-      value: unknown;
-    }): Promise<
+    }: ResolveArgs<ListField>): Promise<
       | {
           _resolver: "_resource";
           _resolver_kind: "_nested_sources";
@@ -267,14 +212,9 @@ export const list = {
       }
     },
     input: async ({
-      datasource,
       field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ListField;
-      value: unknown;
-    }): Promise<
+    }: ResolveArgs<ListField>): Promise<
       | {
           _resolver: "_resource";
           _resolver_kind: "_nested_sources";

@@ -1,25 +1,13 @@
-import { GraphQLString, GraphQLObjectType, GraphQLList } from "graphql";
-import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder/ast-builder";
+import { builder } from "../../builder";
 
-import type { DataSource } from "../../datasources/datasource";
-import type { Cache } from "../../cache";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs } from "../";
 
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: SelectField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<SelectField>) => {
       const name = "SelectField";
       accumulator.push(
         gql.object({
@@ -28,33 +16,17 @@ export const select = {
             gql.string("name"),
             gql.string("label"),
             gql.string("component"),
-            gql.string("options", { list: true }),
+            gql.stringList("options"),
           ],
         })
       );
 
       return name;
     },
-    initialValue: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: SelectField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: async ({ field }: BuildArgs<SelectField>) => {
       return gql.string(field.name);
     },
-    value: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: SelectField;
-      accumulator: Definitions[];
-    }) => {
+    value: async ({ cache, field, accumulator }: BuildArgs<SelectField>) => {
       let select;
       switch (field.config.source.type) {
         case "documents":
@@ -69,31 +41,20 @@ export const select = {
             build: false,
           });
 
-          return gql.field({ name: field.name, value: fieldUnionName });
+          return gql.field({ name: field.name, type: fieldUnionName });
         case "simple":
           return gql.string(field.name);
       }
     },
-    input: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: SelectField;
-      accumulator: Definitions[];
-    }) => {
-      return gql.input(field.name, "String");
+    input: async ({ field }: BuildArgs<SelectField>) => {
+      return gql.inputValue(field.name, "String");
     },
   },
   resolve: {
     field: async ({
       datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: SelectField;
-    }): Promise<TinaSelectField> => {
+    }: Omit<ResolveArgs<SelectField>, "value">): Promise<TinaSelectField> => {
       let select;
       const { type, ...rest } = field;
       const f = {
@@ -123,26 +84,10 @@ export const select = {
           };
       }
     },
-    initialValue: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: SelectField;
-      value: unknown;
-    }) => {
+    initialValue: async ({ value }: ResolveArgs<SelectField>) => {
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: SelectField;
-      value: unknown;
-    }) => {
+    value: async ({ field, value }: ResolveArgs<SelectField>) => {
       switch (field.config.source.type) {
         case "documents":
           throw new Error(`document select not implemented`);
@@ -156,15 +101,7 @@ export const select = {
           return value;
       }
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: SelectField;
-      value: unknown;
-    }) => {
+    input: async ({ field, value }: ResolveArgs<SelectField>) => {
       switch (field.config.source.type) {
         case "documents":
           throw new Error(`document select not implemented`);

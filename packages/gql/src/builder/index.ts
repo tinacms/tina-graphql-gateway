@@ -1,16 +1,5 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLSchema,
-  GraphQLNonNull,
-  GraphQLUnionType,
-  GraphQLList,
-  getNamedType,
-  GraphQLType,
-  GraphQLInputObjectType,
-  GraphQLInputFieldConfigMap,
-} from "graphql";
 import _ from "lodash";
+import { gql } from "../gql";
 
 import { Cache } from "../cache";
 import { text } from "../fields/text";
@@ -20,14 +9,32 @@ import { blocks } from "../fields/blocks";
 import { textarea } from "../fields/textarea";
 import { fieldGroup } from "../fields/field-group";
 import { fieldGroupList } from "../fields/field-group-list";
+import { boolean } from "../fields/boolean";
+import { datetime } from "../fields/datetime";
+import { file } from "../fields/file";
+import { imageGallery } from "../fields/image-gallery";
+import { number } from "../fields/number";
+import { tag_list } from "../fields/tag-list";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { sequential } from "../util";
 
-import type { GraphQLFieldConfigMap } from "graphql";
+import type {
+  DocumentNode,
+  UnionTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  EnumTypeDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+} from "graphql";
 import type { TemplateData } from "../types";
 import type { Field } from "../fields";
-import type { ContextT } from "../resolver";
-import { Definitions } from "./ast-builder";
+
+export type Definitions =
+  | ObjectTypeDefinitionNode
+  | UnionTypeDefinitionNode
+  | InputObjectTypeDefinitionNode
+  | EnumTypeDefinitionNode;
 
 /**
  * The builder holds all the functions which are required to build the schema, everything
@@ -52,8 +59,10 @@ export interface Builder {
   documentDataInputObject: (
     cache: Cache,
     template: TemplateData,
-    returnTemplate?: boolean
-  ) => Promise<GraphQLInputObjectType>;
+    returnTemplate: boolean,
+    accumulator: Definitions[],
+    build?: boolean
+  ) => Promise<string>;
   /**
    * Similar to documentObject except it only deals with unions on the data layer
    *
@@ -70,11 +79,13 @@ export interface Builder {
    *
    * See {@link Resolver.documentDataObject} for the equivalent resolver
    */
-  documentDataObject: (
-    cache: Cache,
-    template: TemplateData,
-    returnTemplate?: boolean
-  ) => Promise<GraphQLObjectType<any, any>>;
+  documentDataObject: (args: {
+    cache: Cache;
+    template: TemplateData;
+    returnTemplate: boolean;
+    accumulator: Definitions[];
+    includeContent?: boolean;
+  }) => Promise<string>;
   /**
    * Similar to {@link documentUnion} except it only deals with unions on the data layer.
    *
@@ -91,7 +102,8 @@ export interface Builder {
     cache: Cache;
     templates: string[];
     returnTemplate: boolean;
-  }) => Promise<GraphQLUnionType>;
+    accumulator: Definitions[];
+  }) => Promise<string>;
   /**
    * A form's fields is a union of different field types
    *
@@ -107,8 +119,10 @@ export interface Builder {
    */
   documentFormFieldsUnion: (
     cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLList<GraphQLType>>;
+    template: TemplateData,
+    accumulator: Definitions[],
+    includeContent?: boolean
+  ) => Promise<string>;
   /**
    * The top-level form type for a document
    *
@@ -124,8 +138,9 @@ export interface Builder {
    */
   documentFormObject: (
     cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLObjectType<any, any>>;
+    template: TemplateData,
+    accumulator: Definitions[]
+  ) => Promise<string>;
   /**
    * The [initial values](https://tinacms.org/docs/plugins/forms/#form-configuration) for the Tina form.
    *
@@ -145,8 +160,10 @@ export interface Builder {
   documentInitialValuesObject: (
     cache: Cache,
     template: TemplateData,
-    returnTemplate?: boolean
-  ) => Promise<GraphQLObjectType<any, any>>;
+    returnTemplate: boolean,
+    accumulator: Definitions[],
+    includeContent?: boolean
+  ) => Promise<string>;
   /**
    * The input values for the document. See {@link documentDataInputObject} for the data input portion.
    * ```graphql
@@ -161,8 +178,9 @@ export interface Builder {
    */
   documentInputObject: (
     cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLInputObjectType>;
+    template: TemplateData,
+    accumulator: Definitions[]
+  ) => Promise<string>;
   /**
    * Builds out the type of document based on the provided template.
    * Each `type` from the {@link documentUnion} is built by this function.
@@ -180,8 +198,10 @@ export interface Builder {
    */
   documentObject: (
     cache: Cache,
-    template: TemplateData
-  ) => Promise<GraphQLObjectType<any, any>>;
+    template: TemplateData,
+    accumulator: Definitions[],
+    build: boolean
+  ) => Promise<string>;
   /**
    * The input values for mutations to the document from a section
    *
@@ -219,7 +239,16 @@ export interface Builder {
   documentTaggedUnionInputObject: (args: {
     cache: Cache;
     section?: string;
-  }) => Promise<GraphQLInputObjectType>;
+    accumulator: Definitions[];
+  }) => Promise<string>;
+  /**
+   *
+   */
+  documentDataTaggedUnionInputObject: (args: {
+    cache: Cache;
+    templateSlugs: string[];
+    accumulator: Definitions[];
+  }) => Promise<string>;
   /**
    * The top-level result, a document is a file which may be of any one of the templates
    * defined, the union consists of each template which is possible.
@@ -252,9 +281,10 @@ export interface Builder {
    */
   documentUnion: (args: {
     cache: Cache;
-    /** If no section is provided, this is the top-level document field */
     section?: string;
-  }) => Promise<GraphQLUnionType>;
+    accumulator: Definitions[];
+    build?: boolean;
+  }) => Promise<string>;
   /**
    * Currently only used by blocks, which accepts an array of values with different shapes,
    * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
@@ -278,8 +308,9 @@ export interface Builder {
   initialValuesUnion: (args: {
     cache: Cache;
     templates: string[];
-    returnTemplate?: boolean;
-  }) => Promise<GraphQLUnionType>;
+    returnTemplate: boolean;
+    accumulator: Definitions[];
+  }) => Promise<string>;
   /**
    * The entrypoint to the build process. It's likely we'll have many more query fields
    * in the future.
@@ -308,281 +339,363 @@ export interface Builder {
     cache: Cache;
     /** If no section is provided, this is the top-level document field */
     section?: string;
-  }) => Promise<GraphQLSchema>;
+  }) => Promise<DocumentNode>;
 }
 
 /**
  * @internal this is redundant in documentation
  */
 export const builder: Builder = {
-  schema: async ({ cache }: { cache: Cache }) => {
-    const documentUnion = await builder.documentUnion({ cache });
-    const documentInput = await builder.documentTaggedUnionInputObject({
-      cache,
-    });
-    const schema = new GraphQLSchema({
-      query: new GraphQLObjectType({
-        name: "Query",
-        fields: {
-          document: {
-            args: {
-              path: { type: GraphQLString },
-            },
-            type: documentUnion,
-          },
-        },
-      }),
-      mutation: new GraphQLObjectType({
-        name: "Mutation",
-        fields: {
-          // addDocument: {
-          //   type: '',
-          //   args: {
-          //     path: { type: GraphQLNonNull(GraphQLString)},
-          //     params: ''
-          //   }
-          // },
-          updateDocument: {
-            type: documentUnion,
-            args: {
-              path: { type: GraphQLNonNull(GraphQLString) },
-              params: {
-                type: documentInput,
-              },
-            },
-          },
-          // updateDocument: {
-          //   type: '',
-          //   args: {
-          //     path: { type: GraphQLNonNull(GraphQLString)},
-          //   }
-          // }
-        },
-      }),
-    });
-
-    return schema;
-  },
-  documentUnion: async ({ cache, section }) => {
-    const name = friendlyName(section, "DocumentUnion");
-
-    return await cache.build(name, async () => {
-      const templates = await cache.datasource.getTemplatesForSection(section);
-      return new GraphQLUnionType({
-        name,
-        types: await sequential(templates, async (template: TemplateData) => {
-          return await builder.documentObject(cache, template);
-        }),
-      });
-    });
-  },
-  documentObject: async (cache: Cache, template: TemplateData) => {
-    return await cache.build(
-      friendlyName(template),
-      async () =>
-        new GraphQLObjectType({
-          name: friendlyName(template),
-          fields: {
-            path: { type: GraphQLString },
-            form: { type: await builder.documentFormObject(cache, template) },
-            data: { type: await builder.documentDataObject(cache, template) },
-            initialValues: {
-              type: await builder.documentInitialValuesObject(cache, template),
-            },
-          },
-        })
-    );
-  },
-  documentDataUnion: async ({ cache, templates, returnTemplate }) => {
-    return await cache.build(friendlyName(templates, "DataUnion"), async () => {
-      const templateObjects = await cache.datasource.getTemplates(templates);
-      const types = await sequential(
-        templateObjects,
-        async (template) =>
-          await builder.documentDataObject(cache, template, returnTemplate)
-      );
-      return new GraphQLUnionType({
-        name: friendlyName(templates, "DataUnion"),
-        types,
-      });
-    });
-  },
-  documentDataObject: async (cache, template, returnTemplate) => {
-    return await cache.build(friendlyName(template, "Data"), async () => {
-      const fields: GraphQLFieldConfigMap<any, ContextT> = {};
-
-      await sequential(template.fields, async (field) => {
-        fields[field.name] = await buildTemplateDataField(cache, field);
-      });
-
-      if (returnTemplate) {
-        fields.template = { type: GraphQLString };
-      }
-      return new GraphQLObjectType({
-        name: friendlyName(template, "Data"),
-        fields,
-      });
-    });
-  },
-  documentFormObject: async (cache: Cache, template: TemplateData) => {
-    return await cache.build(
-      friendlyName(template, "Form"),
-      async () =>
-        new GraphQLObjectType({
-          name: friendlyName(template, "Form"),
-          fields: {
-            label: { type: GraphQLString },
-            name: { type: GraphQLString },
-            fields: {
-              type: await builder.documentFormFieldsUnion(cache, template),
-            },
-          },
-        })
-    );
-  },
-  documentInitialValuesObject: async (cache, template, returnTemplate) => {
-    return await cache.build(
-      friendlyName(template, "InitialValues"),
-      async () => {
-        const fields: GraphQLFieldConfigMap<any, ContextT> = {};
-
-        await sequential(template.fields, async (field) => {
-          fields[field.name] = await buildTemplateInitialValueField(
-            cache,
-            field
-          );
-        });
-
-        if (returnTemplate) {
-          fields._template = { type: GraphQLString };
-        }
-
-        return new GraphQLObjectType({
-          name: friendlyName(template, "InitialValues"),
-          fields: {
-            ...fields,
-          },
-        });
-      }
-    );
-  },
-  initialValuesUnion: async ({ cache, templates, returnTemplate }) => {
-    return await cache.build(
-      friendlyName(templates, "InitialValuesUnion"),
-      async () => {
-        const templateObjects = await cache.datasource.getTemplates(templates);
-        const types = await sequential(
-          templateObjects,
-          async (template) =>
-            await builder.documentInitialValuesObject(
-              cache,
-              template,
-              returnTemplate
-            )
-        );
-        return new GraphQLUnionType({
-          name: friendlyName(templates, "InitialValuesUnion"),
-          types,
-        });
-      }
-    );
-  },
-  documentDataInputObject: async (cache, template, returnTemplate) => {
-    return await cache.build(friendlyName(template, "InputData"), async () => {
-      const fields: GraphQLInputFieldConfigMap = {};
-
-      await sequential(template.fields, async (field) => {
-        if (field.config?.required) {
-          fields[field.name] = {
-            type: GraphQLNonNull(
-              await buildTemplateInputDataField(cache, field)
-            ),
-          };
-        } else {
-          fields[field.name] = {
-            type: await buildTemplateInputDataField(cache, field),
-          };
-        }
-      });
-      await sequential(template.fields, async (field) => {
-        if (field.config?.required) {
-          fields[field.name] = {
-            type: GraphQLNonNull(
-              await buildTemplateInputDataField(cache, field)
-            ),
-          };
-        } else {
-          fields[field.name] = {
-            type: await buildTemplateInputDataField(cache, field),
-          };
-        }
-      });
-      if (returnTemplate) {
-        fields.template = { type: GraphQLString };
-      }
-      return new GraphQLInputObjectType({
-        name: friendlyName(template, "InputData"),
-        fields,
-      });
-    });
-  },
-  documentInputObject: async (cache: Cache, template: TemplateData) => {
-    return await cache.build(
-      friendlyName(template, "Input"),
-      async () =>
-        new GraphQLInputObjectType({
-          name: friendlyName(template, "Input"),
-          fields: {
-            content: { type: GraphQLString },
-            data: {
-              type: await builder.documentDataInputObject(cache, template),
-            },
-          },
-        })
-    );
-  },
-  documentTaggedUnionInputObject: async ({
+  documentDataInputObject: async (
     cache,
-    section,
-  }: {
-    cache: Cache;
-    section?: string;
-  }) => {
-    return await cache.build(
-      friendlyName(section, "DocumentInput"),
-      async () => {
-        const templates = await sequential(
-          await cache.datasource.getTemplatesForSection(section),
-          async (template) => {
-            return await builder.documentInputObject(cache, template);
-          }
-        );
-        const accum: { [key: string]: { type: GraphQLInputObjectType } } = {};
-        templates.forEach((template) => {
-          accum[getNamedType(template).toString()] = { type: template };
-        });
-        return new GraphQLInputObjectType({
-          name: friendlyName(section, "DocumentInput"),
-          fields: accum,
-        });
+    template,
+    returnTemplate,
+    accumulator,
+    build = true
+  ) => {
+    const name = friendlyName(template, "InputData");
+
+    if (build) {
+      const fieldNames = await sequential(template.fields, async (field) => {
+        // TODO: this is where non-null criteria can be set
+        return await buildTemplateInputDataField(cache, field, accumulator);
+      });
+
+      if (returnTemplate) {
+        fieldNames.unshift(gql.inputString("template"));
       }
+
+      if (build) {
+        accumulator.push(gql.input({ name, fields: fieldNames }));
+      }
+    }
+
+    return name;
+  },
+  documentDataObject: async ({
+    cache,
+    template,
+    returnTemplate,
+    accumulator,
+    includeContent = false,
+  }) => {
+    const name = friendlyName(template, "Data");
+    const fields = await sequential(template.fields, async (field) => {
+      return await buildTemplateDataField(cache, field, accumulator);
+    });
+
+    if (includeContent) {
+      // fields.push(
+      //   textarea.build.value({
+      //     cache,
+      //     field: textarea.contentField,
+      //     accumulator,
+      //   })
+      // );
+    }
+
+    accumulator.push(gql.object({ name, fields }));
+
+    return name;
+  },
+  documentDataUnion: async ({
+    cache,
+    templates,
+    returnTemplate,
+    accumulator,
+  }) => {
+    const name = friendlyName(templates, "DataUnion");
+    const templateObjects = await cache.datasource.getTemplates(templates);
+    const types = await sequential(
+      templateObjects,
+      async (template) =>
+        await builder.documentDataObject({
+          cache,
+          template,
+          returnTemplate,
+          accumulator,
+        })
     );
+
+    accumulator.push(gql.union({ name, types }));
+
+    return name;
   },
   documentFormFieldsUnion: async (
-    cache: Cache,
-    template: TemplateData
-  ): Promise<GraphQLList<GraphQLType>> => {
-    return await cache.build(friendlyName(template, "FormFields"), async () => {
-      const fields = _.uniqBy(template.fields, (field) => field.type);
-      const accum = await buildTemplateFormFields(cache, fields);
+    cache,
+    template,
+    accumulator,
+    includeContent = false
+  ): Promise<string> => {
+    const name = friendlyName(template, "FormFields");
+    const fields = _.uniqBy(template.fields, (field) => field.type);
+    const fieldNames = await buildTemplateFormFields(
+      cache,
+      fields,
+      accumulator
+    );
 
-      return GraphQLList(
-        new GraphQLUnionType({
-          name: friendlyName(template, "FormFields"),
-          types: accum,
+    if (includeContent) {
+      // if (!fieldNames.includes("TextareaField")) {
+      //   fieldNames.push(
+      //     await textarea.build.field({
+      //       cache,
+      //       field: textarea.contentField,
+      //       accumulator,
+      //     })
+      //   );
+      // }
+    }
+
+    accumulator.push(gql.union({ name, types: fieldNames }));
+
+    return name;
+  },
+  documentFormObject: async (cache, template, accumulator) => {
+    const name = friendlyName(template, "Form");
+
+    const fieldUnionName = await builder.documentFormFieldsUnion(
+      cache,
+      template,
+      accumulator
+    );
+
+    accumulator.push(
+      gql.object({
+        name,
+        fields: [
+          gql.field({ name: "label", type: "String" }),
+          gql.field({ name: "name", type: "String" }),
+          gql.fieldList({ name: "fields", type: fieldUnionName }),
+        ],
+      })
+    );
+
+    return name;
+  },
+  documentInitialValuesObject: async (
+    cache,
+    template,
+    returnTemplate,
+    accumulator,
+    includeContent = false
+  ) => {
+    const name = friendlyName(template, "InitialValues");
+
+    const fieldNames = await sequential(template.fields, async (field) => {
+      return await buildTemplateInitialValueField(cache, field, accumulator);
+    });
+
+    if (returnTemplate) {
+      fieldNames.unshift(gql.string("_template"));
+    }
+
+    if (includeContent) {
+      // fieldNames.push(
+      //   await textarea.build.initialValue({
+      //     accumulator,
+      //     field: textarea.contentField,
+      //     cache,
+      //   })
+      // );
+    }
+
+    accumulator.push(gql.object({ name, fields: fieldNames }));
+
+    return name;
+  },
+  documentInputObject: async (cache, template, accumulator) => {
+    const name = friendlyName(template, "Input");
+
+    const dataInputName = await builder.documentDataInputObject(
+      cache,
+      template,
+      false,
+      accumulator
+    );
+
+    accumulator.push(
+      gql.input({
+        name,
+        fields: [
+          gql.inputValue("data", dataInputName),
+          gql.inputValue("content", "String"),
+        ],
+      })
+    );
+
+    return name;
+  },
+  documentObject: async (cache, template, accumulator, build) => {
+    const name = friendlyName(template);
+    if (build) {
+      const formName = await builder.documentFormObject(
+        cache,
+        template,
+        accumulator
+      );
+      const dataName = await builder.documentDataObject({
+        cache,
+        template,
+        returnTemplate: false,
+        accumulator,
+        includeContent: true,
+      });
+      const initialValuesName = await builder.documentInitialValuesObject(
+        cache,
+        template,
+        false,
+        accumulator
+      );
+
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.field({ name: "path", type: "String" }),
+            gql.field({ name: "form", type: formName }),
+            gql.field({ name: "data", type: dataName }),
+            gql.field({ name: "initialValues", type: initialValuesName }),
+          ],
         })
       );
+    }
+
+    return name;
+  },
+  documentTaggedUnionInputObject: async ({ cache, section, accumulator }) => {
+    const name = friendlyName(section, "DocumentInput");
+
+    const templates = await sequential(
+      await cache.datasource.getTemplatesForSection(section),
+      async (template) => {
+        return await builder.documentInputObject(cache, template, accumulator);
+      }
+    );
+
+    accumulator.push(
+      gql.input({
+        name,
+        fields: templates.map((templateName) =>
+          gql.inputValue(templateName, templateName)
+        ),
+      })
+    );
+    return name;
+  },
+  documentDataTaggedUnionInputObject: async ({
+    cache,
+    templateSlugs,
+    accumulator,
+  }) => {
+    const name = friendlyName(templateSlugs.join("_"), "DocumentInput");
+
+    const templateData = await sequential(
+      templateSlugs,
+      async (templateSlug) => await cache.datasource.getTemplate(templateSlug)
+    );
+    const templates = await sequential(templateData, async (template) => {
+      return await builder.documentDataInputObject(
+        cache,
+        template,
+        true,
+        accumulator,
+        true
+      );
     });
+
+    accumulator.push(
+      gql.input({
+        name,
+        fields: templates.map((templateName) =>
+          gql.inputValue(templateName, templateName)
+        ),
+      })
+    );
+    return name;
+  },
+  documentUnion: async ({ cache, section, accumulator, build = true }) => {
+    const name = friendlyName(section, "DocumentUnion");
+
+    const templates = await cache.datasource.getTemplatesForSection(section);
+    const templateNames = await sequential(
+      templates,
+      async (template: TemplateData) => {
+        return await builder.documentObject(
+          cache,
+          template,
+          accumulator,
+          build
+        );
+      }
+    );
+    accumulator.push(gql.union({ name: name, types: templateNames }));
+
+    return name;
+  },
+  initialValuesUnion: async ({
+    cache,
+    templates,
+    returnTemplate,
+    accumulator,
+  }) => {
+    const name = friendlyName(templates, "InitialValuesUnion");
+    const templateObjects = await cache.datasource.getTemplates(templates);
+    const types = await sequential(
+      templateObjects,
+      async (template) =>
+        await builder.documentInitialValuesObject(
+          cache,
+          template,
+          returnTemplate,
+          accumulator
+        )
+    );
+    accumulator.push(gql.union({ name, types }));
+
+    return name;
+  },
+  schema: async ({ cache }: { cache: Cache }) => {
+    const accumulator: Definitions[] = [
+      gql.object({
+        name: "Query",
+        fields: [
+          gql.field({
+            name: "document",
+            type: "DocumentUnion",
+            args: [gql.inputString("path")],
+          }),
+        ],
+      }),
+      gql.object({
+        name: "Mutation",
+        fields: [
+          gql.field({
+            name: "updateDocument",
+            type: "DocumentUnion",
+            args: [
+              gql.inputString("path"),
+              gql.inputValue("params", "DocumentInput"),
+            ],
+          }),
+        ],
+      }),
+    ];
+
+    await builder.documentTaggedUnionInputObject({
+      cache,
+      accumulator,
+    });
+    await builder.documentUnion({ cache, accumulator });
+
+    const schema: DocumentNode = {
+      kind: "Document",
+      // TODO: we can probably optimize this by not running calculations for fields
+      // whose names we already have, not worth it for the first pass though.
+      definitions: _.uniqBy(accumulator, (field) => field.name.value),
+    };
+
+    return schema;
   },
 };
 
@@ -590,7 +703,7 @@ const buildTemplateFormFields = async (
   cache: Cache,
   fields: Field[],
   accumulator: Definitions[]
-) => {
+): Promise<string[]> => {
   return await sequential(fields, async (field) => {
     switch (field.type) {
       case "text":
@@ -607,63 +720,123 @@ const buildTemplateFormFields = async (
         return fieldGroup.build.field({ cache, field, accumulator });
       case "list":
         return list.build.field({ cache, field, accumulator });
+      case "boolean":
+        return boolean.build.field({ cache, field, accumulator });
+      case "datetime":
+        return datetime.build.field({ cache, field, accumulator });
+      case "file":
+        return file.build.field({ cache, field, accumulator });
+      case "image_gallery":
+        return imageGallery.build.field({ cache, field, accumulator });
+      case "number":
+        return number.build.field({ cache, field, accumulator });
+      case "tag_list":
+        return tag_list.build.field({ cache, field, accumulator });
     }
   });
 };
 
-const buildTemplateDataField = async (cache: Cache, field: Field) => {
+const buildTemplateInitialValueField = async (
+  cache: Cache,
+  field: Field,
+  accumulator: Definitions[]
+): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
-      return text.build.value({ cache, field });
+      return text.build.initialValue({ cache, field, accumulator });
     case "textarea":
-      return textarea.build.value({ cache, field });
+      return textarea.build.initialValue({ cache, field, accumulator });
     case "select":
-      return select.build.value({ cache, field });
+      return select.build.initialValue({ cache, field, accumulator });
     case "blocks":
-      return blocks.build.value({ cache, field });
+      return blocks.build.initialValue({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.value({ cache, field });
+      return fieldGroup.build.initialValue({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.value({ cache, field });
+      return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
-      return list.build.value({ cache, field });
+      return list.build.initialValue({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.initialValue({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.initialValue({ cache, field, accumulator });
+    case "file":
+      return file.build.initialValue({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.initialValue({ cache, field, accumulator });
+    case "number":
+      return number.build.initialValue({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.initialValue({ cache, field, accumulator });
   }
 };
 
-const buildTemplateInputDataField = async (cache: Cache, field: Field) => {
+const buildTemplateDataField = async (
+  cache: Cache,
+  field: Field,
+  accumulator: Definitions[]
+): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
-      return text.build.input({ cache, field });
+      return text.build.value({ cache, field, accumulator });
     case "textarea":
-      return textarea.build.input({ cache, field });
+      return textarea.build.value({ cache, field, accumulator });
     case "select":
-      return select.build.input({ cache, field });
+      return select.build.value({ cache, field, accumulator });
     case "blocks":
-      return await blocks.build.input({ cache, field });
+      return blocks.build.value({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.input({ cache, field });
+      return fieldGroup.build.value({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.input({ cache, field });
+      return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
-      return list.build.input({ cache, field });
+      return list.build.value({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.value({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.value({ cache, field, accumulator });
+    case "file":
+      return file.build.value({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.value({ cache, field, accumulator });
+    case "number":
+      return number.build.value({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.value({ cache, field, accumulator });
   }
 };
 
-const buildTemplateInitialValueField = async (cache: Cache, field: Field) => {
+const buildTemplateInputDataField = async (
+  cache: Cache,
+  field: Field,
+  accumulator: Definitions[]
+): Promise<InputValueDefinitionNode> => {
   switch (field.type) {
     case "text":
-      return text.build.initialValue({ cache, field });
+      return text.build.input({ cache, field, accumulator });
     case "textarea":
-      return textarea.build.initialValue({ cache, field });
+      return textarea.build.input({ cache, field, accumulator });
     case "select":
-      return select.build.initialValue({ cache, field });
+      return select.build.input({ cache, field, accumulator });
     case "blocks":
-      return blocks.build.initialValue({ cache, field });
+      return await blocks.build.input({ cache, field, accumulator });
     case "field_group":
-      return fieldGroup.build.initialValue({ cache, field });
+      return fieldGroup.build.input({ cache, field, accumulator });
     case "field_group_list":
-      return fieldGroupList.build.initialValue({ cache, field });
+      return fieldGroupList.build.input({ cache, field, accumulator });
     case "list":
-      return list.build.initialValue({ cache, field });
+      return list.build.input({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.input({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.input({ cache, field, accumulator });
+    case "file":
+      return file.build.input({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.input({ cache, field, accumulator });
+    case "number":
+      return number.build.input({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.input({ cache, field, accumulator });
   }
 };

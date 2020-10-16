@@ -1,24 +1,15 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs } from "../";
 
 export const file = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: FileField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<FileField>) => {
+      const name = "FileField";
+
       accumulator.push(
         gql.object({
-          name: "FileField",
+          name,
           fields: [
             gql.string("name"),
             gql.string("label"),
@@ -27,69 +18,35 @@ export const file = {
         })
       );
 
-      return "FileField";
+      return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: FileField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<FileField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: FileField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<FileField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: FileField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<FileField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: FileField;
-    }): TinaFileField => {
+    }: Omit<ResolveArgs<FileField>, "value">): TinaFileField => {
       const { type, ...rest } = field;
       return {
         ...rest,
         component: "image",
+        __typename: "FileField",
         config: rest.config || {
           required: false,
         },
-        __typename: "FileField",
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: FileField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<FileField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved file value`
@@ -97,15 +54,7 @@ export const file = {
       }
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: FileField;
-      value: unknown;
-    }): Promise<string> => {
+    value: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved file value`
@@ -113,15 +62,7 @@ export const file = {
       }
       return value;
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: FileField;
-      value: unknown;
-    }): Promise<string> => {
+    input: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved file value`

@@ -1,10 +1,7 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 import { toAst, toHTML } from "../../remark";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import type { BuildArgs, ResolveArgs } from "../";
 
 export const textarea = {
   contentField: {
@@ -19,15 +16,7 @@ export const textarea = {
     __namespace: "",
   },
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextareaField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<TextareaField>) => {
       const name = "TextareaField";
 
       accumulator.push(
@@ -43,52 +32,28 @@ export const textarea = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextareaField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<TextareaField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextareaField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextValue";
       accumulator.push(
         gql.object({
           name,
           fields: [
-            gql.field({ name: "raw", value: "String" }),
-            gql.field({ name: "markdownAst", value: "String" }),
-            gql.field({ name: "html", value: "String" }),
+            gql.field({ name: "raw", type: "String" }),
+            gql.field({ name: "markdownAst", type: "String" }),
+            gql.field({ name: "html", type: "String" }),
           ],
         })
       );
 
       return gql.field({
         name: field.name,
-        value: name,
+        type: name,
       });
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextareaField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<TextareaField>) => {
       return gql.inputString(field.name);
     },
   },
@@ -96,10 +61,7 @@ export const textarea = {
     field: ({
       datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: TextareaField;
-    }): TinaTextareaField => {
+    }: Omit<ResolveArgs<TextareaField>, "value">): TinaTextareaField => {
       const { type, ...rest } = field;
       return {
         ...rest,
@@ -111,14 +73,8 @@ export const textarea = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: TextareaField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<TextareaField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved textarea value`
@@ -127,18 +83,12 @@ export const textarea = {
       return value;
     },
     value: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: TextareaField;
-      value: unknown;
-    }): Promise<
-      | string
-      | { raw: string; markdownAst: string; html: string }
-      | { _value: string; field: TextareaField }
-    > => {
+    }: ResolveArgs<TextareaField>): Promise<{
+      raw: string;
+      markdownAst: string;
+      html: string;
+    }> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved textarea value`
@@ -157,15 +107,7 @@ export const textarea = {
         html: html,
       };
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: TextareaField;
-      value: unknown;
-    }): Promise<string> => {
+    input: async ({ value }: ResolveArgs<TextareaField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved textarea value`
