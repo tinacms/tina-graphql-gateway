@@ -13,7 +13,7 @@ export const toHTML = async ({ contents: c }: { contents: string }) => {
 };
 
 export const toAst = async ({ contents }: { contents: string }) => {
-  var tree = unified().use(markdown, {}).parse(contents);
+  var tree = unified().use(markdown).parse(contents);
 
   removePosition(tree, true);
 

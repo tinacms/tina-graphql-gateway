@@ -75,13 +75,13 @@ export interface Resolver {
    *
    * See {@link Builder.documentDataObject} for the equivalent builder
    */
-  documentDataObject: (
-    datasource: DataSource,
-    resolvedTemplate: TemplateData,
-    data: DocumentData,
-    includeContent?: boolean,
-    content?: string | undefined
-  ) => Promise<unknown>;
+  documentDataObject: (args: {
+    datasource: DataSource;
+    resolvedTemplate: TemplateData;
+    data: DocumentData;
+    includeContent?: boolean;
+    content?: string | undefined;
+  }) => Promise<unknown>;
   /**
    *
    * The top-level form type for a document
@@ -148,7 +148,9 @@ export interface Resolver {
   documentInitialValuesObject: (
     datasource: DataSource,
     resolvedTemplate: TemplateData,
-    data: DocumentData
+    data: DocumentData,
+    includeContent?: boolean,
+    content?: string
   ) => Promise<{
     __typename: string;
     _template?: string;
@@ -304,27 +306,29 @@ export const resolver: Resolver = {
       path: args.path,
       content: "\nSome content\n",
       form: await resolver.documentFormObject(datasource, template),
-      data: await resolver.documentDataObject(
+      data: await resolver.documentDataObject({
+        datasource,
+        resolvedTemplate: template,
+        data,
+        includeContent: true,
+        content,
+      }),
+      initialValues: await resolver.documentInitialValuesObject(
         datasource,
         template,
         data,
         true,
-        content
-      ),
-      initialValues: await resolver.documentInitialValuesObject(
-        datasource,
-        template,
-        data
+        content || ""
       ),
     };
   },
-  documentDataObject: async (
+  documentDataObject: async ({
     datasource,
     resolvedTemplate,
     data,
     includeContent,
-    content
-  ) => {
+    content,
+  }) => {
     const accum: { [key: string]: unknown } = {};
     const { template, ...rest } = data;
     await sequential(Object.keys(rest), async (key) => {
@@ -333,10 +337,11 @@ export const resolver: Resolver = {
     });
 
     if (includeContent) {
-      accum.content = {
-        _value: content,
-        field: textarea.contentField,
-      };
+      // accum.content = textarea.resolve.value({
+      //   datasource,
+      //   field: textarea.contentField,
+      //   value: content,
+      // });
     }
 
     return {
@@ -345,9 +350,11 @@ export const resolver: Resolver = {
     };
   },
   documentInitialValuesObject: async (
-    datasource: DataSource,
-    resolvedTemplate: TemplateData,
-    data: DocumentData
+    datasource,
+    resolvedTemplate,
+    data,
+    includeContent = false,
+    content
   ) => {
     const accum: { [key: string]: unknown } = {};
 
@@ -361,6 +368,11 @@ export const resolver: Resolver = {
         data[key]
       ));
     });
+
+    if (includeContent) {
+      // accum["content"] = content;
+    }
+
     return {
       __typename: friendlyName(resolvedTemplate, "InitialValues"),
       _template: data.template,
@@ -371,11 +383,22 @@ export const resolver: Resolver = {
     datasource: DataSource,
     template: TemplateData
   ) => {
+    const fields = await sequential(template.fields, async (field) =>
+      dataField(datasource, field)
+    );
+
+    if (true) {
+      // fields.push(
+      //   await textarea.resolve.field({
+      //     datasource,
+      //     field: textarea.contentField,
+      //   })
+      // );
+    }
+
     return {
       ...template,
-      fields: await sequential(template.fields, async (field) =>
-        dataField(datasource, field)
-      ),
+      fields,
     };
   },
   documentDataInputObject: async ({ data, template, datasource }) => {

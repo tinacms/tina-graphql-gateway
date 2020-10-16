@@ -5,47 +5,57 @@ import {
 } from "graphql";
 
 export const gql = {
-  string: (name: string, options: { list?: boolean } = {}) => {
-    if (options.list) {
-      return {
-        kind: "FieldDefinition" as const,
+  string: (name: string) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      arguments: [],
+      type: {
+        kind: "NamedType" as const,
         name: {
           kind: "Name" as const,
-          value: name,
+          value: "String" as const,
         },
-        arguments: [],
-        type: {
-          kind: "ListType" as const,
-          type: {
-            kind: "NamedType" as const,
-            name: {
-              kind: "Name" as const,
-              value: "String",
-            },
-          },
-        },
-        directives: [],
-      };
-    } else {
-      return {
-        kind: "FieldDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: name,
-        },
-        arguments: [],
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: "String" as const,
-          },
-        },
-        directives: [],
-      };
-    }
+      },
+      directives: [],
+    };
   },
-  input: (name: string, value: string) => {
+  stringList: (name: string) => ({
+    kind: "FieldDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    arguments: [],
+    type: {
+      kind: "ListType" as const,
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "String",
+        },
+      },
+    },
+  }),
+  inputString: (name: string) => ({
+    kind: "InputValueDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: "String",
+      },
+    },
+  }),
+  inputValue: (name: string, type: string) => {
     return {
       kind: "InputValueDefinition" as const,
       name: {
@@ -56,12 +66,12 @@ export const gql = {
         kind: "NamedType" as const,
         name: {
           kind: "Name" as const,
-          value: value,
+          value: type,
         },
       },
     };
   },
-  listInputValue: ({ name, value }: { name: string; value: string }) => {
+  inputValueList: (name: string, type: string) => {
     return {
       kind: "InputValueDefinition" as const,
       name: {
@@ -74,13 +84,38 @@ export const gql = {
           kind: "NamedType" as const,
           name: {
             kind: "Name" as const,
-            value: value,
+            value: type,
           },
         },
       },
     };
   },
-  listField: ({ name, value }: { name: string; value: string }) => {
+  field: ({
+    name,
+    type,
+    args = [],
+  }: {
+    name: string;
+    type: string;
+    args?: InputValueDefinitionNode[];
+  }) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: type,
+        },
+      },
+      arguments: args,
+    };
+  },
+  fieldList: ({ name, type }: { name: string; type: string }) => {
     return {
       kind: "FieldDefinition" as const,
       name: {
@@ -93,13 +128,13 @@ export const gql = {
           kind: "NamedType" as const,
           name: {
             kind: "Name" as const,
-            value: value,
+            value: type,
           },
         },
       },
     };
   },
-  inputObject: ({
+  input: ({
     name,
     fields,
   }: {
@@ -141,44 +176,5 @@ export const gql = {
       value: name,
     },
     fields,
-  }),
-  field: ({
-    name,
-    value,
-    args = [],
-  }: {
-    name: string;
-    value: string;
-    args?: InputValueDefinitionNode[];
-  }) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: value,
-        },
-      },
-      arguments: args,
-    };
-  },
-  inputString: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "String",
-      },
-    },
   }),
 };

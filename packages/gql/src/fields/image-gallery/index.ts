@@ -1,21 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs } from "../";
 
 export const imageGallery = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ImageGalleryField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<ImageGalleryField>) => {
       const name = "ImageGalleryField";
       accumulator.push(
         gql.object({
@@ -30,48 +19,23 @@ export const imageGallery = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ImageGalleryField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ImageGalleryField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: ImageGalleryField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: ImageGalleryField;
-    }): TinaImageGalleryField => {
+    }: Omit<
+      ResolveArgs<ImageGalleryField>,
+      "value"
+    >): TinaImageGalleryField => {
       const { type, ...rest } = field;
       return {
         ...rest,
@@ -83,14 +47,8 @@ export const imageGallery = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ImageGalleryField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved imageGallery value`
@@ -99,14 +57,8 @@ export const imageGallery = {
       return value;
     },
     value: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ImageGalleryField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved imageGallery value`
@@ -115,14 +67,8 @@ export const imageGallery = {
       return value;
     },
     input: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: ImageGalleryField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved imageGallery value`

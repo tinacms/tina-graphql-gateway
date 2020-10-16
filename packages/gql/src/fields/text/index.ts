@@ -1,21 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import { BuildArgs, ResolveArgs } from "../";
 
 export const text = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<TextField>) => {
       const name = "TextField";
       accumulator.push(
         gql.object({
@@ -30,48 +19,20 @@ export const text = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<TextField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<TextField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: TextField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<TextField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: TextField;
-    }): TinaTextField => {
+    }: Omit<ResolveArgs<TextField>, "value">): TinaTextField => {
       const { type, ...rest } = field;
       return {
         ...rest,
@@ -83,14 +44,8 @@ export const text = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: TextField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<TextField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved text value`
@@ -98,15 +53,7 @@ export const text = {
       }
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: TextField;
-      value: unknown;
-    }): Promise<string> => {
+    value: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved text value`
@@ -114,15 +61,7 @@ export const text = {
       }
       return value;
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: TextField;
-      value: unknown;
-    }): Promise<string> => {
+    input: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved text value`

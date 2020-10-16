@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { cacheInit } from "../cache";
-import { builder } from "./ast-builder";
+import { builder } from ".";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql, assertSchema } from "../fields/test-util";
 import { printSchema, buildASTSchema } from "graphql";

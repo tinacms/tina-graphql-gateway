@@ -1,22 +1,12 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
 import { gql } from "../../gql";
 
-import type { Cache } from "../../cache";
-import type { DataSource } from "../../datasources/datasource";
-import type { Definitions } from "../../builder/ast-builder";
+import type { BuildArgs, ResolveArgs } from "../";
 
 export const boolean = {
   build: {
-    field: async ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BooleanField;
-      accumulator: Definitions[];
-    }) => {
+    field: async ({ accumulator }: BuildArgs<BooleanField>) => {
       const name = "BooleanField";
+
       accumulator.push(
         gql.object({
           name,
@@ -30,49 +20,22 @@ export const boolean = {
 
       return name;
     },
-    initialValue: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BooleanField;
-      accumulator: Definitions[];
-    }) => {
+    initialValue: ({ field }: BuildArgs<BooleanField>) => {
       return gql.string(field.name);
     },
-    value: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BooleanField;
-      accumulator: Definitions[];
-    }) => {
+    value: ({ field }: BuildArgs<BooleanField>) => {
       return gql.string(field.name);
     },
-    input: ({
-      cache,
-      field,
-      accumulator,
-    }: {
-      cache: Cache;
-      field: BooleanField;
-      accumulator: Definitions[];
-    }) => {
+    input: ({ field }: BuildArgs<BooleanField>) => {
       return gql.inputString(field.name);
     },
   },
   resolve: {
     field: ({
-      datasource,
       field,
-    }: {
-      datasource: DataSource;
-      field: BooleanField;
-    }): TinaBooleanField => {
+    }: Omit<ResolveArgs<BooleanField>, "value">): TinaBooleanField => {
       const { type, ...rest } = field;
+
       return {
         ...rest,
         component: "toggle",
@@ -83,14 +46,8 @@ export const boolean = {
       };
     },
     initialValue: async ({
-      datasource,
-      field,
       value,
-    }: {
-      datasource: DataSource;
-      field: BooleanField;
-      value: unknown;
-    }): Promise<string> => {
+    }: ResolveArgs<BooleanField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected initial value of type ${typeof value} for resolved text value`
@@ -98,15 +55,7 @@ export const boolean = {
       }
       return value;
     },
-    value: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: BooleanField;
-      value: unknown;
-    }): Promise<string> => {
+    value: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected value of type ${typeof value} for resolved text value`
@@ -114,15 +63,7 @@ export const boolean = {
       }
       return value;
     },
-    input: async ({
-      datasource,
-      field,
-      value,
-    }: {
-      datasource: DataSource;
-      field: BooleanField;
-      value: unknown;
-    }): Promise<string> => {
+    input: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
       if (typeof value !== "string") {
         throw new Error(
           `Unexpected input value of type ${typeof value} for resolved text value`
