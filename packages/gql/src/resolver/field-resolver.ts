@@ -336,9 +336,8 @@ export const resolver: Resolver = {
       return (accum[key] = await dataValue(datasource, field, rest[key]));
     });
 
-    let additionalFields = {};
     if (includeContent) {
-      additionalFields.content = {
+      accum.content = {
         _value: content,
         field: textarea.contentField,
       };
@@ -346,7 +345,6 @@ export const resolver: Resolver = {
 
     return {
       __typename: friendlyName(template, "Data"),
-      ...additionalFields,
       ...accum,
     };
   },

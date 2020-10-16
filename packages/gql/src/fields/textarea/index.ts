@@ -198,10 +198,15 @@ export const textarea = {
       const contents = await mdx.mdCompile({
         contents: value,
       });
+      const html = await mdx.plainCompile({
+        contents: value,
+      });
+      console.log(html);
       const markdownAstString = JSON.stringify(contents);
       return {
         raw: value,
         markdownAst: markdownAstString,
+        html: html,
       };
     },
     input: async ({
