@@ -2354,6 +2354,7 @@ __metadata:
     typedoc-plugin-graphql: ^1.0.3
     typescript: ^3.8.3
     unified: ^9.2.0
+    unist-util-remove-position: ^3.0.0
     ws: ^7.3.1
     yup: ^0.29.3
   bin:
@@ -26487,6 +26488,15 @@ typescript@~3.7.2:
   dependencies:
     unist-util-visit: ^2.0.0
   checksum: 0b1a7046c45ab74da969ff269d4fad711d4e15e2dba6f6aa9020845b0a4c2a2733d9fdd437ad46da49be6146f88fbc66db92ee8c45c6d195943003303dc2f8b0
+  languageName: node
+  linkType: hard
+
+"unist-util-remove-position@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "unist-util-remove-position@npm:3.0.0"
+  dependencies:
+    unist-util-visit: ^2.0.0
+  checksum: 981cf61ab3b48957418b1239762c78dcea17f00d95f9f04471db7cab1acd3b7a4e3aaa2da08968d994c859d76ba1ec827f63dafb9324859d747883a0de67c24a
   languageName: node
   linkType: hard
 
