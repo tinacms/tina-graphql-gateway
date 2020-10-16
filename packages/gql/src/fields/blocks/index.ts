@@ -208,64 +208,26 @@ export const blocks: Blocks = {
         }
       );
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: templateName,
-        },
-        interfaces: [],
-        directives: [],
-        fields: _.flatten(possibleTemplates).map((formObject) => {
-          return {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: formObject.name,
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: formObject.value,
-              },
-            },
-            directives: [],
-          };
-        }),
-      });
+      accumulator.push(
+        gql.object({
+          name: templateName,
+          fields: _.flatten(possibleTemplates).map((formObject) =>
+            gql.field({ name: formObject.name, value: formObject.value })
+          ),
+        })
+      );
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: name,
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "templates",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: templateName,
-              },
-            },
-            directives: [],
-          },
-        ],
-      });
+      accumulator.push(
+        gql.object({
+          name: name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+            gql.field({ name: "templates", value: templateName }),
+          ],
+        })
+      );
 
       return name;
     },
@@ -277,25 +239,7 @@ export const blocks: Blocks = {
         accumulator,
       });
 
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: fieldUnionName,
-            },
-          },
-        },
-        directives: [],
-      };
+      return gql.listField({ name: field.name, value: fieldUnionName });
     },
     value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = await builder.documentDataUnion({
@@ -304,25 +248,7 @@ export const blocks: Blocks = {
         returnTemplate: true,
         accumulator,
       });
-      return {
-        kind: "FieldDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        arguments: [],
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: fieldUnionName,
-            },
-          },
-        },
-        directives: [],
-      };
+      return gql.listField({ name: field.name, value: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
       const name = await builder.documentDataTaggedUnionInputObject({
@@ -331,23 +257,7 @@ export const blocks: Blocks = {
         accumulator,
       });
 
-      return {
-        kind: "InputValueDefinition",
-        name: {
-          kind: "Name",
-          value: field.name,
-        },
-        type: {
-          kind: "ListType",
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: name,
-            },
-          },
-        },
-      };
+      return gql.listInputValue({ name: field.name, value: name });
     },
   },
   resolve: {

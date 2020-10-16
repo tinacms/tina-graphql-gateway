@@ -16,22 +16,19 @@ export const imageGallery = {
       field: ImageGalleryField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "ImageGalleryField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      const name = "ImageGalleryField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
 
-      return "ImageGalleryField";
+      return name;
     },
     initialValue: ({
       cache,

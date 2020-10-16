@@ -52,64 +52,26 @@ export const list = {
         accumulator,
       });
 
-      accumulator.push({
-        kind: "UnionTypeDefinition" as const,
-        name: {
-          kind: "Name",
-          value: "List_FormFieldsUnion",
-        },
-        directives: [],
-        types: [
-          {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "TextField",
-            },
-          },
-          {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "SelectField",
-            },
-          },
-        ],
-      });
+      const unionName = "List_FormFieldsUnion";
+      accumulator.push(
+        gql.union({ name: unionName, types: ["TextField", "SelectField"] })
+      );
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "ListField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-          gql.string("defaultItem"),
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "field",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "List_FormFieldsUnion",
-              },
-            },
-            directives: [],
-          },
-        ],
-      });
+      const name = "ListField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+            gql.string("defaultItem"),
+            gql.field({ name: "field", value: unionName }),
+          ],
+        })
+      );
 
-      return "ListField";
+      return name;
     },
     initialValue: async ({
       cache,
@@ -159,25 +121,7 @@ export const list = {
           });
 
           // TODO: refactor this to use the select
-          return {
-            kind: "FieldDefinition" as const,
-            name: {
-              kind: "Name" as const,
-              value: field.name,
-            },
-            arguments: [],
-            type: {
-              kind: "ListType" as const,
-              type: {
-                kind: "NamedType" as const,
-                name: {
-                  kind: "Name" as const,
-                  value: fieldUnionName,
-                },
-              },
-            },
-            directives: [],
-          };
+          return gql.listField({ name: field.name, value: fieldUnionName });
         case "simple":
           list = field as SimpleList;
           return gql.string(field.name, { list: true });
@@ -192,23 +136,7 @@ export const list = {
       field: ListField;
       accumulator: Definitions[];
     }) => {
-      return {
-        kind: "InputValueDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        type: {
-          kind: "ListType" as const,
-          type: {
-            kind: "NamedType" as const,
-            name: {
-              kind: "Name" as const,
-              value: "String" as const,
-            },
-          },
-        },
-      };
+      return gql.listInputValue({ name: field.name, value: "String" });
     },
   },
   resolve: {

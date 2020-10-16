@@ -55,98 +55,29 @@ export type Definitions =
 export const builder = {
   schema: async ({ cache }: { cache: Cache }) => {
     const accumulator: Definitions[] = [
-      {
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "Query",
-        },
+      gql.object({
+        name: "Query",
         fields: [
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "document",
-            },
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "DocumentUnion",
-              },
-            },
-            arguments: [
-              {
-                kind: "InputValueDefinition",
-                name: {
-                  kind: "Name",
-                  value: "path",
-                },
-                type: {
-                  kind: "NamedType",
-                  name: {
-                    kind: "Name",
-                    value: "String",
-                  },
-                },
-              },
-            ],
-          },
+          gql.field({
+            name: "document",
+            value: "DocumentUnion",
+            args: [gql.inputString("path")],
+          }),
         ],
-      },
-      {
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "Mutation",
-        },
+      }),
+      gql.object({
+        name: "Mutation",
         fields: [
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "updateDocument",
-            },
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "DocumentUnion",
-              },
-            },
-            arguments: [
-              {
-                kind: "InputValueDefinition",
-                name: {
-                  kind: "Name",
-                  value: "path",
-                },
-                type: {
-                  kind: "NamedType",
-                  name: {
-                    kind: "Name",
-                    value: "String",
-                  },
-                },
-              },
-              {
-                kind: "InputValueDefinition",
-                name: {
-                  kind: "Name",
-                  value: "params",
-                },
-                type: {
-                  kind: "NamedType",
-                  name: {
-                    kind: "Name",
-                    value: "DocumentInput",
-                  },
-                },
-              },
+          gql.field({
+            name: "updateDocument",
+            value: "DocumentUnion",
+            args: [
+              gql.inputString("path"),
+              gql.input("params", "DocumentInput"),
             ],
-          },
+          }),
         ],
-      },
+      }),
     ];
 
     await builder.documentTaggedUnionInputObject({
@@ -189,21 +120,7 @@ export const builder = {
         );
       }
     );
-    accumulator.push({
-      kind: "UnionTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      directives: [],
-      types: templateNames.map((name) => ({
-        kind: "NamedType",
-        name: {
-          kind: "Name",
-          value: name,
-        },
-      })),
-    });
+    accumulator.push(gql.union({ name: name, types: templateNames }));
 
     return name;
   },
@@ -225,27 +142,14 @@ export const builder = {
       }
     );
 
-    accumulator.push({
-      kind: "InputObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      fields: templates.map((templateName) => ({
-        kind: "InputValueDefinition",
-        name: {
-          kind: "Name",
-          value: templateName,
-        },
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: templateName,
-          },
-        },
-      })),
-    });
+    accumulator.push(
+      gql.inputObject({
+        name,
+        fields: templates.map((templateName) =>
+          gql.input(templateName, templateName)
+        ),
+      })
+    );
     return name;
   },
   documentDataTaggedUnionInputObject: async ({
@@ -273,27 +177,14 @@ export const builder = {
       );
     });
 
-    accumulator.push({
-      kind: "InputObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      fields: templates.map((templateName) => ({
-        kind: "InputValueDefinition",
-        name: {
-          kind: "Name",
-          value: templateName,
-        },
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: templateName,
-          },
-        },
-      })),
-    });
+    accumulator.push(
+      gql.inputObject({
+        name,
+        fields: templates.map((templateName) =>
+          gql.input(templateName, templateName)
+        ),
+      })
+    );
     return name;
   },
   documentInputObject: async (
@@ -310,43 +201,15 @@ export const builder = {
       accumulator
     );
 
-    accumulator.push({
-      kind: "InputObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      fields: [
-        {
-          kind: "InputValueDefinition",
-          name: {
-            kind: "Name",
-            value: "data",
-          },
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: dataInputName,
-            },
-          },
-        },
-        {
-          kind: "InputValueDefinition",
-          name: {
-            kind: "Name",
-            value: "content",
-          },
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-        },
-      ],
-    });
+    accumulator.push(
+      gql.inputObject({
+        name,
+        fields: [
+          gql.input("data", dataInputName),
+          gql.input("content", "String"),
+        ],
+      })
+    );
 
     return name;
   },
@@ -365,20 +228,13 @@ export const builder = {
         return await buildTemplateInputDataField(cache, field, accumulator);
       });
 
-      let additionalFields: InputValueDefinitionNode[] = [];
       if (returnTemplate) {
-        additionalFields.push(gql.inputString("template"));
+        fieldNames.unshift(gql.inputString("template"));
       }
 
-      if (build)
-        accumulator.push({
-          kind: "InputObjectTypeDefinition",
-          name: {
-            kind: "Name",
-            value: name,
-          },
-          fields: [...additionalFields, ...fieldNames],
-        });
+      if (build) {
+        accumulator.push(gql.inputObject({ name, fields: fieldNames }));
+      }
     }
 
     return name;
@@ -410,81 +266,17 @@ export const builder = {
         accumulator
       );
 
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: name,
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "path",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "String",
-              },
-            },
-            directives: [],
-          },
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "form",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: formName,
-              },
-            },
-            directives: [],
-          },
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "data",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: dataName,
-              },
-            },
-            directives: [],
-          },
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "initialValues",
-            },
-            arguments: [],
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: initialValuesName,
-              },
-            },
-            directives: [],
-          },
-        ],
-      });
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.field({ name: "path", value: "String" }),
+            gql.field({ name: "form", value: formName }),
+            gql.field({ name: "data", value: dataName }),
+            gql.field({ name: "initialValues", value: initialValuesName }),
+          ],
+        })
+      );
     }
 
     return name;
@@ -511,16 +303,7 @@ export const builder = {
       );
     }
 
-    accumulator.push({
-      kind: "ObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      interfaces: [],
-      directives: [],
-      fields,
-    });
+    accumulator.push(gql.object({ name, fields }));
 
     return name;
   },
@@ -537,68 +320,17 @@ export const builder = {
       accumulator
     );
 
-    accumulator.push({
-      kind: "ObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      interfaces: [],
-      directives: [],
-      fields: [
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "label",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-          directives: [],
-        },
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "name",
-          },
-          arguments: [],
-          type: {
-            kind: "NamedType",
-            name: {
-              kind: "Name",
-              value: "String",
-            },
-          },
-          directives: [],
-        },
-        {
-          kind: "FieldDefinition",
-          name: {
-            kind: "Name",
-            value: "fields",
-          },
-          arguments: [],
-          type: {
-            kind: "ListType",
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: fieldUnionName,
-              },
-            },
-          },
-          directives: [],
-        },
-      ],
-    });
+    accumulator.push(
+      gql.object({
+        name,
+        fields: [
+          gql.field({ name: "label", value: "String" }),
+          gql.field({ name: "name", value: "String" }),
+          gql.listField({ name: "fields", value: fieldUnionName }),
+        ],
+      })
+    );
+
     return name;
   },
   documentFormFieldsUnion: async (
@@ -614,22 +346,7 @@ export const builder = {
       accumulator
     );
 
-    accumulator.push({
-      kind: "UnionTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      types: fieldNames.map((fieldName) => {
-        return {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: fieldName,
-          },
-        };
-      }),
-    });
+    accumulator.push(gql.union({ name, types: fieldNames }));
 
     return name;
   },
@@ -645,19 +362,11 @@ export const builder = {
       return await buildTemplateInitialValueField(cache, field, accumulator);
     });
 
-    let additionalFields = [];
     if (returnTemplate) {
-      additionalFields.push(gql.string("_template"));
+      fieldNames.unshift(gql.string("_template"));
     }
 
-    accumulator.push({
-      kind: "ObjectTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      fields: [...additionalFields, ...fieldNames],
-    });
+    accumulator.push(gql.object({ name, fields: fieldNames }));
 
     return name;
   },
@@ -684,23 +393,7 @@ export const builder = {
           accumulator
         )
     );
-    accumulator.push({
-      kind: "UnionTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      directives: [],
-      types: types.map((fieldName) => {
-        return {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: fieldName,
-          },
-        };
-      }),
-    });
+    accumulator.push(gql.union({ name, types }));
 
     return name;
   },
@@ -727,23 +420,8 @@ export const builder = {
           accumulator
         )
     );
-    accumulator.push({
-      kind: "UnionTypeDefinition",
-      name: {
-        kind: "Name",
-        value: name,
-      },
-      directives: [],
-      types: types.map((fieldName) => {
-        return {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: fieldName,
-          },
-        };
-      }),
-    });
+
+    accumulator.push(gql.union({ name, types }));
 
     return name;
   },

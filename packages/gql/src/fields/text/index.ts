@@ -16,22 +16,19 @@ export const text = {
       field: TextField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "TextField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      const name = "TextField";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
 
-      return "TextField";
+      return name;
     },
     initialValue: ({
       cache,

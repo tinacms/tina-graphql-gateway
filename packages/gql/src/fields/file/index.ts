@@ -16,20 +16,16 @@ export const file = {
       field: FileField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "FileField",
-        },
-        interfaces: [],
-        directives: [],
-        fields: [
-          gql.string("name"),
-          gql.string("label"),
-          gql.string("component"),
-        ],
-      });
+      accumulator.push(
+        gql.object({
+          name: "FileField",
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+          ],
+        })
+      );
 
       return "FileField";
     },

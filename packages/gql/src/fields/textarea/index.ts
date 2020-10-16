@@ -63,71 +63,22 @@ export const textarea = {
       field: TextareaField;
       accumulator: Definitions[];
     }) => {
-      accumulator.push({
-        kind: "ObjectTypeDefinition",
-        name: {
-          kind: "Name",
-          value: "LongTextValue",
-        },
-        fields: [
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "raw",
-            },
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "String",
-              },
-            },
-          },
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "markdownAst",
-            },
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "String",
-              },
-            },
-          },
-          {
-            kind: "FieldDefinition",
-            name: {
-              kind: "Name",
-              value: "html",
-            },
-            type: {
-              kind: "NamedType",
-              name: {
-                kind: "Name",
-                value: "String",
-              },
-            },
-          },
-        ],
+      const name = "LongTextValue";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.field({ name: "raw", value: "String" }),
+            gql.field({ name: "markdownAst", value: "String" }),
+            gql.field({ name: "html", value: "String" }),
+          ],
+        })
+      );
+
+      return gql.field({
+        name: field.name,
+        value: name,
       });
-      return {
-        kind: "FieldDefinition" as const,
-        name: {
-          kind: "Name" as const,
-          value: field.name,
-        },
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: "LongTextValue" as const,
-          },
-        },
-      };
     },
     input: ({
       cache,
