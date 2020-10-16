@@ -136,18 +136,17 @@ async function compile(mdx, options = {}) {
 ${contents}`;
 }
 
-const plainCompile = async ({ contents }) => {
-  var tree = unified().use(markdown).parse(contents);
-  return tree;
-  // return unified()
-  //   .use(markdown)
-  //   .use(remark2rehype)
-  //   .use(format)
-  //   .use(html)
-  //   .process(contents, function (err, file) {
-  //     console.log(err);
-  //     return file.contents.toString();
-  //   });
+const plainCompile = async ({ contents: c }) => {
+  var compiler = unified()
+    .use(markdown)
+    .use({ settings: { position: false } })
+    .use(remark2rehype)
+    .use(format)
+    .use(html);
+
+  const { contents } = compiler.processSync({ contents: c });
+
+  return contents;
 };
 
 const mdCompile = async ({ contents }) => {
