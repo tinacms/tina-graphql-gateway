@@ -12,7 +12,7 @@ const sleep = (milliseconds: number) => {
 
 describe("Schema builder", () => {
   test("does it", async () => {
-    const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
+    const projectRoot = path.join(process.cwd(), "src/fixtures/basic");
 
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
@@ -22,10 +22,10 @@ describe("Schema builder", () => {
     //   path.join(projectRoot, "ast-schema.json"),
     //   JSON.stringify(schema, null, 2)
     // );
-    // await fs.writeFileSync(
-    //   path.join(projectRoot, "ast-schema.graphql"),
-    //   printSchema(buildASTSchema(schema))
-    // );
+    await fs.writeFileSync(
+      path.join(projectRoot, "ast-schema.graphql"),
+      printSchema(buildASTSchema(schema))
+    );
 
     // await fs.writeFileSync(
     //   path.join(projectRoot, "refactor.graphql"),

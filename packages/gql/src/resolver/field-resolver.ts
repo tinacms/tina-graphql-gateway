@@ -1,8 +1,4 @@
-import _, { add } from "lodash";
-import * as yup from "yup";
-
-// @ts-ignore
-import mdx from "@forestryio/mdx";
+import _ from "lodash";
 
 import { text } from "../fields/text";
 import { list } from "../fields/list";
@@ -275,22 +271,22 @@ export const resolver: Resolver = {
       if (isEnrichedValue(value)) {
         switch (value.field.type) {
           case "textarea":
-            if (args.format) {
-              if (args.format === "html") {
-                const contents = await mdx.plainCompile({
-                  contents: value._value,
-                });
-                // FIXME: not working
-                console.log(contents);
-                return value._value;
-              }
-              if (args.format === "markdown") {
-                const contents = await mdx.mdCompile({
-                  contents: value._value,
-                });
-                return JSON.stringify(contents, null, 2);
-              }
-            }
+            // if (args.format) {
+            // if (args.format === "html") {
+            //   const contents = await mdx.plainCompile({
+            //     contents: value._value,
+            //   });
+            //   // FIXME: not working
+            //   console.log(contents);
+            //   return value._value;
+            // }
+            // if (args.format === "markdown") {
+            //   const contents = await mdx.mdCompile({
+            //     contents: value._value,
+            //   });
+            //   return JSON.stringify(contents, null, 2);
+            // }
+            // }
             return value._value;
           default:
             return value._value;
