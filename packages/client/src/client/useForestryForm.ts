@@ -1,99 +1,47 @@
 import { useCMS, useForm, Form, FormOptions } from "tinacms";
 
-type BaseDataShape = {
-  document?: any;
-};
-
-type BaseFormShape = { data: any; __typename?: string };
-
-export function useForestryForm<
-  DataShape extends BaseDataShape = any,
-  FormShape extends BaseFormShape = any
->(
-  data: DataShape,
+export function useForestryForm(
+  document: any,
   customFormConfig: Partial<FormOptions<any>> = {},
   customFields: any = {}
-): [FormShape, Form] {
+): any {
   const cms = useCMS();
 
-  const { path } = data.document!;
+  const { __typename, path, form, data, initialValues } = document;
 
-  const { _excerpt, ...initialValues } = data.document!.data;
-
-  const formConfig = {
-    id: path,
-    label: path,
-    initialValues,
-    fields: data.document!.form.fields,
-    onSubmit: (values) => {
+  const [modifiedValues, tinaForm] = useForm({
+    id: "tina-tutorial-index",
+    label: "Edit Page",
+    fields: form.fields.map((field) => {
+      if (field.component === "image") {
+        console.log(field);
+        return {
+          ...field,
+          parse: (media) => `/static/${media.filename}`,
+          uploadDir: () => "/public/static/",
+          previewSrc: (fullSrc) => {
+            console.log("hii", fullSrc);
+            return `public/${fullSrc}`;
+          },
+        };
+      }
+      return field;
+    }),
+    initialValues: initialValues,
+    onSubmit: async (values) => {
       cms.api.forestry.updateContent({
         path: path,
         payload: values,
-        form: data.document.form,
+        form: form,
       });
     },
-    ...customFormConfig,
-  };
-
-  formConfig.fields = traverse(formConfig.fields, customFields);
-  const [formData, form] = useForm(formConfig);
-
-  const { __typename } = data.document!;
+  });
 
   return [
     {
       __typename,
-      data: formData, // TODO - should we be returning more than just data here?
-    } as FormShape,
-    form as any, //hack - seems to be a dependency issue with duplicate @tinacms/form Form types
+      data: modifiedValues, // TODO - should we be returning more than just data here?
+    },
+    tinaForm as any, //hack - seems to be a dependency issue with duplicate @tinacms/form Form types
   ];
 }
-
-const traverse = (fields, customizations) => {
-  const customizeComponentNames = Object.keys(customizations);
-  return fields.map((field) => {
-    // If is group or group-list
-    if (field.hasOwnProperty("fields")) {
-      return {
-        ...field,
-        fields: traverse(field.fields, customizations),
-      };
-    }
-    // If is blocks
-    if (field.hasOwnProperty("templates")) {
-      const templates2: { [key: string]: any } = {};
-      Object.keys(field.templates).forEach((templateKey) => {
-        templates2[templateKey] = {
-          ...field.templates[templateKey],
-          fields: traverse(field.templates[templateKey].fields, customizations),
-        };
-      });
-      return {
-        ...field,
-        templates: templates2,
-      };
-    }
-
-    if (field.component === "toggle") {
-      return {
-        ...field,
-        // parse: (value: any, name: string, field: any) => {
-        //   console.log("parse", name, value);
-        //   return value;
-        // },
-        // format: (value: any, name: string, field: any) => {
-        //   console.log("format", name, value);
-        //   return value;
-        // },
-      };
-    }
-
-    if (customizeComponentNames.includes(field.component)) {
-      return {
-        ...customizations[field.component](field),
-      };
-    }
-
-    return field;
-  });
-};

@@ -1,6 +1,10 @@
-import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import {
+  friendlyFMTName,
+  friendlyName,
+  queryBuilder,
+} from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import type { Field } from "tinacms";
+import type { Field, BlockTemplate } from "tinacms";
 
 type BlockItem = {
   label: string;
@@ -12,36 +16,46 @@ type BlockField = {
 };
 
 const handleInner = (values, field: Field & { fields: Field[] }) => {
+  const value = values[field.name];
+  if (!value) {
+    return;
+  }
+
   switch (field.component) {
     case "text":
-      return values[field.name];
+      return value;
     case "blocks":
-      // @ts-ignore
-      const blockField = field as BlockField;
-      const templates = Object.values(blockField.templates);
+      const blockField = field;
 
-      console.log({ templates });
-      const acc: { [key: string]: any } = {};
-      values[field.name].map((v) => {
-        console.log({ v });
-        const template = templates.find((t) => t._template === v._template);
+      return value.map((v) => {
+        const acc: { [key: string]: any } = {};
+        // @ts-ignore
+        const template = blockField.templates[v._template];
         if (!template) {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
-        // @ts-ignore
-        acc[`${template.label}InputData`] = handleData(v, template);
+        acc[friendlyName(template, "InputData")] = {
+          template: v._template,
+          ...handleData(v, template),
+        };
+
+        return acc;
       });
-      // Return an array of one value, tagged union pattern
-      return [acc];
+    // Return an array of one value, tagged union pattern
+
+    case "group":
+      // FIXME: this shouldn't be sent down for anything other than blocks
+      const { _template, ...rest } = value;
+
+      return rest;
 
     default:
-      return values[field.name];
+      return value;
   }
 };
 
 export const handleData = (values, schema: { fields: Field[] }) => {
-  // @ts-ignore
-  const accum: { [key: string]: any } = { _template: schema._template };
+  const accum: { [key: string]: any } = {};
   schema.fields.forEach((field) => {
     // @ts-ignore
     accum[field.name] = handleInner(values, field);
@@ -51,12 +65,12 @@ export const handleData = (values, schema: { fields: Field[] }) => {
 };
 
 export const handle = (values, schema: { fields: Field[] }) => {
-  console.log(schema);
   const accum: { [key: string]: any } = {};
   schema.fields.forEach((field) => {
     // @ts-ignore
     accum[field.name] = handleInner(values, field);
   });
 
-  return { [`${values._template}Input`]: { data: accum } };
+  // @ts-ignore
+  return { [friendlyName(schema, "Input")]: { data: accum } };
 };
