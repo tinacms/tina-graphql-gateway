@@ -7,8 +7,20 @@ import { builder } from "../../builder";
 
 import type { BuildArgs, ResolveArgs } from "../";
 import type { TinaField } from "../index";
+import type { ImageGalleryField } from "../image-gallery";
 
 export const list = {
+  /**
+   * Image Gallery uses list for now, Tina has plans to
+   * implement a proper gallery field
+   */
+  imageGalleryField: (field: ImageGalleryField) => ({
+    ...field,
+    type: "list" as const,
+    config: {
+      use_select: false,
+    },
+  }),
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {

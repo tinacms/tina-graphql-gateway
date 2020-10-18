@@ -428,10 +428,9 @@ export const builder: Builder = {
     includeContent = false
   ): Promise<string> => {
     const name = friendlyName(template, "FormFields");
-    const fields = _.uniqBy(template.fields, (field) => field.type);
     const fieldNames = await buildTemplateFormFields(
       cache,
-      fields,
+      template.fields,
       accumulator
     );
 
@@ -447,7 +446,7 @@ export const builder: Builder = {
       // }
     }
 
-    accumulator.push(gql.union({ name, types: fieldNames }));
+    accumulator.push(gql.union({ name, types: _.uniq(fieldNames) }));
 
     return name;
   },

@@ -1,79 +1,61 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs } from "../";
+import { BuildArgs, ResolveArgs, assertIsStringArray } from "../";
+import { list, TinaListField } from "../list";
 
 export const imageGallery = {
   build: {
-    field: async ({ accumulator }: BuildArgs<ImageGalleryField>) => {
-      const name = "ImageGalleryField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({
+      cache,
+      field,
+      accumulator,
+    }: BuildArgs<ImageGalleryField>) => {
+      return list.build.field({
+        cache,
+        field: list.imageGalleryField(field),
+        accumulator,
+      });
     },
     initialValue: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.string(field.name);
+      return gql.stringList(field.name);
     },
     value: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.string(field.name);
+      return gql.stringList(field.name);
     },
     input: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.inputString(field.name);
+      return gql.inputValueList(field.name, "String");
     },
   },
   resolve: {
-    field: ({
+    field: async ({
+      datasource,
       field,
-    }: Omit<
-      ResolveArgs<ImageGalleryField>,
-      "value"
-    >): TinaImageGalleryField => {
-      const { type, ...rest } = field;
-      return {
-        ...rest,
-        component: "text",
-        config: rest.config || {
-          required: false,
-        },
-        __typename: "ImageGalleryField",
-      };
+    }: Omit<ResolveArgs<ImageGalleryField>, "value">): Promise<
+      TinaImageGalleryField
+    > => {
+      return await list.resolve.field({
+        datasource,
+        field: list.imageGalleryField(field),
+      });
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved imageGallery value`
-        );
-      }
+    }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
+      assertIsStringArray(value, { source: "image gallery initial value" });
       return value;
     },
     value: async ({
       value,
-    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved imageGallery value`
-        );
-      }
+    }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
+      console.log({ value });
+      assertIsStringArray(value, { source: "image gallery value" });
       return value;
     },
     input: async ({
       value,
-    }: ResolveArgs<ImageGalleryField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved imageGallery value`
-        );
-      }
+    }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
+      assertIsStringArray(value, { source: "image gallery input" });
+
       return value;
     },
   },
@@ -90,13 +72,4 @@ export type ImageGalleryField = {
   __namespace: string;
 };
 
-export type TinaImageGalleryField = {
-  label: string;
-  name: string;
-  component: "text";
-  default?: string;
-  config?: {
-    required?: boolean;
-  };
-  __typename: "ImageGalleryField";
-};
+export type TinaImageGalleryField = TinaListField;

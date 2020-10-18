@@ -1,3 +1,5 @@
+import * as yup from "yup";
+
 import type { TextField, TinaTextField } from "./text";
 import type { ListField, TinaListField } from "./list";
 import type { SelectField, TinaSelectField } from "./select";
@@ -68,6 +70,22 @@ export function assertIsString(
   if (typeof value !== "string") {
     throw new Error(
       `Unexpected value of type ${typeof value} for ${options.source}`
+    );
+  }
+}
+
+export function assertIsStringArray(
+  value: unknown,
+  options: { source: string }
+): asserts value is string[] {
+  const schema = yup.array().of(yup.string());
+
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(
+      `Unexpected array of strings for ${options.source} - ${e.message}`
     );
   }
 }
