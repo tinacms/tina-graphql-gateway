@@ -141,25 +141,11 @@ export class ForestryClient {
         __typename
       }
     }`;
-    const { _template, __typename, ...rest } = payload;
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-    const schema = buildClientSchema(data);
     // @ts-ignore
-    console.log(handle(payload, form));
-    console.log(payload);
-
-    const transformedPayload = transform({
-      _template,
-      __typename,
-      data: rest,
-    });
-    // console.log(JSON.stringify(payload, null, 2));
-    // console.log(JSON.stringify(transformedPayload, null, 2));
+    const values = handle(payload, form);
 
     await this.request<UpdateVariables>(mutation, {
-      variables: { path: path, params: transformedPayload },
+      variables: { path: path, params: values },
     });
   };
 

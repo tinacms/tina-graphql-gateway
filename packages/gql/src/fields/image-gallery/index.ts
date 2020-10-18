@@ -47,7 +47,6 @@ export const imageGallery = {
     value: async ({
       value,
     }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
-      console.log({ value });
       assertIsStringArray(value, { source: "image gallery value" });
       return value;
     },
