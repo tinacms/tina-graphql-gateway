@@ -1,6 +1,11 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs } from "../";
+import {
+  BuildArgs,
+  ResolveArgs,
+  assertIsStringArray,
+  assertIsString,
+} from "../";
 
 export const tag_list = {
   build: {
@@ -20,13 +25,13 @@ export const tag_list = {
       return name;
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
-      return gql.string(field.name);
+      return gql.stringList(field.name);
     },
     value: ({ field }: BuildArgs<TagListField>) => {
-      return gql.string(field.name);
+      return gql.stringList(field.name);
     },
     input: ({ field }: BuildArgs<TagListField>) => {
-      return gql.inputString(field.name);
+      return gql.inputValueList(field.name, "String");
     },
   },
   resolve: {
@@ -45,28 +50,16 @@ export const tag_list = {
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<TagListField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved tag_list value`
-        );
-      }
+    }: ResolveArgs<TagListField>): Promise<string[]> => {
+      assertIsStringArray(value, { source: "tag value" });
       return value;
     },
-    value: async ({ value }: ResolveArgs<TagListField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved tag_list value`
-        );
-      }
+    value: async ({ value }: ResolveArgs<TagListField>): Promise<string[]> => {
+      assertIsStringArray(value, { source: "tag value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<TagListField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved tag_list value`
-        );
-      }
+    input: async ({ value }: ResolveArgs<TagListField>): Promise<string[]> => {
+      assertIsStringArray(value, { source: "tag value" });
       return value;
     },
   },
