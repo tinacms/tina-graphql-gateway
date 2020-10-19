@@ -1,4 +1,4 @@
-import { AddContentPlugin, Field, CMS } from "tinacms";
+import { AddContentPlugin, Field, TinaCMS } from "tinacms";
 
 interface CreateContentButtonOptions<FormShape, FrontmatterShape> {
   label: string;
@@ -49,7 +49,7 @@ export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
     this.name = options.label;
   }
 
-  async onSubmit(form: FormShape, cms: CMS) {
+  async onSubmit(form: FormShape, cms: TinaCMS) {
     const fileRelativePath = await this.filename(form);
 
     await cms.api.forestry.addContent({

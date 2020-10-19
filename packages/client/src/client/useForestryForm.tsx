@@ -1,9 +1,10 @@
-import { useCMS, useForm, Form, FormOptions, usePlugin } from "tinacms";
+import { useCMS, useForm, usePlugin } from "tinacms";
+import { ContentCreatorPlugin } from "./create-page-plugin";
 
-export function useForestryForm(
+export function useForestryForm<T>(
   document: any,
   options = { onSubmit: null }
-): any {
+): T {
   const cms = useCMS();
 
   const { __typename, path, form, data, initialValues } = document;
@@ -46,10 +47,33 @@ export function useForestryForm(
           },
   });
 
+  const createPagePlugin = new ContentCreatorPlugin({
+    label: "Add Page",
+    fields: [
+      { name: "title", label: "Title", component: "text", required: true },
+    ],
+    filename: ({ title }) => {
+      return `content/posts/${title.replace(/\s+/, "-").toLowerCase()}.md`;
+    },
+    body: () => ``,
+    frontmatter: ({ title }) => {
+      //remove any other dirs from the title, return only filename
+      const id = `/posts/${title.replace(/\s+/, "-").toLowerCase()}`;
+      return {
+        title,
+        id,
+        prev: null,
+        next: null,
+      };
+    },
+  });
+
+  usePlugin(createPagePlugin);
   usePlugin(tinaForm);
 
+  // @ts-ignore
   return {
     __typename,
-    data: modifiedValues, // TODO - should we be returning more than just data here?
-  };
+    data: modifiedValues,
+  } as T;
 }
