@@ -1,9 +1,8 @@
-import { useCMS, useForm, Form, FormOptions } from "tinacms";
+import { useCMS, useForm, Form, FormOptions, usePlugin } from "tinacms";
 
 export function useForestryForm(
   document: any,
-  customFormConfig: Partial<FormOptions<any>> = {},
-  customFields: any = {}
+  options = { onSubmit: null }
 ): any {
   const cms = useCMS();
 
@@ -28,20 +27,29 @@ export function useForestryForm(
       return field;
     }),
     initialValues: initialValues,
-    onSubmit: async (values) => {
-      cms.api.forestry.updateContent({
-        path: path,
-        payload: values,
-        form: form,
-      });
-    },
+    onSubmit:
+      options && options?.onSubmit
+        ? async (values) => {
+            const payload = await cms.api.forestry.transformPayload({
+              path: path,
+              payload: values,
+              form: form,
+            });
+            options.onSubmit(values, payload);
+          }
+        : async (values) => {
+            cms.api.forestry.updateContent({
+              path: path,
+              payload: values,
+              form: form,
+            });
+          },
   });
 
-  return [
-    {
-      __typename,
-      data: modifiedValues, // TODO - should we be returning more than just data here?
-    },
-    tinaForm as any, //hack - seems to be a dependency issue with duplicate @tinacms/form Form types
-  ];
+  usePlugin(tinaForm);
+
+  return {
+    __typename,
+    data: modifiedValues, // TODO - should we be returning more than just data here?
+  };
 }

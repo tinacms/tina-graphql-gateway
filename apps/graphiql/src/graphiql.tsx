@@ -4,37 +4,24 @@ import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { Link, useParams } from "react-router-dom";
-import { ForestryClient, ForestryMediaStore } from "@forestryio/client";
+import {
+  ForestryClient,
+  ForestryMediaStore,
+  TinacmsForestryProvider,
+  useForestryForm,
+} from "@forestryio/client";
 import {
   getIntrospectionQuery,
   GraphQLSchema,
   buildClientSchema,
   print,
 } from "graphql";
-import {
-  TinaProvider,
-  TinaCMS,
-  useCMS,
-  useForm,
-  Form,
-  usePlugin,
-} from "tinacms";
-import { handle } from "./handler";
+import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 
-// {
-// 	"params": {
-// 		"PostInput": {
-// 			"data": {
-// 				"author": "content/authors/christian.md",
-// 				"image": "/uploads/dreams-on-hold.jpg",
-// 				"title": "Dreams on Hold"
-// 			}
-// 		}
-// 	}
-// }
-
-const TinaWrap = ({ schema, formConfig, onSubmit }) => {
-  const client = new ForestryClient("");
+const TinaWrap = ({ project, schema, formConfig, onSubmit }) => {
+  const client = new ForestryClient("", {
+    gqlServer: `http://localhost:4000/${project}`,
+  });
   const media = new ForestryMediaStore(client);
 
   const cms = new TinaCMS({
@@ -50,45 +37,32 @@ const TinaWrap = ({ schema, formConfig, onSubmit }) => {
 
   return (
     <TinaProvider cms={cms}>
-      {formConfig ? (
-        <UseIt schema={schema} onSubmit={onSubmit} formConfig={formConfig} />
-      ) : null}
-      {/* <UseIt formConfig={formConfig} /> */}
+      <TinacmsForestryProvider
+        onLogin={() => alert("enter edit mode")}
+        onLogout={() => alert("exit edit mode")}
+      >
+        {formConfig ? (
+          <UseIt schema={schema} onSubmit={onSubmit} formConfig={formConfig} />
+        ) : null}
+      </TinacmsForestryProvider>
     </TinaProvider>
   );
 };
 
-const UseIt = ({ schema, formConfig, onSubmit }: { schema: GraphQLSchema }) => {
-  useCMS();
-  // TODO: use yup to build a validation schema based on the arg requirements
-  // Not sure if we have enough info to know if somethin is non-null
-  // but GraphiQL seems to be able to do it without a network call so should be
-  // possible
-  // HERE /Users/jeffsee/code/scratch/graphiql/packages/codemirror-graphql/variables/lint.js
-  // const mutation = schema.getMutationType();
-  // const mutations = mutation?.getFields();
-  // const updateDocument = Object.values(mutations)[0];
-  // console.log(schema.getTypeMap());
-  const [, form] = useForm({
-    id: "tina-tutorial-index",
-    validate: (values) => {
-      // return {
-      //   title: "oh no",
-      //   author: "noooo",
-      //   // TODO: raise an issue with OSS team to see how to do this
-      //   sections: [null, "Oh noooo"],
-      // };
-      return undefined;
-    },
-    label: "Edit Page",
-    fields: formConfig.form.fields,
-    initialValues: formConfig.initialValues,
-    onSubmit: async (values) => {
-      const payload = handle(values, formConfig.form);
-      onSubmit(payload);
+const UseIt = ({
+  schema,
+  formConfig,
+  onSubmit,
+}: {
+  schema: GraphQLSchema;
+  formConfig: any;
+  onSubmit: (values: any) => void;
+}) => {
+  useForestryForm(formConfig, {
+    onSubmit: (values, transformedValues) => {
+      onSubmit(transformedValues);
     },
   });
-  usePlugin(form);
 
   return <div />;
 };
@@ -190,6 +164,7 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
       {queryResult && (
         <TinaWrap
           onSubmit={setVariables}
+          project={project}
           schema={schema}
           formConfig={queryResult}
         />
@@ -202,6 +177,7 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
           explorerIsOpen={state.explorerIsOpen}
           onToggleExplorer={_handleToggleExplorer}
           onRunOperation={(operationName: any) => {
+            // @ts-ignore
             _graphiql.handleRunQuery(operationName);
           }}
         />
