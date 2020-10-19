@@ -186,3 +186,5 @@ export class ForestryClient {
 }
 
 export { useForestryForm } from "./useForestryForm";
+
+export { ForestryMediaStore } from "./media-store";

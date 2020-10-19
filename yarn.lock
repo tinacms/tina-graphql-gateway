@@ -2285,6 +2285,7 @@ __metadata:
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
+    "@tinacms/core": ^0.31.0
     "@tinacms/react-forms": ^0.27.1
     "@tinacms/styles": ^0.26.0
     "@types/crypto-js": ^3.1.47
@@ -4333,6 +4334,13 @@ __metadata:
   version: 0.26.0
   resolution: "@tinacms/core@npm:0.26.0"
   checksum: 680a1714104ebb23b15c32cb6b686a96b824c5692e233f6f5645d2f6a5aac8ba273629de452d5748d368be76b28e382d8802e14934e91e293935c023b98c066e
+  languageName: node
+  linkType: hard
+
+"@tinacms/core@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@tinacms/core@npm:0.31.0"
+  checksum: ecab9ab7d81d614e971810e4f9b2b3e6ed66f18c76721ae9483f68b77f3796335c9d3acd99c26abdfec2ff4be4a0475a4891d1c353d6652bb5b705895ffb81e3
   languageName: node
   linkType: hard
 
@@ -10295,6 +10303,7 @@ __metadata:
     "@forestryio/client": "workspace:packages/client"
     "@forestryio/graphql": "workspace:packages/graphql"
     "@tailwindcss/ui": ^0.3.0
+    "@tinacms/core": ^0.31.0
     "@types/node": ^13.13.1
     "@types/react": ^16.9.43
     "@types/styled-components": ^5.1.3

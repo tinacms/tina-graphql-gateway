@@ -664,6 +664,21 @@ export const builder: Builder = {
             type: "DocumentUnion",
             args: [gql.inputString("path")],
           }),
+          gql.fieldList({
+            name: "documentList",
+            type: "String",
+            args: [gql.inputString("directory")],
+          }),
+          gql.field({
+            name: "media",
+            type: "String",
+            args: [gql.inputString("path")],
+          }),
+          gql.fieldList({
+            name: "mediaList",
+            type: "String",
+            args: [gql.inputString("directory")],
+          }),
         ],
       }),
       gql.object({
