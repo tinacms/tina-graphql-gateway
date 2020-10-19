@@ -1,43 +1,7 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 import { authenticate } from "../auth/authenticate";
-import { handle } from "./handle";
-
-const transform = (obj: any) => {
-  if (typeof obj === "boolean") {
-    return obj;
-  }
-  if (!obj) {
-    return "";
-  }
-  if (typeof obj == "string" || typeof obj === "number") {
-    return obj;
-  }
-
-  // FIXME unreliable
-  if (obj.hasOwnProperty("path")) {
-    return obj.path;
-  }
-  const { _template, __typename, ...rest } = obj;
-  if (_template) {
-    return { [_template.replace("FieldConfig", "Input")]: transform(rest) };
-  }
-
-  const accumulator = {};
-  Object.keys(rest)
-    .filter((key) => rest[key]) // remove items with null values
-    .forEach((key) => {
-      if (Array.isArray(rest[key])) {
-        accumulator[key] = rest[key].map((item) => {
-          return transform(item);
-        });
-      } else {
-        accumulator[key] = transform(rest[key]);
-      }
-    });
-
-  return accumulator;
-};
+import { transformPayload } from "./handle";
 
 interface AddProps {
   url: string;
@@ -85,16 +49,14 @@ export class ForestryClient {
       }
     }`;
 
-    const transformedPayload = transform({
-      _template: friendlyFMTName(template, { suffix: "field_config" }),
-      data: payload,
-    });
+    // @ts-ignore
+    const values = this.transformPayload(payload, form);
 
     await this.request<AddVariables>(mutation, {
       variables: {
         path: path,
         template: template + ".yml",
-        params: transformedPayload,
+        params: values,
       },
     });
   };
@@ -117,7 +79,6 @@ export class ForestryClient {
     path: string;
   }): Promise<{
     data: T;
-    formConfig: any;
   }> => {
     const query = await this.getQuery();
     const data = await this.request(query, {
@@ -125,6 +86,19 @@ export class ForestryClient {
     });
 
     return data;
+  };
+
+  transformPayload = async ({
+    path,
+    payload,
+    form,
+  }: {
+    path: string;
+    payload: any;
+    form: { fields: unknown[] };
+  }) => {
+    // @ts-ignore
+    return transformPayload(payload, form);
   };
 
   updateContent = async ({
@@ -142,7 +116,7 @@ export class ForestryClient {
       }
     }`;
     // @ts-ignore
-    const values = handle(payload, form);
+    const values = this.transformPayload(payload, form);
 
     await this.request<UpdateVariables>(mutation, {
       variables: { path: path, params: values },

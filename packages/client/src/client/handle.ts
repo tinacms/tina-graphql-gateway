@@ -1,19 +1,5 @@
-import {
-  friendlyFMTName,
-  friendlyName,
-  queryBuilder,
-} from "@forestryio/graphql-helpers";
-import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import type { Field, BlockTemplate } from "tinacms";
-
-type BlockItem = {
-  label: string;
-  _template: string;
-} & object;
-
-type BlockField = {
-  templates: BlockItem[];
-};
+import { friendlyName } from "@forestryio/graphql-helpers";
+import type { Field } from "tinacms";
 
 const handleInner = (values, field: Field & { fields: Field[] }) => {
   const value = values[field.name];
@@ -41,7 +27,6 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
 
         return acc;
       });
-    // Return an array of one value, tagged union pattern
 
     case "group":
       // FIXME: this shouldn't be sent down for anything other than blocks
