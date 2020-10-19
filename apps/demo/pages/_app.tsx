@@ -40,6 +40,6 @@ export default withTina(MyApp, {
   },
   sidebar: { position: "displace" },
   // FIXME: seems like I'm mixing versions
-  media: media,
+  // media: media,
   enabled: false,
 });

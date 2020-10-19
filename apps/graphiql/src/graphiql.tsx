@@ -4,6 +4,7 @@ import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { Link, useParams } from "react-router-dom";
+import { ForestryClient, ForestryMediaStore } from "@forestryio/client";
 import {
   getIntrospectionQuery,
   GraphQLSchema,
@@ -33,10 +34,17 @@ import { handle } from "./handler";
 // }
 
 const TinaWrap = ({ schema, formConfig, onSubmit }) => {
+  const client = new ForestryClient("");
+  const media = new ForestryMediaStore(client);
+
   const cms = new TinaCMS({
     sidebar: {
       position: "overlay",
     },
+    apis: {
+      forestry: client,
+    },
+    media: media,
     enabled: true,
   });
 
