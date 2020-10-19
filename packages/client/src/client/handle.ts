@@ -49,7 +49,7 @@ export const handleData = (values, schema: { fields: Field[] }) => {
   return accum;
 };
 
-export const handle = (values, schema: { fields: Field[] }) => {
+export const transformPayload = (values, schema: { fields: Field[] }) => {
   const accum: { [key: string]: any } = {};
   schema.fields.forEach((field) => {
     // @ts-ignore
