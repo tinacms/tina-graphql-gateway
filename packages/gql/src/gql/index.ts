@@ -115,7 +115,15 @@ export const gql = {
       arguments: args,
     };
   },
-  fieldList: ({ name, type }: { name: string; type: string }) => {
+  fieldList: ({
+    name,
+    type,
+    args = [],
+  }: {
+    name: string;
+    type: string;
+    args?: InputValueDefinitionNode[];
+  }) => {
     return {
       kind: "FieldDefinition" as const,
       name: {

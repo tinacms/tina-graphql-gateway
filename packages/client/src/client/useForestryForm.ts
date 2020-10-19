@@ -14,14 +14,14 @@ export function useForestryForm(
     label: "Edit Page",
     fields: form.fields.map((field) => {
       if (field.component === "image") {
-        console.log(field);
         return {
           ...field,
-          parse: (media) => `/static/${media.filename}`,
-          uploadDir: () => "/public/static/",
+          parse: (media) => {
+            return media.filename;
+          },
+          uploadDir: () => "/public/",
           previewSrc: (fullSrc) => {
-            console.log("hii", fullSrc);
-            return `public/${fullSrc}`;
+            return `/uploads/${fullSrc}`;
           },
         };
       }
