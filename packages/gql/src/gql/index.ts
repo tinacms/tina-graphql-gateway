@@ -3,6 +3,7 @@ import {
   FieldDefinitionNode,
   InputValueDefinitionNode,
 } from "graphql";
+import { argsToArgsConfig } from "graphql/type/definition";
 
 export const gql = {
   string: (name: string) => {
@@ -175,11 +176,14 @@ export const gql = {
   object: ({
     name,
     fields,
+    args = [],
   }: {
     name: string;
     fields: FieldDefinitionNode[];
+    args?: InputValueDefinitionNode[];
   }) => ({
     kind: "ObjectTypeDefinition" as const,
+    arguments: args,
     name: {
       kind: "Name" as const,
       value: name,

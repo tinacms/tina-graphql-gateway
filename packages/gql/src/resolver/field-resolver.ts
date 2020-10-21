@@ -365,27 +365,29 @@ export const resolver: Resolver = {
     // console.log(template);
 
     return {
-      __typename: friendlyName(template),
       path: args.path,
       basename,
       filename,
       extension,
-      content: "\nSome content\n",
-      form: await resolver.documentFormObject(datasource, template),
-      data: await resolver.documentDataObject({
-        datasource,
-        resolvedTemplate: template,
-        data,
-        includeContent: true,
-        content,
-      }),
-      initialValues: await resolver.documentInitialValuesObject(
-        datasource,
-        template,
-        data,
-        true,
-        content || ""
-      ),
+      node: {
+        __typename: friendlyName(template),
+        content: "\nSome content\n",
+        form: await resolver.documentFormObject(datasource, template),
+        data: await resolver.documentDataObject({
+          datasource,
+          resolvedTemplate: template,
+          data,
+          includeContent: true,
+          content,
+        }),
+        initialValues: await resolver.documentInitialValuesObject(
+          datasource,
+          template,
+          data,
+          true,
+          content || ""
+        ),
+      },
     };
   },
   documentDataObject: async ({

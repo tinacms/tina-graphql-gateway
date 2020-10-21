@@ -285,6 +285,18 @@ export interface Builder {
     accumulator: Definitions[];
     build?: boolean;
   }) => Promise<string>;
+  documentNodeUnion: (args: {
+    cache: Cache;
+    section?: string;
+    accumulator: Definitions[];
+    build?: boolean;
+  }) => Promise<string>;
+  documentUnionInner: (args: {
+    cache: Cache;
+    section?: string;
+    accumulator: Definitions[];
+    build?: boolean;
+  }) => Promise<string>;
   /**
    * Currently only used by blocks, which accepts an array of values with different shapes,
    * disambiguated by their `_template` property seen in {@link documentInitialValuesObject}.
@@ -551,12 +563,6 @@ export const builder: Builder = {
         gql.object({
           name,
           fields: [
-            gql.field({ name: "path", type: "String" }),
-            gql.field({ name: "relativePath", type: "String" }),
-            gql.fieldList({ name: "breadcrumbs", type: "String" }),
-            gql.field({ name: "basename", type: "String" }),
-            gql.field({ name: "extension", type: "String" }),
-            gql.field({ name: "filename", type: "String" }),
             gql.field({ name: "form", type: formName }),
             gql.field({ name: "data", type: dataName }),
             gql.field({ name: "initialValues", type: initialValuesName }),
@@ -618,7 +624,77 @@ export const builder: Builder = {
     );
     return name;
   },
+  documentNodeUnion: async ({ cache, accumulator, section }) => {
+    const parentName = friendlyName(section, "Section");
+    const name = friendlyName(section, "DocumentNodeUnion");
+
+    const templates = await cache.datasource.getTemplatesForSection(section);
+    const templateNames = await sequential(
+      templates,
+      async (template: TemplateData) => {
+        return await builder.documentObject(
+          cache,
+          template,
+          accumulator,
+          false
+        );
+      }
+    );
+    accumulator.push(gql.union({ name: name, types: templateNames }));
+    accumulator.push(
+      gql.object({
+        name: parentName,
+        fields: [
+          gql.field({ name: "path", type: "String" }),
+          gql.field({ name: "relativePath", type: "String" }),
+          gql.fieldList({ name: "breadcrumbs", type: "String" }),
+          gql.field({ name: "basename", type: "String" }),
+          gql.field({ name: "extension", type: "String" }),
+          gql.field({ name: "filename", type: "String" }),
+          gql.field({
+            name: "node",
+            type: name,
+          }),
+        ],
+      })
+    );
+
+    return parentName;
+  },
+  // FIXME: rename to documentNode
   documentUnion: async ({ cache, section, accumulator, build = true }) => {
+    const name = friendlyName(section, "DocumentNode");
+
+    const unionName = await builder.documentUnionInner({
+      cache,
+      section,
+      accumulator,
+      build,
+    });
+
+    accumulator.push(
+      gql.object({
+        name,
+        args: [gql.inputString("path")],
+        fields: [
+          gql.field({ name: "path", type: "String" }),
+          gql.field({ name: "relativePath", type: "String" }),
+          gql.fieldList({ name: "breadcrumbs", type: "String" }),
+          gql.field({ name: "basename", type: "String" }),
+          gql.field({ name: "extension", type: "String" }),
+          gql.field({ name: "filename", type: "String" }),
+          gql.field({
+            name: "node",
+            type: unionName,
+          }),
+        ],
+      })
+    );
+
+    return name;
+  },
+  // FIXME: rename to documentUnion
+  documentUnionInner: async ({ cache, section, accumulator, build = true }) => {
     const name = friendlyName(section, "DocumentUnion");
 
     const templates = await cache.datasource.getTemplatesForSection(section);
@@ -666,12 +742,13 @@ export const builder: Builder = {
         fields: [
           gql.field({
             name: "document",
-            type: "DocumentUnion",
+            type: "DocumentNode",
             args: [gql.inputString("path")],
           }),
           gql.field({
             name: "documentForSection",
-            type: "DocumentUnion",
+            // type: "DocumentUnion",
+            type: "DocumentNodeUnion",
             args: [gql.inputString("relativePath"), gql.inputString("section")],
           }),
           gql.fieldList({
@@ -681,7 +758,7 @@ export const builder: Builder = {
           }),
           gql.fieldList({
             name: "documentListBySection",
-            type: "DocumentUnion",
+            type: "DocumentNode",
             args: [gql.inputString("section")],
           }),
           gql.field({
@@ -701,7 +778,7 @@ export const builder: Builder = {
         fields: [
           gql.field({
             name: "updateDocument",
-            type: "DocumentUnion",
+            type: "DocumentNode",
             args: [
               gql.inputString("path"),
               gql.inputValue("params", "DocumentInput"),
@@ -716,6 +793,19 @@ export const builder: Builder = {
       accumulator,
     });
     await builder.documentUnion({ cache, accumulator });
+
+    const sections = await cache.datasource.getSectionsSettings();
+    const types = await sequential(
+      sections.filter((section) => section.type === "directory"),
+      async (section) => {
+        return await builder.documentNodeUnion({
+          cache,
+          accumulator,
+          section: section.slug,
+        });
+      }
+    );
+    accumulator.push(gql.union({ name: "DocumentNodeUnion", types: types }));
 
     const schema: DocumentNode = {
       kind: "Document",

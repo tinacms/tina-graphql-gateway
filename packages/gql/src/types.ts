@@ -30,7 +30,7 @@ interface SectionMap {
   document: DocumentSection;
 }
 
-type Section = SectionMap[keyof SectionMap];
+export type Section = SectionMap[keyof SectionMap];
 
 export const byTypeWorks = <T extends keyof SectionMap>(type: T) => (
   section: Section

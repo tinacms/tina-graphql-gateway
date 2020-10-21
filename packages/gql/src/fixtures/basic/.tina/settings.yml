@@ -10,6 +10,7 @@ sections:
     new_doc_ext: md
     templates:
       - post
+      - section
   - type: directory
     path: authors
     label: Authors
