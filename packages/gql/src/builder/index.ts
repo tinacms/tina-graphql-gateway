@@ -552,6 +552,11 @@ export const builder: Builder = {
           name,
           fields: [
             gql.field({ name: "path", type: "String" }),
+            gql.field({ name: "relativePath", type: "String" }),
+            gql.fieldList({ name: "breadcrumbs", type: "String" }),
+            gql.field({ name: "basename", type: "String" }),
+            gql.field({ name: "extension", type: "String" }),
+            gql.field({ name: "filename", type: "String" }),
             gql.field({ name: "form", type: formName }),
             gql.field({ name: "data", type: dataName }),
             gql.field({ name: "initialValues", type: initialValuesName }),
@@ -664,10 +669,20 @@ export const builder: Builder = {
             type: "DocumentUnion",
             args: [gql.inputString("path")],
           }),
+          gql.field({
+            name: "documentForSection",
+            type: "DocumentUnion",
+            args: [gql.inputString("relativePath"), gql.inputString("section")],
+          }),
           gql.fieldList({
             name: "documentList",
             type: "String",
             args: [gql.inputString("directory")],
+          }),
+          gql.fieldList({
+            name: "documentListBySection",
+            type: "DocumentUnion",
+            args: [gql.inputString("section")],
           }),
           gql.field({
             name: "media",

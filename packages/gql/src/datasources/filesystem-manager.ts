@@ -32,6 +32,8 @@ export class FileSystemManager implements DataSource {
   }
 
   getDocumentsForSection = async (sectionSlug?: string) => {
+    const section = await this.getSettingsForSection(sectionSlug);
+
     const templates = await this.getTemplatesForSection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
@@ -47,6 +49,25 @@ export class FileSystemManager implements DataSource {
     );
 
     return data;
+  };
+  getSettingsForSection = async (section: string) => {
+    const sectionsSettings = await this.getSectionsSettings(section);
+    return sectionsSettings.find(({ slug }) => slug === section);
+  };
+  getSectionsSettings = async (section: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections.map((section) => {
+      return {
+        ...section,
+        // Pretty sure this is how we define 'section' values in list/select fields
+        // probably needs to be tested thoroughly to ensure the slugify function works
+        // as it does in Forestry
+        slug: slugify(section.label),
+      };
+    });
+
+    return sections;
   };
   getTemplatesForSection = async (section?: string) => {
     const data = await this.getSettingsData();
@@ -78,6 +99,12 @@ export class FileSystemManager implements DataSource {
     return await sequential(templates, async (templateBasename) => {
       return await this.getTemplate(templateBasename.replace(".yml", ""));
     });
+  };
+  getDocumentMeta = async ({ path }: DocumentArgs) => {
+    const fullPath = p.join(this.rootPath, path);
+    const basename = p.basename(fullPath);
+    const extension = p.extname(fullPath);
+    return { basename, filename: basename.replace(extension, ""), extension };
   };
   getData = async ({ path }: DocumentArgs) => {
     const fullPath = p.join(this.rootPath, path);

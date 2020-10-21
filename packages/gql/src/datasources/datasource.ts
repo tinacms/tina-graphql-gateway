@@ -1,5 +1,5 @@
 import type { Field } from "../fields";
-import type { TemplateData } from "../types";
+import type { TemplateData, Settings, DirectorySection } from "../types";
 
 export type TinaDocument = {
   [key: string]: any;
@@ -29,6 +29,13 @@ export interface DataSource {
    * ```
    */
   getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
+  getDocumentMeta: ({
+    path,
+  }: DocumentArgs) => Promise<{
+    basename: string;
+    extension: string;
+    filename: string;
+  }>;
   getTemplateForDocument: ({ path }: DocumentArgs) => Promise<TemplateData>;
   getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
   getTemplate: (slug: string) => Promise<TemplateData>;
@@ -59,6 +66,7 @@ export interface DataSource {
    */
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
+  getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   updateDocument: (param: {
     path: string;
     params: { content?: string; data: object };

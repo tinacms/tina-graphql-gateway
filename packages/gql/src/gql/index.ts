@@ -123,9 +123,10 @@ export const gql = {
     name: string;
     type: string;
     args?: InputValueDefinitionNode[];
-  }) => {
+  }): FieldDefinitionNode => {
     return {
       kind: "FieldDefinition" as const,
+      arguments: args,
       name: {
         kind: "Name" as const,
         value: name,
