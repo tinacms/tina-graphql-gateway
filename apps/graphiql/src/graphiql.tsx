@@ -18,39 +18,7 @@ import {
 } from "graphql";
 import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 
-const TinaWrap = ({ project, schema, formConfig, onSubmit }) => {
-  const client = new ForestryClient("", {
-    gqlServer: `http://localhost:4000/${project}`,
-  });
-  const media = new ForestryMediaStore(client);
-
-  const cms = new TinaCMS({
-    sidebar: {
-      position: "overlay",
-    },
-    apis: {
-      forestry: client,
-    },
-    media: media,
-    enabled: true,
-  });
-
-  return (
-    <TinaProvider cms={cms}>
-      <TinacmsForestryProvider
-        onLogin={() => alert("enter edit mode")}
-        onLogout={() => alert("exit edit mode")}
-      >
-        {formConfig ? (
-          <UseIt schema={schema} onSubmit={onSubmit} formConfig={formConfig} />
-        ) : null}
-      </TinacmsForestryProvider>
-    </TinaProvider>
-  );
-};
-
 const UseIt = ({
-  schema,
   formConfig,
   onSubmit,
 }: {
@@ -67,12 +35,12 @@ const UseIt = ({
   return <div />;
 };
 
-export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
+export const Explorer = (variables: { variables: any } = { path: "" }) => {
   let { project } = useParams();
   const [vars, setVars] = React.useState();
   React.useEffect(() => {
-    setVars({ path: pathVariable });
-  }, [pathVariable]);
+    setVars(variables.variables);
+  }, [variables]);
   const [state, setState] = React.useState({
     schema: null,
     query: null,
@@ -88,24 +56,28 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
   );
 
   const graphQLFetcher = (graphQLParams: object) => {
-    setQueryResult(null);
-    const url = `http://localhost:4000/${project}`;
-    return fetch(url, {
-      method: `post`,
-      headers: {
-        Accept: `application/json`,
-        "Content-Type": `application/json`,
-      },
-      body: JSON.stringify(graphQLParams),
-      // credentials: `include`,
-    }).then(function (response) {
-      return response.json().then((json) => {
-        if (json?.data?.document) {
-          setQueryResult(json.data.document);
-        }
-        return json;
+    try {
+      setQueryResult(null);
+      const url = `http://localhost:4000/${project}`;
+      return fetch(url, {
+        method: `post`,
+        headers: {
+          Accept: `application/json`,
+          "Content-Type": `application/json`,
+        },
+        body: JSON.stringify(graphQLParams),
+        // credentials: `include`,
+      }).then(function (response) {
+        return response.json().then((json) => {
+          if (json?.data?.document) {
+            setQueryResult(json.data.document);
+          }
+          return json;
+        });
       });
-    });
+    } catch (e) {
+      console.log(e);
+    }
   };
   const _graphiql = React.useRef();
 
@@ -130,23 +102,27 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
     listProjects();
   }, []);
   React.useEffect(() => {
-    graphQLFetcher({
-      query: getIntrospectionQuery(),
-    }).then((result) => {
-      const newState: { schema: any; query: null | string } = {
-        schema: buildClientSchema(result.data),
-        query: "",
-      };
+    try {
+      graphQLFetcher({
+        query: getIntrospectionQuery(),
+      }).then((result) => {
+        const newState: { schema: any; query: null | string } = {
+          schema: buildClientSchema(result.data),
+          query: "",
+        };
 
-      if (!newState.query) {
-        const clientSchema = buildClientSchema(result.data);
-        const query = queryBuilder(clientSchema, "documentForSection");
-        // @ts-ignore for some reason query builder shows no return type
-        newState.query = print(query);
-      }
+        if (!newState.query) {
+          const clientSchema = buildClientSchema(result.data);
+          const query = queryBuilder(clientSchema, "documentForSection");
+          // @ts-ignore for some reason query builder shows no return type
+          newState.query = print(query);
+        }
 
-      setState({ ...state, ...newState });
-    });
+        setState({ ...state, ...newState });
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }, [project]);
 
   const _handleEditQuery = (query: any) => {
@@ -162,7 +138,7 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
   return (
     <div id="root" className="graphiql-container">
       {queryResult && (
-        <TinaWrap
+        <UseIt
           onSubmit={setVariables}
           project={project}
           schema={schema}

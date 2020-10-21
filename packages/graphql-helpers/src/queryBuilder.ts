@@ -177,19 +177,33 @@ export const queryBuilder = (
                             kind: "Field",
                             name: {
                               kind: "Name",
-                              value: "__typename",
+                              value: "node",
                             },
                             arguments: [],
                             directives: [],
+                            selectionSet: {
+                              kind: "SelectionSet",
+                              selections: [
+                                {
+                                  kind: "Field",
+                                  name: {
+                                    kind: "Name",
+                                    value: "__typename",
+                                  },
+                                  arguments: [],
+                                  directives: [],
+                                },
+                                ...(node?.types?.map((item) => {
+                                  return buildInlineFragment(
+                                    item,
+                                    astNode,
+                                    depth,
+                                    items
+                                  );
+                                }) || []),
+                              ],
+                            },
                           },
-                          ...(node?.types?.map((item) => {
-                            return buildInlineFragment(
-                              item,
-                              astNode,
-                              depth,
-                              items
-                            );
-                          }) || []),
                         ],
                       },
                     },
@@ -230,6 +244,11 @@ const buildInlineFragment = (
   };
   visit(astNode, visitor);
 
+  const isDocumentReference =
+    fields.map((f) => f.name.value).includes("form") &&
+    fields.map((f) => f.name.value).includes("data") &&
+    depth > 1;
+
   return {
     kind: "InlineFragment",
     typeCondition: {
@@ -242,44 +261,23 @@ const buildInlineFragment = (
     directives: [],
     selectionSet: {
       kind: "SelectionSet",
-      selections: fields
-        .filter((field) => {
-          /**
-           * FIXME: this is our way of not grabbing data for
-           * nested docments because it's not necessary. We should
-           * instead propose linked forms to the Tina teams and
-           * have a client-side fetch for nested documents, so we
-           * only expose the path, which for Forestry is the
-           * primary key
-           *
-           * The absolutePath and data checks
-           * are far too brittle and the depth check should
-           * be removed entirely. I'm thinking we should have some
-           * sort of __connection field, but that changes the natural
-           * flow of content since it would inject an extra
-           * step which is specific to Tina forms. The data
-           * itself should ideally not differentiate between documents.
-           *
-           * Meaning the end user should be able to do post.author.name.
-           * They shouldn't have to worry that author is a connection
-           * (post.__connection.author.name)
-           */
-          if (
-            fields.map((f) => f.name.value).includes("form") &&
-            fields.map((f) => f.name.value).includes("data") &&
-            depth > 1
-          ) {
-            if (field.name.value === "path") {
+      selections: isDocumentReference
+        ? [
+            {
+              kind: "Field",
+              name: {
+                kind: "Name",
+                value: "__typename",
+              },
+            },
+          ]
+        : fields
+            .filter((field) => {
               return true;
-            }
-            return false;
-          }
-
-          return true;
-        })
-        .map((field) => {
-          return buildField(field, astNode, depth, items);
-        }),
+            })
+            .map((field) => {
+              return buildField(field, astNode, depth, items);
+            }),
     },
   };
 };
