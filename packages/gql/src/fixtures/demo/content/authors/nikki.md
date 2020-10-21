@@ -1,13 +1,12 @@
 ---
 name: Nikki Hiltz
 image: "/uploads/5F46B101-7800-4401-B9BD-9D77653E7E71.JPG"
-athletes: content/athletes.json
 gallery:
-- "/uploads/pride-nikki-2.JPG"
-- "/uploads/group-run.jpg"
-- "/uploads/gctc-intro.jpg"
-
+  - "/uploads/pride-nikki-2.JPG"
+  - "/uploads/group-run.jpg"
+  - "/uploads/gctc-intro.jpg"
 ---
+
 ###### Favorite thing about san diego?
 
 The super friendly people at Sprouts Market

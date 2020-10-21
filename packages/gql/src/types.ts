@@ -14,12 +14,14 @@ export type DirectorySection = {
 export type HeadingSection = {
   type: "heading";
   label: string;
+  slug: string;
 };
 
 export type DocumentSection = {
   type: "document";
   label: string;
   path: string;
+  slug: string;
 };
 
 interface SectionMap {

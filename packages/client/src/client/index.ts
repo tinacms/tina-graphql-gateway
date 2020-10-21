@@ -72,17 +72,63 @@ export class ForestryClient {
 
     return this.query;
   };
+  getSectionQuery = async () => {
+    if (!this.query) {
+      const data = await this.request(getIntrospectionQuery(), {
+        variables: {},
+      });
+
+      this.query = print(
+        queryBuilder(buildClientSchema(data), "documentForSection")
+      );
+    }
+
+    return this.query;
+  };
+
+  listDocumentsBySection = async ({ section }: { section: string }) => {
+    const query = `
+    query DocumentsBySectionQuery($section: String!) {
+      documentListBySection(section: $section) {
+        ...on Post {
+          filename
+          relativePath
+          breadcrumbs
+        }
+      }
+    }
+    `;
+    const result = await this.request(query, { variables: { section } });
+
+    return result.documentListBySection;
+  };
 
   getContent = async <T>({
     path,
   }: {
-    path: string;
+    path?: string;
   }): Promise<{
     data: T;
   }> => {
     const query = await this.getQuery();
     const data = await this.request(query, {
       variables: { path },
+    });
+
+    return data;
+  };
+  getContentForSection = async <T>({
+    relativePath,
+    section,
+  }: {
+    relativePath?: string;
+    section?: string;
+  }): Promise<{
+    data: T;
+  }> => {
+    const query = await this.getSectionQuery();
+    const data = await this.request(query, {
+      variables: { relativePath, section },
     });
 
     return data;

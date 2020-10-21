@@ -14,7 +14,132 @@ import {
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
-export const queryBuilder = (schema: GraphQLSchema) => {
+const args = {
+  document: [
+    {
+      kind: "Argument",
+      name: {
+        kind: "Name",
+        value: "path",
+      },
+      value: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "path",
+        },
+      },
+    },
+  ],
+  documentForSection: [
+    {
+      kind: "Argument",
+      name: {
+        kind: "Name",
+        value: "relativePath",
+      },
+      value: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "relativePath",
+        },
+      },
+    },
+    {
+      kind: "Argument",
+      name: {
+        kind: "Name",
+        value: "section",
+      },
+      value: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "section",
+        },
+      },
+    },
+  ],
+};
+
+const variableDefinitions = {
+  document: [
+    {
+      kind: "VariableDefinition",
+      variable: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "path",
+        },
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      },
+      directives: [],
+    },
+  ],
+  documentForSection: [
+    {
+      kind: "VariableDefinition",
+      variable: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "relativePath",
+        },
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      },
+      directives: [],
+    },
+    {
+      kind: "VariableDefinition",
+      variable: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "section",
+        },
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      },
+      directives: [],
+    },
+  ],
+};
+
+export const queryBuilder = (
+  schema: GraphQLSchema,
+  argumentKind: "document" | "documentForSection" = "document"
+) => {
+  const variableDefinitions2 = variableDefinitions[argumentKind];
+  const args2 = args[argumentKind];
+
   let depth = 0;
   let items: string[] = [];
   let accumulator;
@@ -33,29 +158,7 @@ export const queryBuilder = (schema: GraphQLSchema) => {
                   kind: "Name",
                   value: "DocumentQuery",
                 },
-                variableDefinitions: [
-                  {
-                    kind: "VariableDefinition",
-                    variable: {
-                      kind: "Variable",
-                      name: {
-                        kind: "Name",
-                        value: "path",
-                      },
-                    },
-                    type: {
-                      kind: "NonNullType",
-                      type: {
-                        kind: "NamedType",
-                        name: {
-                          kind: "Name",
-                          value: "String",
-                        },
-                      },
-                    },
-                    directives: [],
-                  },
-                ],
+                variableDefinitions: variableDefinitions2,
                 directives: [],
                 selectionSet: {
                   kind: "SelectionSet",
@@ -64,24 +167,9 @@ export const queryBuilder = (schema: GraphQLSchema) => {
                       kind: "Field",
                       name: {
                         kind: "Name",
-                        value: "document",
+                        value: argumentKind,
                       },
-                      arguments: [
-                        {
-                          kind: "Argument",
-                          name: {
-                            kind: "Name",
-                            value: "path",
-                          },
-                          value: {
-                            kind: "Variable",
-                            name: {
-                              kind: "Name",
-                              value: "path",
-                            },
-                          },
-                        },
-                      ],
+                      arguments: args2,
                       selectionSet: {
                         kind: "SelectionSet",
                         selections: [

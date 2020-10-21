@@ -9,18 +9,19 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = await getSlugs({ template });
   return {
     paths: slugs.map((slug) => {
-      return { params: { slug: slug } };
+      return { params: { slug } };
     }),
     fallback: true,
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  return { props: await getContent({ template, params }) };
+export const getStaticProps: GetStaticProps = async (props) => {
+  const response = await getContent({ template, params: props.params });
+  return { props: response };
 };
 
 const Home = (props) => {
-  const data = useForestryForm2(props.response.document);
+  const data = useForestryForm2(props.documentForSection);
 
   return (
     <>

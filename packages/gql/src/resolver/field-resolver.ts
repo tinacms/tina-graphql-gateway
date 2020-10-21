@@ -218,6 +218,65 @@ export const resolver: Resolver = {
     const value = source[info.fieldName];
     const { datasource } = context;
 
+    if (info.fieldName === "documentForSection") {
+      assertIsDocumentForSectionArgs(args);
+      const documents = await context.datasource.getDocumentsForSection(
+        args.section
+      );
+      const section = await context.datasource.getSettingsForSection(
+        args.section
+      );
+
+      const documentItem = documents.find((documentPath) => {
+        return documentPath === `${section.path}/${args.relativePath}`;
+      });
+
+      const document = await resolver.documentObject({
+        args: { path: documentItem },
+        datasource,
+      });
+
+      const relativePath = documentItem.replace(`${section.path}/`, "");
+
+      return {
+        ...document,
+        // FIXME: this should be added in the documentObject function so it's present everywhere
+        relativePath,
+        breadcrumbs: relativePath
+          .split("/")
+          .map((item) => item.replace(document.extension, "")),
+      };
+    }
+    if (info.fieldName === "documentListBySection") {
+      assertIsDocumentSection(args);
+
+      const documents = await context.datasource.getDocumentsForSection(
+        args.section
+      );
+      const section = await context.datasource.getSettingsForSection(
+        args.section
+      );
+
+      // FIXME: this might be better to resolve on-demand, if we only want
+      // the path here we're doing extra work.
+      return await sequential(documents, async (documentPath) => {
+        const document = await resolver.documentObject({
+          args: { path: documentPath },
+          datasource,
+        });
+
+        const relativePath = document.path.replace(`${section.path}/`, "");
+
+        return {
+          ...document,
+          // FIXME: this should be added in the documentObject function so it's present everywhere
+          relativePath,
+          breadcrumbs: relativePath
+            .split("/")
+            .map((item) => item.replace(".md", "")),
+        };
+      });
+    }
     if (info.fieldName === "updateDocument") {
       assertIsDocumentInputArgs(args);
 
@@ -300,10 +359,17 @@ export const resolver: Resolver = {
   documentObject: async ({ args, datasource }) => {
     const { data, content } = await datasource.getData(args);
     const template = await datasource.getTemplateForDocument(args);
+    const { basename, filename, extension } = await datasource.getDocumentMeta(
+      args
+    );
+    // console.log(template);
 
     return {
       __typename: friendlyName(template),
       path: args.path,
+      basename,
+      filename,
+      extension,
       content: "\nSome content\n",
       form: await resolver.documentFormObject(datasource, template),
       data: await resolver.documentDataObject({
@@ -671,6 +737,24 @@ function assertIsDocumentInputArgs(
   }
   if (!args.params || typeof args.params !== "object") {
     throw new Error(`Expected args for input document request`);
+  }
+}
+
+function assertIsDocumentForSectionArgs(
+  args: FieldResolverArgs
+): asserts args is { section: string; relativePath: string } {
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected args for document request`);
+  }
+  if (!args.relativePath || typeof args.relativePath !== "string") {
+    throw new Error(`Expected args for document request`);
+  }
+}
+function assertIsDocumentSection(
+  args: FieldResolverArgs
+): asserts args is { section: string } {
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected args for document request`);
   }
 }
 

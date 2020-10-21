@@ -140,7 +140,7 @@ export const Explorer = ({ pathVariable = "" }: { pathVariable: string }) => {
 
       if (!newState.query) {
         const clientSchema = buildClientSchema(result.data);
-        const query = queryBuilder(clientSchema);
+        const query = queryBuilder(clientSchema, "documentForSection");
         // @ts-ignore for some reason query builder shows no return type
         newState.query = print(query);
       }
