@@ -192,7 +192,7 @@ export const list = {
       | {
           _resolver: "_resource";
           _resolver_kind: "_nested_sources";
-          _args: { paths: string[] };
+          _args: { fullPaths: string[]; section: string };
         }
       | string[]
     > => {
@@ -213,10 +213,14 @@ export const list = {
           list = field as DocumentList;
           throw new Error(`document list not implemented`);
         case "pages":
+          list = field as SectionList;
           return {
             _resolver: "_resource",
             _resolver_kind: "_nested_sources",
-            _args: { paths: value },
+            _args: {
+              fullPaths: value,
+              section: list.config.source.section,
+            },
           };
         case "simple":
           list = field as SimpleList;

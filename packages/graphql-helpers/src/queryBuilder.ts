@@ -20,13 +20,27 @@ const args = {
       kind: "Argument",
       name: {
         kind: "Name",
-        value: "path",
+        value: "relativePath",
       },
       value: {
         kind: "Variable",
         name: {
           kind: "Name",
-          value: "path",
+          value: "relativePath",
+        },
+      },
+    },
+    {
+      kind: "Argument",
+      name: {
+        kind: "Name",
+        value: "section",
+      },
+      value: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "section",
         },
       },
     },
@@ -71,7 +85,28 @@ const variableDefinitions = {
         kind: "Variable",
         name: {
           kind: "Name",
-          value: "path",
+          value: "relativePath",
+        },
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType",
+          name: {
+            kind: "Name",
+            value: "String",
+          },
+        },
+      },
+      directives: [],
+    },
+    {
+      kind: "VariableDefinition",
+      variable: {
+        kind: "Variable",
+        name: {
+          kind: "Name",
+          value: "section",
         },
       },
       type: {

@@ -14,8 +14,14 @@ export type TinaDocument = {
   };
 };
 
+export type UpdateArgs = {
+  relativePath: string;
+  section: string;
+  params: { content?: string; data: object };
+};
 export type DocumentArgs = {
-  path: string;
+  relativePath: string;
+  section: string;
 };
 
 export interface DataSource {
@@ -33,15 +39,15 @@ export interface DataSource {
    * }
    * ```
    */
-  getData: ({ path }: DocumentArgs) => Promise<TinaDocument>;
-  getDocumentMeta: ({
-    path,
-  }: DocumentArgs) => Promise<{
+  getData: (args: DocumentArgs) => Promise<TinaDocument>;
+  getDocumentMeta: (
+    args: DocumentArgs
+  ) => Promise<{
     basename: string;
     extension: string;
     filename: string;
   }>;
-  getTemplateForDocument: ({ path }: DocumentArgs) => Promise<TemplateData>;
+  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
   getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
   getTemplate: (slug: string) => Promise<TemplateData>;
   /**
@@ -72,11 +78,8 @@ export interface DataSource {
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
-  getSectionsSettings: () => Promise<Section[]>;
-  updateDocument: (param: {
-    path: string;
-    params: { content?: string; data: object };
-  }) => Promise<void>;
+  getSectionsSettings: () => Promise<DirectorySection[]>;
+  updateDocument: (param: UpdateArgs) => Promise<void>;
 }
 
 export type DocumentSummary = {

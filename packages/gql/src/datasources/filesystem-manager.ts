@@ -10,12 +10,14 @@ import { FieldGroupListField } from "../fields/field-group-list";
 import { sequential } from "../util";
 
 import type { Field } from "../fields";
-import type { DataSource } from "./datasource";
-import type { Settings, RawTemplate, TemplateData, WithFields } from "../types";
-
-export type DocumentArgs = {
-  path: string;
-};
+import type { DataSource, UpdateArgs, DocumentArgs } from "./datasource";
+import type {
+  Settings,
+  DirectorySection,
+  RawTemplate,
+  TemplateData,
+  WithFields,
+} from "../types";
 
 export class FileSystemManager implements DataSource {
   rootPath: string;
@@ -26,14 +28,13 @@ export class FileSystemManager implements DataSource {
     // of returning cached objects from different projects. This is undocumented behavior
     // but there's an issue for it here https://github.com/jonschlinkert/gray-matter/issues/106
     // There's another library which might be better if we run into trouble with this
-    // https://github.com/jxson/front-matter
+    // https://github.com/jxson/front-matter - or perhaps we should just use remark and
+    // js-yaml
     // @ts-ignore
     matter.clearCache();
   }
 
   getDocumentsForSection = async (sectionSlug?: string) => {
-    const section = await this.getSettingsForSection(sectionSlug);
-
     const templates = await this.getTemplatesForSection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
@@ -50,24 +51,35 @@ export class FileSystemManager implements DataSource {
 
     return data;
   };
-  getSettingsForSection = async (section: string) => {
-    const sectionsSettings = await this.getSectionsSettings(section);
-    return sectionsSettings.find(({ slug }) => slug === section);
+  getSettingsForSection = async (section?: string) => {
+    const sectionsSettings = await this.getSectionsSettings();
+    if (!section) {
+      throw new Error(`No directory sections found`);
+    }
+    const result = sectionsSettings.find(({ slug }) => slug === section);
+
+    if (!result) {
+      throw new Error(`Expected tofind section with slug ${section}`);
+    }
+
+    return result;
   };
-  getSectionsSettings = async (section: string) => {
+  getSectionsSettings = async () => {
     const data = await this.getSettingsData();
 
-    const sections = data.sections.map((section) => {
-      return {
-        ...section,
-        // Pretty sure this is how we define 'section' values in list/select fields
-        // probably needs to be tested thoroughly to ensure the slugify function works
-        // as it does in Forestry
-        slug: slugify(section.label),
-      };
-    });
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          // Pretty sure this is how we define 'section' values in list/select fields
+          // probably needs to be tested thoroughly to ensure the slugify function works
+          // as it does in Forestry
+          slug: slugify(section.label),
+        };
+      });
 
-    return sections;
+    return sections as DirectorySection[];
   };
   getTemplatesForSection = async (section?: string) => {
     const data = await this.getSettingsData();
@@ -100,14 +112,20 @@ export class FileSystemManager implements DataSource {
       return await this.getTemplate(templateBasename.replace(".yml", ""));
     });
   };
-  getDocumentMeta = async ({ path }: DocumentArgs) => {
-    const fullPath = p.join(this.rootPath, path);
+  getDocumentMeta = async (args: DocumentArgs) => {
+    const fullPath = p.join(this.rootPath, args.relativePath);
     const basename = p.basename(fullPath);
     const extension = p.extname(fullPath);
     return { basename, filename: basename.replace(extension, ""), extension };
   };
-  getData = async ({ path }: DocumentArgs) => {
-    const fullPath = p.join(this.rootPath, path);
+  getData = async ({ relativePath, section }: DocumentArgs) => {
+    const sectionData = await this.getSettingsForSection(section);
+
+    if (!sectionData) {
+      throw new Error(`No section found for ${section}`);
+    }
+
+    const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
     const res = await fs.readFileSync(fullPath).toString();
     const { content, data } = matter(res);
 
@@ -117,13 +135,17 @@ export class FileSystemManager implements DataSource {
     };
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
+    const sectionData = await this.getSettingsForSection(args.section);
+    if (!sectionData) {
+      throw new Error(`No section found for ${args.section}`);
+    }
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const templates = await fs.readdirSync(fullPath);
     const template = (
       await sequential(templates, async (template) => {
         const data = await this.getTemplate(template.replace(".yml", ""));
 
-        if (data.pages?.includes(args.path)) {
+        if (data.pages?.includes(p.join(sectionData.path, args.relativePath))) {
           return data;
         } else {
           return false;
@@ -132,7 +154,9 @@ export class FileSystemManager implements DataSource {
     ).filter(Boolean)[0];
 
     if (!template) {
-      throw new Error(`Unable to find template for document ${args.path}`);
+      throw new Error(
+        `Unable to find template for document ${args.relativePath}`
+      );
     }
 
     return template;
@@ -150,14 +174,13 @@ export class FileSystemManager implements DataSource {
 
     return namespaceFields({ name: slug, ...data });
   };
-  updateDocument = async ({
-    path,
-    params,
-  }: {
-    path: string;
-    params: { content?: string; data: object };
-  }) => {
-    const fullPath = p.join(this.rootPath, path);
+  updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
+    const sectionData = await this.getSettingsForSection(section);
+    if (!sectionData) {
+      throw new Error(`No section found for ${section}`);
+    }
+    const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
+    console.log(fullPath);
     const string = matter.stringify("", params.data);
     await fs.writeFileSync(fullPath, string);
   };
