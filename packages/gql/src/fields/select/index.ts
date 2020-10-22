@@ -95,7 +95,7 @@ export const select = {
           return {
             _resolver: "_resource",
             _resolver_kind: "_nested_source",
-            _args: { path: value },
+            _args: { fullPath: value, section: field.config.source.section },
           };
         case "simple":
           return value;

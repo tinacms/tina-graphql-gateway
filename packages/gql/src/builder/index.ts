@@ -736,6 +736,40 @@ export const builder: Builder = {
     return name;
   },
   schema: async ({ cache }: { cache: Cache }) => {
+    const sectionsObjects = await (
+      await cache.datasource.getSectionsSettings()
+    ).filter((section) => section.type === "directory");
+
+    const sectionSpecificFields = _.flatten(
+      await sequential(
+        sectionsObjects
+          .filter((section) => section.type === "directory")
+          // FIXME: Menu types don't exist - I guess because it has no documents.
+          // Need to make sure we're building all section/template types
+          // regardless of whether it has documents or not (empty is valid)
+          .filter((section) => section.label !== "Menus"),
+        async (section) => {
+          return [
+            gql.field({
+              name: `get${section.label}Document`,
+              type: `${section.label}_DocumentNode`,
+              args: [gql.inputString("relativePath")],
+            }),
+            gql.fieldList({
+              name: `get${section.label}Documents`,
+              type: `${section.label}_DocumentNode`,
+              args: [
+                gql.inputInt("first"),
+                gql.inputString("after"),
+                gql.inputInt("last"),
+                gql.inputString("before"),
+              ],
+            }),
+          ];
+        }
+      )
+    );
+
     const accumulator: Definitions[] = [
       gql.object({
         name: "Query",
@@ -743,14 +777,9 @@ export const builder: Builder = {
           gql.field({
             name: "document",
             type: "DocumentNode",
-            args: [gql.inputString("path")],
-          }),
-          gql.field({
-            name: "documentForSection",
-            // type: "DocumentUnion",
-            type: "DocumentNodeUnion",
             args: [gql.inputString("relativePath"), gql.inputString("section")],
           }),
+          ...sectionSpecificFields,
           gql.fieldList({
             name: "documentList",
             type: "String",
@@ -780,7 +809,8 @@ export const builder: Builder = {
             name: "updateDocument",
             type: "DocumentNode",
             args: [
-              gql.inputString("path"),
+              gql.inputString("relativePath"),
+              gql.inputString("section"),
               gql.inputValue("params", "DocumentInput"),
             ],
           }),

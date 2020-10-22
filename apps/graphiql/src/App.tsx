@@ -53,7 +53,10 @@ const App = () => {
     { label: string; value: string }[]
   >([]);
 
-  const [variables, setVariables] = React.useState<string>({ path: "" });
+  const [variables, setVariables] = React.useState<string>({
+    relativePath: "welcome.md",
+    section: "posts",
+  });
 
   React.useEffect(() => {
     const listProjects = async () => {

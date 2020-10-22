@@ -18,7 +18,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import { sequential } from "../util";
 import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
-import type { TemplateData, TinaTemplateData } from "../types";
+import type { TemplateData, TinaTemplateData, Section } from "../types";
 import type { GraphQLResolveInfo } from "graphql";
 
 export interface Resolver {
@@ -172,7 +172,7 @@ export interface Resolver {
    * See {@link Builder.documentInputObject} for the equivalent builder
    */
   documentInputObject: (params: {
-    args: { path: string };
+    args: { relativePath: string; section: string };
     params: object;
     datasource: DataSource;
   }) => Promise<boolean>;
@@ -194,7 +194,7 @@ export interface Resolver {
    * See {@link Builder.documentObject} for the equivalent builder
    */
   documentObject: (args: {
-    args: { path: string };
+    args: { relativePath?: string; fullPath?: string; section: string };
     datasource: DataSource;
   }) => Promise<unknown>;
   schema: (
@@ -218,35 +218,63 @@ export const resolver: Resolver = {
     const value = source[info.fieldName];
     const { datasource } = context;
 
-    if (info.fieldName === "documentForSection") {
-      assertIsDocumentForSectionArgs(args);
-      const documents = await context.datasource.getDocumentsForSection(
-        args.section
-      );
-      const section = await context.datasource.getSettingsForSection(
-        args.section
-      );
+    /**
+     * Since we don't know what our schema is in the field
+     * resolver (or we don't want to do the work to figure it out
+     * at runtime) - we're splitting the query name apart
+     * this is a half-baked solution - what we should probably
+     * do is build a mapping file at schema build-time:
+     * {
+     *  getPostsDocuments: {
+     *    queryType: 'section',
+     *    section: 'posts',
+     *  }
+     * }
+     *
+     * and store that in .json or cache on the server,
+     * load it here and use that to delegate things to the
+     * appropriate function
+     */
+    if (info.fieldName.startsWith("get")) {
+      if (info.fieldName.endsWith("Document")) {
+        assertIsDocumentForSectionArgs(args);
+        const sectionName = info.fieldName
+          .replace("get", "")
+          .replace("Document", "");
 
-      const documentItem = documents.find((documentPath) => {
-        return documentPath === `${section.path}/${args.relativePath}`;
-      });
+        const { section, documents } = await resolveDocumentsBySectionLabel({
+          label: sectionName,
+          context,
+        });
 
-      const document = await resolver.documentObject({
-        args: { path: documentItem },
-        datasource,
-      });
+        const document = await resolver.documentObject({
+          args: { relativePath: args.relativePath, section: section.slug },
+          datasource,
+        });
 
-      const relativePath = documentItem.replace(`${section.path}/`, "");
+        return document;
+      }
+      if (info.fieldName.endsWith("Documents")) {
+        const sectionName = info.fieldName
+          .replace("get", "")
+          .replace("Documents", "");
 
-      return {
-        ...document,
-        // FIXME: this should be added in the documentObject function so it's present everywhere
-        relativePath,
-        breadcrumbs: relativePath
-          .split("/")
-          .map((item) => item.replace(document.extension, "")),
-      };
+        const { section, documents } = await resolveDocumentsBySectionLabel({
+          label: sectionName,
+          context,
+        });
+
+        return await sequential(documents, async (d) => {
+          const dd = await resolver.documentObject({
+            args: { fullPath: d, section: section.slug },
+            datasource,
+          });
+
+          return dd;
+        });
+      }
     }
+
     if (info.fieldName === "documentListBySection") {
       assertIsDocumentSection(args);
 
@@ -261,20 +289,11 @@ export const resolver: Resolver = {
       // the path here we're doing extra work.
       return await sequential(documents, async (documentPath) => {
         const document = await resolver.documentObject({
-          args: { path: documentPath },
+          args: { fullPath: documentPath, section: section.slug },
           datasource,
         });
 
-        const relativePath = document.path.replace(`${section.path}/`, "");
-
-        return {
-          ...document,
-          // FIXME: this should be added in the documentObject function so it's present everywhere
-          relativePath,
-          breadcrumbs: relativePath
-            .split("/")
-            .map((item) => item.replace(".md", "")),
-        };
+        return document;
       });
     }
     if (info.fieldName === "updateDocument") {
@@ -304,11 +323,18 @@ export const resolver: Resolver = {
     if (isDocumentField(value)) {
       switch (value._resolver_kind) {
         case "_initial":
-          if (!args.path || typeof args.path !== "string") {
+          if (!args.relativePath || typeof args.relativePath !== "string") {
+            throw new Error(`Expected args for initial document request`);
+          }
+          if (!args.section || typeof args.section !== "string") {
             throw new Error(`Expected args for initial document request`);
           }
           return resolver.documentObject({
-            args: { path: args.path, ...args },
+            args: {
+              relativePath: args.relativePath,
+              section: args.section,
+              ...args,
+            },
             datasource,
           });
         case "_nested_source":
@@ -317,9 +343,9 @@ export const resolver: Resolver = {
             datasource,
           });
         case "_nested_sources":
-          return await sequential(value._args.paths, async (p) => {
+          return await sequential(value._args.fullPaths, async (p) => {
             return await resolver.documentObject({
-              args: { path: p, ...args },
+              args: { fullPath: p, section: value._args.section, ...args },
               datasource,
             });
           });
@@ -357,15 +383,26 @@ export const resolver: Resolver = {
     }
   },
   documentObject: async ({ args, datasource }) => {
-    const { data, content } = await datasource.getData(args);
-    const template = await datasource.getTemplateForDocument(args);
+    const sectionData = await datasource.getSettingsForSection(args.section);
+    const relativePath = args.fullPath
+      ? args.fullPath.replace(sectionData.path, "")
+      : args.relativePath;
+    if (!relativePath) {
+      throw new Error(`Expected either relativePath or fullPath arguments`);
+    }
+    const realArgs = { relativePath, section: args.section };
+    const { data, content } = await datasource.getData(realArgs);
+    const template = await datasource.getTemplateForDocument(realArgs);
     const { basename, filename, extension } = await datasource.getDocumentMeta(
-      args
+      realArgs
     );
-    // console.log(template);
 
     return {
-      path: args.path,
+      path: null,
+      relativePath,
+      breadcrumbs: relativePath
+        .split("/")
+        .map((item) => item.replace(extension, "")),
       basename,
       filename,
       extension,
@@ -508,7 +545,7 @@ export const resolver: Resolver = {
       data: value,
       content: "", // TODO: Implement me
     };
-    await datasource.updateDocument({ path: args.path, params: payload });
+    await datasource.updateDocument({ ...args, params: payload });
 
     return true;
   },
@@ -680,6 +717,26 @@ export type ContextT = {
   datasource: DataSource;
 };
 
+const resolveDocumentsBySectionLabel = async ({
+  label,
+  context,
+}: {
+  label: String;
+  context: ContextT;
+}) => {
+  const sections = await context.datasource.getSectionsSettings();
+  const section = sections.find((section) => section.label === label);
+
+  if (!section) {
+    throw new Error(`Expected to find section with label ${label}`);
+  }
+
+  return {
+    section,
+    documents: await context.datasource.getDocumentsForSection(section.slug),
+  };
+};
+
 type FieldResolverArgs = { [argName: string]: unknown };
 
 /**
@@ -697,12 +754,12 @@ export type InitialSource =
   | {
       _resolver: "_resource";
       _resolver_kind: "_nested_source";
-      _args: { path: string };
+      _args: { fullPath: string; section: string };
     }
   | {
       _resolver: "_resource";
       _resolver_kind: "_nested_sources";
-      _args: { paths: string[] };
+      _args: { fullPaths: string[]; section: string };
     };
 
 type FieldResolverSource = {
@@ -733,9 +790,12 @@ function isEnrichedValue(
 
 function assertIsDocumentInputArgs(
   args: FieldResolverArgs
-): asserts args is { path: string; params: object } {
-  if (!args.path || typeof args.path !== "string") {
-    throw new Error(`Expected args for input document request`);
+): asserts args is { relativePath: string; section: string; params: object } {
+  if (!args.relativePath || typeof args.relativePath !== "string") {
+    throw new Error(`Expected relativePath for input document request`);
+  }
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected section for input document request`);
   }
   if (!args.params || typeof args.params !== "object") {
     throw new Error(`Expected args for input document request`);

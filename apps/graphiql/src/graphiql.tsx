@@ -26,7 +26,7 @@ const UseIt = ({
   formConfig: any;
   onSubmit: (values: any) => void;
 }) => {
-  useForestryForm(formConfig, {
+  useForestryForm(formConfig.node, {
     onSubmit: (values, transformedValues) => {
       onSubmit(transformedValues);
     },
@@ -35,7 +35,12 @@ const UseIt = ({
   return <div />;
 };
 
-export const Explorer = (variables: { variables: any } = { path: "" }) => {
+export const Explorer = (
+  variables: { variables: any } = {
+    relativePath: "welcome.md",
+    section: "posts",
+  }
+) => {
   let { project } = useParams();
   const [vars, setVars] = React.useState();
   React.useEffect(() => {
@@ -44,7 +49,7 @@ export const Explorer = (variables: { variables: any } = { path: "" }) => {
   const [state, setState] = React.useState({
     schema: null,
     query: null,
-    // variables: JSON.stringify({ path: "posts/1.md" }, null, 2),
+    // variables: JSON.stringify({ relativePath: "welcome.md", section: "posts" }, null, 2),
     explorerIsOpen: false,
     codeExporterIsOpen: false,
   });
@@ -82,11 +87,15 @@ export const Explorer = (variables: { variables: any } = { path: "" }) => {
   const _graphiql = React.useRef();
 
   const setVariables = (values) => {
-    setVars({ path: vars.path, params: values });
+    setVars({
+      relativePath: vars.relativePath,
+      section: vars.section,
+      params: values,
+    });
     setState({
       ...state,
-      query: `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
-  updateDocument(path: $path, params: $params) {
+      query: `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
+  updateDocument(relativePath: $relativePath, section: $section, params: $params) {
     __typename
   }
 }`,
@@ -113,7 +122,8 @@ export const Explorer = (variables: { variables: any } = { path: "" }) => {
 
         if (!newState.query) {
           const clientSchema = buildClientSchema(result.data);
-          const query = queryBuilder(clientSchema, "documentForSection");
+          // const query = queryBuilder(clientSchema, "documentForSection");
+          const query = queryBuilder(clientSchema);
           // @ts-ignore for some reason query builder shows no return type
           newState.query = print(query);
         }
