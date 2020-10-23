@@ -1,76 +1,11 @@
-import {
-  FileSystemManager,
-  buildSchema as buildForestrySchema,
-} from "@forestryio/graphql";
-
-import cors from "cors";
-import express from "express";
-import { graphqlHTTP } from "express-graphql";
-import { successText } from "../../utils/theme";
-
-const GRAPHQL_ENDPOINT = "/api/graphql";
+// @ts-ignore
+import { startServer as gqlStartServer } from "@forestryio/gql";
 
 interface Options {
   port?: number;
 }
 
-var allowlist = ["http://localhost:3000/"];
-var corsOptionsDelegate = function (req, callback) {
-  var corsOptions;
-  if (allowlist.indexOf(req.header("Origin")) !== -1) {
-    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false }; // disable CORS for this request
-  }
-  callback(null, corsOptions); // callback expects two parameters: error and options
-};
-
 export async function startServer(_ctx, _next, { port = 4001 }: Options) {
-  const app = express();
-
-  const rootPath = process.cwd();
-  const forestryConfig = {
-    serverURL: `http://localhost:${port}/api/graphql`,
-    rootPath,
-    siteLookup: "",
-  };
-  const dataSource = new FileSystemManager(forestryConfig.rootPath);
-
-  app.use(
-    GRAPHQL_ENDPOINT,
-    cors(),
-    graphqlHTTP(async () => {
-      // FIXME: this should probably come from the request, or
-      // maybe in the case of the ElasticManager it's not necessary?
-      const config = {
-        rootPath: "",
-        siteLookup: "qms5qlc0jk1o9g",
-      };
-      const {
-        schema,
-        updateDocumentMutation,
-        addDocumentMutation,
-        deleteDocumentMutation,
-      } = await buildForestrySchema(config, dataSource);
-
-      return {
-        schema,
-        rootValue: {
-          updateDocument: updateDocumentMutation,
-          addDocument: addDocumentMutation,
-          deleteDocument: deleteDocumentMutation,
-        },
-        context: { dataSource },
-        graphiql: true,
-      };
-    })
-  );
-
-  app.listen(port);
-
-  const baseURL = `http://localhost:${port}`;
-
-  console.log(
-    `Graphql server ready at: ${successText(baseURL + GRAPHQL_ENDPOINT)}`
-  );
+  // @ts-ignore
+  await gqlStartServer({ port });
 }

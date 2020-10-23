@@ -32,6 +32,7 @@
     "generate:schema": "yarn node scripts/generateSchema.js"
   },
   "dependencies": {
+    "@forestryio/gql": "workspace:packages/gql",
     "@forestryio/graphql": "workspace:packages/graphql",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.17.0",

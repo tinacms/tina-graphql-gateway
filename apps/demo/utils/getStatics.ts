@@ -11,7 +11,7 @@ export const getSlugs = async ({ template }) => {
 export const getContent = async ({ template, params }) => {
   const relativePath = `${params.slug.join("/")}.md`;
   const section = template;
-  const meh = {
+  return {
     ...(await client.getContentForSection<DocumentUnion>({
       relativePath,
       section,
@@ -19,6 +19,4 @@ export const getContent = async ({ template, params }) => {
     relativePath,
     section,
   };
-
-  return meh;
 };
