@@ -2112,6 +2112,7 @@ __metadata:
   resolution: "@forestryio/cli@workspace:packages/cli"
   dependencies:
     "@forestryio/build": "workspace:packages/build"
+    "@forestryio/gql": "workspace:packages/gql"
     "@forestryio/graphql": "workspace:packages/graphql"
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@graphql-codegen/core": ^1.17.0
@@ -2256,7 +2257,7 @@ __metadata:
     ws: ^7.3.1
     yup: ^0.29.3
   bin:
-    "forestry:serve": ./dist/index.js
+    "forestry:serve": ./dist/serve.js
   languageName: unknown
   linkType: soft
 

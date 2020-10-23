@@ -22,7 +22,7 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_GQL_SERVER = "http://localhost:4000/demo";
+const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/graphql";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
 
 interface ServerOptions {
