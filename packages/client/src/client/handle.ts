@@ -1,4 +1,4 @@
-import { friendlyName } from "@forestryio/graphql-helpers";
+import { friendlyName, templateName } from "@forestryio/graphql-helpers";
 import type { Field } from "tinacms";
 
 const handleInner = (values, field: Field & { fields: Field[] }) => {
@@ -21,7 +21,7 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
         acc[friendlyName(template, "InputData")] = {
-          template: v._template,
+          template: templateName(v._template),
           ...handleData(v, template),
         };
 
