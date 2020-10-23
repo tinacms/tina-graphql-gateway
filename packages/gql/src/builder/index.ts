@@ -813,6 +813,11 @@ export const builder: Builder = {
             name: "getSections",
             type: "SectionUnion",
           }),
+          gql.field({
+            name: "getSection",
+            type: "SectionUnion",
+            args: [gql.inputString("section")],
+          }),
           gql.fieldList({
             name: "documentList",
             type: "String",
@@ -845,6 +850,15 @@ export const builder: Builder = {
               gql.inputString("relativePath"),
               gql.inputString("section"),
               gql.inputValue("params", "DocumentInput"),
+            ],
+          }),
+          gql.field({
+            name: "addPendingDocument",
+            type: "DocumentNode",
+            args: [
+              gql.inputString("relativePath"),
+              gql.inputString("section"),
+              gql.inputString("template"),
             ],
           }),
         ],

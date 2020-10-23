@@ -1,66 +1,40 @@
 import { AddContentPlugin, Field, TinaCMS } from "tinacms";
 
-interface CreateContentButtonOptions<FormShape, FrontmatterShape> {
+interface CreateContentButtonOptions<FormShape> {
   label: string;
-  fields: AnyField[];
-  filename(form: FormShape): MaybePromise<string>;
-  frontmatter?(form: FormShape): MaybePromise<FrontmatterShape>;
-  body?(form: FormShape): MaybePromise<string>;
+  fields: any[];
+  section: string;
 }
 
-type MaybePromise<T> = Promise<T> | T;
-
-interface AnyField extends Field {
-  [key: string]: any;
-}
-
-const MISSING_FILENAME_MESSAGE = "No filename supplied";
-const MISSING_FIELDS_MESSAGE = "No fields supplied";
-
-export class ContentCreatorPlugin<FormShape = any, FrontmatterShape = any>
-  implements AddContentPlugin<FormShape> {
+export class ContentCreatorPlugin<
+  FormShape = { filename: string; template: string }
+> implements AddContentPlugin<FormShape> {
   __type: "content-creator" = "content-creator";
   fields: AddContentPlugin<FormShape>["fields"];
+  section: string;
 
   name: string;
 
-  // Implementation Specific
-  filename: (form: FormShape) => MaybePromise<string>;
-  frontmatter: (form: FormShape) => MaybePromise<FrontmatterShape>;
-  body: (form: any) => MaybePromise<string>;
-
-  constructor(
-    options: CreateContentButtonOptions<FormShape, FrontmatterShape>
-  ) {
-    if (!options.filename) {
-      console.error("No filename supplied");
-      throw new Error(MISSING_FILENAME_MESSAGE);
-    }
-
-    if (!options.fields || options.fields.length === 0) {
-      console.error(MISSING_FIELDS_MESSAGE);
-      throw new Error(MISSING_FIELDS_MESSAGE);
-    }
-
+  constructor(options: CreateContentButtonOptions<FormShape>) {
     this.fields = options.fields;
-    this.filename = options.filename;
-    this.frontmatter = options.frontmatter || (() => ({} as FrontmatterShape));
-    this.body = options.body || (() => "");
+    this.section = options.section;
     this.name = options.label;
   }
 
   async onSubmit(form: FormShape, cms: TinaCMS) {
-    const fileRelativePath = await this.filename(form);
+    const payload = {
+      // @ts-ignore
+      relativePath: form.filename,
+      section: this.section,
+      // @ts-ignore
+      template: form.template,
+    };
+    const res = await cms.api.forestry.addPendingContent(payload);
 
-    await cms.api.forestry.addContent({
-      path: fileRelativePath,
-      template: "block-page",
-      payload: {
-        title: this.name,
-        blocks: [],
-      },
-    });
+    const redirectURL = `/${
+      this.section
+    }/${res.addPendingDocument.breadcrumbs.join("/")}`;
 
-    window.location.href = fileRelativePath.split("pages/")[1].split(".")[0];
+    window.location.href = redirectURL;
   }
 }
