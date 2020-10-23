@@ -1,6 +1,6 @@
 ---
 title: Dreams on Hold
-author: content/authors/emily.md
-image: /uploads/dreams-on-hold.jpg
+author: content/authors/eric.md
+image: Screen Shot 2020-10-15 at 12.36.53 PM.png
 ---
 
