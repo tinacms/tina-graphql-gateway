@@ -26,11 +26,12 @@ const UseIt = ({
   formConfig: any;
   onSubmit: (values: any) => void;
 }) => {
-  useForestryForm(formConfig.node, {
-    onSubmit: (values, transformedValues) => {
-      onSubmit(transformedValues);
-    },
-  });
+  console.log(formConfig.node);
+  // useForestryForm(formConfig.node, {
+  //   onSubmit: (values, transformedValues) => {
+  //     onSubmit(transformedValues);
+  //   },
+  // });
 
   return <div />;
 };

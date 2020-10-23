@@ -26,34 +26,55 @@ export const Sidebar = ({
 }: {
   projects: Project[];
   items?: Item[];
-  onFileSelect: (path: string) => void;
+  onFileSelect: (args: { relativePath: string; section: string }) => void;
 }) => {
-  let { project } = useParams();
+  const { project } = useParams();
 
-  const [documents, setDocuments] = React.useState<
-    { name: string; files: string[] }[]
+  // React.useEffect(() => {
+  //   setSections([]);
+  //   setActiveDocument(null);
+  // }, [project]);
+
+  const [sections, setSections] = React.useState<
+    {
+      slug: string;
+      documents: { relativePath: string; breadcrumbs: string[] }[];
+    }[]
   >([]);
 
-  const [activeDocument, setActiveDocument] = React.useState({
-    folder: "posts",
-    file: "",
-  });
+  const [activeDocument, setActiveDocument] = React.useState<{
+    relativePath: string;
+    section: string;
+  } | null>(null);
+
+  React.useEffect(() => {
+    if (activeDocument) {
+      onFileSelect(activeDocument);
+    }
+  }, [activeDocument]);
+
+  React.useEffect(() => {
+    if (sections.length > 0) {
+      setActiveDocument({
+        relativePath: sections[0].documents[0].relativePath,
+        section: sections[0].slug,
+      });
+    }
+  }, [sections]);
 
   const cms = useCMS();
 
   React.useEffect(() => {
-    const listDocuments = async () => {
+    const listSections = async () => {
       try {
-        const result2 = await cms.api.forestry.listDocumentsBySection({
-          section: "posts",
-        });
-        setDocuments([{ name: "posts", files: result2 }]);
+        const result2 = await cms.api.forestry.listSections();
+        setSections(result2);
       } catch (e) {
         console.log(e);
       }
     };
-    listDocuments();
-  }, []);
+    listSections();
+  }, [project]);
 
   const [_, send, classNames] = useToggleMachine({
     outerClasses: {
@@ -266,21 +287,20 @@ export const Sidebar = ({
           <div className="h-0 flex-1 flex flex-col overflow-y-auto">
             <nav className="flex-1 px-2 bg-gray-800 pt-2">
               <div>
-                {documents.map((documentFolder) => {
+                {sections.map((section) => {
                   return (
                     <>
                       <button
-                        onClick={() =>
-                          setActiveDocument({
-                            folder:
-                              activeDocument.folder === documentFolder.name
-                                ? ""
-                                : documentFolder.name,
-                            file: activeDocument.file,
-                          })
-                        }
+                        onClick={() => {
+                          activeDocument?.section === section.slug
+                            ? setActiveDocument(null)
+                            : setActiveDocument({
+                                relativePath: "",
+                                section: section.slug,
+                              });
+                        }}
                         className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${
-                          activeDocument.folder === documentFolder.name
+                          activeDocument?.section === section.slug
                             ? "bg-gray-600"
                             : ""
                         }`}
@@ -292,28 +312,28 @@ export const Sidebar = ({
                         >
                           <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
                         </svg>
-                        {documentFolder.name}
+                        {section.slug}
                       </button>
                       <div
                         className={`mt-1 space-y-1 ${
-                          activeDocument.folder === documentFolder.name
+                          activeDocument?.section === section.slug
                             ? ""
                             : "hidden"
                         }`}
                       >
-                        {documentFolder.files.map((file) => {
+                        {section.documents.map((document) => {
                           return (
                             <a
                               href="#"
                               onClick={() =>
-                                onFileSelect({
-                                  section: "posts",
-                                  relativePath: file.relativePath,
+                                setActiveDocument({
+                                  relativePath: document.relativePath,
+                                  section: section.slug,
                                 })
                               }
                               className="group w-full flex items-center pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150"
                             >
-                              {file.relativePath}
+                              {document.breadcrumbs.join("/")}
                             </a>
                           );
                         })}

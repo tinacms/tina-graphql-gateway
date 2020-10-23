@@ -18,6 +18,14 @@ fields:
         - CTO
         - COO
         - CFO
+  # - name: favorite_post
+  #   type: select
+  #   config:
+  #     required: false
+  #     source:
+  #       type: pages
+  #       section: posts
+  #   label: Favorite Posts
   - name: anecdotes
     type: list
     config:

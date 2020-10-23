@@ -88,19 +88,33 @@ export class ForestryClient {
 
   listDocumentsBySection = async ({ section }: { section: string }) => {
     const query = `
-    query DocumentsBySectionQuery($section: String!) {
-      documentListBySection(section: $section) {
-        ...on Post {
-          filename
+    query DocumentQuery($section: String!) {
+      documents(section: $section) {
+        relativePath
+        breadcrumbs
+      }
+    }
+    `;
+    const result = await this.request(query, { variables: { section } });
+
+    return result.documents;
+  };
+
+  listSections = async () => {
+    const query = `
+    {
+      getSections {
+        slug
+        documents {
           relativePath
           breadcrumbs
         }
       }
     }
     `;
-    const result = await this.request(query, { variables: { section } });
+    const result = await this.request(query, { variables: {} });
 
-    return result.documentListBySection;
+    return result.getSections;
   };
 
   getContent = async <T>({
