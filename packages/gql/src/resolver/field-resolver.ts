@@ -536,7 +536,7 @@ export const resolver: Resolver = {
 
     return {
       __typename: friendlyName(resolvedTemplate, "InitialValues"),
-      _template: data.template,
+      _template: friendlyName(data.template, "", true),
       ...accum,
     };
   },

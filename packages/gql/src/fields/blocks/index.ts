@@ -226,10 +226,9 @@ export const blocks: Blocks = {
       const templates: { [key: string]: TinaTemplateData } = {};
       await sequential(field.template_types, async (templateSlug) => {
         const template = await datasource.getTemplate(templateSlug);
-        templates[templateSlug] = await resolver.documentFormObject(
-          datasource,
-          template
-        );
+        templates[
+          friendlyName(templateSlug, "", true)
+        ] = await resolver.documentFormObject(datasource, template);
       });
 
       return {

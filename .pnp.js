@@ -4492,6 +4492,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:15.3.0"],
             ["jest", "npm:26.1.0"],
             ["lodash.camelcase", "npm:4.3.0"],
+            ["lodash.kebabcase", "npm:4.1.1"],
+            ["lodash.snakecase", "npm:4.1.1"],
             ["lodash.upperfirst", "npm:4.3.1"],
             ["ts-jest", "virtual:23afd5ce58ee21a819bf3b29aea391fd3a730601309c03ed281fc04a148c1fdc4e77aab651de0c440b09f82700e0985836b951436eb37149b26c567d40a3ac43#npm:26.1.4"],
             ["tslib", "npm:1.13.0"]

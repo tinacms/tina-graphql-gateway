@@ -1,5 +1,9 @@
 import camelCase from "lodash.camelcase";
 import upperFirst from "lodash.upperfirst";
+// @ts-ignore
+import snakecase from "lodash.snakecase";
+// @ts-ignore
+import kebabcase from "lodash.kebabcase";
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const shortFMTName = (path: string) => {
@@ -57,4 +61,8 @@ export const friendlyName2 = (
       return meh;
     }
   }
+};
+
+export const templateName = (string: string) => {
+  return kebabcase(string);
 };
