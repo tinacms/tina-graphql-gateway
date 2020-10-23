@@ -2,6 +2,7 @@ import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 import { authenticate } from "../auth/authenticate";
 import { transformPayload } from "./handle";
+import type { Field } from "tinacms";
 
 interface AddProps {
   url: string;
@@ -78,9 +79,7 @@ export class ForestryClient {
         variables: {},
       });
 
-      this.query = print(
-        queryBuilder(buildClientSchema(data), "documentForSection")
-      );
+      this.query = print(queryBuilder(buildClientSchema(data)));
     }
 
     return this.query;
@@ -91,7 +90,7 @@ export class ForestryClient {
     query DocumentQuery($section: String!) {
       documents(section: $section) {
         relativePath
-        breadcrumbs
+        breadcrumbs(excludeExtension: true)
       }
     }
     `;
@@ -149,37 +148,37 @@ export class ForestryClient {
   };
 
   transformPayload = async ({
-    path,
     payload,
     form,
   }: {
-    path: string;
     payload: any;
-    form: { fields: unknown[] };
+    form: { fields: Field[] };
   }) => {
-    // @ts-ignore
     return transformPayload(payload, form);
   };
 
   updateContent = async ({
-    path,
+    relativePath,
+    section,
     payload,
     form,
   }: {
-    path: string;
+    relativePath: string;
+    section: string;
     payload: any;
-    form: { fields: unknown[] };
+    form: { fields: Field[] };
   }) => {
-    const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
-      updateDocument(path: $path, params: $params) {
+    const mutation = `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
+      updateDocument(relativePath: $relativePath, section: $section, params: $params) {
         __typename
       }
     }`;
-    // @ts-ignore
-    const values = this.transformPayload(payload, form);
+    const values = transformPayload(payload, form);
+    const variables = { relativePath, section, params: values };
 
     await this.request<UpdateVariables>(mutation, {
-      variables: { path: path, params: values },
+      // @ts-ignore
+      variables,
     });
   };
 

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { friendlyName, templateName } from "@forestryio/graphql-helpers";
 import type { Field } from "tinacms";
 

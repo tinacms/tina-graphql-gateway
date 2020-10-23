@@ -20,17 +20,21 @@ import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 
 const UseIt = ({
   formConfig,
+  variables,
   onSubmit,
 }: {
   schema: GraphQLSchema;
   formConfig: any;
   onSubmit: (values: any) => void;
 }) => {
-  useForestryForm(formConfig.node, {
-    onSubmit: (values, transformedValues) => {
-      onSubmit(transformedValues);
-    },
-  });
+  useForestryForm(
+    { document: formConfig, ...variables },
+    {
+      onSubmit: (values, transformedValues) => {
+        onSubmit(transformedValues);
+      },
+    }
+  );
 
   return <div />;
 };
@@ -150,6 +154,7 @@ export const Explorer = (
       {queryResult && (
         <UseIt
           onSubmit={setVariables}
+          variables={variables.variables}
           project={project}
           schema={schema}
           formConfig={queryResult}

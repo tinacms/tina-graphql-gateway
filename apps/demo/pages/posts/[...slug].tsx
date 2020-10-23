@@ -21,7 +21,7 @@ export const getStaticProps: GetStaticProps = async (props) => {
 };
 
 const Home = (props) => {
-  const data = useForestryForm2(props.documentForSection);
+  const data = useForestryForm2(props);
 
   return (
     <>
