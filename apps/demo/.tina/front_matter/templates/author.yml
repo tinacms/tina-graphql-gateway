@@ -1,3 +1,4 @@
+---
 label: Author
 hide_body: false
 display_field: name
@@ -47,3 +48,4 @@ pages:
   - content/authors/jen.md
   - content/authors/nikki.md
   - content/authors/terrence.md
+  - content/authors/nested/author-person.md

@@ -1,3 +1,4 @@
+---
 label: Post
 hide_body: false
 display_field: title
@@ -28,3 +29,4 @@ pages:
   - content/posts/dreams-on-hold.md
   - content/posts/love-more-than-ever.md
   - content/posts/welcome.md
+  - content/posts/nested/hello.md
