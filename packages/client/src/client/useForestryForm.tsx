@@ -2,12 +2,23 @@ import { useCMS, useForm, usePlugin } from "tinacms";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 
 export function useForestryForm<T>(
-  document: any,
+  props: {
+    document: {
+      node: {
+        __typename: string;
+        form: { fields: any[] };
+        data: object;
+        initialValues: object;
+      };
+      relativePath: string;
+      section: string;
+    };
+  },
   options = { onSubmit: null }
 ): T {
   const cms = useCMS();
 
-  const { __typename, path, form, data, initialValues } = document;
+  const { __typename, form, initialValues } = props.document.node;
 
   const [modifiedValues, tinaForm] = useForm({
     id: "tina-tutorial-index",
@@ -32,7 +43,6 @@ export function useForestryForm<T>(
       options && options?.onSubmit
         ? async (values) => {
             const payload = await cms.api.forestry.transformPayload({
-              path: path,
               payload: values,
               form: form,
             });
@@ -40,7 +50,10 @@ export function useForestryForm<T>(
           }
         : async (values) => {
             cms.api.forestry.updateContent({
-              path: path,
+              // @ts-ignore
+              relativePath: props.relativePath,
+              // @ts-ignore
+              section: props.section,
               payload: values,
               form: form,
             });

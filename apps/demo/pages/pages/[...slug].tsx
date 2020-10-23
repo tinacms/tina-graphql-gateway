@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from "next";
-import { useForestryForm } from "@forestryio/client";
+import { useForestryForm2 } from "../../.forestry/types";
 import { getContent, getSlugs } from "../../utils/getStatics";
 
 const template = "pages";
@@ -19,10 +19,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 const Home = (props) => {
-  if (!props.response) {
-    return <div />;
-  }
-  const data = useForestryForm(props.response.document);
+  const data = useForestryForm2(props);
 
   return (
     <pre>
