@@ -26,6 +26,10 @@ const migrateDryRunOption = {
   name: "--dry-run",
   description: "Audit the .forestry config without migrating",
 };
+const subCommand = {
+  name: "-c, --command <command>",
+  description: "The sub-command to run",
+};
 const typescriptOption = {
   name: "--typescript",
   description: "Generate types for the schema",
@@ -60,7 +64,7 @@ export const baseCmds: Command[] = [
   {
     command: CMD_START_SERVER,
     description: "Start Filesystem Graphql Server",
-    options: [startServerPortOption],
+    options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
   },
 ];
