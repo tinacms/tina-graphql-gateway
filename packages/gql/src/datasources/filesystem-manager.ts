@@ -1,7 +1,8 @@
-import fs from "fs";
+import fs from "fs-extra";
 import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
+import * as jsyaml from "js-yaml";
 import { slugify } from "../util";
 
 import { byTypeWorks } from "../types";
@@ -161,7 +162,10 @@ export class FileSystemManager implements DataSource {
 
     return template;
   };
-  getTemplate = async (slug: string) => {
+  getTemplate = async (
+    slug: string,
+    options: { namespace: boolean } = { namespace: true }
+  ) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const templates = await fs.readdirSync(fullPath);
     const template = templates.find((templateBasename) => {
@@ -172,7 +176,27 @@ export class FileSystemManager implements DataSource {
     }
     const { data } = await readFile<RawTemplate>(p.join(fullPath, template));
 
-    return namespaceFields({ name: slug, ...data });
+    if (options.namespace) {
+      return namespaceFields({ name: slug, ...data });
+    } else {
+      return data;
+    }
+  };
+  addDocument = async ({ relativePath, section, template }) => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const sectionData = await this.getSettingsForSection(section);
+    const templateData = await this.getTemplate(template, { namespace: false });
+    if (!sectionData) {
+      throw new Error(`No section found for ${section}`);
+    }
+    const path = p.join(sectionData.path, relativePath);
+    const updatedTemplateData = {
+      ...templateData,
+      pages: [...(templateData.pages ? templateData.pages : []), path],
+    };
+    await fs.outputFile(p.join(this.rootPath, path), "---");
+    const string = "---\n" + jsyaml.dump(updatedTemplateData);
+    await fs.outputFile(p.join(fullPath, `${template}.yml`), string);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
@@ -180,9 +204,8 @@ export class FileSystemManager implements DataSource {
       throw new Error(`No section found for ${section}`);
     }
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
-    console.log(fullPath);
     const string = matter.stringify("", params.data);
-    await fs.writeFileSync(fullPath, string);
+    await fs.outputFile(fullPath, string);
   };
 }
 

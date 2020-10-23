@@ -176,6 +176,10 @@ export interface Resolver {
     params: object;
     datasource: DataSource;
   }) => Promise<boolean>;
+  pendingDocumentInputObject: (params: {
+    args: { relativePath: string; section: string };
+    datasource: DataSource;
+  }) => Promise<boolean>;
   /**
    *
    * The top-level return value
@@ -240,6 +244,17 @@ export const resolver: Resolver = {
           },
         };
       });
+    }
+    if (info.fieldName === "getSection") {
+      let section = await context.datasource.getSettingsForSection(
+        args.section
+      );
+      return {
+        ...section,
+        documents: {
+          _section: section.slug,
+        },
+      };
     }
     if (info.fieldName === "documents") {
       let sections = await context.datasource.getSectionsSettings();
@@ -360,6 +375,18 @@ export const resolver: Resolver = {
       await resolver.documentInputObject({
         args: args,
         params: args.params,
+        datasource,
+      });
+      return await resolver.documentObject({
+        args: args,
+        datasource,
+      });
+    }
+    if (info.fieldName === "addPendingDocument") {
+      assertIsPendingDocumentInputArgs(args);
+
+      await resolver.pendingDocumentInputObject({
+        args: args,
         datasource,
       });
       return await resolver.documentObject({
@@ -580,6 +607,14 @@ export const resolver: Resolver = {
       });
     });
     return accum;
+  },
+  pendingDocumentInputObject: async ({
+    args,
+    datasource,
+  }): Promise<boolean> => {
+    await datasource.addDocument(args);
+
+    return true;
   },
   documentInputObject: async ({
     args,
@@ -844,6 +879,19 @@ function isEnrichedValue(
   return false;
 }
 
+function assertIsPendingDocumentInputArgs(
+  args: FieldResolverArgs
+): asserts args is { relativePath: string; section: string; params: object } {
+  if (!args.relativePath || typeof args.relativePath !== "string") {
+    throw new Error(`Expected relativePath for input document request`);
+  }
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected section for input document request`);
+  }
+  if (!args.template || typeof args.template !== "string") {
+    throw new Error(`Expected args for input document request`);
+  }
+}
 function assertIsDocumentInputArgs(
   args: FieldResolverArgs
 ): asserts args is { relativePath: string; section: string; params: object } {

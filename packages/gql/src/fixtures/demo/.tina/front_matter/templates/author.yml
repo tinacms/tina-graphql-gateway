@@ -48,3 +48,4 @@ pages:
   - content/authors/jen.md
   - content/authors/nikki.md
   - content/authors/terrence.md
+  - content/authors/nested/author-person.md

@@ -62,6 +62,23 @@ export class ForestryClient {
     });
   };
 
+  addPendingContent = async (props) => {
+    const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $section: String!) {
+      addPendingDocument(relativePath: $relativePath, template: $template, section: $section) {
+        path
+        relativePath
+        breadcrumbs(excludeExtension: true)
+        filename
+      }
+    }`;
+
+    const result = await this.request<AddVariables>(mutation, {
+      variables: props,
+    });
+
+    return result;
+  };
+
   getQuery = async () => {
     if (!this.query) {
       const data = await this.request(getIntrospectionQuery(), {

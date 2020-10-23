@@ -1,3 +1,4 @@
+import React from "react";
 import { useCMS, useForm, usePlugin } from "tinacms";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 
@@ -10,9 +11,9 @@ export function useForestryForm<T>(
         data: object;
         initialValues: object;
       };
-      relativePath: string;
-      section: string;
     };
+    relativePath: string;
+    section: string;
   },
   options = { onSubmit: null }
 ): T {
@@ -50,9 +51,7 @@ export function useForestryForm<T>(
           }
         : async (values) => {
             cms.api.forestry.updateContent({
-              // @ts-ignore
               relativePath: props.relativePath,
-              // @ts-ignore
               section: props.section,
               payload: values,
               form: form,
@@ -60,26 +59,66 @@ export function useForestryForm<T>(
           },
   });
 
-  const createPagePlugin = new ContentCreatorPlugin({
-    label: "Add Page",
-    fields: [
-      { name: "title", label: "Title", component: "text", required: true },
-    ],
-    filename: ({ title }) => {
-      return `content/posts/${title.replace(/\s+/, "-").toLowerCase()}.md`;
-    },
-    body: () => ``,
-    frontmatter: ({ title }) => {
-      //remove any other dirs from the title, return only filename
-      const id = `/posts/${title.replace(/\s+/, "-").toLowerCase()}`;
-      return {
-        title,
-        id,
-        prev: null,
-        next: null,
-      };
-    },
-  });
+  const [createPagePlugin, setCreatePagePlugin] = React.useState(
+    new ContentCreatorPlugin({
+      label: `Add ${props.section}`,
+      fields: [
+        {
+          name: "filename",
+          label: "filename",
+          component: "text",
+          description: "This can be a pathname relative to your section config",
+          required: true,
+        },
+      ],
+      section: props.section,
+    })
+  );
+  React.useEffect(() => {
+    const getSectionData = async () => {
+      const sectionData = await cms.api.forestry.request(
+        `
+        query SectionQuery($section: String!) {
+          getSection(section: $section) {
+            type
+            path
+            templates
+            create
+          }
+        }
+      `,
+        {
+          variables: { section: props.section },
+        }
+      );
+      const s = sectionData.getSection;
+      const createPagePlugin = new ContentCreatorPlugin({
+        label: `Add ${props.section}`,
+        fields: [
+          {
+            name: "filename",
+            label: "Filename",
+            component: "text",
+            description: `The value after your section directory - ${s.path}`,
+            required: true,
+          },
+          {
+            name: "template",
+            label: "Template",
+            component: "select",
+            // FIXME: this shouldn't require selection but it
+            // does because we aren't able to add initial values
+            options: ["", ...s.templates],
+            required: true,
+          },
+        ],
+        section: props.section,
+      });
+      setCreatePagePlugin(createPagePlugin);
+    };
+
+    getSectionData();
+  }, [props.section]);
 
   usePlugin(createPagePlugin);
   usePlugin(tinaForm);
