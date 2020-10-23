@@ -31,5 +31,4 @@ fields:
         label: Description
 
 pages:
-  - authors/marge.md
   - authors/homer.md

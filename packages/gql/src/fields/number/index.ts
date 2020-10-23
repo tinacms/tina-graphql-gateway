@@ -1,6 +1,6 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs, assertIsString } from "../";
+import { BuildArgs, ResolveArgs, assertIsNumber } from "../";
 
 export const number = {
   build: {
@@ -46,17 +46,17 @@ export const number = {
     initialValue: async ({
       value,
     }: ResolveArgs<NumberField>): Promise<string> => {
-      assertIsString(value, { source: "number field" });
+      assertIsNumber(value, { source: "number field initial value" });
 
       return value;
     },
     value: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
-      assertIsString(value, { source: "number field" });
+      assertIsNumber(value, { source: "number field value" });
 
       return value;
     },
     input: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
-      assertIsString(value, { source: "number field" });
+      assertIsNumber(value, { source: "number field input" });
 
       return value;
     },

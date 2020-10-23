@@ -352,6 +352,12 @@ export interface Builder {
     /** If no section is provided, this is the top-level document field */
     section?: string;
   }) => Promise<DocumentNode>;
+  sectionUnion: (args: {
+    cache: Cache;
+    section?: string;
+    accumulator: Definitions[];
+    build?: boolean;
+  }) => Promise<string>;
 }
 
 /**
@@ -647,7 +653,11 @@ export const builder: Builder = {
         fields: [
           gql.field({ name: "path", type: "String" }),
           gql.field({ name: "relativePath", type: "String" }),
-          gql.fieldList({ name: "breadcrumbs", type: "String" }),
+          gql.fieldList({
+            name: "breadcrumbs",
+            type: "String",
+            args: [gql.inputBoolean("excludeExtension")],
+          }),
           gql.field({ name: "basename", type: "String" }),
           gql.field({ name: "extension", type: "String" }),
           gql.field({ name: "filename", type: "String" }),
@@ -679,7 +689,11 @@ export const builder: Builder = {
         fields: [
           gql.field({ name: "path", type: "String" }),
           gql.field({ name: "relativePath", type: "String" }),
-          gql.fieldList({ name: "breadcrumbs", type: "String" }),
+          gql.fieldList({
+            name: "breadcrumbs",
+            type: "String",
+            args: [gql.inputBoolean("excludeExtension")],
+          }),
           gql.field({ name: "basename", type: "String" }),
           gql.field({ name: "extension", type: "String" }),
           gql.field({ name: "filename", type: "String" }),
@@ -740,46 +754,65 @@ export const builder: Builder = {
       await cache.datasource.getSectionsSettings()
     ).filter((section) => section.type === "directory");
 
-    const sectionSpecificFields = _.flatten(
+    const sectionSpecificFields: {
+      objects: Definitions[];
+      fields: FieldDefinitionNode[];
+    }[] = _.flatten(
       await sequential(
-        sectionsObjects
-          .filter((section) => section.type === "directory")
-          // FIXME: Menu types don't exist - I guess because it has no documents.
-          // Need to make sure we're building all section/template types
-          // regardless of whether it has documents or not (empty is valid)
-          .filter((section) => section.label !== "Menus"),
+        sectionsObjects.filter((section) => section.type === "directory"),
         async (section) => {
-          return [
-            gql.field({
-              name: `get${section.label}Document`,
-              type: `${section.label}_DocumentNode`,
-              args: [gql.inputString("relativePath")],
-            }),
-            gql.fieldList({
-              name: `get${section.label}Documents`,
-              type: `${section.label}_DocumentNode`,
-              args: [
-                gql.inputInt("first"),
-                gql.inputString("after"),
-                gql.inputInt("last"),
-                gql.inputString("before"),
-              ],
-            }),
-          ];
+          const accum: Definitions[] = [];
+          const meh = await builder.documentUnion({
+            cache,
+            accumulator: accum,
+            section: section.slug,
+            build: false,
+          });
+
+          return {
+            objects: accum,
+            fields: [
+              gql.field({
+                name: `get${section.label}Document`,
+                type: meh,
+                args: [gql.inputString("relativePath")],
+              }),
+              gql.fieldList({
+                name: `get${section.label}Documents`,
+                type: meh,
+                args: [
+                  gql.inputInt("first"),
+                  gql.inputString("after"),
+                  gql.inputInt("last"),
+                  gql.inputString("before"),
+                ],
+              }),
+            ],
+          };
         }
       )
     );
 
     const accumulator: Definitions[] = [
+      ..._.flatten(sectionSpecificFields.map((ssf) => ssf.objects)),
       gql.object({
         name: "Query",
         fields: [
+          ..._.flatten(sectionSpecificFields.map((ssf) => ssf.fields)),
           gql.field({
             name: "document",
             type: "DocumentNode",
             args: [gql.inputString("relativePath"), gql.inputString("section")],
           }),
-          ...sectionSpecificFields,
+          gql.fieldList({
+            name: "documents",
+            type: "DocumentNode",
+            args: [gql.inputString("section")],
+          }),
+          gql.fieldList({
+            name: "getSections",
+            type: "SectionUnion",
+          }),
           gql.fieldList({
             name: "documentList",
             type: "String",
@@ -823,6 +856,7 @@ export const builder: Builder = {
       accumulator,
     });
     await builder.documentUnion({ cache, accumulator });
+    await builder.sectionUnion({ cache, accumulator });
 
     const sections = await cache.datasource.getSectionsSettings();
     const types = await sequential(
@@ -845,6 +879,32 @@ export const builder: Builder = {
     };
 
     return schema;
+  },
+  // FIXME: rename to documentUnion
+  sectionUnion: async ({ cache, accumulator, build = true }) => {
+    const name = "SectionUnion";
+
+    const sections = await cache.datasource.getSectionsSettings();
+    // accumulator.push(gql.union({ name: name, types: templateNames }));
+    sequential(sections, async (section) => {});
+
+    accumulator.push(
+      gql.object({
+        name,
+        fields: [
+          gql.field({ name: "type", type: "String" }),
+          gql.field({ name: "path", type: "String" }),
+          gql.field({ name: "label", type: "String" }),
+          gql.field({ name: "create", type: "String" }),
+          gql.field({ name: "match", type: "String" }),
+          gql.fieldList({ name: "templates", type: "String" }),
+          gql.field({ name: "slug", type: "String" }),
+          gql.fieldList({ name: "documents", type: "DocumentNode" }),
+        ],
+      })
+    );
+
+    return name;
   },
 };
 

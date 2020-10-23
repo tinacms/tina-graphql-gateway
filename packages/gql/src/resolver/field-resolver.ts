@@ -218,6 +218,64 @@ export const resolver: Resolver = {
     const value = source[info.fieldName];
     const { datasource } = context;
 
+    if (info.fieldName === "breadcrumbs") {
+      if (args.excludeExtension) {
+        return value.map((item, i) => {
+          if (i === value.length - 1) {
+            return item.replace(".md", "");
+          }
+          return item;
+        });
+      } else {
+        return value;
+      }
+    }
+    if (info.fieldName === "getSections") {
+      let sections = await context.datasource.getSectionsSettings();
+      return await sequential(sections, async (section) => {
+        return {
+          ...section,
+          documents: {
+            _section: section.slug,
+          },
+        };
+      });
+    }
+    if (info.fieldName === "documents") {
+      let sections = await context.datasource.getSectionsSettings();
+
+      if (args.section) {
+        sections = sections.filter((section) => section.slug === args.section);
+      }
+      if (value && value._section) {
+        sections = sections.filter(
+          (section) => section.slug === value._section
+        );
+      }
+
+      const sectionDocs = _.flatten(
+        await sequential(
+          // FIXME: pages section not working for demos fixture
+          // sections.filter((s) => s.slug !== "pages"),
+          sections,
+          async (s) => {
+            const paths = await context.datasource.getDocumentsForSection(
+              s.slug
+            );
+            return await sequential(paths, async (documentPath) => {
+              const document = await resolver.documentObject({
+                args: { fullPath: documentPath, section: s.slug },
+                datasource,
+              });
+
+              return document;
+            });
+          }
+        )
+      );
+      return sectionDocs;
+    }
+
     /**
      * Since we don't know what our schema is in the field
      * resolver (or we don't want to do the work to figure it out
@@ -400,9 +458,7 @@ export const resolver: Resolver = {
     return {
       path: null,
       relativePath,
-      breadcrumbs: relativePath
-        .split("/")
-        .map((item) => item.replace(extension, "")),
+      breadcrumbs: relativePath.split("/").filter(Boolean),
       basename,
       filename,
       extension,
