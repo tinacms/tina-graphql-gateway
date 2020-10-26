@@ -19763,6 +19763,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["js-cookie", [
+        ["npm:2.2.1", {
+          "packageLocation": "./.yarn/cache/js-cookie-npm-2.2.1-e879cd2148-c110f78427.zip/node_modules/js-cookie/",
+          "packageDependencies": [
+            ["js-cookie", "npm:2.2.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["js-tokens", [
         ["npm:3.0.2", {
           "packageLocation": "./.yarn/cache/js-tokens-npm-3.0.2-fe6fb334bd-81e634d5a9.zip/node_modules/js-tokens/",
@@ -42325,7 +42334,7 @@ module.exports = require("util");
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -42338,14 +42347,14 @@ module.exports = require("util");
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -42358,7 +42367,7 @@ module.exports = require("util");
 /******/ 			return getter;
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -42370,12 +42379,12 @@ module.exports = require("util");
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
 /******/ 	})();
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
