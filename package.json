@@ -11,7 +11,7 @@
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",
-    "ci:build": "yarn workspaces foreach -pt --exclude demo run build",
+    "ci:build": "yarn workspaces foreach -pt --exclude demo --exclude graphiql run build",
     "ci:version-check": "yarn version check",
     "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=demo --exclude=forestry-schema-extension --verbose npm publish --tolerate-republish",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=demo --verbose run test"
