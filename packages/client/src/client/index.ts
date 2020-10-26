@@ -40,6 +40,8 @@ export class ForestryClient {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
 
+    console.log("surl", this.serverURL);
+
     this.clientId = clientId;
   }
 

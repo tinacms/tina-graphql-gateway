@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "yarn tina-gql server:start -c \"yarn next-dev\"",
+    "watch": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "next-dev": "next dev --port 2999",
     "build": "next build",
-    "start": "next start",
-    "watch": "next dev"
+    "start": "next start"
   },
   "devDependencies": {
     "@forestryio/cli": "workspace:packages/cli",
@@ -15,7 +14,6 @@
   },
   "dependencies": {
     "@forestryio/client": "workspace:packages/client",
-    "@forestryio/graphql": "workspace:packages/graphql",
     "@tailwindcss/ui": "^0.3.0",
     "@types/node": "^13.13.1",
     "@types/react": "^16.9.43",

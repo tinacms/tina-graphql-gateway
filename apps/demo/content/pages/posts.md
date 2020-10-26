@@ -1,5 +1,5 @@
 ---
-title: Posts
+title: Postss
 blocks:
   - template: excerpt-post
     post: content/posts/love-more-than-ever.md

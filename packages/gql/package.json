@@ -3,12 +3,15 @@
   "version": "0.0.7",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "files": [
+    "src/fixtures/**/*"
+  ],
   "bin": {
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
@@ -19,6 +22,8 @@
     "@graphql-tools/schema": "^6.2.1",
     "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",
+    "@types/fs-extra": "^9.0.2",
+    "@types/js-yaml": "^3.12.5",
     "@types/lodash": "^4.14.161",
     "@types/ws": "^7.2.6",
     "@types/yup": "^0.29.7",

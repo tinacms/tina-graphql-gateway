@@ -13,7 +13,7 @@ import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
-export const startFixtureServer = async () => {
+export const startFixtureServer = async ({ port }: { port: number }) => {
   const app = express();
   const server = http.createServer(app);
 
@@ -31,37 +31,12 @@ export const startFixtureServer = async () => {
   app.use(cors());
   app.use(bodyParser.json());
 
-  console.log("drrr", __dirname);
-  const fixturePath = path.join(process.cwd(), `src/fixtures`);
+  const fixturePath = path.join(__dirname, "..", "src", "fixtures");
   app.get("/list-projects", async (req, res) => {
     return res.json(
       await fs.readdirSync(fixturePath).map((folderName) => {
         return { label: folderName, value: folderName };
       })
-    );
-  });
-
-  app.get("/list-documents/:schema", async (req, res) => {
-    return res.json(
-      await Promise.all(
-        await fs
-          .readdirSync(
-            path.join(fixturePath, req.path.replace("/list-documents", ""))
-          )
-          .filter((folderName) => folderName !== ".tina")
-          .map(async (folderName) => {
-            return {
-              name: folderName,
-              files: await fs.readdirSync(
-                path.join(
-                  fixturePath,
-                  req.path.replace("/list-documents", ""),
-                  folderName
-                )
-              ),
-            };
-          })
-      )
     );
   });
 
@@ -85,8 +60,8 @@ export const startFixtureServer = async () => {
     return res.json(result);
   });
 
-  server.listen(4000, () => {
-    console.info("Listening on http://localhost:4000");
+  server.listen(port, () => {
+    console.info(`Listening on http://localhost:${port}`);
   });
 };
 

@@ -70,6 +70,7 @@ export const Sidebar = ({
         const result2 = await cms.api.forestry.listSections();
         setSections(result2);
       } catch (e) {
+        console.log("unable to list documents...");
         console.log(e);
       }
     };
@@ -223,13 +224,13 @@ export const Sidebar = ({
                     src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
                     alt=""
                   />
-                  <div className="flex-1">
-                    <h2 className="text-gray-100 text-sm leading-5 font-medium">
-                      Realm Name
-                    </h2>
+                  <div className="flex-1 text-left">
                     <p className="text-gray-200 text-sm leading-5 truncate">
-                      @realm-slug
+                      Project:
                     </p>
+                    <h2 className="text-gray-100 text-lg capitalize leading-5 font-medium">
+                      {project}
+                    </h2>
                   </div>
                 </div>
                 <svg

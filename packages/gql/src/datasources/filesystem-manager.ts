@@ -11,7 +11,12 @@ import { FieldGroupListField } from "../fields/field-group-list";
 import { sequential } from "../util";
 
 import type { Field } from "../fields";
-import type { DataSource, UpdateArgs, DocumentArgs } from "./datasource";
+import type {
+  DataSource,
+  AddArgs,
+  UpdateArgs,
+  DocumentArgs,
+} from "./datasource";
 import type {
   Settings,
   DirectorySection,
@@ -142,6 +147,7 @@ export class FileSystemManager implements DataSource {
     }
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const templates = await fs.readdirSync(fullPath);
+
     const template = (
       await sequential(templates, async (template) => {
         const data = await this.getTemplate(template.replace(".yml", ""));
@@ -182,7 +188,7 @@ export class FileSystemManager implements DataSource {
       return data;
     }
   };
-  addDocument = async ({ relativePath, section, template }) => {
+  addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
     const templateData = await this.getTemplate(template, { namespace: false });

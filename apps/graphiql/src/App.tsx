@@ -21,7 +21,7 @@ import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 const TinaWrap = ({ children }) => {
   let { project } = useParams();
   const client = new ForestryClient("", {
-    gqlServer: `http://localhost:4000/${project}`,
+    gqlServer: `http://localhost:4002/${project}`,
   });
   const media = new ForestryMediaStore(client);
 
@@ -60,7 +60,7 @@ const App = () => {
 
   React.useEffect(() => {
     const listProjects = async () => {
-      const result = await fetch(`http://localhost:4000/list-projects`);
+      const result = await fetch(`http://localhost:4002/list-projects`);
       const json = await result.json();
       setProjects(json);
     };

@@ -3,20 +3,18 @@ import GraphiQL from "graphiql";
 // @ts-ignore no types provided
 import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
-import { Link, useParams } from "react-router-dom";
-import {
-  ForestryClient,
-  ForestryMediaStore,
-  TinacmsForestryProvider,
-  useForestryForm,
-} from "@forestryio/client";
+import { useParams } from "react-router-dom";
+import { useForestryForm } from "@forestryio/client";
 import {
   getIntrospectionQuery,
   GraphQLSchema,
   buildClientSchema,
   print,
 } from "graphql";
-import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
+
+type Variables = {
+  variables: object;
+};
 
 const UseIt = ({
   formConfig,
@@ -25,12 +23,13 @@ const UseIt = ({
 }: {
   schema: GraphQLSchema;
   formConfig: any;
+  variables: Variables;
   onSubmit: (values: any) => void;
 }) => {
   useForestryForm(
     { document: formConfig, ...variables },
     {
-      onSubmit: (values, transformedValues) => {
+      onSubmit: (values: unknown, transformedValues: unknown) => {
         onSubmit(transformedValues);
       },
     }
@@ -40,26 +39,24 @@ const UseIt = ({
 };
 
 export const Explorer = (
-  variables: { variables: any } = {
-    relativePath: "welcome.md",
-    section: "posts",
+  variables: Pick<Variables, "variables"> = {
+    variables: {},
   }
 ) => {
   let { project } = useParams();
-  const [vars, setVars] = React.useState();
+  const [vars, setVars] = React.useState<Pick<Variables, "variables">>({});
+
   React.useEffect(() => {
     setVars(variables.variables);
   }, [variables]);
+
   const [state, setState] = React.useState({
     schema: null,
     query: null,
     // variables: JSON.stringify({ relativePath: "welcome.md", section: "posts" }, null, 2),
     explorerIsOpen: false,
-    codeExporterIsOpen: false,
   });
-  const [projects, setProjects] = React.useState<
-    { label: string; value: string }[]
-  >([]);
+
   const [queryResult, setQueryResult] = React.useState<null | { data: object }>(
     null
   );
@@ -67,7 +64,7 @@ export const Explorer = (
   const graphQLFetcher = (graphQLParams: object) => {
     try {
       setQueryResult(null);
-      const url = `http://localhost:4000/${project}`;
+      const url = `http://localhost:4002/${project}`;
       return fetch(url, {
         method: `post`,
         headers: {
@@ -106,14 +103,6 @@ export const Explorer = (
     });
   };
 
-  React.useEffect(() => {
-    const listProjects = async () => {
-      const result = await fetch(`http://localhost:4000/list-projects`);
-      const json = await result.json();
-      setProjects(json);
-    };
-    listProjects();
-  }, []);
   React.useEffect(() => {
     try {
       graphQLFetcher({
@@ -183,21 +172,12 @@ export const Explorer = (
           {/* Hide GraphiQL logo */}
           <GraphiQL.Logo>{` `}</GraphiQL.Logo>
           <GraphiQL.Toolbar>
-            {projects.map((project) => {
-              return (
-                <Link to={`/${project.value}`}>
-                  {/* @ts-ignore */}
-                  <GraphiQL.Button key={project.value} label={project.label} />
-                </Link>
-              );
-            })}
-            {/* @ts-ignore */}
-            <GraphiQL.Button
-              key="explorer"
+            <button
               onClick={_handleToggleExplorer}
-              label="Explorer"
-              title="Toggle Explorer"
-            />
+              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
+            >
+              Explorer
+            </button>
           </GraphiQL.Toolbar>
         </GraphiQL>
       </React.Fragment>

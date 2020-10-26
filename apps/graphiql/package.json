@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
+    "@forestryio/cli": "workspace:packages/cli",
     "@forestryio/client": "workspace:packages/client",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@svgr/webpack": "4.3.3",
@@ -90,6 +91,7 @@
     "build:css": "postcss src/main.css -o src/App.css",
     "watch:css": "postcss src/main.css -o src/App.css -w",
     "start": "node scripts/start.js",
+    "watch": "yarn tina-gql server:playground -c \"node scripts/start.js\"",
     "build": "node scripts/build.js"
   },
   "eslintConfig": {

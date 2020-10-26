@@ -7,8 +7,8 @@
   ],
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "forestry-build",
-    "watch": "forestry-watch",
+    "build": "yarn tsup src/index.tsx --format cjs --dts",
+    "watch": "yarn tsup src/index.tsx --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },
@@ -38,6 +38,7 @@
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "tsup": "^3.7.0",
     "typescript": "^3.9.5"
   },
   "devDependencies": {
