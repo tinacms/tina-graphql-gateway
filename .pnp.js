@@ -4196,6 +4196,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["path", "npm:0.12.7"],
             ["simple-git", "npm:1.124.0"],
             ["ts-jest", "virtual:6a9a6f8f48a81df3d75f943eeddff643a390ae520fc1723f33040cdbb239753ea90c5e6f807c22a77e0ca0ffe91f6137dee62074d771b445d42ae994cd492299#npm:26.1.2"],
+            ["tsup", "npm:3.7.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"],
             ["yaml", "npm:1.10.0"],
             ["yo", "npm:3.1.1"]
@@ -4238,6 +4239,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-is", "npm:16.13.1"],
             ["styled-components", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:5.2.0"],
             ["tinacms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.31.0"],
+            ["tsup", "npm:3.7.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"]
           ],
           "packagePeers": [
@@ -4282,6 +4284,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dom", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:16.13.1"],
             ["styled-components", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:5.2.0"],
             ["tinacms", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:0.31.0"],
+            ["tsup", "npm:3.7.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"]
           ],
           "linkType": "SOFT",
@@ -4296,7 +4299,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-tools/schema", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:6.2.1"],
             ["@types/cors", "npm:2.8.7"],
             ["@types/express", "npm:4.17.8"],
+            ["@types/fs-extra", "npm:9.0.2"],
             ["@types/jest", "npm:26.0.7"],
+            ["@types/js-yaml", "npm:3.12.5"],
             ["@types/lodash", "npm:4.14.161"],
             ["@types/lodash.camelcase", "npm:4.3.6"],
             ["@types/lodash.upperfirst", "npm:4.3.6"],
@@ -4342,6 +4347,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@forestryio/graphiql", "workspace:apps/graphiql"],
             ["@babel/core", "npm:7.9.0"],
+            ["@forestryio/cli", "workspace:packages/cli"],
             ["@forestryio/client", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
             ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@svgr/webpack", "npm:4.3.3"],
@@ -4491,6 +4497,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@forestryio/build", "workspace:packages/build"],
             ["@types/jest", "npm:26.0.7"],
             ["@types/lodash.camelcase", "npm:4.3.6"],
+            ["@types/lodash.kebabcase", "npm:4.1.6"],
             ["@types/lodash.upperfirst", "npm:4.3.6"],
             ["graphql", "npm:15.3.0"],
             ["jest", "npm:26.1.0"],
@@ -4499,7 +4506,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.snakecase", "npm:4.1.1"],
             ["lodash.upperfirst", "npm:4.3.1"],
             ["ts-jest", "virtual:23afd5ce58ee21a819bf3b29aea391fd3a730601309c03ed281fc04a148c1fdc4e77aab651de0c440b09f82700e0985836b951436eb37149b26c567d40a3ac43#npm:26.1.4"],
-            ["tslib", "npm:1.13.0"]
+            ["tslib", "npm:1.13.0"],
+            ["tsup", "npm:3.7.0"]
           ],
           "linkType": "SOFT",
         }]
@@ -7089,6 +7097,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-fs-extra-npm-9.0.1-655e67e711-a7c0f73736.zip/node_modules/@types/fs-extra/",
           "packageDependencies": [
             ["@types/fs-extra", "npm:9.0.1"],
+            ["@types/node", "npm:14.0.27"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:9.0.2", {
+          "packageLocation": "./.yarn/cache/@types-fs-extra-npm-9.0.2-76105aa5a6-9fb00885d8.zip/node_modules/@types/fs-extra/",
+          "packageDependencies": [
+            ["@types/fs-extra", "npm:9.0.2"],
             ["@types/node", "npm:14.0.27"]
           ],
           "linkType": "HARD",
@@ -13113,7 +13129,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["demo", "workspace:apps/demo"],
             ["@forestryio/cli", "workspace:packages/cli"],
             ["@forestryio/client", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
-            ["@forestryio/graphql", "workspace:packages/graphql"],
             ["@tailwindcss/ui", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.3.1"],
             ["@types/node", "npm:13.13.15"],
             ["@types/react", "npm:16.9.43"],
@@ -27164,6 +27179,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fsevents", "patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>::version=2.1.3&hash=495457"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:2.32.1", {
+          "packageLocation": "./.yarn/cache/rollup-npm-2.32.1-d2d2a2aab7-b231dfa7b0.zip/node_modules/rollup/",
+          "packageDependencies": [
+            ["rollup", "npm:2.32.1"],
+            ["fsevents", "patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>::version=2.1.3&hash=495457"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["rollup-plugin-babel", [
@@ -27184,13 +27207,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["rollup-plugin-dts", [
+        ["virtual:5b90510b026d7a2311083a18cacc86fbd3969a3562e3b7dbd8c864efa3c60cdffbbc3017a5442b96c07bcfcf4010a593556e7ee9f5761d6ce56b732dc2585953#npm:1.4.13", {
+          "packageLocation": "./.yarn/$$virtual/rollup-plugin-dts-virtual-8408df3267/0/cache/rollup-plugin-dts-npm-1.4.13-0f22439823-6ce7619d55.zip/node_modules/rollup-plugin-dts/",
+          "packageDependencies": [
+            ["rollup-plugin-dts", "virtual:5b90510b026d7a2311083a18cacc86fbd3969a3562e3b7dbd8c864efa3c60cdffbbc3017a5442b96c07bcfcf4010a593556e7ee9f5761d6ce56b732dc2585953#npm:1.4.13"],
+            ["@babel/code-frame", "npm:7.10.4"],
+            ["rollup", "npm:2.32.1"],
+            ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"]
+          ],
+          "packagePeers": [
+            "rollup",
+            "typescript"
+          ],
+          "linkType": "HARD",
+        }],
         ["virtual:8a48b036f49a4b90e0788c0d62c630dd79315d36b86b0d9b7bfc98c1e7e6771947b20bbc2a8a32fa18401ca25841e0bb67b85627d51ece80d88b195f9d2b36c9#npm:1.4.13", {
           "packageLocation": "./.yarn/$$virtual/rollup-plugin-dts-virtual-d28aa1aaac/0/cache/rollup-plugin-dts-npm-1.4.13-0f22439823-6ce7619d55.zip/node_modules/rollup-plugin-dts/",
           "packageDependencies": [
             ["rollup-plugin-dts", "virtual:8a48b036f49a4b90e0788c0d62c630dd79315d36b86b0d9b7bfc98c1e7e6771947b20bbc2a8a32fa18401ca25841e0bb67b85627d51ece80d88b195f9d2b36c9#npm:1.4.13"],
             ["@babel/code-frame", "npm:7.10.4"],
             ["rollup", "npm:2.26.11"],
-            ["typescript", null]
+            ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"]
           ],
           "packagePeers": [
             "rollup",
@@ -30118,7 +30155,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["resolve-from", "npm:5.0.0"],
             ["rollup", "npm:2.26.11"],
             ["rollup-plugin-dts", "virtual:8a48b036f49a4b90e0788c0d62c630dd79315d36b86b0d9b7bfc98c1e7e6771947b20bbc2a8a32fa18401ca25841e0bb67b85627d51ece80d88b195f9d2b36c9#npm:1.4.13"],
-            ["sucrase", "npm:3.15.0"]
+            ["sucrase", "npm:3.15.0"],
+            ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.7.0", {
+          "packageLocation": "./.yarn/cache/tsup-npm-3.7.0-5b90510b02-6ddf12e7b3.zip/node_modules/tsup/",
+          "packageDependencies": [
+            ["tsup", "npm:3.7.0"],
+            ["cac", "npm:6.6.1"],
+            ["chalk", "npm:4.1.0"],
+            ["chokidar", "npm:3.4.2"],
+            ["esbuild", "npm:0.6.32"],
+            ["joycon", "npm:2.2.5"],
+            ["resolve-from", "npm:5.0.0"],
+            ["rollup", "npm:2.32.1"],
+            ["rollup-plugin-dts", "virtual:5b90510b026d7a2311083a18cacc86fbd3969a3562e3b7dbd8c864efa3c60cdffbbc3017a5442b96c07bcfcf4010a593556e7ee9f5761d6ce56b732dc2585953#npm:1.4.13"],
+            ["sucrase", "npm:3.15.0"],
+            ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"]
           ],
           "linkType": "HARD",
         }]
@@ -30383,6 +30438,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/typescript-patch-ba0dbfd217-f0d3d9c987.zip/node_modules/typescript/",
           "packageDependencies": [
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2", {
+          "packageLocation": "./.yarn/cache/typescript-patch-b8e40b0a95-72db87d09f.zip/node_modules/typescript/",
+          "packageDependencies": [
+            ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"]
           ],
           "linkType": "HARD",
         }]

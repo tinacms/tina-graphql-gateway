@@ -2161,6 +2161,7 @@ __metadata:
     path: ^0.12.7
     simple-git: 1.124.0
     ts-jest: 26.1.2
+    tsup: ^3.7.0
     typescript: ^3.6.3
     yaml: ^1.10.0
     yo: ^3.1.1
@@ -2202,6 +2203,7 @@ __metadata:
     react-dom: 16.13.1
     styled-components: ^5.2.0
     tinacms: 0.31.0
+    tsup: ^3.7.0
     typescript: ^3.9.5
   peerDependencies:
     react: ">=16.8"
@@ -2220,7 +2222,9 @@ __metadata:
     "@graphql-tools/schema": ^6.2.1
     "@types/cors": ^2.8.7
     "@types/express": ^4.17.8
+    "@types/fs-extra": ^9.0.2
     "@types/jest": ^26.0.4
+    "@types/js-yaml": ^3.12.5
     "@types/lodash": ^4.14.161
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
@@ -2257,7 +2261,7 @@ __metadata:
     ws: ^7.3.1
     yup: ^0.29.3
   bin:
-    "forestry:serve": ./dist/serve.js
+    "forestry:serve": ./dist/index.js
   languageName: unknown
   linkType: soft
 
@@ -2266,6 +2270,7 @@ __metadata:
   resolution: "@forestryio/graphiql@workspace:apps/graphiql"
   dependencies:
     "@babel/core": 7.9.0
+    "@forestryio/cli": "workspace:packages/cli"
     "@forestryio/client": "workspace:packages/client"
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@svgr/webpack": 4.3.3
@@ -2357,6 +2362,7 @@ __metadata:
     "@forestryio/build": "workspace:packages/build"
     "@types/jest": ^26.0.4
     "@types/lodash.camelcase": ^4.3.6
+    "@types/lodash.kebabcase": ^4.1.6
     "@types/lodash.upperfirst": ^4.3.6
     graphql: ^15.3.0
     jest: ^26.1.0
@@ -2366,6 +2372,7 @@ __metadata:
     lodash.upperfirst: ^4.3.1
     ts-jest: ^26.1.2
     tslib: ^1.11.1
+    tsup: ^3.7.0
   bin:
     "forestry:serve": ./dist/index.js
   languageName: unknown
@@ -4413,6 +4420,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: a7c0f7373620b5045fb5fc6ccc28c8752a08f93c03127036e292cfa35bf123bd2cdbe534aaac5800a8383af37490c8b8d1192361ea24a4c7e4177ebe97c3b429
+  languageName: node
+  linkType: hard
+
+"@types/fs-extra@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "@types/fs-extra@npm:9.0.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: 9fb00885d8d064cf81e25722e6ee6f8af316065beb33b980f24a4a918e06c15ae328b82d3ede240e9b99e039c59467a266c1e4549d5b3ad2498111c75eb90987
   languageName: node
   linkType: hard
 
@@ -9685,7 +9701,6 @@ __metadata:
   dependencies:
     "@forestryio/cli": "workspace:packages/cli"
     "@forestryio/client": "workspace:packages/client"
-    "@forestryio/graphql": "workspace:packages/graphql"
     "@tailwindcss/ui": ^0.3.0
     "@types/node": ^13.13.1
     "@types/react": ^16.9.43
@@ -22688,6 +22703,20 @@ resolve@1.15.1:
   languageName: node
   linkType: hard
 
+"rollup@npm:^2.26.11":
+  version: 2.32.1
+  resolution: "rollup@npm:2.32.1"
+  dependencies:
+    fsevents: ~2.1.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    rollup: dist/bin/rollup
+  checksum: b231dfa7b00c1238cc12eeddb29fb80acc21e74ba2f5a3a97610f1de8381a67e8cc43283a98454caa2a4d0bc3462c87599f0dd61f7ffef17055450647499d614
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^2.6.1":
   version: 2.23.0
   resolution: "rollup@npm:2.23.0"
@@ -25178,6 +25207,25 @@ resolve@1.15.1:
   languageName: node
   linkType: hard
 
+"tsup@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "tsup@npm:3.7.0"
+  dependencies:
+    cac: ^6.6.1
+    chalk: ^4.1.0
+    chokidar: ^3.4.2
+    esbuild: ^0.6.19
+    joycon: ^2.2.5
+    resolve-from: ^5.0.0
+    rollup: ^2.26.11
+    rollup-plugin-dts: ^1.4.10
+    sucrase: ^3.15.0
+  bin:
+    tsup: dist/cli.js
+  checksum: 6ddf12e7b3176a405317c0b0ea9b6d517305664f6bd6f1a5bf155ec5e15d12d3e7219e1f8221222b368d1800191e6bdb46221ff4b643cdd750d2f6c00261b3b6
+  languageName: node
+  linkType: hard
+
 "tsutils@npm:^3.17.1":
   version: 3.17.1
   resolution: "tsutils@npm:3.17.1"
@@ -25388,6 +25436,16 @@ resolve@1.15.1:
   languageName: node
   linkType: hard
 
+typescript@^4.0.3:
+  version: 4.0.3
+  resolution: "typescript@npm:4.0.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 5c892e132756a83d22030d7fb38be47cde27613f71d233dbe7faf79e4a92852c5146bfddcaf8c2da1a37d35ae8bf7b8c888fdcd763d5ad184cea6b21e7466838
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@^3.6.3#builtin<compat/typescript>, typescript@patch:typescript@^3.8.3#builtin<compat/typescript>, typescript@patch:typescript@^3.9.5#builtin<compat/typescript>":
   version: 3.9.7
   resolution: "typescript@patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"
@@ -25395,6 +25453,16 @@ resolve@1.15.1:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: f0d3d9c987860c7c458229ab6dd7e3d322405db36b70abccba610b5efd9f9451e4e67a3fc7983c0d3741033c1f1a8d7aa859a1510caa8f20fad762fc39648bfa
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.0.3#builtin<compat/typescript>":
+  version: 4.0.3
+  resolution: "typescript@patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=5b02a2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 72db87d09f728c83062d64b5e12ed52effb6278963b6bc5c006219b22c104e02b8ce80164261de554923d3c47d894a1ca937ed542328caccb83ebaedeae98a69
   languageName: node
   linkType: hard
 

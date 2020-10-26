@@ -39569,6 +39569,113 @@ div.graphiql-explorer-root > div:last-child {
   height: 100vh !important;
 }
 
+.graphiql-container .execute-button-wrap {
+  margin: 0px !important;
+  height: auto !important;
+}
+
+.graphiql-container .topBar {
+  background: none !important;
+  --bg-opacity: 1 !important;
+  background-color: #e5e7eb !important;
+  background-color: rgba(229, 231, 235, var(--bg-opacity)) !important;
+  height: 4rem !important;
+}
+
+.graphiql-container .docExplorerShow::before {
+  border-left: 2px solid #090909 !important;
+  border-top: 2px solid #090909 !important;
+}
+
+.doc-explorer-title-bar {
+  height: 4rem !important;
+  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  font-weight: 400 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.graphiql-container .doc-explorer-contents {
+  top: 63px !important;
+}
+
+.graphiql-container .docExplorerShow {
+  background: none !important;
+  --bg-opacity: 1 !important;
+  background-color: #e5e7eb !important;
+  background-color: rgba(229, 231, 235, var(--bg-opacity)) !important;
+  height: 4rem !important;
+  padding-left: 0.875rem !important;
+  padding-right: 0.875rem !important;
+  padding-top: 1.25rem !important;
+  padding-bottom: 1.25rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  line-height: 1.25rem !important;
+  border-left-width: 0 !important;
+  font-weight: 500 !important;
+  --text-opacity: 1 !important;
+  color: #374151 !important;
+  color: rgba(55, 65, 81, var(--text-opacity)) !important;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+  --bg-opacity: 1 !important;
+  background-color: #e5e7eb !important;
+  background-color: rgba(229, 231, 235, var(--bg-opacity)) !important;
+  letter-spacing: 0.05em !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.graphiql-container .execute-button {
+  background: none !important;
+  fill: white !important;
+  width: 100% !important;
+  border-radius: 0.375rem !important;
+  padding-left: 0.875rem !important;
+  padding-right: 0.875rem !important;
+  padding-top: 1.25rem !important;
+  padding-bottom: 1.25rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  line-height: 1.25rem !important;
+  font-weight: 500 !important;
+  border-style: none !important;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-duration: 150ms !important;
+  --bg-opacity: 1 !important;
+  background-color: #76a9fa !important;
+  background-color: rgba(118, 169, 250, var(--bg-opacity)) !important;
+  --text-opacity: 1 !important;
+  color: #ffffff !important;
+  color: rgba(255, 255, 255, var(--text-opacity)) !important;
+  letter-spacing: 0.05em !important;
+  border-radius: 0.375rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.graphiql-container .execute-button:hover {
+  width: 100% !important;
+  --bg-opacity: 1 !important;
+  background-color: #3f83f8 !important;
+  background-color: rgba(63, 131, 248, var(--bg-opacity)) !important;
+  --text-opacity: 1 !important;
+  color: #ffffff !important;
+  color: rgba(255, 255, 255, var(--text-opacity)) !important;
+}
+
+.graphiql-container .execute-button::after {
+  content: "Run Query";
+  margin: 0px 2rem 0px 0.5rem;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

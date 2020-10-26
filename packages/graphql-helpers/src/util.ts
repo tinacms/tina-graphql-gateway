@@ -1,8 +1,5 @@
 import camelCase from "lodash.camelcase";
 import upperFirst from "lodash.upperfirst";
-// @ts-ignore
-import snakecase from "lodash.snakecase";
-// @ts-ignore
 import kebabcase from "lodash.kebabcase";
 
 export const FMT_BASE = ".forestry/front_matter/templates";

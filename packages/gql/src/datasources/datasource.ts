@@ -4,6 +4,7 @@ import type {
   Settings,
   Section,
   DirectorySection,
+  TemplateDataWithNoName,
 } from "../types";
 
 export type TinaDocument = {
@@ -24,6 +25,11 @@ export type DocumentArgs = {
   section: string;
 };
 
+export type AddArgs = {
+  relativePath: string;
+  section: string;
+  template: string;
+};
 export interface DataSource {
   /**
    * `getData`
@@ -47,9 +53,11 @@ export interface DataSource {
     extension: string;
     filename: string;
   }>;
-  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
-  getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
-  getTemplate: (slug: string) => Promise<TemplateData>;
+  getTemplateForDocument: (
+    args: DocumentArgs
+  ) => Promise<TemplateDataWithNoName>;
+  getTemplates: (slugs: string[]) => Promise<TemplateDataWithNoName[]>;
+  getTemplate: (slug: string) => Promise<TemplateDataWithNoName>;
   /**
    * `getTemplatesForSection`
    *
@@ -75,10 +83,13 @@ export interface DataSource {
    * ]
    * ```
    */
-  getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
+  getTemplatesForSection: (
+    section?: string
+  ) => Promise<TemplateDataWithNoName[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   getSectionsSettings: () => Promise<DirectorySection[]>;
+  addDocument: (args: AddArgs) => Promise<void>;
   updateDocument: (param: UpdateArgs) => Promise<void>;
 }
 
