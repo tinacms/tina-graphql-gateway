@@ -5,14 +5,19 @@ import { withTina } from "tinacms";
 import { ForestryClient, ForestryMediaStore } from "@forestryio/client";
 import { TinacmsForestryProvider } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
+import Cookies from "js-cookie";
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <TinacmsForestryProvider
-      onLogin={() => alert("enter edit mode")}
-      onLogout={() => alert("exit edit mode")}
+      onLogin={() => {
+        Cookies.set("tina-editmode", "true");
+        window.location.reload();
+      }}
+      onLogout={() => Cookies.remove("tina-editmode")}
     >
       <div>
-        <div style={{ display: "flex" }}>
+        <div>
           <Link href="/pages">
             <a>Pages</a>
           </Link>
@@ -38,8 +43,6 @@ export default withTina(MyApp, {
   apis: {
     forestry: client,
   },
-  sidebar: { position: "displace" },
-  // FIXME: seems like I'm mixing versions
-  // media: media,
-  enabled: false,
+  sidebar: !!Cookies.get("tina-editmode"),
+  enabled: !!Cookies.get("tina-editmode"),
 });

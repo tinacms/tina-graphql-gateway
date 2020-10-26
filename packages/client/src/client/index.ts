@@ -24,6 +24,7 @@ interface AddVariables {
 
 const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/graphql";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
+const DEFAULT_IDENTITY_HOST = "http://localhost:3000";
 
 interface ServerOptions {
   gqlServer?: string;
@@ -34,11 +35,13 @@ interface ServerOptions {
 export class ForestryClient {
   serverURL: string;
   oauthHost: string;
+  identityHost: string;
   clientId: string;
   query: string;
   constructor(clientId: string, options?: ServerOptions) {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
+    this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
 
     console.log("surl", this.serverURL);
 
@@ -202,15 +205,42 @@ export class ForestryClient {
   };
 
   async isAuthorized(): Promise<boolean> {
-    return Promise.resolve(true); //TODO - implement me
+    return this.isAuthenticated(); // TODO - check access
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return Promise.resolve(false); //TODO - implement me
+    return !!(await this.getUser());
   }
 
   async authenticate() {
     return authenticate(this.clientId, this.oauthHost);
+  }
+
+  async getUser() {
+    const url = `${this.identityHost}/me`;
+
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + this.getCookie(AUTH_COOKIE_NAME),
+          "Content-Type": "application/json",
+        }),
+      });
+      const val = await res.json();
+      if (!res.status.toString().startsWith("2")) {
+        console.error(val.error);
+        return null;
+      }
+      return val;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  private getCookie(cookieName: string): string | undefined {
+    return Cookies.get(cookieName);
   }
 
   private async request<VariableType>(

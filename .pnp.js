@@ -4222,6 +4222,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:3e9d881be8af83b63ec498ffb4e2036901465262174f6f96ded1fd2081c3bad441d9cd54441f793104181a0af0bf0d7e20083e1906a5940d897c34d7ca426c48#npm:0.31.0"],
             ["@tinacms/styles", "virtual:3e9d881be8af83b63ec498ffb4e2036901465262174f6f96ded1fd2081c3bad441d9cd54441f793104181a0af0bf0d7e20083e1906a5940d897c34d7ca426c48#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
+            ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:14.0.27"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -4231,6 +4232,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form", "npm:4.20.1"],
             ["graphql", "npm:15.3.0"],
             ["isomorphic-unfetch", "npm:3.0.0"],
+            ["js-cookie", "npm:2.2.1"],
             ["next", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:9.4.2"],
             ["node-fetch", "npm:2.6.0"],
             ["prop-types", "npm:15.7.2"],
@@ -4268,6 +4270,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:0.31.0"],
             ["@tinacms/styles", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
+            ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:14.0.27"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -4277,6 +4280,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form", "npm:4.20.1"],
             ["graphql", "npm:15.3.0"],
             ["isomorphic-unfetch", "npm:3.0.0"],
+            ["js-cookie", "npm:2.2.1"],
             ["next", "virtual:930382e9e0caec37b05adedd075250b1b4ad209013ea1f2ab629acbb7c89b886e02766db05074496305f675f06bbc5f8f086ea85452fb09aedc43ee869a13bb2#npm:9.4.2"],
             ["node-fetch", "npm:2.6.0"],
             ["prop-types", "npm:15.7.2"],
@@ -7233,6 +7237,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:26.0.7"],
             ["jest-diff", "npm:25.5.0"],
             ["pretty-format", "npm:25.5.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/js-cookie", [
+        ["npm:2.2.6", {
+          "packageLocation": "./.yarn/cache/@types-js-cookie-npm-2.2.6-dd551f922c-08d3a2a014.zip/node_modules/@types/js-cookie/",
+          "packageDependencies": [
+            ["@types/js-cookie", "npm:2.2.6"]
           ],
           "linkType": "HARD",
         }]
@@ -13130,6 +13143,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@forestryio/cli", "workspace:packages/cli"],
             ["@forestryio/client", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
             ["@tailwindcss/ui", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.3.1"],
+            ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:13.13.15"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -13140,6 +13154,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fast-glob", "npm:3.2.4"],
             ["formik", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:2.1.5"],
             ["graphql", "npm:15.3.0"],
+            ["js-cookie", "npm:2.2.1"],
             ["next", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:9.5.1"],
             ["postcss-import", "npm:12.0.1"],
             ["react", "npm:16.13.1"],
@@ -42310,7 +42325,7 @@ module.exports = require("util");
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -42323,14 +42338,14 @@ module.exports = require("util");
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -42343,7 +42358,7 @@ module.exports = require("util");
 /******/ 			return getter;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -42355,12 +42370,12 @@ module.exports = require("util");
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
 /******/ 	})();
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	// module exports must be returned from runtime so entry inlining is disabled
 /******/ 	// startup
