@@ -2,7 +2,7 @@
 
 There is an `apps/demo` folder which is a nextjs app and then everything else is in `packages`:
 
-### @forestry/graphql
+### @forestry/cli
 
 Environment: `node`
 
@@ -13,10 +13,6 @@ Provides `buildSchema` function which takes a `DataSource` instance and provides
 Environment: `browser`
 
 Provides React hooks for fetching and building the Tina form. It also exposes a CLI for things like generating Typescript types for your content models.
-
-### @forestry/build
-
-Just a package builder, uses Rollup.
 
 ### Getting started
 
