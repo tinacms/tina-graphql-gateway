@@ -1,8 +1,9 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import { authenticate } from "../auth/authenticate";
+import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
 import { transformPayload } from "./handle";
 import type { Field } from "tinacms";
+import Cookies from "js-cookie";
 
 interface AddProps {
   url: string;
