@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.19",
+  "version": "0.2.21",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -11,7 +11,6 @@
     "tina-gql": "bin/tina-gql"
   },
   "devDependencies": {
-    "@forestryio/build": "workspace:packages/build",
     "@types/clear": "0.1.0",
     "@types/cors": "2.8.5",
     "@types/express": "^4.17.7",
@@ -33,7 +32,6 @@
   },
   "dependencies": {
     "@forestryio/gql": "workspace:packages/gql",
-    "@forestryio/graphql": "workspace:packages/graphql",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.17.0",
     "@graphql-codegen/typescript": "^1.17.0",

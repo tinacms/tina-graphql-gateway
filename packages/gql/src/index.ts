@@ -13,6 +13,14 @@ import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
+export const buildSchema = async (projectRoot: string) => {
+  const datasource = new FileSystemManager(projectRoot);
+  const cache = cacheInit(datasource);
+  const schema = await builder.schema({ cache });
+
+  return buildASTSchema(schema);
+};
+
 export const demo = async ({
   fixtureFolder,
   query,

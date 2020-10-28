@@ -1,11 +1,11 @@
 import { Command } from "../command";
 import { chain } from "../middleware";
-import { genTypes, attachSchema, genQueries } from "./query-gen";
+import { genTypes, attachSchema } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
 import { startServer } from "./start-server";
 import { playgroundServer } from "./start-server/playground";
 
-export const CMD_GEN_QUERY = "schema:gen-query";
+export const CMD_GEN_TYPES = "schema:types";
 export const CMD_AUDIT = "schema:audit";
 export const CMD_DUMP = "schema:dump";
 export const CMD_MIGRATE = "schema:migrate";
@@ -32,18 +32,13 @@ const subCommand = {
   name: "-c, --command <command>",
   description: "The sub-command to run",
 };
-const typescriptOption = {
-  name: "--typescript",
-  description: "Generate types for the schema",
-};
 
 export const baseCmds: Command[] = [
   {
-    command: CMD_GEN_QUERY,
+    command: CMD_GEN_TYPES,
     description:
       "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
-    options: [typescriptOption],
-    action: (options) => chain([attachSchema, genQueries, genTypes], options),
+    action: (options) => chain([attachSchema, genTypes], options),
   },
   {
     command: CMD_AUDIT,
