@@ -1,10 +1,10 @@
 {
   "name": "@forestryio/gql",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist/index.js",
+    "dist/*",
     "src/fixtures/**/*"
   ],
   "scripts": {
