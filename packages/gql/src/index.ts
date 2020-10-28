@@ -26,16 +26,20 @@ export const demo = async ({
   const projectRoot = path.join(fixturePath, fixtureFolder);
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
-  const schema = await builder.schema({ cache });
+  try {
+    const schema = await builder.schema({ cache });
 
-  const result = await graphqlInit({
-    schema: buildASTSchema(schema),
-    source: query,
-    contextValue: { datasource },
-    variableValues: variables,
-  });
-
-  return result;
+    const result = await graphqlInit({
+      schema: buildASTSchema(schema),
+      source: query,
+      contextValue: { datasource },
+      variableValues: variables,
+    });
+    return result;
+  } catch (e) {
+    console.error(e);
+    return { message: "nothing" };
+  }
 };
 
 export const startFixtureServer = async ({ port }: { port: number }) => {
