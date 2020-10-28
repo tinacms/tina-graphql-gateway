@@ -14,7 +14,7 @@ export const graphqlInit = async (args: {
   schema: GraphQLSchema;
   source: string | Source;
   contextValue: ContextT;
-  variableValues: { path: string };
+  variableValues: object;
 }) => {
   return await graphql({
     ...args,
