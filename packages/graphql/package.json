@@ -14,7 +14,7 @@
     "watch": "forestry-watch",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js",
-    "test": "jest --passWithNoTests",
+    "no-test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch"
   },
   "dependencies": {
