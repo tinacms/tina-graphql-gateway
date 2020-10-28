@@ -10,8 +10,8 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "forestry-build",
-    "watch": "forestry-watch",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
@@ -19,10 +19,14 @@
   },
   "dependencies": {
     "@forestryio/build": "workspace:packages/build",
+    "@types/lodash.kebabcase": "^4.1.6",
     "graphql": "^15.3.0",
     "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
-    "tslib": "^1.11.1"
+    "tslib": "^1.11.1",
+    "tsup": "^3.7.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

@@ -1,0 +1,63 @@
+---
+label: Author
+hide_body: false
+fields:
+  - name: name
+    label: Name
+    type: textarea
+    description: Your first name & last name
+  - name: role
+    label: role
+    type: select
+    description: What's your job?
+    config:
+      source:
+        type: simple
+      options:
+        - CEO
+        - CTO
+        - COO
+        - CFO
+  - name: anecdotes
+    type: list
+    config:
+      use_select: false
+    label: Anecdotes
+    description: Something simple about their high-level achievements
+  - name: favorite_posts
+    label: Favorite Posts
+    type: list
+    config:
+      use_select: true
+      source:
+        type: pages
+        section: authors
+  - name: all_time_post
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: posts
+    label: All-Time Favorite Post
+  - name: accolades
+    label: Accolades
+    type: field_group_list
+    fields:
+      - name: figure
+        type: textarea
+        config:
+          required: false
+        label: Figure
+        description: A single number or word to emphasize
+      - name: description
+        type: textarea
+        config:
+          required: false
+          schema:
+            format: markdown
+        label: Description
+
+pages:
+  - authors/marge.md
+  - authors/homer.md

@@ -2,7 +2,7 @@ import React from "react";
 import { AppProps } from "next/app";
 import Link from "next/link";
 import { withTina } from "tinacms";
-import { ForestryClient } from "@forestryio/client";
+import { ForestryClient, ForestryMediaStore } from "@forestryio/client";
 import { TinacmsForestryProvider } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
@@ -37,10 +37,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+const client = new ForestryClient(process.env.SITE_CLIENT_ID);
+const media = new ForestryMediaStore(client);
 export default withTina(MyApp, {
   apis: {
-    forestry: new ForestryClient(process.env.SITE_CLIENT_ID),
+    forestry: client,
   },
-  sidebar: !!Cookies.get("tina-editmode"),
-  enabled: !!Cookies.get("tina-editmode"),
+  // sidebar: !!Cookies.get("tina-editmode"),
+  // enabled: !!Cookies.get("tina-editmode"),
+  sidebar: true,
+  enabled: true,
 });

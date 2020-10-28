@@ -1,0 +1,285 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@forestryio/gql</title>
+	<meta name="description" content="Documentation for @forestryio/gql">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@forestryio/gql</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>@forestryio/gql</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h2>Getting started</h2>
+				</a>
+				<p>There&#39;s a serve and watch command, which are separate for now:</p>
+				<pre><code class="language-sh">// terminal 1
+<span class="hljs-built_in">cd</span> packages/gql
+yarn watch
+
+// terminal 2
+<span class="hljs-built_in">cd</span> packages/gql
+yarn serve</code></pre>
+				<p>You can consume this from the <code>graphiql</code> app:</p>
+				<pre><code class="language-sh">// terminal 3
+<span class="hljs-built_in">cd</span> apps/graphiql
+yarn start</code></pre>
+				<p>Note that this app doesn&#39;t use anything from the <code>client</code> package right now, it&#39;s just an interactive tool to see how things move from the graphql server into tina. That process has been improved in this package but will need to be merged back into the <code>client</code> package before this is usable.</p>
+				<a href="#running-queries" id="running-queries" style="color: inherit; text-decoration: none;">
+					<h3>Running queries</h3>
+				</a>
+				<p>By default the app will redirect to <code>project1</code> and display the default query generated from the <code>graphql-helpers</code> library - which consumes the fixtures from the <code>project1</code> folder the the <code>gql</code> package, any number of fixtures can be used if you want to add your own, just ensure the <code>server.ts</code> file knows about them.</p>
+				<p>When you run the initial query, you should see the result along with the Tina sidebar toggle, this indicates that the Tina form has now been populated with the query values. If you change some values around and hit submit, the <code>onSubmit</code> function will populate the GraphiQL editor instead of sending it off to the server, you can play around with the mutation before sending it off if you&#39;d like.</p>
+				<a href="#tests" id="tests" style="color: inherit; text-decoration: none;">
+					<h3>Tests</h3>
+				</a>
+				<p>The most valuable test right now is the <code>builder.spec.ts</code>, it&#39;s sort of an integration of all the field-level builders. There are also field-level build tests, but not resolvers ones just yet. If you&#39;re making changes to the builder just run <code>yarn test-watch</code> and hit <code>p</code> to provide a pattern, then type &quot;builder&quot;, this will isolate that test and if it&#39;s passing you probably didn&#39;t break anything.</p>
+				<a href="#architecture" id="architecture" style="color: inherit; text-decoration: none;">
+					<h2>Architecture</h2>
+				</a>
+				<a href="#builder" id="builder" style="color: inherit; text-decoration: none;">
+					<h3>Builder</h3>
+				</a>
+				<p>The builder service is responsible for building out the entire GraphQL schema for a given <code>.tina</code> config. This service can run at any time (but needs to be re-run on each schema change) and it&#39;s output is a GraphQL schema which can be stored in the schema definition language (SDL) as a string in a database record or as a <code>.graphql</code> file. At the top of the schema is a <code>document</code> query, this query returns the document, which can be one of any number of templates defined in the <code>.tina</code> config. From there, each field in the given template is used to build out the rest of the schema, so each template field is built by the <code>type</code> in it&#39;s definition</p>
+				<a href="#field-level-builders" id="field-level-builders" style="color: inherit; text-decoration: none;">
+					<h4>Field-level builders</h4>
+				</a>
+				<p>Field-level builders take a field definition and produce 4 different GraphQL types:</p>
+				<a href="#field" id="field" style="color: inherit; text-decoration: none;">
+					<h5><code>field</code></h5>
+				</a>
+				<p>Builds the type which fits into Tina&#39;s field definition shape:</p>
+				<p>Given:</p>
+				<pre><code class="language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">Title</span>
+<span class="hljs-attr">label:</span> <span class="hljs-string">title</span>
+<span class="hljs-attr">type:</span> <span class="hljs-string">text</span></code></pre>
+				<pre><code class="language-js">text.build.field({ cache, field });</code></pre>
+				<p>Produces</p>
+				<pre><code class="language-graphql">type TextField {
+  name: String
+  label: String
+  component: String
+  description: String
+}</code></pre>
+				<a href="#initialvalue" id="initialvalue" style="color: inherit; text-decoration: none;">
+					<h5><code>initialValue</code></h5>
+				</a>
+				<p>Tina fields need an initial value when editing existing data. This builder is responsible for providing the shape of that value.</p>
+				<p>For most fields this is the same value as <code>value</code> - but if you picture the schema as a &quot;graph&quot; - you can see how the &quot;value&quot; of a document reference (ie. a Post has an Author) is not helpful to Tina. Tina only cares about the stored document value of the reference (in this case <code>/path/to/author.md</code>) so it&#39;s the <code>initialValue</code>&#39;s role to provide what makes sense to Tina, regardless of the schema&#39;s relationships.</p>
+				<a href="#value" id="value" style="color: inherit; text-decoration: none;">
+					<h5><code>value</code></h5>
+				</a>
+				<p>The value of the field, it&#39;s the role of this function to provide the shape of the data we should expect for a fully resolved graph.</p>
+				<p>For <code>block</code> fields, this looks like an array of different shapes, which means it&#39;s the <code>blocks.build.value</code> function&#39;s responsibility to return a <code>union</code> array.</p>
+				<a href="#input" id="input" style="color: inherit; text-decoration: none;">
+					<h5><code>input</code></h5>
+				</a>
+				<p>When a mutation is made, the shape of this mutation needs to fit the shape create by this function.</p>
+				<a href="#resolvers" id="resolvers" style="color: inherit; text-decoration: none;">
+					<h3>Resolvers</h3>
+				</a>
+				<p><code>resolvers</code> can be thought of as the runtime siblings to <code>builders</code>. While it&#39;s the job of builders to define the &quot;graph&quot;, the resolvers are responsible for taking raw values (like those from a <code>.md</code> file) and shaping them so they fit the schema.</p>
+				<a href="#field-level-resolvers" id="field-level-resolvers" style="color: inherit; text-decoration: none;">
+					<h4>Field-level resolvers</h4>
+				</a>
+				<p>Again, similar to field-level builders, most of the work for resolving the data is passed on to the appropriate field to handle. So if you have a document like so:</p>
+				<pre><code class="language-md">---
+title: Hello, World!
+<span class="hljs-section">author: /authors/homer.md
+---</span></code></pre>
+				<p>It&#39;s template definition might look like:</p>
+				<pre><code class="language-yaml"><span class="hljs-attr">label:</span> <span class="hljs-string">Post</span>
+<span class="hljs-meta">---</span>
+<span class="hljs-attr">fields:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">title</span>
+    <span class="hljs-attr">label:</span> <span class="hljs-string">Title</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">text</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">author</span>
+    <span class="hljs-attr">label:</span> <span class="hljs-string">Author</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">select</span>
+    <span class="hljs-attr">config:</span>
+      <span class="hljs-attr">source:</span>
+        <span class="hljs-attr">type:</span> <span class="hljs-string">pages</span>
+        <span class="hljs-attr">section:</span> <span class="hljs-string">authors</span></code></pre>
+				<p>The <code>text.resolver</code> object will be responsible for resolving the values related to <code>title</code>:</p>
+				<a href="#field-1" id="field-1" style="color: inherit; text-decoration: none;">
+					<h5><code>field</code></h5>
+				</a>
+				<p>The <code>field</code> resolver provides the appropriate values for it&#39;s <code>field</code> builder counterpart. In the example above the <code>text.resolve.field</code> function would return:</p>
+				<pre><code class="language-json">{
+  <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;title&quot;</span>,
+  <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;Title&quot;</span>,
+  <span class="hljs-attr">&quot;component&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>
+}</code></pre>
+				<p>This would then be passed on to Tina for rendering on the client.</p>
+				<a href="#initialvalue-1" id="initialvalue-1" style="color: inherit; text-decoration: none;">
+					<h5><code>initialValue</code></h5>
+				</a>
+				<p>In the example above the <code>text.resolve.initialValue</code> would return &quot;Hello, World!&quot;</p>
+				<p>For blocks we need to return the object along with a <code>_template</code> key, this is used downstream to disambiguate which template the value comes from.</p>
+				<a href="#value-1" id="value-1" style="color: inherit; text-decoration: none;">
+					<h5><code>value</code></h5>
+				</a>
+				<p>In the example above the <code>text.resolve.value</code> would return &quot;Hello, World!&quot;, and again, for document references this would return the entire document being referenced, which may or may not be used depending on the graph fields requested</p>
+				<a href="#input-1" id="input-1" style="color: inherit; text-decoration: none;">
+					<h5><code>input</code></h5>
+				</a>
+				<p>Input resolvers don&#39;t do much (except in the case of blocks described later), since the GraphQL mutataion payload has all the necessary information, we just pass the value into these resolvers as a runtime type-check. In the future, this is where field-level validations can take place.</p>
+				<p><strong>Caveats with <code>blocks</code></strong>: <code>blocks</code> values are an array of unlike objects, meaning in order to enforce type-safe requests coming into the server, we need to use a somewhat awkward pattern (<a href="https://github.com/graphql/graphql-spec/blob/master/rfcs/InputUnion.md#-5-one-of-tagged-union">read more about the trade-offs here</a>) which we sort of need to rearrange once it hits the server.</p>
+				<a href="#architecture-diagram" id="architecture-diagram" style="color: inherit; text-decoration: none;">
+					<h2>Architecture Diagram</h2>
+				</a>
+				<iframe style="border:none" width="700" height="350" src="https://whimsical.com/embed/Kh28ULaAYKPRpeCLm3VG63@2Ux7TurymMtzhxz2sLxX"></iframe>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_builder_index_.html">&quot;builder/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_cache_index_.html">&quot;cache/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_datasources_datasource_.html">&quot;datasources/datasource&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_datasources_filesystem_manager_.html">&quot;datasources/filesystem-<wbr>manager&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_blocks_index_.html">&quot;fields/blocks/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_field_group_list_index_.html">&quot;fields/field-<wbr>group-<wbr>list/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_field_group_index_.html">&quot;fields/field-<wbr>group/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_index_.html">&quot;fields/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_list_index_.html">&quot;fields/list/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_select_index_.html">&quot;fields/select/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_test_util_.html">&quot;fields/test-<wbr>util&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_text_index_.html">&quot;fields/text/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_fields_textarea_index_.html">&quot;fields/textarea/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_resolver_field_resolver_.html">&quot;resolver/field-<wbr>resolver&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_resolver_index_.html">&quot;resolver/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_server_.html">&quot;server&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_types_.html">&quot;types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_util_.html">&quot;util&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,43 +1,9 @@
 import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
 import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
+import { transformPayload } from "./handle";
+import type { Field } from "tinacms";
 import Cookies from "js-cookie";
-
-const transform = (obj: any) => {
-  if (typeof obj === "boolean") {
-    return obj;
-  }
-  if (!obj) {
-    return "";
-  }
-  if (typeof obj == "string" || typeof obj === "number") {
-    return obj;
-  }
-
-  // FIXME unreliable
-  if (obj.hasOwnProperty("path")) {
-    return obj.path;
-  }
-  const { _template, __typename, ...rest } = obj;
-  if (_template) {
-    return { [_template.replace("FieldConfig", "Input")]: transform(rest) };
-  }
-
-  const accumulator = {};
-  Object.keys(rest)
-    .filter((key) => rest[key]) // remove items with null values
-    .forEach((key) => {
-      if (Array.isArray(rest[key])) {
-        accumulator[key] = rest[key].map((item) => {
-          return transform(item);
-        });
-      } else {
-        accumulator[key] = transform(rest[key]);
-      }
-    });
-
-  return accumulator;
-};
 
 interface AddProps {
   url: string;
@@ -57,7 +23,7 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/api/graphql";
+const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/graphql";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
 const DEFAULT_IDENTITY_HOST = "http://localhost:3000";
 
@@ -78,6 +44,8 @@ export class ForestryClient {
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
     this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
 
+    console.log("surl", this.serverURL);
+
     this.clientId = clientId;
   }
 
@@ -88,18 +56,33 @@ export class ForestryClient {
       }
     }`;
 
-    const transformedPayload = transform({
-      _template: friendlyFMTName(template, { suffix: "field_config" }),
-      data: payload,
-    });
+    // @ts-ignore
+    const values = this.transformPayload(payload, form);
 
     await this.request<AddVariables>(mutation, {
       variables: {
         path: path,
         template: template + ".yml",
-        params: transformedPayload,
+        params: values,
       },
     });
+  };
+
+  addPendingContent = async (props) => {
+    const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $section: String!) {
+      addPendingDocument(relativePath: $relativePath, template: $template, section: $section) {
+        path
+        relativePath
+        breadcrumbs(excludeExtension: true)
+        filename
+      }
+    }`;
+
+    const result = await this.request<AddVariables>(mutation, {
+      variables: props,
+    });
+
+    return result;
   };
 
   getQuery = async () => {
@@ -113,14 +96,55 @@ export class ForestryClient {
 
     return this.query;
   };
+  getSectionQuery = async () => {
+    if (!this.query) {
+      const data = await this.request(getIntrospectionQuery(), {
+        variables: {},
+      });
+
+      this.query = print(queryBuilder(buildClientSchema(data)));
+    }
+
+    return this.query;
+  };
+
+  listDocumentsBySection = async ({ section }: { section: string }) => {
+    const query = `
+    query DocumentQuery($section: String!) {
+      documents(section: $section) {
+        relativePath
+        breadcrumbs(excludeExtension: true)
+      }
+    }
+    `;
+    const result = await this.request(query, { variables: { section } });
+
+    return result.documents;
+  };
+
+  listSections = async () => {
+    const query = `
+    {
+      getSections {
+        slug
+        documents {
+          relativePath
+          breadcrumbs
+        }
+      }
+    }
+    `;
+    const result = await this.request(query, { variables: {} });
+
+    return result.getSections;
+  };
 
   getContent = async <T>({
     path,
   }: {
-    path: string;
+    path?: string;
   }): Promise<{
     data: T;
-    formConfig: any;
   }> => {
     const query = await this.getQuery();
     const data = await this.request(query, {
@@ -129,25 +153,55 @@ export class ForestryClient {
 
     return data;
   };
+  getContentForSection = async <T>({
+    relativePath,
+    section,
+  }: {
+    relativePath?: string;
+    section?: string;
+  }): Promise<{
+    data: T;
+  }> => {
+    const query = await this.getSectionQuery();
+    const data = await this.request(query, {
+      variables: { relativePath, section },
+    });
 
-  updateContent = async ({ path, payload }: { path: string; payload: any }) => {
-    const mutation = `mutation updateDocumentMutation($path: String!, $params: DocumentInput) {
-      updateDocument(path: $path, params: $params) {
+    return data;
+  };
+
+  transformPayload = async ({
+    payload,
+    form,
+  }: {
+    payload: any;
+    form: { fields: Field[] };
+  }) => {
+    return transformPayload(payload, form);
+  };
+
+  updateContent = async ({
+    relativePath,
+    section,
+    payload,
+    form,
+  }: {
+    relativePath: string;
+    section: string;
+    payload: any;
+    form: { fields: Field[] };
+  }) => {
+    const mutation = `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
+      updateDocument(relativePath: $relativePath, section: $section, params: $params) {
         __typename
       }
     }`;
-    const { _template, __typename, ...rest } = payload;
-
-    const transformedPayload = transform({
-      _template,
-      __typename,
-      data: rest,
-    });
-    // console.log(JSON.stringify(payload, null, 2));
-    // console.log(JSON.stringify(transformedPayload, null, 2));
+    const values = transformPayload(payload, form);
+    const variables = { relativePath, section, params: values };
 
     await this.request<UpdateVariables>(mutation, {
-      variables: { path: path, params: transformedPayload },
+      // @ts-ignore
+      variables,
     });
   };
 
@@ -215,3 +269,5 @@ export class ForestryClient {
 }
 
 export { useForestryForm } from "./useForestryForm";
+
+export { ForestryMediaStore } from "./media-store";

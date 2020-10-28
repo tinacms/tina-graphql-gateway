@@ -25,13 +25,14 @@
     "typescript": "^3.6.3"
   },
   "scripts": {
-    "build": "forestry-build",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
-    "watch": "forestry-watch",
     "generate:schema": "yarn node scripts/generateSchema.js"
   },
   "dependencies": {
+    "@forestryio/gql": "workspace:packages/gql",
     "@forestryio/graphql": "workspace:packages/graphql",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.17.0",
@@ -70,6 +71,7 @@
     "ora": "^4.0.2",
     "path": "^0.12.7",
     "simple-git": "1.124.0",
+    "tsup": "^3.7.0",
     "yaml": "^1.10.0",
     "yo": "^3.1.1"
   },
