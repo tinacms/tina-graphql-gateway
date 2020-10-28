@@ -7,9 +7,6 @@
     "dist/index.js",
     "src/fixtures/**/*"
   ],
-  "bin": {
-    "forestry:serve": "./dist/index.js"
-  },
   "scripts": {
     "build": "yarn tsup src/index.ts --format cjs --dts",
     "watch": "yarn tsup src/index.ts --watch --format cjs --dts",

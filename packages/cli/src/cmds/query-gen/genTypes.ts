@@ -3,13 +3,8 @@ import { generateTypes } from "../../codegen";
 import fs from "fs";
 
 export async function genTypes({ schema }: any, next: () => void, options) {
-  if (!options.typescript) {
-    next();
-    return;
-  }
-
   const typescriptTypes = await generateTypes(schema);
-  const typesPath = process.cwd() + "/.forestry/types.ts";
+  const typesPath = process.cwd() + "/.tina/types.ts";
 
   await fs.writeFileSync(
     typesPath,

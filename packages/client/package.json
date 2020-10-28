@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -13,7 +13,6 @@
     "graphiql": "next dev -p 3001"
   },
   "dependencies": {
-    "@forestryio/build": "workspace:packages/build",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@graphql-codegen/core": "^1.15.4",
     "@graphql-codegen/typescript": "^1.15.4",
@@ -43,7 +42,6 @@
     "typescript": "^3.9.5"
   },
   "devDependencies": {
-    "@forestryio/build": "workspace:packages/build",
     "@types/crypto-js": "^3.1.47",
     "@types/js-cookie": "^2.2.6",
     "@types/styled-components": "^5.1.3",

@@ -1,16 +1,8 @@
-import {
-  buildSchema as buildForestrySchema,
-  FileSystemManager,
-} from "@forestryio/graphql";
+import { buildSchema } from "@forestryio/gql";
 
 export async function attachSchema(ctx: any, next: () => void, options) {
   const rootPath = process.cwd();
-  const dataSource = new FileSystemManager(rootPath);
-
-  const { schema } = await buildForestrySchema(
-    { rootPath, siteLookup: "" },
-    dataSource
-  );
+  const schema = await buildSchema(rootPath);
 
   ctx.schema = schema;
   next();
