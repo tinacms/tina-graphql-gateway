@@ -3,12 +3,14 @@ import { chain } from "../middleware";
 import { genTypes, attachSchema, genQueries } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
 import { startServer } from "./start-server";
+import { playgroundServer } from "./start-server/playground";
 
 export const CMD_GEN_QUERY = "schema:gen-query";
 export const CMD_AUDIT = "schema:audit";
 export const CMD_DUMP = "schema:dump";
 export const CMD_MIGRATE = "schema:migrate";
 export const CMD_START_SERVER = "server:start";
+export const CMD_START_PLAYGROUND = "server:playground";
 
 const startServerPortOption = {
   name: "--port <port>",
@@ -25,6 +27,10 @@ const schemaDumpOption = {
 const migrateDryRunOption = {
   name: "--dry-run",
   description: "Audit the .forestry config without migrating",
+};
+const subCommand = {
+  name: "-c, --command <command>",
+  description: "The sub-command to run",
 };
 const typescriptOption = {
   name: "--typescript",
@@ -60,7 +66,13 @@ export const baseCmds: Command[] = [
   {
     command: CMD_START_SERVER,
     description: "Start Filesystem Graphql Server",
-    options: [startServerPortOption],
+    options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
+  },
+  {
+    command: CMD_START_PLAYGROUND,
+    description: "Start Graphql Playground Server",
+    options: [startServerPortOption, subCommand],
+    action: (options) => chain([playgroundServer], options),
   },
 ];

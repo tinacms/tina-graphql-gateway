@@ -1,0 +1,24 @@
+---
+label: Section
+hide_body: false
+fields:
+  - name: description
+    label: Description
+    type: textarea
+  - name: cta
+    label: Cta
+    type: field_group
+    config:
+      required: true
+    fields:
+      - name: header
+        label: Header
+        type: textarea
+  - name: authors
+    label: Authors
+    type: list
+    config:
+      use_select: true
+      source:
+        type: pages
+        section: authors

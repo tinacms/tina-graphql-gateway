@@ -21,8 +21,6 @@ fields:
     type: list
     config:
       use_select: false
-      min:
-      max:
     label: Anecdotes
     description: Something simple about their high-level achievements
   - name: accolades

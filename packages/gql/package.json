@@ -1,0 +1,73 @@
+{
+  "name": "@forestryio/gql",
+  "version": "0.0.7",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "src/fixtures/**/*"
+  ],
+  "bin": {
+    "forestry:serve": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "docs": "yarn typedoc",
+    "serve": "yarn nodemon dist/index.js",
+    "no-test": "jest --passWithNoTests",
+    "test-watch": "jest --watch"
+  },
+  "dependencies": {
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
+    "@graphql-tools/schema": "^6.2.1",
+    "@types/cors": "^2.8.7",
+    "@types/express": "^4.17.8",
+    "@types/fs-extra": "^9.0.2",
+    "@types/js-yaml": "^3.12.5",
+    "@types/lodash": "^4.14.161",
+    "@types/ws": "^7.2.6",
+    "@types/yup": "^0.29.7",
+    "body-parser": "^1.19.0",
+    "chokidar": "^3.4.2",
+    "chokidar-cli": "^2.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-graphql": "^0.11.0",
+    "fs-extra": "^9.0.1",
+    "graphql": "^15.3.0",
+    "graphql-tools": "^6.2.1",
+    "graphql-type-json": "^0.3.2",
+    "gray-matter": "^4.0.2",
+    "jest-diff": "^26.4.2",
+    "jest-matcher-utils": "^26.4.2",
+    "js-yaml": "^3.14.0",
+    "lodash": "^4.17.20",
+    "nodemon": "^2.0.4",
+    "rehype-format": "^3.1.0",
+    "rehype-stringify": "^8.0.0",
+    "remark-parse": "^9.0.0",
+    "remark-rehype": "^8.0.0",
+    "tslib": "^1.11.1",
+    "typedoc": "^0.19.2",
+    "typescript": "^3.8.3",
+    "unified": "^9.2.0",
+    "unist-util-remove-position": "^3.0.0",
+    "ws": "^7.3.1",
+    "yup": "^0.29.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "url": "https://github.com/forestryio/graphql-demo.git",
+    "directory": "packages/gql"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.4",
+    "@types/lodash.camelcase": "^4.3.6",
+    "@types/lodash.upperfirst": "^4.3.6",
+    "jest": "^26.1.0",
+    "ts-jest": "^26.1.2",
+    "tsup": "^3.6.1"
+  }
+}

@@ -1,0 +1,26 @@
+---
+label: Post
+hide_body: false
+display_field: title
+fields:
+  - name: title
+    label: Title
+    type: textarea
+    description: The name of your post, keep it short!
+    config:
+      required: false
+  - name: author
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: authors
+    label: Author
+  - name: sections
+    type: blocks
+    label: Sections
+    template_types:
+      - section
+pages:
+  - posts/1.md
