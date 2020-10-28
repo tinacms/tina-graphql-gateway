@@ -13,6 +13,31 @@ import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
+export const demo = async ({
+  fixtureFolder,
+  query,
+  variables,
+}: {
+  fixtureFolder: string;
+  query: string;
+  variables: object;
+}) => {
+  const fixturePath = path.join(__dirname, "..", "src", "fixtures");
+  const projectRoot = path.join(fixturePath, fixtureFolder);
+  const datasource = new FileSystemManager(projectRoot);
+  const cache = cacheInit(datasource);
+  const schema = await builder.schema({ cache });
+
+  const result = await graphqlInit({
+    schema: buildASTSchema(schema),
+    source: query,
+    contextValue: { datasource },
+    variableValues: variables,
+  });
+
+  return result;
+};
+
 export const startFixtureServer = async ({ port }: { port: number }) => {
   const app = express();
   const server = http.createServer(app);
@@ -43,6 +68,7 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
   app.post("/:schema", async (req, res) => {
     const { query, variables } = req.body;
 
+    const fixturePath = path.join(__dirname, "..", "src", "fixtures");
     const projectRoot = path.join(fixturePath, req.path);
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
