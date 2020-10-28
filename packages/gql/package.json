@@ -14,7 +14,7 @@
     "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/index.js",
-    "test": "jest --passWithNoTests",
+    "no-test": "jest --passWithNoTests",
     "test-watch": "jest --watch"
   },
   "dependencies": {
@@ -60,7 +60,7 @@
   },
   "repository": {
     "url": "https://github.com/forestryio/graphql-demo.git",
-    "directory": "packages/graphql"
+    "directory": "packages/gql"
   },
   "devDependencies": {
     "@types/jest": "^26.0.4",
