@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from "next";
-import { useForestryForm2 } from "../../.forestry/types";
+import { useForestryForm2 } from "../../.tina/types";
 import { getContent, getSlugs } from "../../utils/getStatics";
 
 const template = "authors";

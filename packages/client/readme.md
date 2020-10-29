@@ -250,7 +250,7 @@ import { usePlugin } from "tinacms";
 import { useForestryForm, ForestryClient } from "@forestryio/client";
 
 // These are your generated types from CLI
-import { DocumentUnion, Query } from "../../.forestry/types";
+import { DocumentUnion, Query } from "../../.tina/types";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
