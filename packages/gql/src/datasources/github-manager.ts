@@ -1,4 +1,3 @@
-import fs from "fs-extra";
 import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
@@ -28,25 +27,46 @@ import type {
 } from "../types";
 import { Octokit } from "@octokit/rest";
 
-const appOctoKit = new Octokit({
-  auth: "a2f579a8792838e87d225136f90668feef8b44a6",
-  // authStrategy: createAppAuth,
-  // auth: {
-  //   id: 83861,
-  //   privateKey: pk,
-  //   installationId: “12264194”,
-  //   clientId: GH_CLIENT,
-  //   clientSecret: GH_SECRET,
-  // },
-});
-
 export class GithubManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
   dirLoader: DataLoader<unknown, unknown, unknown>;
-  // appOctoKit: Octokit;
-  constructor(rootPath: string) {
+  repoConfig: {
+    owner: string;
+    repo: string;
+  };
+  appOctoKit: Octokit;
+  constructor({
+    rootPath,
+    accessToken,
+    owner,
+    repo,
+  }: {
+    rootPath: string;
+    accessToken: string;
+    owner: string;
+    repo: string;
+  }) {
+    // constructor(rootPath: string) {
     this.rootPath = rootPath;
+    const repoConfig = {
+      owner,
+      repo,
+    };
+    this.repoConfig = repoConfig;
+
+    const appOctoKit = new Octokit({
+      auth: accessToken,
+      // authStrategy: createAppAuth,
+      // auth: {
+      //   id: 83861,
+      //   privateKey: pk,
+      //   installationId: “12264194”,
+      //   clientId: GH_CLIENT,
+      //   clientSecret: GH_SECRET,
+      // },
+    });
+    this.appOctoKit = appOctoKit;
 
     // This is not an application cache - in-memory batching is its purpose
     // read a good conversation on it here https://github.com/graphql/dataloader/issues/62
@@ -57,8 +77,63 @@ export class GithubManager implements DataSource {
      * it ourselves is when there's a cached value as part of the mutation process, which then
      * needs to return the new value
      */
-    this.loader = new DataLoader(batchReadFileFunction);
-    this.dirLoader = new DataLoader(batchReadDirFunction);
+    this.loader = new DataLoader(async function (keys: readonly string[]) {
+      const results: { [key: string]: unknown } = {};
+      await Promise.all(
+        keys.map(async (path) => {
+          const extension = p.extname(path);
+
+          switch (extension) {
+            case ".yml":
+              const ymlContent = await appOctoKit.repos.getContent({
+                ...repoConfig,
+                path,
+              });
+
+              results[path] = parseMatter(
+                Buffer.from(ymlContent.data.content, "base64")
+              );
+              break;
+            case ".md":
+              const markdownContent = await appOctoKit.repos.getContent({
+                ...repoConfig,
+                path,
+              });
+              results[path] = parseMatter(
+                Buffer.from(markdownContent.data.content, "base64")
+              );
+              break;
+            default:
+              throw new Error(
+                `Unable to parse file, unknown extension ${extension} for path ${path}`
+              );
+          }
+        })
+      );
+      return keys.map(
+        (key) => results[key] || new Error(`No result for ${key}`)
+      );
+    });
+    this.dirLoader = new DataLoader(async function (keys: readonly string[]) {
+      const results: { [key: string]: unknown } = {};
+      await Promise.all(
+        keys.map(async (path) => {
+          const dirContents = await appOctoKit.repos.getContent({
+            ...repoConfig,
+            path,
+          });
+          if (Array.isArray(dirContents.data)) {
+            results[path] = dirContents.data.map((t) => t.name);
+          }
+
+          // TODO: An error I suppose
+          return [];
+        })
+      );
+      return keys.map(
+        (key) => results[key] || new Error(`No result for ${key}`)
+      );
+    });
 
     // Pretty bad behavior from gray-matter, without clearing this we'd run the risk
     // of returning cached objects from different projects. This is undocumented behavior
@@ -81,7 +156,7 @@ export class GithubManager implements DataSource {
       async (templateSlug) => await this.getTemplate(templateSlug)
     );
   getSettingsData = async () => {
-    const { data } = await readFile<Settings>(
+    const { data } = await this.readFile<Settings>(
       p.join(this.rootPath, ".tina/settings.yml"),
       this.loader
     );
@@ -163,7 +238,7 @@ export class GithubManager implements DataSource {
     }
 
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
-    return await readFile<TinaDocument>(fullPath, this.loader);
+    return await this.readFile<TinaDocument>(fullPath, this.loader);
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
     const sectionData = await this.getSettingsForSection(args.section);
@@ -171,7 +246,7 @@ export class GithubManager implements DataSource {
       throw new Error(`No section found for ${args.section}`);
     }
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
-    const templates = await readDir(fullPath, this.dirLoader);
+    const templates = await this.readDir(fullPath, this.dirLoader);
 
     const template = (
       await sequential(templates, async (template) => {
@@ -198,14 +273,14 @@ export class GithubManager implements DataSource {
     options: { namespace: boolean } = { namespace: true }
   ) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
-    const templates = await readDir(fullPath, this.dirLoader);
+    const templates = await this.readDir(fullPath, this.dirLoader);
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
     });
     if (!template) {
       throw new Error(`No template found for slug ${slug}`);
     }
-    const { data } = await readFile<RawTemplate>(
+    const { data } = await this.readFile<RawTemplate>(
       p.join(fullPath, template),
       this.loader
     );
@@ -228,9 +303,9 @@ export class GithubManager implements DataSource {
       ...templateData,
       pages: [...(templateData.pages ? templateData.pages : []), path],
     };
-    await writeFile(p.join(this.rootPath, path), "---");
+    await this.writeFile(p.join(this.rootPath, path), "---");
     const string = "---\n" + jsyaml.dump(updatedTemplateData);
-    await writeFile(p.join(fullPath, `${template}.yml`), string);
+    await this.writeFile(p.join(fullPath, `${template}.yml`), string);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
@@ -242,80 +317,62 @@ export class GithubManager implements DataSource {
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
     const string = matter.stringify("", params.data);
-    await fs.outputFile(fullPath, string);
+    await this.writeFile(fullPath, string);
   };
-}
 
-async function batchReadFileFunction(keys: readonly string[]) {
-  const results: { [key: string]: unknown } = {};
-  await Promise.all(
-    keys.map(async (key) => (results[key] = await internalReadFile(key)))
-  );
-  return keys.map((key) => results[key] || new Error(`No result for ${key}`));
-}
-async function batchReadDirFunction(keys: readonly string[]) {
-  const results: { [key: string]: unknown } = {};
-  await Promise.all(
-    keys.map(async (key) => (results[key] = await internalReadDir(key)))
-  );
-  return keys.map((key) => results[key] || new Error(`No result for ${key}`));
-}
-
-const readFile = async <T>(
-  path: string,
-  loader: DataLoader<unknown, unknown, unknown>
-): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // return await internalReadFile(path);
-  return await loader.load(path);
-};
-const internalReadFile = async <T>(path: string): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // console.log("internalRequest", path);
-  const extension = p.extname(path);
-
-  switch (extension) {
-    case ".yml":
-      const ymlContent = await appOctoKit.repos.getContent({
-        owner: "jeffsee55",
-        repo: "basic-schema",
-        path,
-      });
-
-      return parseMatter(Buffer.from(ymlContent.data.content, "base64"));
-    case ".md":
-      const markdownContent = await appOctoKit.repos.getContent({
-        owner: "jeffsee55",
-        repo: "basic-schema",
-        path,
-      });
-      return parseMatter(Buffer.from(markdownContent.data.content, "base64"));
-    default:
-      throw new Error(`Unable to parse file, unknown extension ${extension}`);
-  }
-};
-
-const writeFile = fs.outputFile;
-
-const readDir = async (
-  path: string,
-  loader: DataLoader<unknown, unknown, unknown>
-): Promise<string[]> => {
-  return loader.load(path);
-};
-const internalReadDir = async (path: string) => {
-  const dirContents = await appOctoKit.repos.getContent({
-    owner: "jeffsee55",
-    repo: "basic-schema",
-    path,
-  });
-  if (Array.isArray(dirContents.data)) {
-    return dirContents.data.map((t) => t.name);
+  async readFile<T>(
+    path: string,
+    loader: DataLoader<unknown, unknown, unknown>
+  ): Promise<T> {
+    // Uncomment to bypass dataloader for debugging
+    // return await internalReadFile(path);
+    return await loader.load(path);
   }
 
-  // TODO: An error I suppose
-  return [];
-};
+  async writeFile(path: string, content: string) {
+    // check if the file exists
+    let fileSha = undefined;
+    try {
+      const fileContent = await this.appOctoKit.repos.getContent({
+        ...this.repoConfig,
+        path: path,
+      });
+
+      fileSha = fileContent.data.sha;
+    } catch (e) {
+      console.log("No file exists, creating new one");
+    }
+
+    const response = await this.appOctoKit.repos.createOrUpdateFileContents({
+      ...this.repoConfig,
+      path: path,
+      message: "Update from GraphQL client",
+      content: new Buffer(content).toString("base64"),
+      sha: fileSha,
+    });
+
+    return response;
+  }
+
+  async readDir(
+    path: string,
+    loader: DataLoader<unknown, unknown, unknown>
+  ): Promise<string[]> {
+    return loader.load(path);
+  }
+  async internalReadDir(path: string) {
+    const dirContents = await this.appOctoKit.repos.getContent({
+      ...this.repoConfig,
+      path,
+    });
+    if (Array.isArray(dirContents.data)) {
+      return dirContents.data.map((t) => t.name);
+    }
+
+    // TODO: An error I suppose
+    return [];
+  }
+}
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {

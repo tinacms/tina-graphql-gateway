@@ -83,7 +83,12 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
 
     const fixturePath = path.join(__dirname, "..", "src", "fixtures");
     const projectRoot = path.join(fixturePath, req.path);
-    const datasource = new GithubManager("");
+    const datasource = new GithubManager({
+      rootPath: "",
+      accessToken: "a2f579a8792838e87d225136f90668feef8b44a6",
+      owner: "jeffsee55",
+      repo: "basic-schema",
+    });
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
     await fs.writeFileSync("./fs.graphql", print(schema));
