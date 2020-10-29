@@ -26,13 +26,28 @@ import type {
   TemplateData,
   WithFields,
 } from "../types";
+import { Octokit } from "@octokit/rest";
 
-export class FileSystemManager implements DataSource {
+const appOctoKit = new Octokit({
+  auth: "a2f579a8792838e87d225136f90668feef8b44a6",
+  // authStrategy: createAppAuth,
+  // auth: {
+  //   id: 83861,
+  //   privateKey: pk,
+  //   installationId: “12264194”,
+  //   clientId: GH_CLIENT,
+  //   clientSecret: GH_SECRET,
+  // },
+});
+
+export class GithubManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
   dirLoader: DataLoader<unknown, unknown, unknown>;
+  // appOctoKit: Octokit;
   constructor(rootPath: string) {
     this.rootPath = rootPath;
+
     // This is not an application cache - in-memory batching is its purpose
     // read a good conversation on it here https://github.com/graphql/dataloader/issues/62
 
@@ -261,11 +276,20 @@ const internalReadFile = async <T>(path: string): Promise<T> => {
 
   switch (extension) {
     case ".yml":
-      const ymlString = await fs.readFileSync(path);
-      return parseMatter(ymlString);
+      const ymlContent = await appOctoKit.repos.getContent({
+        owner: "jeffsee55",
+        repo: "basic-schema",
+        path,
+      });
+
+      return parseMatter(Buffer.from(ymlContent.data.content, "base64"));
     case ".md":
-      const markdownString = await fs.readFileSync(path);
-      return parseMatter(markdownString);
+      const markdownContent = await appOctoKit.repos.getContent({
+        owner: "jeffsee55",
+        repo: "basic-schema",
+        path,
+      });
+      return parseMatter(Buffer.from(markdownContent.data.content, "base64"));
     default:
       throw new Error(`Unable to parse file, unknown extension ${extension}`);
   }
@@ -280,7 +304,17 @@ const readDir = async (
   return loader.load(path);
 };
 const internalReadDir = async (path: string) => {
-  return await fs.readdirSync(path);
+  const dirContents = await appOctoKit.repos.getContent({
+    owner: "jeffsee55",
+    repo: "basic-schema",
+    path,
+  });
+  if (Array.isArray(dirContents.data)) {
+    return dirContents.data.map((t) => t.name);
+  }
+
+  // TODO: An error I suppose
+  return [];
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
