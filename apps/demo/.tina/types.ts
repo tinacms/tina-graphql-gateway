@@ -1176,6 +1176,11 @@ export type DocumentNodeUnion =
 
 import { useForestryForm } from "@forestryio/client";
 
-export const useForestryForm2 = (props, options) => {
-  return useForestryForm(props, options);
+export const useForestryForm2 = (
+  props,
+  options?: {
+    onSubmit: any;
+  }
+) => {
+  return useForestryForm<DocumentUnion>(props, options);
 };
