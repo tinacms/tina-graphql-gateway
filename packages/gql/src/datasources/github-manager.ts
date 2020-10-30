@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
 import { slugify } from "../util";
 import DataLoader from "dataloader";
+import LRU from "lru-cache";
 
 import { byTypeWorks } from "../types";
 import { FieldGroupField } from "../fields/field-group";
@@ -26,6 +27,49 @@ import type {
   WithFields,
 } from "../types";
 import { Octokit } from "@octokit/rest";
+
+const cache = new LRU<string, string | string[]>({
+  max: 50,
+  length: function (v: string, key) {
+    return v.length;
+  },
+});
+
+export const clearCache = ({
+  owner,
+  repo,
+}: {
+  owner: string;
+  repo: string;
+}) => {
+  const repoPrefix = `${owner}:${repo}__`;
+  console.log("clearing cache for ", repoPrefix);
+  cache.forEach((value, key, cache) => {
+    if (key.startsWith(repoPrefix)) {
+      console.log("clearing key", key);
+      cache.del(key);
+    }
+  });
+};
+
+const getAndSetFromCache = async (
+  { owner, repo }: { owner: string; repo: string },
+  key: string,
+  setter: () => string | string[]
+) => {
+  const keyName = `${owner}:${repo}__${key}`;
+  const value = cache.get(keyName);
+
+  if (value) {
+    console.log("getting from cache", keyName);
+    return value;
+  } else {
+    console.log("item not in cache", keyName);
+    const valueToCache = await setter();
+    cache.set(keyName, valueToCache);
+    return valueToCache;
+  }
+};
 
 export class GithubManager implements DataSource {
   rootPath: string;
@@ -82,26 +126,21 @@ export class GithubManager implements DataSource {
       await Promise.all(
         keys.map(async (path) => {
           const extension = p.extname(path);
-
           switch (extension) {
-            case ".yml":
-              const ymlContent = await appOctoKit.repos.getContent({
-                ...repoConfig,
-                path,
-              });
-
-              results[path] = parseMatter(
-                Buffer.from(ymlContent.data.content, "base64")
-              );
-              break;
             case ".md":
-              const markdownContent = await appOctoKit.repos.getContent({
-                ...repoConfig,
-                path,
+            case ".yml":
+              results[path] = await getAndSetFromCache(repoConfig, path, () => {
+                return appOctoKit.repos
+                  .getContent({
+                    ...repoConfig,
+                    path,
+                  })
+                  .then((response) => {
+                    return parseMatter(
+                      Buffer.from(response.data.content, "base64")
+                    );
+                  });
               });
-              results[path] = parseMatter(
-                Buffer.from(markdownContent.data.content, "base64")
-              );
               break;
             default:
               throw new Error(
@@ -118,13 +157,18 @@ export class GithubManager implements DataSource {
       const results: { [key: string]: unknown } = {};
       await Promise.all(
         keys.map(async (path) => {
-          const dirContents = await appOctoKit.repos.getContent({
-            ...repoConfig,
-            path,
+          results[path] = await getAndSetFromCache(repoConfig, path, () => {
+            return appOctoKit.repos
+              .getContent({
+                ...repoConfig,
+                path,
+              })
+              .then((dirContents) => {
+                if (Array.isArray(dirContents.data)) {
+                  return dirContents.data.map((t) => t.name);
+                }
+              });
           });
-          if (Array.isArray(dirContents.data)) {
-            results[path] = dirContents.data.map((t) => t.name);
-          }
 
           // TODO: An error I suppose
           return [];
