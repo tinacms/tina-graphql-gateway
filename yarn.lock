@@ -2154,6 +2154,7 @@ __metadata:
     "@types/lodash": ^4.14.161
     "@types/lodash.camelcase": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
+    "@types/lru-cache": ^5.1.0
     "@types/ws": ^7.2.6
     "@types/yup": ^0.29.7
     body-parser: ^1.19.0
@@ -2173,6 +2174,7 @@ __metadata:
     jest-matcher-utils: ^26.4.2
     js-yaml: ^3.14.0
     lodash: ^4.17.20
+    lru-cache: ^6.0.0
     nodemon: ^2.0.4
     rehype-format: ^3.1.0
     rehype-stringify: ^8.0.0

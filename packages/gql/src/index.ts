@@ -12,8 +12,9 @@ import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
-import { GithubManager } from "./datasources/github-manager";
+import { GithubManager, clearCache } from "./datasources/github-manager";
 
+export { clearCache };
 export const githubRoute = async ({
   accessToken,
   owner,
