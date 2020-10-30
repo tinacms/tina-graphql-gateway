@@ -10,9 +10,44 @@ import bodyParser from "body-parser";
 import { builder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
-import { buildASTSchema, print } from "graphql";
+import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 import { GithubManager } from "./datasources/github-manager";
+
+export const githubRoute = async ({
+  owner,
+  repo,
+  query,
+  variables,
+}: {
+  owner: string;
+  repo: string;
+  query: string;
+  variables: object;
+}) => {
+  const datasource = new GithubManager({
+    rootPath: "",
+    accessToken: "a2f579a8792838e87d225136f90668feef8b44a6",
+    owner,
+    repo,
+  });
+  const cache = cacheInit(datasource);
+  const schema = await builder.schema({ cache });
+
+  console.log("done...");
+
+  const result = await graphqlInit({
+    schema: buildASTSchema(schema),
+    source: query,
+    contextValue: { datasource: datasource },
+    variableValues: variables,
+  });
+  if (result.errors) {
+    console.error(result.errors);
+  }
+
+  return result;
+};
 
 export const buildSchema = async (projectRoot: string) => {
   const datasource = new FileSystemManager(projectRoot);
@@ -91,7 +126,6 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
     });
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
-    await fs.writeFileSync("./fs.graphql", print(schema));
 
     // const datasource2 = new FileSystemManager(projectRoot);
     // const cache2 = cacheInit(datasource2);
