@@ -15,19 +15,21 @@ import { FileSystemManager } from "./datasources/filesystem-manager";
 import { GithubManager } from "./datasources/github-manager";
 
 export const githubRoute = async ({
+  accessToken,
   owner,
   repo,
   query,
   variables,
 }: {
+  accessToken: string;
   owner: string;
   repo: string;
   query: string;
   variables: object;
 }) => {
   const datasource = new GithubManager({
-    rootPath: "",
-    accessToken: "a2f579a8792838e87d225136f90668feef8b44a6",
+    rootPath: "", // FIXME: no need for this
+    accessToken,
     owner,
     repo,
   });
