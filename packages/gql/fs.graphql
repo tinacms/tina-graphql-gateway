@@ -1,0 +1,319 @@
+union Posts_DocumentUnion = Post | Section
+
+type Posts_DocumentNode {
+  path: String
+  relativePath: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  basename: String
+  extension: String
+  filename: String
+  node: Posts_DocumentUnion
+}
+
+union Authors_DocumentUnion = Author
+
+type Authors_DocumentNode {
+  path: String
+  relativePath: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  basename: String
+  extension: String
+  filename: String
+  node: Authors_DocumentUnion
+}
+
+type Query {
+  getPostsDocument(relativePath: String): Posts_DocumentNode
+  getPostsDocuments(first: Int, after: String, last: Int, before: String): [Posts_DocumentNode]
+  getAuthorsDocument(relativePath: String): Authors_DocumentNode
+  getAuthorsDocuments(first: Int, after: String, last: Int, before: String): [Authors_DocumentNode]
+  document(relativePath: String, section: String): DocumentNode
+  documents(section: String): [DocumentNode]
+  getSections: [SectionUnion]
+  getSection(section: String): SectionUnion
+  documentList(directory: String): [String]
+  documentListBySection(section: String): [DocumentNode]
+  media(path: String): String
+  mediaList(directory: String): [String]
+}
+
+type Mutation {
+  updateDocument(relativePath: String, section: String, params: DocumentInput): DocumentNode
+  addPendingDocument(relativePath: String, section: String, template: String): DocumentNode
+}
+
+input Section_Cta_InputData {
+  header: String
+}
+
+input Section_InputData {
+  template: String
+  description: String
+  cta: Section_Cta_InputData
+  authors: [String]
+}
+
+input Section_DocumentInput {
+  Section_InputData: Section_InputData
+}
+
+input Post_InputData {
+  title: String
+  author: String
+  sections: [Section_DocumentInput]
+}
+
+input Post_Input {
+  data: Post_InputData
+  content: String
+}
+
+input Section_Input {
+  data: Section_InputData
+  content: String
+}
+
+input Author_Accolades_InputData {
+  figure: String
+  description: String
+}
+
+input Author_InputData {
+  name: String
+  role: String
+  anecdotes: [String]
+  favorite_posts: [String]
+  all_time_post: String
+  accolades: [Author_Accolades_InputData]
+}
+
+input Author_Input {
+  data: Author_InputData
+  content: String
+}
+
+input DocumentInput {
+  Post_Input: Post_Input
+  Section_Input: Section_Input
+  Author_Input: Author_Input
+}
+
+type TextareaField {
+  name: String
+  label: String
+  component: String
+}
+
+type SelectField {
+  name: String
+  label: String
+  component: String
+  options: [String]
+}
+
+union Section_Cta_FormFields = TextareaField
+
+type Section_Cta_GroupField {
+  name: String
+  label: String
+  component: String
+  fields: [Section_Cta_FormFields]
+}
+
+type TextField {
+  name: String
+  label: String
+  component: String
+}
+
+union List_FormFieldsUnion = TextField | SelectField
+
+type ListField {
+  name: String
+  label: String
+  component: String
+  defaultItem: String
+  field: List_FormFieldsUnion
+}
+
+union Section_FormFields = TextareaField | Section_Cta_GroupField | ListField
+
+type Section_Form {
+  label: String
+  name: String
+  fields: [Section_FormFields]
+}
+
+type Post_Sections_BlocksFieldTemplates {
+  section: Section_Form
+}
+
+type Post_Sections_BlocksField {
+  name: String
+  label: String
+  component: String
+  templates: Post_Sections_BlocksFieldTemplates
+}
+
+union Post_FormFields = TextareaField | SelectField | Post_Sections_BlocksField
+
+type Post_Form {
+  label: String
+  name: String
+  fields: [Post_FormFields]
+}
+
+type LongTextValue {
+  raw: String
+  markdownAst: String
+  html: String
+}
+
+type Section_Cta_Data {
+  header: LongTextValue
+}
+
+type Section_Data {
+  description: LongTextValue
+  cta: Section_Cta_Data
+  authors: [Authors_DocumentNode]
+}
+
+union Section_DataUnion = Section_Data
+
+type Post_Data {
+  title: LongTextValue
+  author: Authors_DocumentNode
+  sections: [Section_DataUnion]
+}
+
+type Section_Cta_InitialValues {
+  header: String
+}
+
+type Section_InitialValues {
+  _template: String
+  description: String
+  cta: Section_Cta_InitialValues
+  authors: [String]
+}
+
+union Section_InitialValuesUnion = Section_InitialValues
+
+type Post_InitialValues {
+  title: String
+  author: String
+  sections: [Section_InitialValuesUnion]
+}
+
+type Post {
+  form: Post_Form
+  data: Post_Data
+  initialValues: Post_InitialValues
+}
+
+type Section {
+  form: Section_Form
+  data: Section_Data
+  initialValues: Section_InitialValues
+}
+
+union Author_Accolades_FormFields = TextareaField
+
+type Author_Accolades_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_Accolades_FormFields]
+}
+
+union Author_FormFields = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
+
+type Author_Form {
+  label: String
+  name: String
+  fields: [Author_FormFields]
+}
+
+type Author_Accolades_Data {
+  figure: LongTextValue
+  description: LongTextValue
+}
+
+type Author_Data {
+  name: LongTextValue
+  role: String
+  anecdotes: [String]
+  favorite_posts: [Authors_DocumentNode]
+  all_time_post: Posts_DocumentNode
+  accolades: [Author_Accolades_Data]
+}
+
+type Author_Accolades_InitialValues {
+  figure: String
+  description: String
+}
+
+type Author_InitialValues {
+  name: String
+  role: String
+  anecdotes: [String]
+  favorite_posts: [String]
+  all_time_post: String
+  accolades: [Author_Accolades_InitialValues]
+}
+
+type Author {
+  form: Author_Form
+  data: Author_Data
+  initialValues: Author_InitialValues
+}
+
+union DocumentUnion = Post | Section | Author
+
+type DocumentNode {
+  path: String
+  relativePath: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  basename: String
+  extension: String
+  filename: String
+  node: DocumentUnion
+}
+
+type SectionUnion {
+  type: String
+  path: String
+  label: String
+  create: String
+  match: String
+  templates: [String]
+  slug: String
+  documents: [DocumentNode]
+}
+
+union Posts_DocumentNodeUnion = Post | Section
+
+type Posts_Section {
+  path: String
+  relativePath: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  basename: String
+  extension: String
+  filename: String
+  node: Posts_DocumentNodeUnion
+}
+
+union Authors_DocumentNodeUnion = Author
+
+type Authors_Section {
+  path: String
+  relativePath: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  basename: String
+  extension: String
+  filename: String
+  node: Authors_DocumentNodeUnion
+}
+
+union DocumentNodeUnion = Posts_Section | Authors_Section
