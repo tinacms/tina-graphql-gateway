@@ -306,13 +306,22 @@ const buildInlineFragment = (
               },
             },
           ]
-        : fields
-            .filter((field) => {
-              return true;
-            })
-            .map((field) => {
-              return buildField(field, astNode, depth, items);
-            }),
+        : [
+            {
+              kind: "Field",
+              name: {
+                kind: "Name",
+                value: "__typename",
+              },
+            },
+            ...fields
+              .filter((field) => {
+                return true;
+              })
+              .map((field) => {
+                return buildField(field, astNode, depth, items);
+              }),
+          ],
     },
   };
 };

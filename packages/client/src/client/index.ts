@@ -44,8 +44,6 @@ export class ForestryClient {
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
     this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
 
-    console.log("surl", this.serverURL);
-
     this.clientId = clientId;
   }
 
@@ -244,7 +242,7 @@ export class ForestryClient {
     return Cookies.get(cookieName);
   }
 
-  private async request<VariableType>(
+  async request<VariableType>(
     query: string,
     { variables }: { variables: VariableType }
   ) {

@@ -73,15 +73,12 @@ export const list = {
     },
     value: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
 
       let list;
       switch (listTypeIdentifier) {
@@ -118,15 +115,12 @@ export const list = {
       const { ...rest } = field;
 
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
       let defaultItem = "";
 
       // FIXME this should be a subset type of TinaField,
@@ -198,21 +192,19 @@ export const list = {
     > => {
       assertIsStringArray(value);
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
       let list;
       switch (listTypeIdentifier) {
         case "documents":
           list = field as DocumentList;
           throw new Error(`document list not implemented`);
         case "pages":
+          // FIXME - get it
           list = field as SectionList;
           return {
             _resolver: "_resource",

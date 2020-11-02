@@ -42,7 +42,7 @@ export const textarea = {
           name,
           fields: [
             gql.field({ name: "raw", type: "String" }),
-            gql.field({ name: "markdownAst", type: "String" }),
+            gql.field({ name: "markdownAst", type: "JSONObject" }),
             gql.field({ name: "html", type: "String" }),
           ],
         })
@@ -100,10 +100,10 @@ export const textarea = {
       const html = await toHTML({
         contents: value,
       });
-      const markdownAstString = JSON.stringify(contents);
+      // const markdownAstString = JSON.stringify(contents);
       return {
         raw: value,
-        markdownAst: markdownAstString,
+        markdownAst: contents,
         html: html,
       };
     },

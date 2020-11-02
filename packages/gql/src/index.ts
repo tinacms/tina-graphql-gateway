@@ -89,7 +89,13 @@ export const demo = async ({
   }
 };
 
-export const startFixtureServer = async ({ port }: { port: number }) => {
+export const startFixtureServer = async ({
+  port,
+  root,
+}: {
+  port: number;
+  root?: string;
+}) => {
   const app = express();
   const server = http.createServer(app);
 
@@ -108,6 +114,7 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
   app.use(bodyParser.json());
 
   const fixturePath = path.join(__dirname, "..", "src", "fixtures");
+
   app.get("/list-projects", async (req, res) => {
     return res.json(
       await fs.readdirSync(fixturePath).map((folderName) => {
@@ -120,13 +127,8 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
     const { query, variables } = req.body;
 
     const fixturePath = path.join(__dirname, "..", "src", "fixtures");
-    const projectRoot = path.join(fixturePath, req.path);
-    const datasource = new GithubManager({
-      rootPath: "",
-      accessToken: "a2f579a8792838e87d225136f90668feef8b44a6",
-      owner: "jeffsee55",
-      repo: "basic-schema",
-    });
+    const projectRoot = root ? root : path.join(fixturePath, req.path);
+    const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
 

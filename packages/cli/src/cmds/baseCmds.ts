@@ -32,6 +32,11 @@ const subCommand = {
   name: "-c, --command <command>",
   description: "The sub-command to run",
 };
+const pathOption = {
+  name: "--root",
+  description:
+    "Specify to use the .tina folder in the root of your repository for the schema",
+};
 
 export const baseCmds: Command[] = [
   {
@@ -67,7 +72,7 @@ export const baseCmds: Command[] = [
   {
     command: CMD_START_PLAYGROUND,
     description: "Start Graphql Playground Server",
-    options: [startServerPortOption, subCommand],
+    options: [startServerPortOption, subCommand, pathOption],
     action: (options) => chain([playgroundServer], options),
   },
 ];

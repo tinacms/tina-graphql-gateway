@@ -1,0 +1,33 @@
+---
+label: Section Index
+hide_body: true
+fields:
+  - name: body
+    type: textarea
+    default: ""
+    config:
+      required: false
+      wysiwyg: true
+      schema:
+        format: markdown
+    label: Body
+  - name: limit
+    type: number
+    label: Limit
+    default: 0
+    config:
+      required: true
+  - name: section
+    type: select
+    config:
+      required: false
+      options:
+        - posts
+        - pages
+        - authors
+      source:
+        type: simple
+    label: Section
+    description: >-
+      Choose the section you want to use for indexing. <br><br><em>(Keep this
+      option list up-to-date)</em>
