@@ -12,6 +12,44 @@ import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
+import { GithubManager } from "./datasources/github-manager";
+
+export const githubRoute = async ({
+  accessToken,
+  owner,
+  repo,
+  query,
+  variables,
+}: {
+  accessToken: string;
+  owner: string;
+  repo: string;
+  query: string;
+  variables: object;
+}) => {
+  const datasource = new GithubManager({
+    rootPath: "", // FIXME: no need for this
+    accessToken,
+    owner,
+    repo,
+  });
+  const cache = cacheInit(datasource);
+  const schema = await builder.schema({ cache });
+
+  console.log("done...");
+
+  const result = await graphqlInit({
+    schema: buildASTSchema(schema),
+    source: query,
+    contextValue: { datasource: datasource },
+    variableValues: variables,
+  });
+  if (result.errors) {
+    console.error(result.errors);
+  }
+
+  return result;
+};
 
 export const buildSchema = async (projectRoot: string) => {
   const datasource = new FileSystemManager(projectRoot);
@@ -82,14 +120,26 @@ export const startFixtureServer = async ({ port }: { port: number }) => {
 
     const fixturePath = path.join(__dirname, "..", "src", "fixtures");
     const projectRoot = path.join(fixturePath, req.path);
-    const datasource = new FileSystemManager(projectRoot);
+    const datasource = new GithubManager({
+      rootPath: "",
+      accessToken: "a2f579a8792838e87d225136f90668feef8b44a6",
+      owner: "jeffsee55",
+      repo: "basic-schema",
+    });
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
+
+    // const datasource2 = new FileSystemManager(projectRoot);
+    // const cache2 = cacheInit(datasource2);
+    // const schema2 = await builder.schema({ cache: cache2 });
+    // await fs.writeFileSync("./fs.graphql", print(schema2));
+
+    console.log("done...");
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
-      contextValue: { datasource },
+      contextValue: { datasource: datasource },
       variableValues: variables,
     });
     if (result.errors) {
@@ -125,6 +175,7 @@ export const startServer = async ({ port }: { port: number }) => {
     const { query, variables } = req.body;
 
     const projectRoot = process.cwd();
+    // const projectRoot = "/Users/jeffsee/code/graphql-demo/apps/demo";
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const schema = await builder.schema({ cache });
@@ -141,8 +192,11 @@ export const startServer = async ({ port }: { port: number }) => {
     return res.json(result);
   });
 
-  console.log("listen on", port);
   server.listen(port, () => {
     console.info(`Listening on http://localhost:${port}`);
   });
 };
+
+// startServer({ port: 4001 });
+
+// startFixtureServer({ port: 4002 });

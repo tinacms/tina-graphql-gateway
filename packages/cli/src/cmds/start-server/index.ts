@@ -12,13 +12,15 @@ export async function startServer(
   _next,
   { port = 4001, command }: Options
 ) {
-  const commands = command.split(" ");
+  if (typeof command === "string") {
+    const commands = command.split(" ");
+    const ps = childProcess.spawn(commands[0], [commands[1]], {
+      stdio: "inherit",
+    });
+    ps.on("close", (code) => {
+      console.log(`child process exited with code ${code}`);
+      process.exit(1);
+    });
+  }
   await gqlStartServer({ port });
-  const ps = childProcess.spawn(commands[0], [commands[1]], {
-    stdio: "inherit",
-  });
-  ps.on("close", (code) => {
-    console.log(`child process exited with code ${code}`);
-    process.exit(1);
-  });
 }
