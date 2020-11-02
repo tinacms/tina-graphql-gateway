@@ -77,6 +77,38 @@ export const Sidebar = ({
     listSections();
   }, [project]);
 
+  const [_modalState, modalSend, modalClassNames] = useToggleMachine({
+    outerClasses: {
+      closed: { className: "pointer-events-none" },
+    },
+    overlayClasses: {
+      className: "transition-opacity ease-linear duration-300",
+      opened: {
+        className: "opacity-100",
+      },
+      closed: {
+        className: "opacity-0 pointer-events-none",
+      },
+    },
+    closeButton: {
+      opened: {
+        className: "block",
+      },
+      closed: {
+        className: "hidden",
+      },
+    },
+
+    menuClasses: {
+      className: "transition ease-in-out duration-300 transform",
+      opened: {
+        className: "opacity-100 translate-y-0 sm:scale-100",
+      },
+      closed: {
+        className: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+      },
+    },
+  });
   const [_, send, classNames] = useToggleMachine({
     outerClasses: {
       closed: { className: "pointer-events-none" },
@@ -124,6 +156,7 @@ export const Sidebar = ({
 
   return (
     <>
+      <ConfigModal classNames={modalClassNames} />
       {/* Off-canvas menu for mobile */}
       <div className="md:hidden">
         <div className={`fixed inset-0 flex z-40 ${classNames.outerClasses}`}>
@@ -268,10 +301,10 @@ export const Sidebar = ({
                                 alt=""
                               />
                               <div className="flex-1">
-                                <h2 className="text-gray-900 text-sm leading-5 font-medium">
+                                <h2 className="text-gray-900 text-sm leading-5 font-medium text-left">
                                   {project.label}
                                 </h2>
-                                <p className="text-gray-500 text-sm leading-5 truncate">
+                                <p className="text-gray-500 text-sm leading-5 truncate text-left">
                                   {project.value}
                                 </p>
                               </div>
@@ -282,6 +315,37 @@ export const Sidebar = ({
                     </Link>
                   );
                 })}
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      sendRealm("CLOSE");
+                      modalSend("OPEN");
+                    }}
+                    type="button"
+                    className="group w-full rounded-md px-3.5 py-2 text-sm leading-5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-500 focus:outline-none focus:bg-gray-200 focus:border-blue-300 active:bg-gray-50 active:text-gray-800 transition ease-in-out duration-150"
+                    id="options-menu"
+                    aria-haspopup="true"
+                    aria-expanded="true"
+                  >
+                    <div className="flex w-full justify-between items-center">
+                      <div className="flex items-center justify-between space-x-3">
+                        <img
+                          className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"
+                          src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                          alt=""
+                        />
+                        <div className="flex-1">
+                          <h2 className="text-gray-900 text-sm leading-5 font-medium text-left">
+                            Config
+                          </h2>
+                          <p className="text-gray-500 text-sm leading-5 truncate text-left">
+                            Add config
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -467,4 +531,85 @@ const Icon = ({ glyph }: { glyph: Icon }) => {
         </svg>
       );
   }
+};
+
+export const ConfigModal = ({ classNames }) => {
+  const serverURLRef = React.createRef();
+  const clientIDRef = React.createRef();
+  return (
+    <div
+      className={`fixed z-10 inset-0 overflow-y-auto ${classNames.outerClasses}`}
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          window.location = `external/${encodeURIComponent(
+            serverURLRef.current.value
+          )}/${clientIDRef.current.value}`;
+        }}
+      >
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div
+            className={`fixed inset-0 transition-opacity ${classNames.overlayClasses}`}
+          >
+            <div className="absolute inset-0 bg-gray-500 opacity-75" />
+          </div>
+          <span className="hidden sm:inline-block sm:align-middle sm:h-screen" />
+          ​
+          <div
+            className={`inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6 ${classNames.menuClasses}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
+            <div className="mx-auto flex items-center justify-center text-lg font-bold mb-4">
+              Provide a URL and optional Client ID
+            </div>
+            <div>
+              <label
+                htmlFor="serverURL"
+                className="block text-sm font-medium leading-5 text-gray-700"
+              >
+                Server URL
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <input
+                  ref={serverURLRef}
+                  id="serverURL"
+                  className="form-input block w-full sm:text-sm sm:leading-5"
+                  placeholder="http://localhost:4002"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="clientID"
+                  className="block text-sm font-medium leading-5 text-gray-700 mt-4"
+                >
+                  Client ID
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    ref={clientIDRef}
+                    id="clientID"
+                    className="form-input block w-full sm:text-sm sm:leading-5"
+                    placeholder="abc-123"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 sm:mt-6">
+              <span className="flex w-full rounded-md shadow-sm">
+                <button
+                  type="submit"
+                  className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                >
+                  Go back to dashboard
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
 };
