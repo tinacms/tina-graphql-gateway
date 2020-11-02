@@ -17,9 +17,10 @@ export function useForestryForm<T>(
   },
   options = { onSubmit: null }
 ): T {
+  const [documentData, setDocumentData] = React.useState(props.document);
   const cms = useCMS();
 
-  const { __typename, form, initialValues } = props.document.node;
+  const { __typename, form, data, initialValues } = props.document.node;
 
   const [modifiedValues, tinaForm] = useForm({
     id: "tina-tutorial-index",
@@ -50,12 +51,21 @@ export function useForestryForm<T>(
             options.onSubmit(values, payload);
           }
         : async (values) => {
-            cms.api.forestry.updateContent({
+            await cms.api.forestry.updateContent({
               relativePath: props.relativePath,
               section: props.section,
               payload: values,
               form: form,
             });
+
+            const d = await cms.api.forestry.request(props.query, {
+              variables: {
+                relativePath: props.relativePath,
+                section: props.section,
+              },
+            });
+            console.log(d);
+            setDocumentData(d.document);
           },
   });
 
@@ -123,9 +133,8 @@ export function useForestryForm<T>(
   usePlugin(createPagePlugin);
   usePlugin(tinaForm);
 
+  // console.log(documentData.node);
+  return documentData.node;
   // @ts-ignore
-  return {
-    __typename,
-    data: modifiedValues,
-  } as T;
+  return props.document.node as T;
 }

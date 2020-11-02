@@ -6,6 +6,16 @@ import {
 import { argsToArgsConfig } from "graphql/type/definition";
 
 export const gql = {
+  scalar: (name: string) => {
+    return {
+      kind: "ScalarTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      directives: [],
+    };
+  },
   string: (name: string) => {
     return {
       kind: "FieldDefinition" as const,

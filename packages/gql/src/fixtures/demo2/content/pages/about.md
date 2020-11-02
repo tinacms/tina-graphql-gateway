@@ -1,5 +1,5 @@
 ---
-title: About7
+title: About
 blocks:
   - template: sidecar
     text: >-
