@@ -22,16 +22,17 @@ interface AddVariables {
   params?: any;
 }
 
-const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX = "auth.ca-central-1.amazoncognito.com"
+const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX =
+  "auth.ca-central-1.amazoncognito.com";
 
 interface ServerOptions {
-  realm: string, 
-  clientId: string, 
-  redirectURI: string,
+  realm: string;
+  clientId: string;
+  redirectURI: string;
   customAPI?: string;
-  identityProxy?: string
-  getTokenFn?: () => string,
-  tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM",
+  identityProxy?: string;
+  getTokenFn?: () => string;
+  tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
 export class ForestryClient {
@@ -39,43 +40,47 @@ export class ForestryClient {
   oauthHost: string;
   clientId: string;
   query: string;
-  redirectURI: string
+  redirectURI: string;
   setToken: (_token: string) => void;
   private getToken: () => string;
-  private token: string // used with memory storage
+  private token: string; // used with memory storage
 
-  constructor({ tokenStorage = "MEMORY", ...options}: ServerOptions) {
-    const _this = this
-    this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
-    this.oauthHost = options.identityProxy || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`;
-    this.redirectURI = options.redirectURI
+  constructor({ tokenStorage = "MEMORY", ...options }: ServerOptions) {
+    const _this = this;
+    (this.serverURL =
+      options.customAPI ||
+      `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`),
+      (this.oauthHost =
+        options.identityProxy ||
+        `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);
+    this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
 
-    switch(tokenStorage)
-    {
-      case 'LOCAL_STORAGE': 
-        this.getToken = function() {
-          return localStorage.getItem(AUTH_TOKEN_KEY) || null
-        }
-        this.setToken = function(token: string) {
-          localStorage.setItem(AUTH_TOKEN_KEY, token)
-        }
+    switch (tokenStorage) {
+      case "LOCAL_STORAGE":
+        this.getToken = function () {
+          return localStorage.getItem(AUTH_TOKEN_KEY) || null;
+        };
+        this.setToken = function (token: string) {
+          localStorage.setItem(AUTH_TOKEN_KEY, token);
+        };
         break;
-      case 'MEMORY':
-        this.getToken = function() {
-          return _this.token
-        }
-        this.setToken = function(token: string) {
-          _this.token = token
-        }
+      case "MEMORY":
+        this.getToken = function () {
+          return _this.token;
+        };
+        this.setToken = function (token: string) {
+          _this.token = token;
+        };
         break;
-      case 'CUSTOM':
-        if(!options.getTokenFn)
-        {
-          throw new Error("When CUSTOM token storage is selected, a getTokenFn must be provided")
+      case "CUSTOM":
+        if (!options.getTokenFn) {
+          throw new Error(
+            "When CUSTOM token storage is selected, a getTokenFn must be provided"
+          );
         }
-        this.getToken = options.getTokenFn
-         break;
+        this.getToken = options.getTokenFn;
+        break;
     }
   }
 
@@ -242,9 +247,13 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    const token = await authenticate(this.clientId, this.oauthHost,this.redirectURI);
-    this.setToken(token)
-    return token
+    const token = await authenticate(
+      this.clientId,
+      this.oauthHost,
+      this.redirectURI
+    );
+    this.setToken(token);
+    return token;
   }
 
   async getUser() {
@@ -270,7 +279,7 @@ export class ForestryClient {
     }
   }
 
-  private async request<VariableType>(
+  async request<VariableType>(
     query: string,
     { variables }: { variables: VariableType }
   ) {
@@ -299,4 +308,5 @@ export { useForestryForm } from "./useForestryForm";
 
 export { ForestryMediaStore } from "./media-store";
 
-export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL = "http://localhost:4001/graphql";
+export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL =
+  "http://localhost:4001/graphql";

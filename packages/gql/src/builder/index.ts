@@ -26,6 +26,7 @@ import type {
   InputObjectTypeDefinitionNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
+  ScalarTypeDefinitionNode,
 } from "graphql";
 import type { TemplateData } from "../types";
 import type { Field } from "../fields";
@@ -34,6 +35,7 @@ export type Definitions =
   | ObjectTypeDefinitionNode
   | UnionTypeDefinitionNode
   | InputObjectTypeDefinitionNode
+  | ScalarTypeDefinitionNode
   | EnumTypeDefinitionNode;
 
 /**
@@ -795,6 +797,8 @@ export const builder: Builder = {
 
     const accumulator: Definitions[] = [
       ..._.flatten(sectionSpecificFields.map((ssf) => ssf.objects)),
+      gql.scalar("JSON"),
+      gql.scalar("JSONObject"),
       gql.object({
         name: "Query",
         fields: [

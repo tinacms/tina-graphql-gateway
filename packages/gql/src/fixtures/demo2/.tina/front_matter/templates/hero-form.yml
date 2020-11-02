@@ -1,0 +1,32 @@
+---
+label: Hero Form
+hide_body: true
+fields:
+  - name: title
+    label: Title
+    type: textarea
+    config:
+      required: true
+      wysiwyg: true
+      schema:
+        format: markdown
+  - name: cta
+    label: Cta
+    type: field_group
+    config: {}
+    fields:
+      - name: title
+        label: Title
+        type: text
+        config:
+          required: true
+      - name: subTitle
+        label: Sub-Title
+        type: text
+        config:
+          required: true
+      - name: link
+        label: Link
+        type: text
+        config:
+          required: true
