@@ -5,6 +5,8 @@ import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
 import { useForestryForm } from "@forestryio/client";
+import { useCMS, CMSContext, ModalBody } from "tinacms";
+
 import {
   getIntrospectionQuery,
   GraphQLSchema,
@@ -26,14 +28,14 @@ const UseIt = ({
   variables: Variables;
   onSubmit: (values: any) => void;
 }) => {
-  // useForestryForm(
-  //   { document: formConfig, ...variables },
-  //   {
-  //     onSubmit: (values: unknown, transformedValues: unknown) => {
-  //       onSubmit(transformedValues);
-  //     },
-  //   }
-  // );
+  useForestryForm(
+    { document: formConfig, ...variables },
+    {
+      onSubmit: (values: unknown, transformedValues: unknown) => {
+        onSubmit(transformedValues);
+      },
+    }
+  );
 
   return <div />;
 };
@@ -45,6 +47,7 @@ export const Explorer = (
 ) => {
   let { project } = useParams();
   const [vars, setVars] = React.useState<Pick<Variables, "variables">>({});
+  const cms = useCMS();
 
   React.useEffect(() => {
     setVars(variables.variables);
@@ -61,26 +64,24 @@ export const Explorer = (
     null
   );
 
-  const graphQLFetcher = (graphQLParams: object) => {
+  const graphQLFetcher = async (graphQLParams: {
+    query: string;
+    variables?: object;
+    operationName?: string;
+  }) => {
     try {
       setQueryResult(null);
-      const url = `http://localhost:4002/${project}`;
-      return fetch(url, {
-        method: `post`,
-        headers: {
-          Accept: `application/json`,
-          "Content-Type": `application/json`,
-        },
-        body: JSON.stringify(graphQLParams),
-        // credentials: `include`,
-      }).then(function (response) {
-        return response.json().then((json) => {
-          if (json?.data?.document) {
-            setQueryResult(json.data.document);
+      return cms.api.forestry
+        .request(graphQLParams.query, {
+          variables: graphQLParams.variables || {},
+        })
+        .then((response) => {
+          if (response.document) {
+            setQueryResult(response.document);
           }
-          return json;
+          console.log(response);
+          return response;
         });
-      });
     } catch (e) {
       console.log(e);
     }
@@ -109,12 +110,12 @@ export const Explorer = (
         query: getIntrospectionQuery(),
       }).then((result) => {
         const newState: { schema: any; query: null | string } = {
-          schema: buildClientSchema(result.data),
+          schema: buildClientSchema(result),
           query: "",
         };
 
         if (!newState.query) {
-          const clientSchema = buildClientSchema(result.data);
+          const clientSchema = buildClientSchema(result);
           // const query = queryBuilder(clientSchema, "documentForSection");
           const query = queryBuilder(clientSchema);
           // @ts-ignore for some reason query builder shows no return type

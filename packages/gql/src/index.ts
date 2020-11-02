@@ -117,9 +117,13 @@ export const startFixtureServer = async ({
 
   app.get("/list-projects", async (req, res) => {
     return res.json(
-      await fs.readdirSync(fixturePath).map((folderName) => {
-        return { label: folderName, value: folderName };
-      })
+      await fs
+        .readdirSync(fixturePath)
+        .filter((item) => item !== ".DS_Store")
+        .map((folderName) => {
+          console.log(folderName);
+          return { label: folderName, value: folderName };
+        })
     );
   });
 

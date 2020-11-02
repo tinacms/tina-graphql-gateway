@@ -18,7 +18,71 @@ import {
 } from "@forestryio/client";
 import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 
-const TinaWrap = ({ children }) => {
+const Doit = () => {
+  const [variables, setVariables] = React.useState<object>({
+    relativePath: "welcome.md",
+    section: "posts",
+  });
+  let { externalURL, clientID } = useParams();
+  console.log(decodeURIComponent(externalURL));
+  return (
+    <div>
+      <TinaWrap serverURL={decodeURIComponent(externalURL)} clientID={clientID}>
+        <div className="h-screen flex overflow-hidden bg-gray-100">
+          <Sidebar
+            onFileSelect={(variables) => {
+              setVariables(variables);
+            }}
+            projects={[]}
+            items={[
+              { icon: "chart" as const, label: "Apps", link: "/apps" },
+              {
+                icon: "lock-closed" as const,
+                label: "Providers",
+                link: "/providers",
+              },
+            ]}
+          />
+          <div className="flex flex-col w-0 flex-1 overflow-hidden">
+            <Explorer variables={variables} />
+          </div>
+        </div>
+      </TinaWrap>
+    </div>
+  );
+};
+
+const TinaWrap = ({ serverURL, clientID = "", children }) => {
+  const client = new ForestryClient(clientID, {
+    gqlServer: serverURL,
+  });
+  console.log(client);
+  const media = new ForestryMediaStore(client);
+
+  const cms = new TinaCMS({
+    sidebar: {
+      position: "overlay",
+    },
+    apis: {
+      forestry: client,
+    },
+    media: media,
+    enabled: true,
+  });
+
+  return (
+    <TinaProvider cms={cms}>
+      <TinacmsForestryProvider
+        onLogin={() => alert("enter edit mode")}
+        onLogout={() => alert("exit edit mode")}
+      >
+        {children}
+      </TinacmsForestryProvider>
+    </TinaProvider>
+  );
+};
+
+const TinaWrap2 = ({ children }) => {
   let { project } = useParams();
   const client = new ForestryClient({
     realm: "",
@@ -56,7 +120,7 @@ const App = () => {
     { label: string; value: string }[]
   >([]);
 
-  const [variables, setVariables] = React.useState<string>({
+  const [variables, setVariables] = React.useState<object>({
     relativePath: "welcome.md",
     section: "posts",
   });
@@ -66,6 +130,9 @@ const App = () => {
       const result = await fetch(`http://localhost:4002/list-projects`);
       const json = await result.json();
       setProjects(json);
+      if (window.location.pathname === "/") {
+        window.location = json[0].value;
+      }
     };
     listProjects();
   }, []);
@@ -74,7 +141,14 @@ const App = () => {
     <Router>
       <Switch>
         <Route path="/" exact>
-          <Redirect to={`/${projects[0]}`} />
+          Hang on....
+        </Route>
+        <Route path="/external">
+          <Switch>
+            <Route path="/:ignore/:externalURL/:clientID">
+              <Doit />
+            </Route>
+          </Switch>
         </Route>
         <Route path="/:project" exact>
           <TinaWrap>
