@@ -43,8 +43,6 @@ export default withTina(MyApp, {
   apis: {
     forestry: client,
   },
-  // sidebar: !!Cookies.get("tina-editmode"),
-  // enabled: !!Cookies.get("tina-editmode"),
-  sidebar: true,
-  enabled: true,
+  sidebar: !!Cookies.get("tina-editmode"),
+  enabled: !!Cookies.get("tina-editmode"),
 });
