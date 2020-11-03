@@ -66,7 +66,7 @@ export const Sidebar = ({
     listSections();
   }, [project]);
 
-  const [_modalState, modalSend, modalClassNames] = useToggleMachine({
+  const [, modalSend, modalClassNames] = useToggleMachine({
     outerClasses: {
       closed: { className: "pointer-events-none" },
     },
@@ -98,39 +98,8 @@ export const Sidebar = ({
       },
     },
   });
-  const [_, send, classNames] = useToggleMachine({
-    outerClasses: {
-      closed: { className: "pointer-events-none" },
-    },
-    overlayClasses: {
-      className: "transition-opacity ease-linear duration-300",
-      opened: {
-        className: "opacity-100",
-      },
-      closed: {
-        className: "opacity-0 pointer-events-none",
-      },
-    },
-    closeButton: {
-      opened: {
-        className: "block",
-      },
-      closed: {
-        className: "hidden",
-      },
-    },
 
-    menuClasses: {
-      className: "transition ease-in-out duration-300 transform",
-      opened: {
-        className: "translate-x-0",
-      },
-      closed: {
-        className: "-translate-x-full",
-      },
-    },
-  });
-  const [_realmState, sendRealm, classNamesRealm] = useToggleMachine({
+  const [, sendRealm, classNamesRealm] = useToggleMachine({
     realmDropdown: {
       className:
         "z-10 mx-3 origin-bottom absolute right-0 left-0 mt-1 rounded-md shadow-lg top-full",
@@ -145,6 +114,7 @@ export const Sidebar = ({
 
   return (
     <>
+      {/* @ts-ignore */}
       <ConfigModal classNames={modalClassNames} />
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:flex-shrink-0">
@@ -296,8 +266,8 @@ export const Sidebar = ({
                       >
                         {section.documents.map((document) => {
                           return (
-                            <a
-                              href="#"
+                            <button
+                              type="button"
                               onClick={() =>
                                 setActiveDocument({
                                   relativePath: document.relativePath,
@@ -307,7 +277,7 @@ export const Sidebar = ({
                               className="group w-full flex items-center pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150"
                             >
                               {document.breadcrumbs.join("/")}
-                            </a>
+                            </button>
                           );
                         })}
                       </div>
@@ -320,23 +290,6 @@ export const Sidebar = ({
         </div>
       </div>
     </>
-  );
-};
-
-type NavItemType = Item & {
-  active: boolean;
-};
-
-const NavItem = ({ active, label, link, icon }: NavItemType) => {
-  const activeClass =
-    "group flex items-center px-2 py-2 text-sm leading-5 font-medium text-white rounded-md bg-gray-900 focus:outline-none focus:bg-gray-700 transition ease-in-out duration-150";
-  const inactiveClass =
-    "mt-1 group flex items-center px-2 py-2 text-sm leading-5 font-medium text-gray-300 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition ease-in-out duration-150";
-  return (
-    <Link to={link} className={active ? activeClass : inactiveClass}>
-      <Icon glyph={icon} />
-      {label}
-    </Link>
   );
 };
 
