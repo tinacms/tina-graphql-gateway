@@ -5,18 +5,13 @@ import GraphiQLExplorer from "graphiql-explorer";
 import { queryBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
 import { useForestryForm } from "@forestryio/client";
-import { useCMS, CMSContext, ModalBody } from "tinacms";
-
+import { useCMS } from "tinacms";
 import {
   getIntrospectionQuery,
   GraphQLSchema,
   buildClientSchema,
   print,
 } from "graphql";
-
-type Variables = {
-  variables: object;
-};
 
 const UseIt = ({
   formConfig,
@@ -25,7 +20,7 @@ const UseIt = ({
 }: {
   schema: GraphQLSchema;
   formConfig: any;
-  variables: Variables;
+  variables: object;
   onSubmit: (values: any) => void;
 }) => {
   useForestryForm(
@@ -41,22 +36,29 @@ const UseIt = ({
 };
 
 export const Explorer = (
-  variables: Pick<Variables, "variables"> = {
+  variables: { variables: {} | { relativePath: string; section: string } } = {
     variables: {},
   }
 ) => {
-  let { project } = useParams();
-  const [vars, setVars] = React.useState<Pick<Variables, "variables">>({});
+  const params = useParams();
+
+  const project = params.project as string;
+
+  const [vars, setVars] = React.useState<object>({});
   const cms = useCMS();
 
   React.useEffect(() => {
     setVars(variables.variables);
   }, [variables]);
 
-  const [state, setState] = React.useState({
+  const [state, setState] = React.useState<{
+    schema: null | GraphQLSchema;
+    query: null | string;
+    variables?: object;
+    explorerIsOpen: boolean;
+  }>({
     schema: null,
     query: null,
-    // variables: JSON.stringify({ relativePath: "welcome.md", section: "posts" }, null, 2),
     explorerIsOpen: false,
   });
 
@@ -75,20 +77,20 @@ export const Explorer = (
         .request(graphQLParams.query, {
           variables: graphQLParams.variables || {},
         })
-        .then((response) => {
+        .then((response: { document: { data: object } }) => {
           if (response.document) {
             setQueryResult(response.document);
           }
-          console.log(response);
           return response;
         });
     } catch (e) {
       console.log(e);
     }
   };
+
   const _graphiql = React.useRef();
 
-  const setVariables = (values) => {
+  const setVariables = (values: object) => {
     setVars({
       relativePath: vars.relativePath,
       section: vars.section,
@@ -109,7 +111,7 @@ export const Explorer = (
       graphQLFetcher({
         query: getIntrospectionQuery(),
       }).then((result) => {
-        const newState: { schema: any; query: null | string } = {
+        const newState: { schema: GraphQLSchema; query: null | string } = {
           schema: buildClientSchema(result),
           query: "",
         };
@@ -136,12 +138,15 @@ export const Explorer = (
   const _handleToggleExplorer = () => {
     setState({ ...state, explorerIsOpen: !state.explorerIsOpen });
   };
-
   const { query, schema } = state;
+
+  if (!schema) {
+    return <div>Finding schema...</div>;
+  }
 
   return (
     <div id="root" className="graphiql-container">
-      {queryResult && (
+      {queryResult?.node?.form && (
         <UseIt
           onSubmit={setVariables}
           variables={variables.variables}

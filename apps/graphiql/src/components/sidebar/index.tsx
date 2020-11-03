@@ -14,14 +14,8 @@ type Project = {
   value: string;
 };
 
-const defaultItems = [
-  { icon: "chart" as const, label: "Apps", link: "/apps" },
-  { icon: "lock-closed" as const, label: "Providers", link: "/providers" },
-];
-
 export const Sidebar = ({
   projects,
-  items = defaultItems,
   onFileSelect,
 }: {
   projects: Project[];
@@ -29,11 +23,6 @@ export const Sidebar = ({
   onFileSelect: (args: { relativePath: string; section: string }) => void;
 }) => {
   const { project } = useParams();
-
-  // React.useEffect(() => {
-  //   setSections([]);
-  //   setActiveDocument(null);
-  // }, [project]);
 
   const [sections, setSections] = React.useState<
     {
@@ -157,87 +146,6 @@ export const Sidebar = ({
   return (
     <>
       <ConfigModal classNames={modalClassNames} />
-      {/* Off-canvas menu for mobile */}
-      <div className="md:hidden">
-        <div className={`fixed inset-0 flex z-40 ${classNames.outerClasses}`}>
-          <div className={`fixed inset-0 ${classNames.overlayClasses}`}>
-            <div className="absolute inset-0 bg-gray-600 opacity-75" />
-          </div>
-          <div
-            className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800 ${classNames.menuClasses}`}
-          >
-            <div className="absolute top-0 right-0 -mr-14 p-1">
-              <button
-                onClick={() => send("TOGGLE")}
-                className={`flex items-center justify-center h-12 w-12 rounded-full focus:outline-none focus:bg-gray-600 ${classNames.closeButton}`}
-                aria-label="Close sidebar"
-              >
-                <svg
-                  className="h-6 w-6 text-white"
-                  stroke="currentColor"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-shrink-0 flex items-center px-4">
-              <button
-                type="button"
-                className="group w-full rounded-md px-3.5 py-2 text-sm leading-5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-500 focus:outline-none focus:bg-gray-200 focus:border-blue-300 active:bg-gray-50 active:text-gray-800 transition ease-in-out duration-150"
-                id="options-menu"
-                aria-haspopup="true"
-                aria-expanded="true"
-              >
-                <div className="flex w-full justify-between items-center">
-                  <div className="flex items-center justify-between space-x-3">
-                    <img
-                      className="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0"
-                      src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
-                      alt=""
-                    />
-                    <div className="flex-1">
-                      <h2 className="text-gray-900 text-sm leading-5 font-medium">
-                        Jessy Schwarz
-                      </h2>
-                      <p className="text-gray-500 text-sm leading-5 truncate">
-                        @jessyschwarz
-                      </p>
-                    </div>
-                  </div>
-                  <svg
-                    className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </button>
-            </div>
-            <div className="mt-5 flex-1 h-0 overflow-y-auto">
-              <nav className="px-2">
-                {items.map((item) => (
-                  <NavItem key={item.link} active={false} {...item} />
-                ))}
-              </nav>
-            </div>
-          </div>
-          <div className="flex-shrink-0 w-14">
-            {/* Dummy element to force sidebar to shrink to fit close icon */}
-          </div>
-        </div>
-      </div>
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col" style={{ width: "21rem" }}>
@@ -533,9 +441,17 @@ const Icon = ({ glyph }: { glyph: Icon }) => {
   }
 };
 
-export const ConfigModal = ({ classNames }) => {
-  const serverURLRef = React.createRef();
-  const clientIDRef = React.createRef();
+export const ConfigModal = ({
+  classNames,
+}: {
+  classNames: {
+    outerClasses: string;
+    overlayClasses: string;
+    menuClasses: string;
+  };
+}) => {
+  const serverURLRef = React.createRef<HTMLInputElement>();
+  const clientIDRef = React.createRef<HTMLInputElement>();
   return (
     <div
       className={`fixed z-10 inset-0 overflow-y-auto ${classNames.outerClasses}`}
@@ -543,9 +459,12 @@ export const ConfigModal = ({ classNames }) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          window.location = `external/${encodeURIComponent(
-            serverURLRef.current.value
-          )}/${clientIDRef.current.value}`;
+          if (serverURLRef.current && clientIDRef.current) {
+            // @ts-ignore
+            window.location = `external/${encodeURIComponent(
+              serverURLRef.current.value
+            )}/${clientIDRef.current.value}`;
+          }
         }}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -603,7 +522,7 @@ export const ConfigModal = ({ classNames }) => {
                   type="submit"
                   className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 >
-                  Go back to dashboard
+                  Go to playground
                 </button>
               </span>
             </div>
