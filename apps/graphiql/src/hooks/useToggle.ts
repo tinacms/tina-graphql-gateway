@@ -77,7 +77,7 @@ const toggleMachine = Machine<ToggleContext, ToggleStateSchema, ToggleEvent>(
     actions: {
       assignInitial: assign((context, event) => {
         const classes: { [key: string]: string } = {};
-        Object.keys(context.properties).map((item) => {
+        Object.keys(context.properties).forEach((item) => {
           classes[item] = context.properties[item]?.className || "";
         });
 
@@ -90,7 +90,7 @@ const toggleMachine = Machine<ToggleContext, ToggleStateSchema, ToggleEvent>(
         const classes: { [key: string]: string } = {};
         Object.keys(context.properties)
           .filter((item) => item !== "classes")
-          .map((item) => {
+          .forEach((item) => {
             classes[item] =
               context.properties[item]?.className +
                 " " +
@@ -106,7 +106,7 @@ const toggleMachine = Machine<ToggleContext, ToggleStateSchema, ToggleEvent>(
         const classes: { [key: string]: string } = {};
         Object.keys(context.properties)
           .filter((item) => item !== "classes")
-          .map((item) => {
+          .forEach((item) => {
             classes[item] =
               context.properties[item].className +
                 " " +
