@@ -5,12 +5,7 @@ import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 import { Sidebar } from "./components/sidebar";
 import { useParams } from "react-router-dom";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   ForestryClient,
   ForestryMediaStore,
