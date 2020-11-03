@@ -5,18 +5,14 @@ import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 import { Sidebar } from "./components/sidebar";
 import { Link, useParams } from "react-router-dom";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   ForestryClient,
   ForestryMediaStore,
   TinacmsForestryProvider,
 } from "@forestryio/client";
-import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
+
+import { TinaProvider, TinaCMS } from "tinacms";
 
 const Doit = () => {
   const [variables, setVariables] = React.useState<object>({
@@ -24,7 +20,6 @@ const Doit = () => {
     section: "posts",
   });
   let { externalURL, clientID } = useParams();
-  console.log(decodeURIComponent(externalURL));
   return (
     <div>
       <TinaWrap serverURL={decodeURIComponent(externalURL)} clientID={clientID}>
@@ -52,11 +47,18 @@ const Doit = () => {
   );
 };
 
-const TinaWrap = ({ serverURL, clientID = "", children }) => {
+const TinaWrap = ({
+  serverURL,
+  clientID = "",
+  children,
+}: {
+  serverURL: string;
+  clientID?: string;
+  children: React.ReactNode;
+}) => {
   const client = new ForestryClient(clientID, {
     gqlServer: serverURL,
   });
-  console.log(client);
   const media = new ForestryMediaStore(client);
 
   const cms = new TinaCMS({
@@ -82,7 +84,7 @@ const TinaWrap = ({ serverURL, clientID = "", children }) => {
   );
 };
 
-const TinaWrap2 = ({ children }) => {
+const TinaFixtureProject = ({ children }: { children: React.ReactNode }) => {
   let { project } = useParams();
   const client = new ForestryClient("", {
     gqlServer: `http://localhost:4002/${project}`,
@@ -148,27 +150,19 @@ const App = () => {
           </Switch>
         </Route>
         <Route path="/:project" exact>
-          <TinaWrap>
+          <TinaFixtureProject>
             <div className="h-screen flex overflow-hidden bg-gray-100">
               <Sidebar
                 onFileSelect={(variables) => {
                   setVariables(variables);
                 }}
                 projects={projects}
-                items={[
-                  { icon: "chart" as const, label: "Apps", link: "/apps" },
-                  {
-                    icon: "lock-closed" as const,
-                    label: "Providers",
-                    link: "/providers",
-                  },
-                ]}
               />
               <div className="flex flex-col w-0 flex-1 overflow-hidden">
                 <Explorer variables={variables} />
               </div>
             </div>
-          </TinaWrap>
+          </TinaFixtureProject>
         </Route>
       </Switch>
     </Router>
