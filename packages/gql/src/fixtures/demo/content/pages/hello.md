@@ -1,5 +1,3 @@
 ---
 title: Add Page
-blocks: []
 ---
-
