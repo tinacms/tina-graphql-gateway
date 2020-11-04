@@ -164,9 +164,7 @@ export class ForestryClient {
   }: {
     relativePath?: string;
     section?: string;
-  }): Promise<{
-    data: T;
-  }> => {
+  }): Promise<T> => {
     const query = await this.getSectionQuery();
     const data = await this.request(query, {
       variables: { relativePath, section },

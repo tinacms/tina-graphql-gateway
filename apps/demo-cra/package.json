@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@forestryio/client": "workspace:packages/client",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -11,14 +12,20 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "eslint-config-react-app": "^6.0.0",
+    "eslint-import-resolver-node": "0.3.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-is": "^17.0.1",
     "react-refresh": "^0.9.0",
     "react-scripts": "4.0.0",
     "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
   },
+  "devDependencies": {
+    "@forestryio/cli": "workspace:packages/cli"
+  },
   "scripts": {
+    "dev": "yarn tina-gql server:start -c \"yarn start\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
