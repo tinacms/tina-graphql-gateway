@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { ForestryClient } from "@forestryio/client"
+import { ForestryClient, TinacmsForestryProvider } from "@forestryio/client"
 import {Query, Home_Data} from "../.tina/types"
+import Cookies from "js-cookie";
+import { Home } from './Home';
+import { withTina } from "tinacms";
+const client = new ForestryClient("8357445d-8957-4a0e-a932-9f209e07cc11w")
 
 function App() {
-
-  const client = new ForestryClient("")
 
   const [content,setContent] = useState<Home_Data | undefined>()
 
@@ -19,23 +19,22 @@ function App() {
   },[])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-         {content?.title || "Loading"}
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <TinacmsForestryProvider
+      onLogin={() => {
+        Cookies.set("tina-editmode", "true");
+        window.location.reload();
+      }}
+      onLogout={() => Cookies.remove("tina-editmode")}
+    >
+      {content && <Home content={content} />}
+    </TinacmsForestryProvider>
   );
 }
 
-export default App;
+export default withTina(App, {
+  apis: {
+    forestry: client,
+  },
+  sidebar: !!Cookies.get("tina-editmode"),
+  enabled: !!Cookies.get("tina-editmode"),
+});
