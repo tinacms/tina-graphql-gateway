@@ -18297,8 +18297,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:12.12.58"],
             ["@types/react", "npm:16.9.55"],
             ["@types/react-dom", "npm:16.9.9"],
+            ["eslint-config-react-app", "virtual:11e5ba5d7844c81dff5e7ab85b0babf2812313eeb10e794a26c34b6f63347865da73eec14e891309b0a19b1d318832b3100893f11d588db2d1e1ec359c978921#npm:6.0.0"],
             ["react", "npm:17.0.1"],
             ["react-dom", "virtual:11e5ba5d7844c81dff5e7ab85b0babf2812313eeb10e794a26c34b6f63347865da73eec14e891309b0a19b1d318832b3100893f11d588db2d1e1ec359c978921#npm:17.0.1"],
+            ["react-refresh", "npm:0.9.0"],
             ["react-scripts", "virtual:11e5ba5d7844c81dff5e7ab85b0babf2812313eeb10e794a26c34b6f63347865da73eec14e891309b0a19b1d318832b3100893f11d588db2d1e1ec359c978921#npm:4.0.0"],
             ["typescript", "patch:typescript@npm%3A4.0.3#builtin<compat/typescript>::version=4.0.3&hash=a72311"],
             ["web-vitals", "npm:0.2.4"]
@@ -19398,6 +19400,60 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["eslint-config-react-app", [
+        ["virtual:11e5ba5d7844c81dff5e7ab85b0babf2812313eeb10e794a26c34b6f63347865da73eec14e891309b0a19b1d318832b3100893f11d588db2d1e1ec359c978921#npm:6.0.0", {
+          "packageLocation": "./.yarn/$$virtual/eslint-config-react-app-virtual-5d08105515/0/cache/eslint-config-react-app-npm-6.0.0-c5908e735c-ab983e9a31.zip/node_modules/eslint-config-react-app/",
+          "packageDependencies": [
+            ["eslint-config-react-app", "virtual:11e5ba5d7844c81dff5e7ab85b0babf2812313eeb10e794a26c34b6f63347865da73eec14e891309b0a19b1d318832b3100893f11d588db2d1e1ec359c978921#npm:6.0.0"],
+            ["@types/babel-eslint", null],
+            ["@types/eslint", null],
+            ["@types/eslint-plugin-flowtype", null],
+            ["@types/eslint-plugin-import", null],
+            ["@types/eslint-plugin-jest", null],
+            ["@types/eslint-plugin-jsx-a11y", null],
+            ["@types/eslint-plugin-react", null],
+            ["@types/eslint-plugin-react-hooks", null],
+            ["@types/eslint-plugin-testing-library", null],
+            ["@types/typescript-eslint__eslint-plugin", null],
+            ["@types/typescript-eslint__parser", null],
+            ["@typescript-eslint/eslint-plugin", null],
+            ["@typescript-eslint/parser", null],
+            ["babel-eslint", null],
+            ["confusing-browser-globals", "npm:1.0.10"],
+            ["eslint", null],
+            ["eslint-plugin-flowtype", null],
+            ["eslint-plugin-import", null],
+            ["eslint-plugin-jest", null],
+            ["eslint-plugin-jsx-a11y", null],
+            ["eslint-plugin-react", null],
+            ["eslint-plugin-react-hooks", null],
+            ["eslint-plugin-testing-library", null]
+          ],
+          "packagePeers": [
+            "@types/babel-eslint",
+            "@types/eslint-plugin-flowtype",
+            "@types/eslint-plugin-import",
+            "@types/eslint-plugin-jest",
+            "@types/eslint-plugin-jsx-a11y",
+            "@types/eslint-plugin-react-hooks",
+            "@types/eslint-plugin-react",
+            "@types/eslint-plugin-testing-library",
+            "@types/eslint",
+            "@types/typescript-eslint__eslint-plugin",
+            "@types/typescript-eslint__parser",
+            "@typescript-eslint/eslint-plugin",
+            "@typescript-eslint/parser",
+            "babel-eslint",
+            "eslint-plugin-flowtype",
+            "eslint-plugin-import",
+            "eslint-plugin-jest",
+            "eslint-plugin-jsx-a11y",
+            "eslint-plugin-react-hooks",
+            "eslint-plugin-react",
+            "eslint-plugin-testing-library",
+            "eslint"
+          ],
+          "linkType": "HARD",
+        }],
         ["virtual:d9e8f63c6cd5c2bf7a3eb5fed208acadd529806c979fd1835696b7ba35d4cc5f1a2de0e3dbdcb7b131db3b48bb197ab460a2da343a9067cfa2fc40debb576f6d#npm:6.0.0", {
           "packageLocation": "./.yarn/$$virtual/eslint-config-react-app-virtual-f4e06afa59/0/cache/eslint-config-react-app-npm-6.0.0-c5908e735c-ab983e9a31.zip/node_modules/eslint-config-react-app/",
           "packageDependencies": [
@@ -32443,6 +32499,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/react-refresh-npm-0.8.3-9b3fb3900b-38f06df8e0.zip/node_modules/react-refresh/",
           "packageDependencies": [
             ["react-refresh", "npm:0.8.3"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:0.9.0", {
+          "packageLocation": "./.yarn/cache/react-refresh-npm-0.9.0-02c61ee045-300dc43138.zip/node_modules/react-refresh/",
+          "packageDependencies": [
+            ["react-refresh", "npm:0.9.0"]
           ],
           "linkType": "HARD",
         }]
