@@ -31,6 +31,7 @@ interface ServerOptions {
   gqlServer?: string;
   oauthHost?: string;
   identityHost?: string;
+  getTokenFn?: () => string,
 }
 
 export class ForestryClient {
@@ -39,10 +40,14 @@ export class ForestryClient {
   identityHost: string;
   clientId: string;
   query: string;
+  getToken: () => string
   constructor(clientId: string, options?: ServerOptions) {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
     this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
+    this.getToken = options?.getTokenFn || function() {
+      return Cookies.get(AUTH_COOKIE_NAME)
+    }
 
     console.log("surl", this.serverURL);
 
@@ -224,7 +229,7 @@ export class ForestryClient {
       const res = await fetch(url, {
         method: "GET",
         headers: new Headers({
-          Authorization: "Bearer " + this.getCookie(AUTH_COOKIE_NAME),
+          Authorization: "Bearer " + this.getToken(),
           "Content-Type": "application/json",
         }),
       });
@@ -240,10 +245,6 @@ export class ForestryClient {
     }
   }
 
-  private getCookie(cookieName: string): string | undefined {
-    return Cookies.get(cookieName);
-  }
-
   private async request<VariableType>(
     query: string,
     { variables }: { variables: VariableType }
@@ -252,6 +253,7 @@ export class ForestryClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + this.getToken(),
       },
       body: JSON.stringify({
         query,
