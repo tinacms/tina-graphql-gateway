@@ -11,6 +11,10 @@ export const useTinaAuthRedirect = () => {
       state: urlParams.get("state"),
     };
 
+    if(!config.code){
+      return
+    }
+
     localStorage[TINA_AUTH_CONFIG] = JSON.stringify(config);
   }, []);
 };
