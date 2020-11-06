@@ -26,11 +26,13 @@ interface AddVariables {
 const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/graphql";
 const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
 const DEFAULT_IDENTITY_HOST = "http://localhost:3000";
+const DEFAULT_REDIRECT_URI = "http://localhost:2999/authenticating";
 
 interface ServerOptions {
   gqlServer?: string;
   oauthHost?: string;
   identityHost?: string;
+  redirectURI?: string;
   getTokenFn?: () => string,
 }
 
@@ -40,17 +42,18 @@ export class ForestryClient {
   identityHost: string;
   clientId: string;
   query: string;
+  redirectURI: string
   getToken: () => string
   constructor(clientId: string, options?: ServerOptions) {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
     this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
+    this.redirectURI = options?.redirectURI || DEFAULT_REDIRECT_URI
     this.getToken = options?.getTokenFn || function() {
       return Cookies.get(AUTH_COOKIE_NAME)
     }
 
     console.log("surl", this.serverURL);
-
     this.clientId = clientId;
   }
 
@@ -217,7 +220,7 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    return authenticate(this.clientId, this.oauthHost);
+    return authenticate(this.clientId, this.oauthHost,this.redirectURI);
   }
 
   async getUser() {

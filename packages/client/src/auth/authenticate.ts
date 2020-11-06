@@ -21,17 +21,17 @@ import { useGenerator } from "./useGenerator";
 import Cookies from "js-cookie";
 
 const TINA_AUTH_CONFIG = "tina_auth_config";
-const SITE_REDIRECT_URI = "http://localhost:2999/authenticating";
 export const AUTH_COOKIE_NAME = "tinacms-auth";
 export const authenticate = (
   clientId: string,
-  oauthHost: string
+  oauthHost: string,
+  redirectURI: string
 ): Promise<void> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
   const signInUrl = new URL(`${oauthHost}/oauth2/auth`);
   signInUrl.searchParams.append("client_id", clientId);
-  signInUrl.searchParams.append("redirect_uri", SITE_REDIRECT_URI);
+  signInUrl.searchParams.append("redirect_uri", redirectURI);
   signInUrl.searchParams.append("response_type", "code");
   signInUrl.searchParams.append("state", state);
   signInUrl.searchParams.append("code_challenge", codeChallenge);
@@ -48,7 +48,7 @@ export const authenticate = (
         let formData = new FormData();
         formData.append("grant_type", "authorization_code");
         formData.append("client_id", clientId);
-        formData.append("redirect_uri", SITE_REDIRECT_URI);
+        formData.append("redirect_uri", redirectURI);
         formData.append("code", config.code);
         formData.append("code_verifier", codeVerifier);
 
