@@ -2,8 +2,11 @@ import React from "react";
 import { AppProps } from "next/app";
 import Link from "next/link";
 import { withTina } from "tinacms";
-import { ForestryClient, ForestryMediaStore } from "@forestryio/client";
-import { TinacmsForestryProvider } from "@forestryio/client";
+import {
+  TinacmsForestryProvider,
+  ForestryClient,
+  ForestryMediaStore,
+} from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 

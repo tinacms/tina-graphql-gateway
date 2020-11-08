@@ -4087,7 +4087,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["crypto", "npm:1.0.1"],
             ["esm", "npm:3.2.25"],
             ["express", "npm:4.17.1"],
-            ["express-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.11.0"],
+            ["express-graphql", "virtual:6a9a6f8f48a81df3d75f943eeddff643a390ae520fc1723f33040cdbb239753ea90c5e6f807c22a77e0ca0ffe91f6137dee62074d771b445d42ae994cd492299#npm:0.11.0"],
             ["fast-glob", "npm:3.2.4"],
             ["figlet", "npm:1.5.0"],
             ["fs-extra", "npm:9.0.1"],
@@ -4232,7 +4232,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],
             ["dataloader", "npm:2.0.0"],
             ["express", "npm:4.17.1"],
-            ["express-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.11.0"],
             ["fs-extra", "npm:9.0.1"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tools", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:6.2.1"],
@@ -14292,6 +14291,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["express-graphql", [
+        ["virtual:6a9a6f8f48a81df3d75f943eeddff643a390ae520fc1723f33040cdbb239753ea90c5e6f807c22a77e0ca0ffe91f6137dee62074d771b445d42ae994cd492299#npm:0.11.0", {
+          "packageLocation": "./.yarn/$$virtual/express-graphql-virtual-7705fbf13d/0/cache/express-graphql-npm-0.11.0-c15bd88c96-91fdcc9bf6.zip/node_modules/express-graphql/",
+          "packageDependencies": [
+            ["express-graphql", "virtual:6a9a6f8f48a81df3d75f943eeddff643a390ae520fc1723f33040cdbb239753ea90c5e6f807c22a77e0ca0ffe91f6137dee62074d771b445d42ae994cd492299#npm:0.11.0"],
+            ["accepts", "npm:1.3.7"],
+            ["content-type", "npm:1.0.4"],
+            ["graphql", "npm:15.3.0"],
+            ["http-errors", "npm:1.8.0"],
+            ["raw-body", "npm:2.4.1"]
+          ],
+          "packagePeers": [
+            "graphql"
+          ],
+          "linkType": "HARD",
+        }],
         ["virtual:81ccb0b6d9dec0de8117538ffcff243340f76bc1d9e508d68bcd2e95fad3568eca34fcb375bfffd59e37a816a80c197efedec7ace2a30b447f88f1e672f9663e#npm:0.11.0", {
           "packageLocation": "./.yarn/$$virtual/express-graphql-virtual-65ffb1c4d4/0/cache/express-graphql-npm-0.11.0-c15bd88c96-91fdcc9bf6.zip/node_modules/express-graphql/",
           "packageDependencies": [
@@ -14301,21 +14315,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:14.7.0"],
             ["http-errors", "npm:1.8.0"],
             ["raw-body", "npm:2.4.1"]
-          ],
-          "linkType": "HARD",
-        }],
-        ["virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.11.0", {
-          "packageLocation": "./.yarn/$$virtual/express-graphql-virtual-fedae82170/0/cache/express-graphql-npm-0.11.0-c15bd88c96-91fdcc9bf6.zip/node_modules/express-graphql/",
-          "packageDependencies": [
-            ["express-graphql", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:0.11.0"],
-            ["accepts", "npm:1.3.7"],
-            ["content-type", "npm:1.0.4"],
-            ["graphql", "npm:15.3.0"],
-            ["http-errors", "npm:1.8.0"],
-            ["raw-body", "npm:2.4.1"]
-          ],
-          "packagePeers": [
-            "graphql"
           ],
           "linkType": "HARD",
         }]

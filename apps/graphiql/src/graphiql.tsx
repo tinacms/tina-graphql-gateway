@@ -24,6 +24,7 @@ const UseIt = ({
   onSubmit: (values: any) => void;
 }) => {
   useForestryForm(
+    // @ts-ignore
     { document: formConfig, ...variables },
     {
       onSubmit: (values: unknown, transformedValues: unknown) => {
@@ -42,6 +43,7 @@ export const Explorer = (
 ) => {
   const params = useParams();
 
+  // @ts-ignore
   const project = params.project as string;
 
   const [vars, setVars] = React.useState<object>({});
@@ -92,7 +94,9 @@ export const Explorer = (
 
   const setVariables = (values: object) => {
     setVars({
+      // @ts-ignore
       relativePath: vars.relativePath,
+      // @ts-ignore
       section: vars.section,
       params: values,
     });
@@ -146,10 +150,11 @@ export const Explorer = (
 
   return (
     <div id="root" className="graphiql-container">
-      {queryResult?.node?.form && (
+      {queryResult && queryResult?.node?.form && (
         <UseIt
           onSubmit={setVariables}
           variables={variables.variables}
+          // @ts-ignore
           project={project}
           schema={schema}
           formConfig={queryResult}

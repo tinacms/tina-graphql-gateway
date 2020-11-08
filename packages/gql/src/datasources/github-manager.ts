@@ -129,6 +129,7 @@ export class GithubManager implements DataSource {
           switch (extension) {
             case ".md":
             case ".yml":
+              // @ts-ignore
               results[path] = await getAndSetFromCache(repoConfig, path, () => {
                 return appOctoKit.repos
                   .getContent({
@@ -157,17 +158,21 @@ export class GithubManager implements DataSource {
       const results: { [key: string]: unknown } = {};
       await Promise.all(
         keys.map(async (path) => {
+          // @ts-ignore
           results[path] = await getAndSetFromCache(repoConfig, path, () => {
-            return appOctoKit.repos
-              .getContent({
-                ...repoConfig,
-                path,
-              })
-              .then((dirContents) => {
-                if (Array.isArray(dirContents.data)) {
-                  return dirContents.data.map((t) => t.name);
-                }
-              });
+            return (
+              appOctoKit.repos
+                .getContent({
+                  ...repoConfig,
+                  path,
+                })
+                // @ts-ignore
+                .then((dirContents) => {
+                  if (Array.isArray(dirContents.data)) {
+                    return dirContents.data.map((t) => t.name);
+                  }
+                })
+            );
           });
 
           // TODO: An error I suppose
@@ -370,6 +375,7 @@ export class GithubManager implements DataSource {
   ): Promise<T> {
     // Uncomment to bypass dataloader for debugging
     // return await internalReadFile(path);
+    // @ts-ignore
     return await loader.load(path);
   }
 
@@ -402,6 +408,7 @@ export class GithubManager implements DataSource {
     path: string,
     loader: DataLoader<unknown, unknown, unknown>
   ): Promise<string[]> {
+    // @ts-ignore
     return loader.load(path);
   }
   async internalReadDir(path: string) {
