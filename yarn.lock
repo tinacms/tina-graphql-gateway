@@ -2163,7 +2163,6 @@ __metadata:
     cors: ^2.8.5
     dataloader: ^2.0.0
     express: ^4.17.1
-    express-graphql: ^0.11.0
     fs-extra: ^9.0.1
     graphql: ^15.3.0
     graphql-tools: ^6.2.1

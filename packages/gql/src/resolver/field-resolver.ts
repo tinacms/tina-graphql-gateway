@@ -470,7 +470,9 @@ export const resolver: Resolver = {
   documentObject: async ({ args, datasource }) => {
     const sectionData = await datasource.getSettingsForSection(args.section);
     const relativePath = args.fullPath
-      ? args.fullPath.replace(sectionData.path, "")
+      ? args.fullPath
+          .replace(sectionData.path, "")
+          .replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "")
       : args.relativePath;
     if (!relativePath) {
       throw new Error(`Expected either relativePath or fullPath arguments`);
@@ -485,6 +487,7 @@ export const resolver: Resolver = {
     return {
       path: null,
       relativePath,
+      section: sectionData,
       breadcrumbs: relativePath.split("/").filter(Boolean),
       basename,
       filename,
@@ -909,9 +912,6 @@ function assertIsDocumentInputArgs(
 function assertIsDocumentForSectionArgs(
   args: FieldResolverArgs
 ): asserts args is { section: string; relativePath: string } {
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected args for document request`);
-  }
   if (!args.relativePath || typeof args.relativePath !== "string") {
     throw new Error(`Expected args for document request`);
   }

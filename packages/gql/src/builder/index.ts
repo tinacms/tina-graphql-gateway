@@ -689,6 +689,8 @@ export const builder: Builder = {
         name,
         args: [gql.inputString("path")],
         fields: [
+          gql.field({ name: "section", type: "SectionUnion" }),
+          // gql.field({ name: "section", type: "String" }),
           gql.field({ name: "path", type: "String" }),
           gql.field({ name: "relativePath", type: "String" }),
           gql.fieldList({
@@ -775,6 +777,10 @@ export const builder: Builder = {
             objects: accum,
             fields: [
               gql.field({
+                // NOTE: this won't work with section names that have 2 words.
+                // but we need to do it this way so it can be "looked up", on
+                // the resolver side. This is fixable with a cached lookup json
+                // file that's generated at build time
                 name: `get${section.label}Document`,
                 type: meh,
                 args: [gql.inputString("relativePath")],

@@ -3,8 +3,7 @@ title: Oh hi
 blocks:
   - template: hero-form
     title: >-
-      ## Training Plans for __big results__
-
+      ## Golden Coast Track Club
 
       Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem
       cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua ad
