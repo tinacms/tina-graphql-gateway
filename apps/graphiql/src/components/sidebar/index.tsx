@@ -449,7 +449,7 @@ export const ConfigModal = ({
                   ref={serverURLRef}
                   id="serverURL"
                   className="form-input block w-full sm:text-sm sm:leading-5"
-                  placeholder="http://localhost:4002"
+                  placeholder="http://localhost:4002/graphql"
                 />
               </div>
               <div>

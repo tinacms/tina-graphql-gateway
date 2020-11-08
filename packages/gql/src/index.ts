@@ -14,6 +14,35 @@ import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 import { GithubManager, clearCache } from "./datasources/github-manager";
 
+export const doit = async ({
+  projectRoot,
+  query,
+  variables,
+}: {
+  projectRoot: string;
+  query: string;
+  variables: object;
+}) => {
+  const datasource = new FileSystemManager(projectRoot);
+  const cache = cacheInit(datasource);
+  console.log("pwd", process.cwd());
+  console.log("folder", await fs.readdirSync(process.cwd()));
+  try {
+    const schema = await builder.schema({ cache });
+
+    const result = await graphqlInit({
+      schema: buildASTSchema(schema),
+      source: query,
+      contextValue: { datasource },
+      variableValues: variables,
+    });
+    return result;
+  } catch (e) {
+    console.error(e);
+    return { message: "nothing" };
+  }
+};
+
 export { clearCache };
 export const githubRoute = async ({
   accessToken,
@@ -36,8 +65,6 @@ export const githubRoute = async ({
   });
   const cache = cacheInit(datasource);
   const schema = await builder.schema({ cache });
-
-  console.log("done...");
 
   const result = await graphqlInit({
     schema: buildASTSchema(schema),
@@ -121,7 +148,6 @@ export const startFixtureServer = async ({
         .readdirSync(fixturePath)
         .filter((item) => item !== ".DS_Store")
         .map((folderName) => {
-          console.log(folderName);
           return { label: folderName, value: folderName };
         })
     );
