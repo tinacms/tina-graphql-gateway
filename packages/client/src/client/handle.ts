@@ -51,12 +51,17 @@ export const handleData = (values, schema: { fields: Field[] }) => {
 };
 
 export const transformPayload = (values, schema: { fields: Field[] }) => {
-  const accum: { [key: string]: any } = {};
-  schema.fields.forEach((field) => {
-    // @ts-ignore
-    accum[field.name] = handleInner(values, field);
-  });
+  try {
+    const accum: { [key: string]: any } = {};
+    schema.fields.forEach((field) => {
+      // @ts-ignore
+      accum[field.name] = handleInner(values, field);
+    });
 
-  // @ts-ignore
-  return { [friendlyName(schema, "Input")]: { data: accum } };
+    // @ts-ignore
+    return { [friendlyName(schema, "Input")]: { data: accum } };
+  } catch (e) {
+    console.error("Error transformaing payload");
+    console.log(e);
+  }
 };

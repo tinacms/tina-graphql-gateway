@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from "next";
-import { useForestryForm2 } from "../../.tina/types";
+import { useForestryForm } from "@forestryio/client";
 import { getContent, getSlugs } from "../../utils/getStatics";
 
 const template = "authors";
@@ -15,11 +15,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  return { props: await getContent({ template, params }) };
+  return {
+    props: await getContent({
+      template,
+      params,
+    }),
+  };
 };
 
 const Page = (props) => {
-  const data = useForestryForm2(props);
+  const data = useForestryForm(props);
 
   return (
     <>

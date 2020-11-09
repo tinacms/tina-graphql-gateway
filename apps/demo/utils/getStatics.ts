@@ -1,5 +1,4 @@
 import { ForestryClient } from "@forestryio/client";
-import { DocumentUnion } from "../.forestry/types";
 
 const client = new ForestryClient(process.env.SITE_CLIENT_ID);
 
@@ -12,7 +11,7 @@ export const getContent = async ({ template, params }) => {
   const relativePath = `${params.slug.join("/")}.md`;
   const section = template;
   return {
-    ...(await client.getContentForSection<DocumentUnion>({
+    ...(await client.getContentForSection({
       relativePath,
       section,
     })),
