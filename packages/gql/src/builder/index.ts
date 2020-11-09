@@ -800,8 +800,11 @@ export const builder: Builder = {
       )
     );
 
+    const sectionSpecificFieldsAccumulator = _.flatten(
+      sectionSpecificFields.map((ssf) => ssf.objects)
+    );
     const accumulator: Definitions[] = [
-      ..._.flatten(sectionSpecificFields.map((ssf) => ssf.objects)),
+      ...sectionSpecificFieldsAccumulator,
       gql.scalar("JSON"),
       gql.scalar("JSONObject"),
       gql.object({

@@ -53,11 +53,14 @@ export interface DataSource {
     extension: string;
     filename: string;
   }>;
-  getTemplateForDocument: (
-    args: DocumentArgs
-  ) => Promise<TemplateDataWithNoName>;
-  getTemplates: (slugs: string[]) => Promise<TemplateDataWithNoName[]>;
-  getTemplate: (slug: string) => Promise<TemplateDataWithNoName>;
+  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
+  getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
+  getTemplate: (slug: string) => Promise<TemplateData>;
+  /**
+   * `getTemplateWithoutName` the name is a synthetic value, so
+   * sometimes you don't want it (ex. when writing back to the data source)
+   */
+  getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>;
   /**
    * `getTemplatesForSection`
    *
@@ -83,9 +86,7 @@ export interface DataSource {
    * ]
    * ```
    */
-  getTemplatesForSection: (
-    section?: string
-  ) => Promise<TemplateDataWithNoName[]>;
+  getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   getSectionsSettings: () => Promise<DirectorySection[]>;
