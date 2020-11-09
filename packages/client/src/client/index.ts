@@ -4,6 +4,7 @@ import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
 import { transformPayload } from "./handle";
 import type { Field } from "tinacms";
 import Cookies from "js-cookie";
+const DEFAULT_REDIRECT_URI = "http://localhost:2999/authenticating";
 
 interface AddProps {
   url: string;
@@ -31,6 +32,7 @@ interface ServerOptions {
   gqlServer?: string;
   oauthHost?: string;
   identityHost?: string;
+  redirectURI?: string;
   getTokenFn?: () => string,
 }
 
@@ -40,6 +42,7 @@ export class ForestryClient {
   identityHost: string;
   clientId: string;
   query: string;
+  redirectURI: string
   getToken: () => string
   constructor(clientId: string, options?: ServerOptions) {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
@@ -48,8 +51,10 @@ export class ForestryClient {
     this.getToken = options?.getTokenFn || function() {
       return Cookies.get(AUTH_COOKIE_NAME)
     }
-
-    console.log("surl", this.serverURL);
+    this.redirectURI = options?.redirectURI || DEFAULT_REDIRECT_URI
+    this.getToken = options?.getTokenFn || function() {
+      return Cookies.get(AUTH_COOKIE_NAME)
+    }
 
     this.clientId = clientId;
   }
@@ -164,9 +169,7 @@ export class ForestryClient {
   }: {
     relativePath?: string;
     section?: string;
-  }): Promise<{
-    data: T;
-  }> => {
+  }): Promise<T> => {
     const query = await this.getSectionQuery();
     const data = await this.request(query, {
       variables: { relativePath, section },
@@ -219,7 +222,7 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    return authenticate(this.clientId, this.oauthHost);
+    return authenticate(this.clientId, this.oauthHost,this.redirectURI);
   }
 
   async getUser() {
