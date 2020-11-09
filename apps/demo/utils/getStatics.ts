@@ -1,6 +1,6 @@
-import { ForestryClient } from "@forestryio/client";
+import { createClient } from "./createClient";
 
-const client = new ForestryClient(process.env.SITE_CLIENT_ID);
+const client = createClient(false);
 
 export const getSlugs = async ({ template }) => {
   const documents = await client.listDocumentsBySection({ section: template });

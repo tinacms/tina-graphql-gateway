@@ -2,9 +2,10 @@ import React from "react";
 import { AppProps } from "next/app";
 import Link from "next/link";
 import { withTina } from "tinacms";
-import { TinacmsForestryProvider, ForestryClient } from "@forestryio/client";
+import { TinacmsForestryProvider } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
+import { createClient } from "../utils/createClient";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -36,11 +37,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-const client = new ForestryClient(process.env.SITE_CLIENT_ID);
+const editMode = !!Cookies.get("tina-editmode");
+const client = createClient(editMode);
+
 export default withTina(MyApp, {
   apis: {
     forestry: client,
   },
-  sidebar: !!Cookies.get("tina-editmode"),
-  enabled: !!Cookies.get("tina-editmode"),
+  sidebar: editMode,
+  enabled: editMode,
 });
