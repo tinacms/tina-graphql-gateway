@@ -14,7 +14,7 @@ import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 import { GithubManager, clearCache } from "./datasources/github-manager";
 
-export const doit = async ({
+export const gql = async ({
   projectRoot,
   query,
   variables,
@@ -25,8 +25,7 @@ export const doit = async ({
 }) => {
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
-  console.log("pwd", process.cwd());
-  console.log("folder", await fs.readdirSync(process.cwd()));
+
   try {
     const schema = await builder.schema({ cache });
 
@@ -39,7 +38,7 @@ export const doit = async ({
     return result;
   } catch (e) {
     console.error(e);
-    return { message: "nothing" };
+    return { error: e.message };
   }
 };
 
