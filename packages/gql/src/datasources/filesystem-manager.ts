@@ -195,16 +195,33 @@ export class FileSystemManager implements DataSource {
       this.loader
     );
 
-    if (options.namespace) {
-      return namespaceFields({ name: slug, ...data });
-    } else {
-      return data;
+    return namespaceFields({ name: slug, ...data });
+  };
+  getTemplateWithoutName = async (
+    slug: string,
+    options: { namespace: boolean } = { namespace: true }
+  ) => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await readDir(fullPath, this.dirLoader);
+    const template = templates.find((templateBasename) => {
+      return templateBasename === `${slug}.yml`;
+    });
+    if (!template) {
+      throw new Error(`No template found for slug ${slug}`);
     }
+    const { data } = await readFile<RawTemplate>(
+      p.join(fullPath, template),
+      this.loader
+    );
+
+    return data;
   };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplate(template, { namespace: false });
+    const templateData = await this.getTemplateWithoutName(template, {
+      namespace: false,
+    });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
@@ -250,13 +267,9 @@ const readFile = async <T>(
   path: string,
   loader: DataLoader<unknown, unknown, unknown>
 ): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // return await internalReadFile(path);
-  return await loader.load(path);
+  return (await loader.load(path)) as T;
 };
 const internalReadFile = async <T>(path: string): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // console.log("internalRequest", path);
   const extension = p.extname(path);
 
   switch (extension) {
@@ -277,7 +290,7 @@ const readDir = async (
   path: string,
   loader: DataLoader<unknown, unknown, unknown>
 ): Promise<string[]> => {
-  return loader.load(path);
+  return (await loader.load(path)) as string[];
 };
 const internalReadDir = async (path: string) => {
   return await fs.readdirSync(path);

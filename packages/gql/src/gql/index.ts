@@ -1,12 +1,11 @@
 import {
-  GraphQLString,
   FieldDefinitionNode,
+  ScalarTypeDefinitionNode,
   InputValueDefinitionNode,
 } from "graphql";
-import { argsToArgsConfig } from "graphql/type/definition";
 
 export const gql = {
-  scalar: (name: string) => {
+  scalar: (name: string): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
       name: {
