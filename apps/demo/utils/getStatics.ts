@@ -1,7 +1,7 @@
 import { DocumentUnion } from "../.tina/types";
 import { createClient } from "./createClient";
 
-const client = createClient(false)
+const client = createClient(false);
 
 export const getSlugs = async ({ template }) => {
   const documents = await client.listDocumentsBySection({ section: template });
@@ -12,7 +12,7 @@ export const getContent = async ({ template, params }) => {
   const relativePath = `${params.slug.join("/")}.md`;
   const section = template;
   return {
-    ...(await client.getContentForSection<DocumentUnion>({
+    ...(await client.getContentForSection({
       relativePath,
       section,
     })),

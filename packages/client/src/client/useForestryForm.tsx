@@ -14,16 +14,14 @@ export function useForestryForm<T>(
     };
     relativePath: string;
     section: string;
-    query?: string;
   },
   options = { onSubmit: null }
 ): T {
-  const [documentData, setDocumentData] = React.useState(props.document);
   const cms = useCMS();
 
   const { form, initialValues } = props.document.node;
 
-  const [_modifiedValues, tinaForm] = useForm({
+  const [modifiedValues, tinaForm] = useForm({
     id: "tina-tutorial-index",
     label: "Edit Page",
     fields: form.fields.map((field) => {
@@ -58,23 +56,20 @@ export function useForestryForm<T>(
               payload: values,
               form: form,
             });
-
-            // Re-run query as a way to see updates from server
-            if (props.query) {
-              const result = await cms.api.forestry.request(props.query, {
-                variables: {
-                  relativePath: props.relativePath,
-                  section: props.section,
-                },
-              });
-              setDocumentData(result.document);
-            }
           },
   });
 
+  useCreateDocumentPlugin(props.section);
+  usePlugin(tinaForm);
+
+  return modifiedValues;
+}
+
+const useCreateDocumentPlugin = (section: string) => {
+  const cms = useCMS();
   const [createPagePlugin, setCreatePagePlugin] = React.useState(
     new ContentCreatorPlugin({
-      label: `Add ${props.section}`,
+      label: `Add ${section}`,
       fields: [
         {
           name: "filename",
@@ -84,7 +79,7 @@ export function useForestryForm<T>(
           required: true,
         },
       ],
-      section: props.section,
+      section,
     })
   );
   React.useEffect(() => {
@@ -101,12 +96,12 @@ export function useForestryForm<T>(
         }
       `,
         {
-          variables: { section: props.section },
+          variables: { section },
         }
       );
       const s = sectionData.getSection;
       const createPagePlugin = new ContentCreatorPlugin({
-        label: `Add ${props.section}`,
+        label: `Add ${section}`,
         fields: [
           {
             name: "filename",
@@ -125,17 +120,13 @@ export function useForestryForm<T>(
             required: true,
           },
         ],
-        section: props.section,
+        section,
       });
       setCreatePagePlugin(createPagePlugin);
     };
 
     getSectionData();
-  }, [props.section]);
+  }, [section]);
 
   usePlugin(createPagePlugin);
-  usePlugin(tinaForm);
-
-  // @ts-ignore
-  return documentData.node;
-}
+};
