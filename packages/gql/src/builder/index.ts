@@ -690,7 +690,6 @@ export const builder: Builder = {
         args: [gql.inputString("path")],
         fields: [
           gql.field({ name: "section", type: "SectionUnion" }),
-          // gql.field({ name: "section", type: "String" }),
           gql.field({ name: "path", type: "String" }),
           gql.field({ name: "relativePath", type: "String" }),
           gql.fieldList({
