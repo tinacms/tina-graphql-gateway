@@ -354,7 +354,6 @@ const buildField = (
           // @ts-ignore
           if (node.name.value === realType.name.value) {
             if (node.name.value === "SectionUnion") {
-              console.log(node.fields);
               fields = node.fields
                 ? node.fields.filter(
                     (field) => field.name.value !== "documents"
