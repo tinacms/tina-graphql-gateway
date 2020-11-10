@@ -2096,13 +2096,6 @@ __metadata:
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
-    "@tinacms/core": 0.31.0
-    "@tinacms/forms": ">=0.3"
-    "@tinacms/icons": ">=0.7"
-    "@tinacms/react-core": ">=0.2"
-    "@tinacms/react-forms": 0.31.0
-    "@tinacms/react-modals": ">=0.1"
-    "@tinacms/styles": ^0.29.0
     "@types/crypto-js": ^3.1.47
     "@types/js-cookie": ^2.2.6
     "@types/node": ^14.0.13
@@ -2125,6 +2118,13 @@ __metadata:
     tsup: ^3.7.0
     typescript: ^3.9.5
   peerDependencies:
+    "@tinacms/core": 0.31.0
+    "@tinacms/forms": ">=0.3"
+    "@tinacms/icons": ">=0.7"
+    "@tinacms/react-core": ">=0.2"
+    "@tinacms/react-forms": 0.31.0
+    "@tinacms/react-modals": ">=0.1"
+    "@tinacms/styles": ^0.29.0
     react: ">=16.8"
     react-dom: ">=16.8"
     react-is: ^16.13.1
@@ -3785,7 +3785,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/core@npm:0.31.0, @tinacms/core@npm:^0.31.0":
+"@tinacms/core@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/core@npm:0.31.0"
   checksum: ecab9ab7d81d614e971810e4f9b2b3e6ed66f18c76721ae9483f68b77f3796335c9d3acd99c26abdfec2ff4be4a0475a4891d1c353d6652bb5b705895ffb81e3
@@ -3825,7 +3825,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/forms@npm:>=0.3, @tinacms/forms@npm:^0.31.0":
+"@tinacms/forms@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/forms@npm:0.31.0"
   dependencies:
@@ -3837,7 +3837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/icons@npm:>=0.7, @tinacms/icons@npm:^0.31.0":
+"@tinacms/icons@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/icons@npm:0.31.0"
   checksum: 142ea1f3649240e86e15138a42c41ed44b9edf54c673bebcd00225020a40ae1d5192409afb82c3bd972ca5b7b83739d5a07fb18c96c241296f8c6114b1a3328e
@@ -3858,7 +3858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-core@npm:>=0.2, @tinacms/react-core@npm:^0.31.0":
+"@tinacms/react-core@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/react-core@npm:0.31.0"
   dependencies:
@@ -3870,7 +3870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-forms@npm:0.31.0, @tinacms/react-forms@npm:^0.31.0":
+"@tinacms/react-forms@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/react-forms@npm:0.31.0"
   dependencies:
@@ -3890,7 +3890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-modals@npm:>=0.1, @tinacms/react-modals@npm:^0.31.0":
+"@tinacms/react-modals@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/react-modals@npm:0.31.0"
   peerDependencies:
