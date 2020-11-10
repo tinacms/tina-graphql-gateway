@@ -22,7 +22,7 @@ export async function playgroundServer(
     });
     ps.on("close", (code) => {
       console.log(`child process exited with code ${code}`);
-      process.exit(1);
+      process.exit(code);
     });
   }
 }
