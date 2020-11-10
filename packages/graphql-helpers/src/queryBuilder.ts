@@ -353,13 +353,20 @@ const buildField = (
         ObjectTypeDefinition: (node) => {
           // @ts-ignore
           if (node.name.value === realType.name.value) {
-            fields = node.fields?.filter(
-              (field) =>
-                // NOTE: Prevent recursive loop since sections return documents as well
-                node.name.value !== "SectionUnion" &&
-                // NOTE: we might want to remove this from the schema if we're not using it
-                field.name.value !== "absolutePath"
-            ) as FieldDefinitionNode[];
+            if (node.name.value === "SectionUnion") {
+              console.log(node.fields);
+              fields = node.fields
+                ? node.fields.filter(
+                    (field) => field.name.value !== "documents"
+                  )
+                : [];
+            } else {
+              fields = node.fields?.filter(
+                (field) =>
+                  // NOTE: we might want to remove this from the schema if we're not using it
+                  field.name.value !== "absolutePath"
+              ) as FieldDefinitionNode[];
+            }
           }
         },
         UnionTypeDefinition: (node) => {
