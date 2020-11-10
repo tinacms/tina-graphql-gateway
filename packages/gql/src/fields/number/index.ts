@@ -45,17 +45,17 @@ export const number = {
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<NumberField>): Promise<string> => {
+    }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field initial value" });
 
       return value;
     },
-    value: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
+    value: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field value" });
 
       return value;
     },
-    input: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
+    input: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field input" });
 
       return value;
