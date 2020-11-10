@@ -48,18 +48,18 @@
     "tinacms": "^0.31.0"
   },
   "peerDependencies": {
-    "@tinacms/core": "0.31.0",
-    "@tinacms/forms": ">=0.3",
-    "@tinacms/icons": ">=0.7",
-    "@tinacms/react-core": ">=0.2",
-    "@tinacms/react-forms": "0.31.0",
-    "@tinacms/react-modals": ">=0.1",
+    "@tinacms/core": "^0.31.0",
+    "@tinacms/forms": "^0.3",
+    "@tinacms/icons": "^0.7",
+    "@tinacms/react-core": "^0.2",
+    "@tinacms/react-forms": "^0.31.0",
+    "@tinacms/react-modals": "^0.1",
     "@tinacms/styles": "^0.29.0",
+    "tinacms": "^0.31.0",
     "react": ">=16.8",
     "react-dom": ">=16.8",
     "react-is": "^16.13.1",
-    "styled-components": "*",
-    "tinacms": "0.31.0"
+    "styled-components": "*"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
