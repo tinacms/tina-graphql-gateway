@@ -1,4 +1,4 @@
-import { DocumentUnion } from "../.forestry/types";
+import { DocumentUnion } from "../.tina/types";
 import { createClient } from "./createClient";
 
 const client = createClient(false)
