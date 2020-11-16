@@ -4,7 +4,7 @@ import "./App.css";
 import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 import { Sidebar } from "./components/sidebar";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,8 +20,11 @@ import { TinaProvider, TinaCMS, usePlugin } from "tinacms";
 
 const TinaWrap = ({ children }) => {
   let { project } = useParams();
-  const client = new ForestryClient("", {
-    gqlServer: `http://localhost:4002/${project}`,
+  const client = new ForestryClient({
+    realm: "",
+    clientId: "",
+    redirectURI: "",
+    customAPI: `http://localhost:4002/${project}`,
   });
   const media = new ForestryMediaStore(client);
 

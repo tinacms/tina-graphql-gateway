@@ -4,7 +4,6 @@ import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
 import { transformPayload } from "./handle";
 import type { Field } from "tinacms";
 import Cookies from "js-cookie";
-const DEFAULT_REDIRECT_URI = "http://localhost:2999/authenticating";
 
 interface AddProps {
   url: string;
@@ -24,15 +23,14 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_GQL_SERVER = "http://localhost:4001/graphql";
-const DEFAULT_TINA_OAUTH_HOST = "http://localhost:4444";
-const DEFAULT_IDENTITY_HOST = "http://localhost:3000";
+const DEFAULT_TINA_OAUTH_HOST = 'https://hydra.tinajs.dev:4444';
+const DEFAULT_IDENTITY_HOST = "http://identity.tinajs.dev";
 
 interface ServerOptions {
-  gqlServer?: string;
-  oauthHost?: string;
-  identityHost?: string;
-  redirectURI?: string;
+  realm: string, 
+  clientId: string, 
+  redirectURI: string,
+  customAPI?: string;
   getTokenFn?: () => string,
 }
 
@@ -44,19 +42,16 @@ export class ForestryClient {
   query: string;
   redirectURI: string
   getToken: () => string
-  constructor(clientId: string, options?: ServerOptions) {
-    this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
-    this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
-    this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
-    this.getToken = options?.getTokenFn || function() {
-      return Cookies.get(AUTH_COOKIE_NAME)
-    }
-    this.redirectURI = options?.redirectURI || DEFAULT_REDIRECT_URI
-    this.getToken = options?.getTokenFn || function() {
-      return Cookies.get(AUTH_COOKIE_NAME)
-    }
+  constructor(options: ServerOptions) {
+    this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
+    this.oauthHost = process.env.TINAIO_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
+    this.identityHost = process.env.TINAIO_IDENTITY_HOST || DEFAULT_IDENTITY_HOST;
+    this.redirectURI = options.redirectURI
+    this.clientId = options.clientId;
 
-    this.clientId = clientId;
+    this.getToken = options?.getTokenFn || function() {
+      return Cookies.get(AUTH_COOKIE_NAME)
+    }
   }
 
   addContent = async ({ path, template, payload }: AddProps) => {
@@ -276,3 +271,5 @@ export class ForestryClient {
 export { useForestryForm } from "./useForestryForm";
 
 export { ForestryMediaStore } from "./media-store";
+
+export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL = "http://localhost:4001/graphql";
