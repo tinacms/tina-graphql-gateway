@@ -2048,7 +2048,7 @@ __metadata:
     "@types/lodash.get": ^4.4.6
     ajv: ^6.12.3
     axios: 0.19.0
-    bcrypt: ^3.0.6
+    bcrypt: ^5.0.0
     chalk: ^2.4.2
     clear: ^0.1.0
     commander: 5.1.0
@@ -6625,13 +6625,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bcrypt@npm:^3.0.6":
-  version: 3.0.8
-  resolution: "bcrypt@npm:3.0.8"
+"bcrypt@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "bcrypt@npm:5.0.0"
   dependencies:
-    nan: 2.14.0
-    node-pre-gyp: 0.14.0
-  checksum: 6abea1a9754f14ec43c6fcd099edb19f8c58da01b5eb1bc450df9af8c07c72bb5cdbcce421098495d784600a8dee5304240822daddd063e8a55e01c97e3d8cf8
+    node-addon-api: ^3.0.0
+    node-pre-gyp: 0.15.0
+  checksum: 73241a03a0b62e50138342801a4123ac6026330fc417ae586ab2fae95e62a3acdf4a6d27afa6f8b4eb9186f7d9b889113efd385e5c99c2943250b3fafd1549d7
   languageName: node
   linkType: hard
 
@@ -17258,7 +17258,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"nan@npm:2.14.0, nan@npm:^2.12.1":
+"nan@npm:^2.12.1":
   version: 2.14.0
   resolution: "nan@npm:2.14.0"
   dependencies:
@@ -17320,16 +17320,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"needle@npm:^2.2.1":
-  version: 2.5.0
-  resolution: "needle@npm:2.5.0"
+"needle@npm:^2.5.0":
+  version: 2.5.2
+  resolution: "needle@npm:2.5.2"
   dependencies:
     debug: ^3.2.6
     iconv-lite: ^0.4.4
     sax: ^1.2.4
   bin:
     needle: bin/needle
-  checksum: b50cef343e8f1037ddc727949d9e3243a9e175a2e935d5ac8f7f1434a47c6433c869c8accf270942196014a9f65ea1911a3d032455a380c9e27b66c74b7c6889
+  checksum: 42b3c8fc7cbb788285eb4e0077a1c0971c42332f846dbc3216ac7c8d8eebc6bb7678cc6823b1e8ffefa3415c53a2449aee25fd6c1ee3252f8c7088001ca95af3
   languageName: node
   linkType: hard
 
@@ -17503,6 +17503,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"node-addon-api@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "node-addon-api@npm:3.0.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 7f401e4ad9ed75cea9ba8590da8048b37e99531e8d8b46b941e6c951ca1cf8e0db29f31ddf25d3e87c13cb6653c06e0db72c05ef50eff9db3529cd929ae69747
+  languageName: node
+  linkType: hard
+
 "node-emoji@npm:^1.8.1":
   version: 1.10.0
   resolution: "node-emoji@npm:1.10.0"
@@ -17665,13 +17674,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"node-pre-gyp@npm:0.14.0":
-  version: 0.14.0
-  resolution: "node-pre-gyp@npm:0.14.0"
+"node-pre-gyp@npm:0.15.0":
+  version: 0.15.0
+  resolution: "node-pre-gyp@npm:0.15.0"
   dependencies:
     detect-libc: ^1.0.2
-    mkdirp: ^0.5.1
-    needle: ^2.2.1
+    mkdirp: ^0.5.3
+    needle: ^2.5.0
     nopt: ^4.0.1
     npm-packlist: ^1.1.6
     npmlog: ^4.0.2
@@ -17681,7 +17690,7 @@ fsevents@^1.2.7:
     tar: ^4.4.2
   bin:
     node-pre-gyp: ./bin/node-pre-gyp
-  checksum: 04dfb46fa5a0ad300ed894fbf293105ff98b190c26c5200b0f87da46e643ff9ebaf7a54c4079370d345f135f2016e164d7a20b09a4e9bd9c48236b350372a01e
+  checksum: 6a0e20bda32519e8574ec0c594cc4ec2085976b05f810cf811893ffb24884ec57eb6f8d114f4c21b995e48e0e46aead7616502d4750a407266e84be9a89a8ae6
   languageName: node
   linkType: hard
 
