@@ -46,14 +46,21 @@ export const authenticate = (
       if (e.key == TINA_AUTH_CONFIG) {
         const config = JSON.parse(e.newValue);
         const formData = `grant_type=authorization_code&client_id=${clientId}&redirect_uri=${redirectURI}&code=${config.code}&code_verifier=${codeVerifier}`;
-        
+
         fetch(`${oauthHost}/oauth2/token`, {
           method: "POST",
           headers: {
+            "Content-Type": "application/x-www-form-urlencoded", // FOR SOME REASON INCLUDING THIS RUINS EVERYTHING
             Accept: "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: formData,
+          body: JSON_to_URLEncoded({
+            grant_type: "authorization_code",
+            client_id: clientId,
+            redirect_uri: redirectURI,
+            code: config.code,
+            code_verifier: codeVerifier,
+          }),
         })
           .then((response) => response.json())
           .then((json) => {

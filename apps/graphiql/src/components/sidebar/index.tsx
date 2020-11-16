@@ -27,7 +27,7 @@ export const Sidebar = ({
   const [sections, setSections] = React.useState<
     {
       slug: string;
-      documents: { relativePath: string; breadcrumbs: string[] }[];
+      documents?: { relativePath: string; breadcrumbs: string[] }[];
     }[]
   >([]);
 
@@ -44,10 +44,12 @@ export const Sidebar = ({
 
   React.useEffect(() => {
     if (sections.length > 0) {
-      setActiveDocument({
-        relativePath: sections[0].documents[0].relativePath,
-        section: sections[0].slug,
-      });
+      if (sections[0].documents) {
+        setActiveDocument({
+          relativePath: sections[0].documents[0].relativePath,
+          section: sections[0].slug,
+        });
+      }
     }
   }, [sections]);
 
@@ -264,7 +266,11 @@ export const Sidebar = ({
                             : "hidden"
                         }`}
                       >
-                        {section.documents.map((document) => {
+                        {section.documents?.map((document) => {
+                          // FIXME: array with null is returned
+                          if (!document) {
+                            return null;
+                          }
                           return (
                             <button
                               type="button"
