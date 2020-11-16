@@ -48,9 +48,6 @@ export class ForestryClient {
     this.serverURL = options?.gqlServer || DEFAULT_TINA_GQL_SERVER;
     this.oauthHost = options?.oauthHost || DEFAULT_TINA_OAUTH_HOST;
     this.identityHost = options?.identityHost || DEFAULT_IDENTITY_HOST;
-    this.getToken = options?.getTokenFn || function() {
-      return Cookies.get(AUTH_COOKIE_NAME)
-    }
     this.redirectURI = options?.redirectURI || DEFAULT_REDIRECT_URI
     this.getToken = options?.getTokenFn || function() {
       return Cookies.get(AUTH_COOKIE_NAME)
