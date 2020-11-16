@@ -55,11 +55,11 @@
     "@tinacms/react-forms": "^0.31.0",
     "@tinacms/react-modals": "^0.1",
     "@tinacms/styles": "^0.29.0",
-    "tinacms": "^0.31.0",
     "react": ">=16.8",
     "react-dom": ">=16.8",
     "react-is": "^16.13.1",
-    "styled-components": "*"
+    "styled-components": "*",
+    "tinacms": "^0.31.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

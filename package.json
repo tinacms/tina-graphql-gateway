@@ -29,5 +29,13 @@
     "prettier": "^2.0.4",
     "typescript": "^3.8.3",
     "workspace": "^0.0.1-preview.1"
+  },
+  "dependenciesMeta": {
+    "remark-mdx": {
+      "unplugged": true
+    },
+    "rmark-mdx": {
+      "unplugged": true
+    }
   }
 }
