@@ -128,56 +128,34 @@ pages:
   - _posts/welcome.md # This keeps reference to all the pages using this template
 ```
 
-#### Creating the GraphQL server
+### Sourcing your content
 
-Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use.
+Now that we have defined our content model, we can connect our site to the Tina.io content API
 
-**Start your local GraphQL server by running:**
+_Make sure your .tina directory is pushed to git_
 
-```bash
-npx tina-gql server:start
-```
+#### Creating a Tina.io app
 
-or
+The Tina.io content API connects to your Github repository, and puts the content behind Tina.io's expressive content API.
 
-```bash
-yarn tina-gql server:start
-```
+- Navigate to [Tina.io](https://auth.tinajs.dev/)
+- Create a realm
+- Create an app
 
-You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
+You will then see a client-id for your new app. We will use this shortly.
 
-**(Optional) Generate TypeScript types**
-
-We can automatically generate TypeScript types based on your schema by running the following command:
-
-```bash
-npx tina-gql schema:gen-query --typescript
-```
-
-or
-
-```bash
-yarn tina-gql schema:gen-query --typescript
-```
-
-This will create a file at `.forestry/types.ts`.
-
-### Using the data within our Next.JS site
-
-Now that we have a working GraphQL server with our local content, let's use it within our site.
-
-_Make sure you keep your GraphQL server running in a seperate console through this entire process._
+#### Using the data within our Next.JS site
 
 First, install the TinaCMS dependencies:
 
 ```bash
-npm install tinacms styled-components
+npm install tinacms styled-components http-proxy-middleware
 ```
 
 or
 
 ```bash
-yarn add tinacms styled-components
+yarn add tinacms styled-components http-proxy-middleware
 ```
 
 In your site root, add TinaCMS & register the `ForestryClient` like so:
@@ -196,50 +174,138 @@ function MyApp({ Component, pageProps }) {
 
 export default withTina(MyApp, {
   apis: {
-    forestry: new ForestryClient(),
+    forestry: new ForestryClient({
+      realm: "your-realm-name", // this was set by you in the previous step
+      clientId: "your-client-id", // this is visible in your Tina.io dashboard
+      redirectURI: "your webpage url", //e.g http://localhost:3000
+    }),
   },
   sidebar: true,
 });
 ```
 
-If your site uses SSR, you may also need to add this to your **\_document.js** to handle TinaCMS's Styled Components
+We'll also want to wrap our main layout in the `TinacmsForestryProvider` to support authentication
 
-**pages/\_document.js**
+```tsx
 
-```js
-import Document from "next/document";
-import { ServerStyleSheet } from "styled-components";
+//...
 
-export default class MyDocument extends Document {
-  static async getInitialProps(ctx) {
-    const sheet = new ServerStyleSheet();
-    const originalRenderPage = ctx.renderPage;
+function MyApp({ Component, pageProps }) {
+  return (<TinacmsForestryProvider
+    onLogin={() => {
+      const headers = new Headers()
 
-    try {
-      ctx.renderPage = () =>
-        originalRenderPage({
-          enhanceApp: (App) => (props) =>
-            sheet.collectStyles(<App {...props} />),
-        });
+      //TODO - the token should could as a param from onLogin
+      headers.append('Authorization', 'Bearer ' + Cookies.get("tinacms-auth"))
+      fetch('/api/preview', {
+        method: 'POST',
+        headers: headers,
+      }).then(() => {
+        window.location.href = '/'
+      })
 
-      const initialProps = await Document.getInitialProps(ctx);
-      return {
-        ...initialProps,
-        styles: (
-          <>
-            {initialProps.styles}
-            {sheet.getStyleElement()}
-          </>
-        ),
-      };
-    } finally {
-      sheet.seal();
-    }
-  }
+    }}
+    onLogout={() => {console.log('exit edit mode')}}
+  ><Component {...pageProps} />)
 }
+
+//...
+
 ```
 
-By registering the `ForestryClient` globally, we can now use it within our pages to fetch content.
+This Next implementation relies on a few backend functions.
+
+```tsx
+// /pages/api/preview.ts
+const preview = (req: any, res: any) => {
+  const token = (req.headers["authorization"] || "").split(" ")[1] || null;
+
+  const previewData = {
+    tinaio_token: token,
+  };
+  res.setPreviewData(previewData);
+  res.end("Preview mode enabled");
+};
+
+export default preview;
+```
+
+```tsx
+// /pages/api/proxy/[...slug].ts
+import { createProxyMiddleware } from "http-proxy-middleware";
+
+//proxy to circumvent cors on identity app
+const apiProxy = createProxyMiddleware({
+  target: "https://identity.tinajs.dev",
+  changeOrigin: true,
+  pathRewrite: { [`^/api/proxy`]: "" },
+  secure: false,
+});
+
+export default apiProxy;
+```
+
+The last step is to add a way for the user to enter edit-mode. Let's create a `/login` page.
+
+```tsx
+// /pages/login.tsx
+import { EditLink } from "../components/EditLink";
+import { useCMS } from "tinacms";
+
+const EditLink = () => {
+  const cms = useCMS();
+
+  return (
+    <button onClick={() => cms.toggle()}>
+      {cms.enabled ? "Exit Edit Mode" : "Edit This Site"}
+    </button>
+  );
+};
+
+export default function Login(props) {
+  return (
+    <>
+      <EditLink />
+      {props.preview && (
+        <p>
+          You are logged in to Tina.io. Return to <a href="/">homepage</a>
+        </p>
+      )}
+    </>
+  );
+}
+
+export const getStaticProps = async (props: {
+  preview: boolean;
+  previewData: { tinaio_token: string };
+}) => {
+  return {
+    props: {
+      preview: !!props.preview,
+    },
+  };
+};
+```
+
+Your users should at this point be able to login and view their content from Tina.io's API. We will also want the site to build outside of edit-mode, for your production content.
+
+#### Creating a local GraphQL server
+
+Now that we've defined our schema, let's use the CLI to setup a GraphQL server for our site to use locally, or during production builds.
+
+**Start your local GraphQL server by running:**
+
+```bash
+npx tina-gql server:start
+```
+
+or
+
+```bash
+yarn tina-gql server:start
+```
+
+You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
 
 **pages/posts/welcome.tsx**
 
@@ -247,14 +313,23 @@ By registering the `ForestryClient` globally, we can now use it within our pages
 import config from "../../.forestry/config";
 import query from "../../.forestry/query";
 import { usePlugin } from "tinacms";
-import { useForestryForm, ForestryClient } from "@forestryio/client";
+import {
+  useForestryForm,
+  ForestryClient,
+  DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
+} from "@forestryio/client";
 
 // These are your generated types from CLI
 import { DocumentUnion, Query } from "../../.tina/types";
 
 export async function getStaticProps({ params }) {
   const path = `_posts/welcome.md`;
-  const client = new ForestryClient();
+  const client = new ForestryClient({
+    realm: "your-realm-name", // this was set by you in the previous step
+    clientId: "your-client-id", // this is visible in your Tina.io dashboard
+    redirectURI: "your webpage url", //e.g http://localhost:3000
+    customAPI: preview ? undefined : DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
+  });
   const response = await client.getContent({
     path,
   });
@@ -274,10 +349,25 @@ export default function Home(props) {
 }
 ```
 
-Now, if you navigate to [/posts/welcome](http://localhost:3000/posts/welcome) you should see your content. You should also be able to update your content using the TinaCMS sidebar.
+Now, if you navigate to [/posts/welcome](http://localhost:3000/posts/welcome) you should see your production content. Once you log-in, you should also be able to update your content using the TinaCMS sidebar.
 
 Next steps:
 
 - Make changes to our data-model, and verify our templates with `$ tina-gql schema:audit`
-- Setup build server to run in production
-- Configure your site to use the `Tina Teams` API in your hosted Cloud Editing Environment
+- Setup typescript types for your data-model
+
+**(Optional) Generate TypeScript types**
+
+We can automatically generate TypeScript types based on your schema by running the following command:
+
+```bash
+npx tina-gql schema:gen-query --typescript
+```
+
+or
+
+```bash
+yarn tina-gql schema:gen-query --typescript
+```
+
+This will create a file at `.forestry/types.ts`.
