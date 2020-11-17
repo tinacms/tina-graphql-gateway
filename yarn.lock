@@ -2099,7 +2099,7 @@ __metadata:
     "@tinacms/forms": ^0.3
     "@tinacms/icons": ^0.7
     "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": 0.31.0
+    "@tinacms/react-forms": ^0.31.0
     "@tinacms/react-modals": ^0.1
     "@tinacms/styles": ^0.29.0
     "@types/crypto-js": ^3.1.47
@@ -2128,7 +2128,9 @@ __metadata:
     "@tinacms/forms": ">=0.3"
     "@tinacms/icons": ">=0.7"
     "@tinacms/react-core": ">=0.2"
+    "@tinacms/react-forms": ">=0.30.0"
     "@tinacms/react-modals": ">=0.1"
+    "@tinacms/styles": ">=0.29.0"
     react: ">=16.8"
     react-dom: ">=16.8"
     react-is: ^16.13.1
@@ -3923,7 +3925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-forms@npm:0.31.0, @tinacms/react-forms@npm:^0.31.0":
+"@tinacms/react-forms@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/react-forms@npm:0.31.0"
   dependencies:
