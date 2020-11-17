@@ -31,6 +31,7 @@ interface ServerOptions {
   clientId: string, 
   redirectURI: string,
   customAPI?: string;
+  identityProxy?: string
   getTokenFn?: () => string,
 }
 
@@ -45,7 +46,7 @@ export class ForestryClient {
   constructor(options: ServerOptions) {
     this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
     this.oauthHost = process.env.TINAIO_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
-    this.identityHost = process.env.TINAIO_IDENTITY_HOST || DEFAULT_IDENTITY_HOST;
+    this.identityHost = options.identityProxy || DEFAULT_IDENTITY_HOST;
     this.redirectURI = options.redirectURI
     this.clientId = options.clientId;
 
