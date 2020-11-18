@@ -2,7 +2,7 @@ module.exports = {
   projects: {
     app: {
       schema: ["./apps/demo/.tina/schema.gql"],
-      documents: "**/*.{graphql,js,ts,jsx,tsx}",
+      documents: "./apps/demo/**/*.{graphql,js,ts,jsx,tsx}",
       extensions: {
         endpoints: {
           default: {

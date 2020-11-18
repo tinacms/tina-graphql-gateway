@@ -5,8 +5,9 @@ import {
   templateName,
   shortFMTName,
 } from "./util";
-import { queryBuilder } from "./queryBuilder";
+import { queryBuilder, formBuilder } from "./queryBuilder";
 export {
+  formBuilder,
   friendlyFMTName,
   templateName,
   friendlyName,

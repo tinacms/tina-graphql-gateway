@@ -409,3 +409,123 @@ const getRealType = (node: FieldDefinitionNode) => {
     return node.type;
   }
 };
+
+export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
+  const astNode = parse(printSchema(schema));
+  const visitor: VisitorType = {
+    leave: {
+      InlineFragment: (node, key, parent, path, ancestors) => {
+        const visitor2: VisitorType = {
+          leave: {
+            UnionTypeDefinition: (unionNode) => {
+              if (
+                unionNode.name.value ===
+                `${node.typeCondition?.name.value}_FormFields`
+              ) {
+                console.log("i ran ", node.typeCondition?.name.value);
+                const items: any[] = [];
+                const meh = unionNode.types?.map((type) => {
+                  return buildInlineFragment(type, astNode, 0, items);
+                });
+                // console.log(JSON.stringify(meh, null, 2));
+                node.selectionSet.selections = [
+                  ...node.selectionSet.selections,
+                  {
+                    name: {
+                      kind: "Name",
+                      value: "form",
+                    },
+                    kind: "Field",
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        {
+                          kind: "Field",
+                          name: {
+                            kind: "Name",
+                            value: "label",
+                          },
+                        },
+                        {
+                          kind: "Field",
+                          name: {
+                            kind: "Name",
+                            value: "name",
+                          },
+                        },
+                        {
+                          name: {
+                            kind: "Name",
+                            value: "fields",
+                          },
+                          kind: "Field",
+                          selectionSet: {
+                            kind: "SelectionSet",
+                            selections: meh,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ];
+              }
+            },
+          },
+        };
+
+        visit(astNode, visitor2);
+      },
+    },
+  };
+
+  visit(query, visitor);
+};
+
+// export const formBuilder2 = (query: DocumentNode, schema: GraphQLSchema) => {
+//   const astNode = parse(printSchema(schema));
+//   const visitor: VisitorType = {
+//     leave: {
+//       InlineFragment: (node) => {
+//         const visitor2: VisitorType = {
+//           leave: {
+//             NamedType: (node) => {
+//               buildInlineFragment(node, astNode, 1);
+//             },
+//           },
+//         };
+//         visit(astNode, visitor2);
+
+//         node.selectionSet.selections = [
+//           ...node.selectionSet.selections,
+//           {
+//             name: {
+//               kind: "Name",
+//               value: "form",
+//             },
+//             kind: "Field",
+//             selectionSet: {
+//               kind: "SelectionSet",
+//               selections: [
+//                 {
+//                   kind: "Field",
+//                   name: {
+//                     kind: "Name",
+//                     value: "label",
+//                   },
+//                 },
+//               ],
+//             },
+//           },
+//         ];
+//       },
+
+//       // Name: (node, _, other) => {
+//       //   if (node.value === "node") {
+//       //     console.log(JSON.stringify(other, null, 2));
+//       //   }
+//       // },
+//     },
+//   };
+
+//   visit(query, visitor);
+// };
