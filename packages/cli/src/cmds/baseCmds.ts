@@ -20,6 +20,10 @@ const auditFixOption = {
   name: "--fix",
   description: "Fix errors in the .tina folder configuration",
 };
+const genOption = {
+  name: "--schema -s",
+  description: "Dump the graphql SDL",
+};
 const schemaDumpOption = {
   name: "--folder <folder>",
   description: "Dump the schema into the given path",
@@ -43,6 +47,7 @@ export const baseCmds: Command[] = [
     command: CMD_GEN_TYPES,
     description:
       "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
+    options: [genOption],
     action: (options) => chain([attachSchema, genTypes], options),
   },
   {

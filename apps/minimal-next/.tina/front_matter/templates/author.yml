@@ -1,0 +1,22 @@
+---
+label: Author
+hide_body: false
+display_field: name
+fields:
+  - name: name
+    type: text
+    config:
+      required: true
+    label: Name
+  - name: image
+    type: file
+    config:
+      maxSize: 64
+    label: Image
+  - name: description
+    type: text
+    config:
+      required: true
+    label: Description
+pages:
+  - content/authors/homer.md

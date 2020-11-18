@@ -1,6 +1,4 @@
-import { DocumentUnion } from "../.tina/types";
 import { createClient } from "./createClient";
-import { graphql } from "@forestryio/client";
 
 const client = createClient(false);
 

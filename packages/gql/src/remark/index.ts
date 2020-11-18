@@ -5,7 +5,6 @@ import remark from "remark";
 import parse from "remark-parse";
 import mdx from "remark-mdx";
 import removePosition from "unist-util-remove-position";
-import vfile from "vfile";
 
 export const toHTML = async ({ contents: c }: { contents: string }) => {
   var compiler = unified().use(parse).use(remark2rehype).use(stringify);
