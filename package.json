@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach -pt --exclude demo --exclude @forestryio/graphiql run build",
-    "watch": "yarn workspaces foreach --exclude forestry-schema --exclude demo --exclude @forestryio/graphiql --exclude=build -p -i --verbose run watch",
+    "watch": "yarn workspaces foreach --exclude forestry-schema --exclude minimal-next --exclude demo --exclude @forestryio/graphiql --exclude=build -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",

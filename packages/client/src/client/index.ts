@@ -1,5 +1,10 @@
-import { queryBuilder } from "@forestryio/graphql-helpers";
-import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
+import { formBuilder, queryBuilder } from "@forestryio/graphql-helpers";
+import {
+  getIntrospectionQuery,
+  buildClientSchema,
+  print,
+  DocumentNode,
+} from "graphql";
 import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
 import { transformPayload } from "./handle";
 import type { Field } from "tinacms";
@@ -277,6 +282,39 @@ export class ForestryClient {
       console.error(e);
       return null;
     }
+  }
+
+
+  async requestWithForm<VariableType>({
+    query,
+    variables,
+  }: {
+    query: DocumentNode;
+    variables: VariableType;
+  }) {
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+    formBuilder(query, buildClientSchema(data));
+    console.log(print(query));
+    const res = await fetch(this.serverURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.getToken(),
+      },
+      body: JSON.stringify({
+        query: print(query),
+        variables,
+      }),
+    });
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error(json.errors);
+      throw new Error("Failed to fetch API");
+    }
+    return json.data;
   }
 
   async request<VariableType>(
