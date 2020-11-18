@@ -133,7 +133,7 @@ export const Explorer = (
     } catch (e) {
       console.log(e);
     }
-  }, [project]);
+  }, [project, vars.relativePath]);
 
   const _handleEditQuery = (query: any) => {
     setState({ ...state, query });
