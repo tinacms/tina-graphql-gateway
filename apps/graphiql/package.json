@@ -1,7 +1,6 @@
 {
   "name": "@forestryio/graphiql",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
     "@forestryio/cli": "workspace:packages/cli",
