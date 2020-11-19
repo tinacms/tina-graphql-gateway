@@ -204,6 +204,7 @@ input Post_InputData {
   title: String
   author: String
   image: String
+  excerpt: String
   hashtags: [String]
 }
 
@@ -684,7 +685,7 @@ type TagListField {
   component: String
 }
 
-union Post_FormFields = TextField | SelectField | FileField | TagListField
+union Post_FormFields = TextField | SelectField | TagListField
 
 type Post_Form {
   label: String
@@ -696,6 +697,7 @@ type Post_Data {
   title: String
   author: Authors_DocumentNode
   image: String
+  excerpt: String
   hashtags: [String]
 }
 
@@ -703,6 +705,7 @@ type Post_InitialValues {
   title: String
   author: String
   image: String
+  excerpt: String
   hashtags: [String]
 }
 
@@ -721,7 +724,7 @@ type Author_Accolades_GroupListField {
   fields: [Author_Accolades_FormFields]
 }
 
-union Author_FormFields = TextField | FileField | ListField | Author_Accolades_GroupListField
+union Author_FormFields = TextField | ListField | Author_Accolades_GroupListField
 
 type Author_Form {
   label: String

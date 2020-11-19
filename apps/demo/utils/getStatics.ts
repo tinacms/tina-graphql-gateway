@@ -1,6 +1,7 @@
 import { DocumentUnion } from "../.tina/types";
 import { createClient } from "./createClient";
-import { graphql } from "@forestryio/client";
+import gql from "graphql-tag";
+import { print } from "graphql";
 
 const client = createClient(false);
 
@@ -12,12 +13,44 @@ export const getSlugs = async ({ template }) => {
 export const getContent = async ({ template, params }) => {
   const relativePath = `${params.slug.join("/")}.md`;
   const section = template;
-  const content = await client.getContentForSection<object>({
-    relativePath,
-    section,
+  const query = gql`
+    query DocumentQuery($relativePath: String!, $section: String!) {
+      document(relativePath: $relativePath, section: $section) {
+        node {
+          __typename
+          ... on Post {
+            data {
+              title
+              image
+              excerpt
+              hashtags
+              author {
+                relativePath
+                node {
+                  ... on Author {
+                    data {
+                      name
+                      image
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+  const content = await client.requestWithForm<object>({
+    query,
+    variables: {
+      relativePath,
+      section,
+    },
   });
   return {
     ...content,
+    query: print(query),
     relativePath,
     section,
   };

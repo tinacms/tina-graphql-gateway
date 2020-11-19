@@ -1,6 +1,8 @@
 import React from "react";
 import { useCMS, useForm, usePlugin } from "tinacms";
 import { ContentCreatorPlugin } from "./create-page-plugin";
+import merge from "lodash.merge";
+import { DocumentNode } from "graphql";
 
 export function useForestryForm<T>(
   props: {
@@ -12,6 +14,7 @@ export function useForestryForm<T>(
         initialValues: object;
       };
     };
+    query: string;
     relativePath: string;
     section: string;
   },
@@ -19,7 +22,8 @@ export function useForestryForm<T>(
 ): T {
   const cms = useCMS();
 
-  const { form, initialValues } = props.document.node;
+  const { data, form, initialValues } = props.document.node;
+  const [serverData, setServerData] = React.useState(data);
 
   const [modifiedValues, tinaForm] = useForm({
     id: "tina-tutorial-index",
@@ -40,30 +44,80 @@ export function useForestryForm<T>(
       return field;
     }),
     initialValues: initialValues,
-    onSubmit:
-      options && options?.onSubmit
-        ? async (values) => {
-            const payload = await cms.api.forestry.transformPayload({
-              payload: values,
-              form: form,
-            });
-            options.onSubmit(values, payload);
-          }
-        : async (values) => {
-            await cms.api.forestry.updateContent({
-              relativePath: props.relativePath,
-              section: props.section,
-              payload: values,
-              form: form,
-            });
+    onSubmit: async (values) => {
+      if (options.onSubmit) {
+        const payload = await cms.api.forestry.transformPayload({
+          payload: values,
+          form: form,
+        });
+        options.onSubmit(values, payload);
+      } else {
+        // TODO: this should specify the response data
+        // so we don't need another round trip
+        await cms.api.forestry.updateContent({
+          relativePath: props.relativePath,
+          section: props.section,
+          payload: values,
+          form: form,
+        });
+        const updatedContent = await cms.api.forestry.request(props.query, {
+          variables: {
+            relativePath: props.relativePath,
+            section: props.section,
           },
+        });
+        setServerData(updatedContent.document.node.data);
+      }
+    },
   });
 
   useCreateDocumentPlugin(props.section);
   usePlugin(tinaForm);
 
-  return modifiedValues;
+  const realData = tempRemoveFormKeys(serverData);
+
+  return {
+    modifiedValues,
+    data: realData,
+    mixed: {
+      title: modifiedValues.title,
+      excerpt: modifiedValues.excerpt,
+      author: realData.author,
+      image: modifiedValues.image,
+      hashtags: modifiedValues.hashtags,
+    },
+  };
 }
+
+/**
+ *
+ * Right now our form builder puts form keys inside the nested documents,
+ * we want to hoist those up or omit them, but for now this is easiest
+ */
+const tempRemoveFormKeys = (data: object) => {
+  const accum = {};
+  Object.keys(data)
+    .filter((key) => {
+      return key !== "form" && key !== "initialValues";
+    })
+    .forEach((key) => {
+      if (Array.isArray(data[key])) {
+        accum[key] = data[key].map((value) => {
+          if (typeof value === "object" && value !== null) {
+            return tempRemoveFormKeys(value);
+          } else {
+            return value;
+          }
+        });
+      } else if (typeof data[key] === "object" && data[key] !== null) {
+        accum[key] = tempRemoveFormKeys(data[key]);
+      } else {
+        accum[key] = data[key];
+      }
+    });
+
+  return accum;
+};
 
 const useCreateDocumentPlugin = (section: string) => {
   const cms = useCMS();

@@ -2250,6 +2250,7 @@ __metadata:
     graphiql: ^1.0.4
     graphiql-explorer: ^0.6.2
     graphql: ^15.3.0
+    graphql-tag: ^2.11.0
     html-webpack-plugin: 4.0.0-beta.11
     identity-obj-proxy: 3.0.0
     jest: 24.9.0
@@ -9449,6 +9450,7 @@ __metadata:
     final-form: ^4.18.2
     formik: ^2.1.4
     graphql: ^15.0.0
+    graphql-tag: ^2.11.0
     js-cookie: ^2.2.1
     next: 9.5.1
     postcss-import: ^12.0.1
@@ -16236,6 +16238,13 @@ fsevents@^1.2.7:
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
   checksum: 080c1095b7795b293a06078737550dc0c8138192cadbafb4e4b1303357d367ac589a1a570fad8de154175b008ca7b2b48d6a7f1755a143e13b764e20a7104080
+  languageName: node
+  linkType: hard
+
+"lodash.merge@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "lodash.merge@npm:4.6.2"
+  checksum: 4e2bb42a87a148991458d7c384bc197e96f7115e9536fc8e2c86ae9e99ce1c1f693ff15eb85761952535f48d72253aed8e673d9f32dde3e671cd91e3fde220a7
   languageName: node
   linkType: hard
 

@@ -295,8 +295,8 @@ export class ForestryClient {
     const data = await this.request(getIntrospectionQuery(), {
       variables: {},
     });
-    formBuilder(query, buildClientSchema(data));
-    console.log(print(query));
+    const formifiedQuery = formBuilder(query, buildClientSchema(data));
+
     const res = await fetch(this.serverURL, {
       method: "POST",
       headers: {
@@ -304,7 +304,7 @@ export class ForestryClient {
         Authorization: "Bearer " + this.getToken(),
       },
       body: JSON.stringify({
-        query: print(query),
+        query: print(formifiedQuery),
         variables,
       }),
     });
