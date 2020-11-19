@@ -343,6 +343,7 @@ export type Post_InputData = {
   title?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
+  excerpt?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
@@ -888,7 +889,7 @@ export type TagListField = {
   component?: Maybe<Scalars['String']>;
 };
 
-export type Post_FormFields = TextField | SelectField | FileField | TagListField;
+export type Post_FormFields = TextField | SelectField | TagListField;
 
 export type Post_Form = {
   __typename?: 'Post_Form';
@@ -902,6 +903,7 @@ export type Post_Data = {
   title?: Maybe<Scalars['String']>;
   author?: Maybe<Authors_DocumentNode>;
   image?: Maybe<Scalars['String']>;
+  excerpt?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
@@ -910,6 +912,7 @@ export type Post_InitialValues = {
   title?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
+  excerpt?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
@@ -930,7 +933,7 @@ export type Author_Accolades_GroupListField = {
   fields?: Maybe<Array<Maybe<Author_Accolades_FormFields>>>;
 };
 
-export type Author_FormFields = TextField | FileField | ListField | Author_Accolades_GroupListField;
+export type Author_FormFields = TextField | ListField | Author_Accolades_GroupListField;
 
 export type Author_Form = {
   __typename?: 'Author_Form';

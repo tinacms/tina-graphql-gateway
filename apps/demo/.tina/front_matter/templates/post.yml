@@ -17,10 +17,13 @@ fields:
         section: authors
     label: Author
   - name: image
-    type: file
-    config:
-      maxSize: 2
+    type: text
     label: Image
+  - name: excerpt
+    type: text
+    config:
+      required: false
+    label: Excerpt
   - name: hashtags
     type: tag_list
     default: []

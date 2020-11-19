@@ -417,17 +417,32 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
       InlineFragment: (node, key, parent, path, ancestors) => {
         const visitor2: VisitorType = {
           leave: {
+            FieldDefinition: (nameNode, key, parent, path, ancestors) => {
+              if (
+                getRealType(nameNode).name.value ===
+                `${node.typeCondition?.name.value}_InitialValues`
+              ) {
+                const items: any[] = [];
+                const meh = buildField(nameNode, astNode, 0, items);
+
+                node.selectionSet.selections = [
+                  ...node.selectionSet.selections,
+                  meh,
+                ];
+              }
+            },
             UnionTypeDefinition: (unionNode) => {
               if (
                 unionNode.name.value ===
                 `${node.typeCondition?.name.value}_FormFields`
               ) {
-                console.log("i ran ", node.typeCondition?.name.value);
                 const items: any[] = [];
                 const meh = unionNode.types?.map((type) => {
                   return buildInlineFragment(type, astNode, 0, items);
                 });
                 // console.log(JSON.stringify(meh, null, 2));
+                // FIXME: don't overwrite, replace
+                // @ts-ignore
                 node.selectionSet.selections = [
                   ...node.selectionSet.selections,
                   {
@@ -479,6 +494,8 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   };
 
   visit(query, visitor);
+
+  return query;
 };
 
 // export const formBuilder2 = (query: DocumentNode, schema: GraphQLSchema) => {

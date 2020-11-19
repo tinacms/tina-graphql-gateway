@@ -2,11 +2,12 @@ import React from "react";
 import GraphiQL from "graphiql";
 // @ts-ignore no types provided
 import GraphiQLExplorer from "graphiql-explorer";
-import { queryBuilder } from "@forestryio/graphql-helpers";
+import { formBuilder, queryBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
 import { useForestryForm } from "@forestryio/client";
 import { useCMS } from "tinacms";
 import {
+  parse,
   getIntrospectionQuery,
   GraphQLSchema,
   buildClientSchema,
@@ -67,6 +68,7 @@ export const Explorer = (
   const [queryResult, setQueryResult] = React.useState<null | { data: object }>(
     null
   );
+  const [editedQuery, setEditQuery] = React.useState("");
 
   const graphQLFetcher = async (graphQLParams: {
     query: string;
@@ -121,11 +123,26 @@ export const Explorer = (
         };
 
         if (!newState.query) {
-          const clientSchema = buildClientSchema(result);
-          // const query = queryBuilder(clientSchema, "documentForSection");
-          const query = queryBuilder(clientSchema);
+          // const clientSchema = buildClientSchema(result);
+          // // const query = queryBuilder(clientSchema, "documentForSection");
+          // const query = queryBuilder(clientSchema);
           // @ts-ignore for some reason query builder shows no return type
-          newState.query = print(query);
+          // newState.query = print(query);
+          const q = `query DocumentQuery($relativePath: String!, $section: String!) {
+  document(relativePath: $relativePath, section: $section) {
+    node {
+      __typename
+      ... on BlockPage {
+        data {
+          title
+        }
+      }
+    }
+  }
+}
+          `;
+          newState.query = q;
+          setEditQuery(q);
         }
 
         setState({ ...state, ...newState });
@@ -133,7 +150,29 @@ export const Explorer = (
     } catch (e) {
       console.log(e);
     }
-  }, [project, vars.relativePath]);
+  }, [project]);
+
+  const _handleFormifyQuery = () => {
+    try {
+      graphQLFetcher({
+        query: getIntrospectionQuery(),
+      }).then((result) => {
+        const clientSchema = buildClientSchema(result);
+        console.log(editedQuery);
+        const documentNode = parse(editedQuery);
+
+        const queryAst = formBuilder(documentNode, clientSchema);
+        const newState: { schema: GraphQLSchema; query: null | string } = {
+          schema: buildClientSchema(result),
+          query: print(queryAst),
+        };
+
+        setState({ ...state, ...newState });
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const _handleEditQuery = (query: any) => {
     setState({ ...state, query });
@@ -177,12 +216,21 @@ export const Explorer = (
           ref={_graphiql}
           fetcher={graphQLFetcher}
           schema={schema}
+          onEditQuery={(query) => {
+            setEditQuery(query);
+          }}
           query={query}
           variables={JSON.stringify(vars, null, 2)}
         >
           {/* Hide GraphiQL logo */}
           <GraphiQL.Logo>{` `}</GraphiQL.Logo>
           <GraphiQL.Toolbar>
+            <button
+              onClick={_handleFormifyQuery}
+              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
+            >
+              Formify
+            </button>
             <button
               onClick={_handleToggleExplorer}
               className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
