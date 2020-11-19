@@ -6,6 +6,6 @@ export const createClient = (editMode: boolean) => {
       realm: "", 
       clientId: process.env.SITE_CLIENT_ID, 
       redirectURI: "", 
-      customAPI: editMode ? `http://localhost:3003/github/my-realm/${process.env.SITE_CLIENT_ID}` : undefined
+      customAPI: editMode ? `http://localhost:3003/github/${process.env.REALM}/${process.env.SITE_CLIENT_ID}` : undefined
     })
 }
