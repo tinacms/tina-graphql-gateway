@@ -297,22 +297,23 @@ export class ForestryClient {
     });
     const formifiedQuery = formBuilder(query, buildClientSchema(data));
 
+    const body = {
+      query: print(formifiedQuery),
+      variables,
+    };
     const res = await fetch(this.serverURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + this.getToken(),
       },
-      body: JSON.stringify({
-        query: print(formifiedQuery),
-        variables,
-      }),
+      body: JSON.stringify(body),
     });
 
     const json = await res.json();
     if (json.errors) {
       console.error(json.errors);
-      throw new Error("Failed to fetch API");
+      // throw new Error("Failed to fetch API");
     }
     return json.data;
   }
@@ -336,13 +337,13 @@ export class ForestryClient {
     const json = await res.json();
     if (json.errors) {
       console.error(json.errors);
-      throw new Error("Failed to fetch API");
+      // throw new Error("Failed to fetch API");
     }
     return json.data;
   }
 }
 
-export { useForestryForm } from "./useForestryForm";
+export { useForestryForm, useForestryForm2 } from "./useForestryForm";
 
 export { ForestryMediaStore } from "./media-store";
 

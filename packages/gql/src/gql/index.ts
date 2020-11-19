@@ -2,7 +2,11 @@ import {
   FieldDefinitionNode,
   ScalarTypeDefinitionNode,
   InputValueDefinitionNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
 } from "graphql";
+import { InterfaceImplementations } from "graphql/type/schema";
 
 export const gql = {
   scalar: (name: string): ScalarTypeDefinitionNode => {
@@ -47,6 +51,23 @@ export const gql = {
         name: {
           kind: "Name" as const,
           value: "String",
+        },
+      },
+    },
+  }),
+  inputID: (name: string): InputValueDefinitionNode => ({
+    kind: "InputValueDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NonNullType",
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "ID",
         },
       },
     },
@@ -128,6 +149,23 @@ export const gql = {
       },
     };
   },
+  fieldID: ({ name }: { name: string }) => ({
+    kind: "FieldDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NonNullType" as const,
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "ID",
+        },
+      },
+    },
+  }),
   field: ({
     name,
     type,
@@ -151,6 +189,52 @@ export const gql = {
         },
       },
       arguments: args,
+    };
+  },
+  fieldRequired: ({
+    name,
+    type,
+    args = [],
+  }: {
+    name: string;
+    type: string;
+    args?: InputValueDefinitionNode[];
+  }): FieldDefinitionNode => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType" as const,
+          name: {
+            kind: "Name" as const,
+            value: type,
+          },
+        },
+      },
+      arguments: args,
+    };
+  },
+  interface: ({
+    name,
+    fields,
+  }: {
+    name: string;
+    fields: FieldDefinitionNode[];
+  }) => {
+    return {
+      kind: "InterfaceTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      interfaces: [],
+      directives: [],
+      fields: fields,
     };
   },
   fieldList: ({
@@ -210,7 +294,7 @@ export const gql = {
       },
     })),
   }),
-  object: ({
+  node: ({
     name,
     fields,
     args = [],
@@ -218,9 +302,38 @@ export const gql = {
     name: string;
     fields: FieldDefinitionNode[];
     args?: InputValueDefinitionNode[];
-  }) => ({
+  }): ObjectTypeDefinitionNode => ({
     kind: "ObjectTypeDefinition" as const,
     arguments: args,
+    interfaces: [
+      {
+        kind: "NamedType",
+        name: {
+          kind: "Name",
+          value: "Node",
+        },
+      },
+    ],
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    fields,
+  }),
+  object: ({
+    name,
+    fields,
+    interfaces = [],
+    args = [],
+  }: {
+    name: string;
+    fields: FieldDefinitionNode[];
+    interfaces?: NamedTypeNode[];
+    args?: NamedTypeNode[];
+  }): ObjectTypeDefinitionNode => ({
+    kind: "ObjectTypeDefinition" as const,
+    arguments: args,
+    interfaces,
     name: {
       kind: "Name" as const,
       value: name,

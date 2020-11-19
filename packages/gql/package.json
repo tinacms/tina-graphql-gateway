@@ -8,10 +8,10 @@
     "src/fixtures/**/*"
   ],
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tsup src/index.ts src/server.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts src/server.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
-    "serve": "yarn nodemon dist/index.js",
+    "serve": "yarn nodemon dist/server.js",
     "serve-gh": "yarn nodemon dist/server.js",
     "no-test": "jest --passWithNoTests",
     "test-watch": "jest --watch"

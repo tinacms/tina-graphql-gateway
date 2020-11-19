@@ -18,7 +18,12 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import { sequential } from "../util";
 import type { Field } from "../fields";
 import type { DataSource } from "../datasources/datasource";
-import type { TemplateData, TinaTemplateData, Section } from "../types";
+import type {
+  DirectorySection,
+  TemplateData,
+  TinaTemplateData,
+  Section,
+} from "../types";
 import type { GraphQLResolveInfo } from "graphql";
 
 export interface Resolver {
@@ -129,7 +134,8 @@ export interface Resolver {
    */
   documentFormObject: (
     datasource: DataSource,
-    template: TemplateData
+    template: TemplateData,
+    includeContent?: boolean
   ) => Promise<TinaTemplateData>;
   /**
    * Given a template and document data, return the appropriate initialValues along with the _template and __typename
@@ -205,7 +211,13 @@ export interface Resolver {
     source: FieldResolverSource,
     args: FieldResolverArgs,
     context: ContextT,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
+    sectionMap: {
+      [key: string]: {
+        section: DirectorySection;
+        plural: boolean;
+      };
+    }
   ) => Promise<unknown>;
 }
 
@@ -217,10 +229,23 @@ export const resolver: Resolver = {
     source: FieldResolverSource,
     args: FieldResolverArgs,
     context: ContextT,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
+    sectionMap: {
+      [key: string]: {
+        section: DirectorySection;
+        plural: boolean;
+      };
+    }
   ) => {
     const value = source[info.fieldName];
     const { datasource } = context;
+
+    if (info.fieldName === "node") {
+      return await resolver.documentObject({
+        args: { fullPath: args.id, section: "pages" },
+        datasource: context.datasource,
+      });
+    }
 
     if (info.fieldName === "breadcrumbs") {
       if (args.excludeExtension) {
@@ -291,60 +316,32 @@ export const resolver: Resolver = {
       return sectionDocs;
     }
 
-    /**
-     * Since we don't know what our schema is in the field
-     * resolver (or we don't want to do the work to figure it out
-     * at runtime) - we're splitting the query name apart
-     * this is a half-baked solution - what we should probably
-     * do is build a mapping file at schema build-time:
-     * {
-     *  getPostsDocuments: {
-     *    queryType: 'section',
-     *    section: 'posts',
-     *  }
-     * }
-     *
-     * and store that in .json or cache on the server,
-     * load it here and use that to delegate things to the
-     * appropriate function
-     */
-    if (info.fieldName.startsWith("get")) {
-      if (info.fieldName.endsWith("Document")) {
-        assertIsDocumentForSectionArgs(args);
-        const sectionName = info.fieldName
-          .replace("get", "")
-          .replace("Document", "");
-
-        const { section, documents } = await resolveDocumentsBySectionLabel({
-          label: sectionName,
+    const sectionItem = sectionMap[info.fieldName];
+    if (sectionItem) {
+      // assertIsDocumentForSectionArgs(args);
+      // console.log(sectionItem);
+      if (sectionItem.plural) {
+        const { documents } = await resolveDocumentsBySectionLabel({
+          label: sectionItem.section.label,
           context,
         });
-
-        const document = await resolver.documentObject({
-          args: { relativePath: args.relativePath, section: section.slug },
-          datasource,
-        });
-
-        return document;
-      }
-      if (info.fieldName.endsWith("Documents")) {
-        const sectionName = info.fieldName
-          .replace("get", "")
-          .replace("Documents", "");
-
-        const { section, documents } = await resolveDocumentsBySectionLabel({
-          label: sectionName,
-          context,
-        });
-
         return await sequential(documents, async (d) => {
           const dd = await resolver.documentObject({
-            args: { fullPath: d, section: section.slug },
+            args: { fullPath: d, section: sectionItem.section.slug },
             datasource,
           });
 
           return dd;
         });
+      } else {
+        const document = await resolver.documentObject({
+          args: {
+            relativePath: args.relativePath,
+            section: sectionItem.section.slug,
+          },
+          datasource,
+        });
+        return document;
       }
     }
 
@@ -485,17 +482,17 @@ export const resolver: Resolver = {
     );
 
     return {
-      path: null,
+      id: relativePath, // FIXME: this should be full
+      path: relativePath, // FIXME: this should be full
       relativePath,
       section: sectionData,
       breadcrumbs: relativePath.split("/").filter(Boolean),
       basename,
       filename,
       extension,
-      node: {
+      document: {
         __typename: friendlyName(template),
-        content: "\nSome content\n",
-        form: await resolver.documentFormObject(datasource, template),
+        form: await resolver.documentFormObject(datasource, template, true),
         data: await resolver.documentDataObject({
           datasource,
           resolvedTemplate: template,
@@ -528,11 +525,11 @@ export const resolver: Resolver = {
     });
 
     if (includeContent) {
-      // accum.content = textarea.resolve.value({
-      //   datasource,
-      //   field: textarea.contentField,
-      //   value: content,
-      // });
+      accum.content = textarea.resolve.value({
+        datasource,
+        field: textarea.contentField,
+        value: content,
+      });
     }
 
     return {
@@ -561,7 +558,7 @@ export const resolver: Resolver = {
     });
 
     if (includeContent) {
-      // accum["content"] = content;
+      accum["content"] = content;
     }
 
     return {
@@ -572,19 +569,20 @@ export const resolver: Resolver = {
   },
   documentFormObject: async (
     datasource: DataSource,
-    template: TemplateData
+    template: TemplateData,
+    includeContent?: boolean
   ) => {
     const fields = await sequential(template.fields, async (field) =>
       dataField(datasource, field)
     );
 
-    if (true) {
-      // fields.push(
-      //   await textarea.resolve.field({
-      //     datasource,
-      //     field: textarea.contentField,
-      //   })
-      // );
+    if (includeContent) {
+      fields.push(
+        await textarea.resolve.field({
+          datasource,
+          field: textarea.contentField,
+        })
+      );
     }
 
     return {
@@ -628,16 +626,19 @@ export const resolver: Resolver = {
 
     // FIXME: we should validate that only one key was passed
     const data = Object.values(params)[0].data;
+    const { content, ...rest } = data;
 
+    // This doesn't do much at the moment, but it gives us the chance
+    // to run through field-level validations
     const { _template, ...value } = await resolver.documentDataInputObject({
-      data,
+      data: rest,
       template,
       datasource,
     });
 
     const payload = {
       data: value,
-      content: "", // TODO: Implement me
+      content,
     };
     await datasource.updateDocument({ ...args, params: payload });
 

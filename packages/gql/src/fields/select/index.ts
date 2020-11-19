@@ -1,4 +1,5 @@
 import { gql } from "../../gql";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
 import { builder } from "../../builder";
 
@@ -17,6 +18,7 @@ export const select = {
             gql.string("label"),
             gql.string("component"),
             gql.stringList("options"),
+            gql.string("refetchPolicy"),
           ],
         })
       );
@@ -34,14 +36,12 @@ export const select = {
         case "pages":
           select = field as SectionSelect;
 
-          const fieldUnionName = await builder.documentUnion({
-            cache,
-            section: select.config.source.section,
-            accumulator,
-            build: false,
-          });
+          const section = await cache.datasource.getSettingsForSection(
+            select.config.source.section
+          );
+          const name = friendlyName(section.slug);
 
-          return gql.field({ name: field.name, type: fieldUnionName });
+          return gql.field({ name: field.name, type: `${name}Document` });
         case "simple":
           return gql.string(field.name);
       }
@@ -69,6 +69,7 @@ export const select = {
           select = field as SectionSelect;
           return {
             ...f,
+            refetchPolicy: "onChange",
             options: [
               "",
               ...(await datasource.getDocumentsForSection(
@@ -159,4 +160,6 @@ export type TinaSelectField = {
   name: string;
   component: "select";
   options: string[];
+  /** When the value changes, should we hit the server? */
+  refetchPolicy?: "none" | "onChange";
 };

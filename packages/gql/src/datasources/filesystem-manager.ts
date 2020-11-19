@@ -60,6 +60,15 @@ export class FileSystemManager implements DataSource {
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
+  getAllTemplates = async () => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await readDir(fullPath, this.dirLoader);
+    return await sequential(
+      templates,
+      async (templateSlug) =>
+        await this.getTemplate(templateSlug.replace(".yml", ""))
+    );
+  };
   getTemplates = async (templateSlugs: string[]) =>
     await sequential(
       templateSlugs,
@@ -243,7 +252,7 @@ export class FileSystemManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
-    const string = matter.stringify("", params.data);
+    const string = matter.stringify(params.content || "", params.data);
     await fs.outputFile(fullPath, string);
   };
 }

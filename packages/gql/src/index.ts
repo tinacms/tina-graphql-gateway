@@ -27,13 +27,14 @@ export const gql = async ({
   const cache = cacheInit(datasource);
 
   try {
-    const schema = await builder.schema({ cache });
+    const { schema, sectionMap } = await builder.schema({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
       contextValue: { datasource },
       variableValues: variables,
+      sectionMap,
     });
     return result;
   } catch (e) {
@@ -63,13 +64,14 @@ export const githubRoute = async ({
     repo,
   });
   const cache = cacheInit(datasource);
-  const schema = await builder.schema({ cache });
+  const { schema, sectionMap } = await builder.schema({ cache });
 
   const result = await graphqlInit({
     schema: buildASTSchema(schema),
     source: query,
     contextValue: { datasource: datasource },
     variableValues: variables,
+    sectionMap,
   });
   if (result.errors) {
     console.error(result.errors);
@@ -100,13 +102,14 @@ export const demo = async ({
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
   try {
-    const schema = await builder.schema({ cache });
+    const { schema, sectionMap } = await builder.schema({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
       contextValue: { datasource },
       variableValues: variables,
+      sectionMap,
     });
     return result;
   } catch (e) {
@@ -159,20 +162,19 @@ export const startFixtureServer = async ({
     const projectRoot = root ? root : path.join(fixturePath, req.path);
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const schema = await builder.schema({ cache });
+    const { schema, sectionMap } = await builder.schema({ cache });
 
     // const datasource2 = new FileSystemManager(projectRoot);
     // const cache2 = cacheInit(datasource2);
     // const schema2 = await builder.schema({ cache: cache2 });
     // await fs.writeFileSync("./fs.graphql", print(schema2));
 
-    console.log("done...");
-
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
       contextValue: { datasource: datasource },
       variableValues: variables,
+      sectionMap,
     });
     if (result.errors) {
       console.error(result.errors);
@@ -210,13 +212,14 @@ export const startServer = async ({ port }: { port: number }) => {
     // const projectRoot = "/Users/jeffsee/code/graphql-demo/apps/demo";
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const schema = await builder.schema({ cache });
+    const { schema, sectionMap } = await builder.schema({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
       contextValue: { datasource },
       variableValues: variables,
+      sectionMap,
     });
     if (result.errors) {
       console.error(result.errors);
