@@ -1,0 +1,32 @@
+---
+label: Post
+hide_body: false
+display_field: title
+fields:
+  - name: title
+    type: text
+    config:
+      required: false
+    label: Title
+  - name: author
+    type: select
+    config:
+      required: false
+      source:
+        type: pages
+        section: authors
+    label: Author
+  - name: image
+    type: text
+    label: Image
+  - name: excerpt
+    type: text
+    config:
+      required: false
+    label: Excerpt
+  - name: hashtags
+    type: tag_list
+    default: []
+    label: Hashtags
+pages:
+  - content/posts/welcome.md

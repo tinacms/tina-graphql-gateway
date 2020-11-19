@@ -128,19 +128,30 @@ export const Explorer = (
           // const query = queryBuilder(clientSchema);
           // @ts-ignore for some reason query builder shows no return type
           // newState.query = print(query);
-          const q = `query DocumentQuery($relativePath: String!, $section: String!) {
-  document(relativePath: $relativePath, section: $section) {
-    node {
+          //           const q = `query DocumentQuery($relativePath: String!, $section: String!) {
+          //   document(relativePath: $relativePath, section: $section) {
+          //     node {
+          //       __typename
+          //       ... on BlockPage {
+          //         data {
+          //           title
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+          const q = `query DocumentQuery($relativePath: String!) {
+  getPagesDocument(relativePath: $relativePath) {
+    document {
       __typename
-      ... on BlockPage {
+      ...on BlockPage {
         data {
           title
         }
       }
     }
   }
-}
-          `;
+}`;
           newState.query = q;
           setEditQuery(q);
         }

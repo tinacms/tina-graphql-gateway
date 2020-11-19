@@ -1,0 +1,86 @@
+"""
+An object with an ID to support global identification.
+"""
+interface Node {
+  id: ID!
+}
+
+interface DocumentInterface {
+  sys: SystemType
+}
+
+type SystemType {
+  filename: String!
+  basename: String!
+  path: String!
+}
+
+type BlogType {
+  title: String
+  content: String!
+}
+
+type ArticleType {
+  heading: String
+  content: String!
+}
+
+type HeroType {
+  id: ID!
+  sys: SystemType
+  image: String
+  content: String!
+}
+
+union PostTypeData = BlogType | ArticleType
+
+type PostType implements Node & DocumentInterface {
+  id: ID!
+  sys: SystemType
+  data: PostTypeData
+}
+
+union PageTypeData = HeroType
+type PageType implements Node & DocumentInterface {
+  id: ID!
+  sys: SystemType
+  data: PageTypeData
+}
+
+union DocumentTypeData = HeroType | BlogType | ArticleType
+type DocumentType implements Node & DocumentInterface {
+  id: ID!
+  sys: SystemType
+  data: DocumentTypeData
+}
+
+type Query {
+  node(id: ID!): Node
+  getDocument(id: ID!): DocumentType
+  getPage(id: ID!): PageType
+  getPost(id: ID!): PostType
+}
+
+# query {
+#   getPost(id: "some-id") {
+#     id
+#     filename
+#     basename
+#     data {
+#       ...on Blog {
+#         title
+#       }
+#       ...on Article {
+#         frontmatter {
+#           heading
+#         }
+#         content
+#       }
+#     }
+#     values {
+#       ...on Blog {
+#         title
+#       }
+#     }
+#   }
+# }

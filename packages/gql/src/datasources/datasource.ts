@@ -54,6 +54,7 @@ export interface DataSource {
     filename: string;
   }>;
   getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
+  getAllTemplates: () => Promise<TemplateData[]>;
   getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
   getTemplate: (slug: string) => Promise<TemplateData>;
   /**

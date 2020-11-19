@@ -1,0 +1,30 @@
+---
+label: Author
+hide_body: false
+display_field: name
+fields:
+  - name: name
+    type: text
+    config:
+      required: true
+    label: Name
+  - name: image
+    type: text
+    label: Image
+  - name: gallery
+    type: image_gallery
+    label: Gallery
+  - name: role
+    label: Role
+    type: select
+    config:
+      required: false
+      options:
+        - CEO
+        - CTO
+        - Editor
+      source:
+        type: simple
+pages:
+  - content/authors/christian.md
+  - content/authors/emily.md

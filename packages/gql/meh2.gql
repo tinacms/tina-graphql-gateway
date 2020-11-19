@@ -1,0 +1,59 @@
+"""
+An object with an ID to support global identification.
+"""
+interface Node {
+  id: ID!
+}
+
+interface Document_Interface {
+  path: String
+  relativePath: String
+}
+
+type Pages_DataBlockTemplate {
+  title: String
+  content: String
+}
+
+type Pages_DataHeroTemplate {
+  header: String
+  content: String
+}
+
+type Pages_Block_Node implements Node & Document_Interface & Document_PagesSection_Interface {
+  id: ID!
+  path: String
+  relativePath: String
+  data: Pages_DataBlockTemplate
+}
+
+interface Document_PagesSection_Interface {
+  id: ID!
+  path: String
+  relativePath: String
+}
+
+type Posts_DataArticleTemplate {
+  title: String
+  content: String
+}
+
+type Posts_Article_Node implements Node & Document_Interface & Document_PostsSection_Interface {
+  id: ID!
+  path: String
+  relativePath: String
+  data: Posts_DataArticleTemplate
+}
+
+interface Document_PostsSection_Interface {
+  id: ID!
+  path: String
+  relativePath: String
+}
+
+type Query {
+  node(id: ID!): Node
+  getDocument(id: ID!): Document_Interface
+  getPage(id: ID!): Document_PagesSection_Interface
+  getPost(id: ID!): Document_PostsSection_Interface
+}
