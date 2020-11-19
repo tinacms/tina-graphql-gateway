@@ -1,11 +1,9 @@
 ---
-title: Welcome
-author: content/authors/emily.md
+title: 'Hello, World!sdfsdfs'
+author: content/authors/christian.md
 image: >-
-  https://images.unsplash.com/photo-1492724441997-5dc865305da7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1679&q=80
-excerpt: >-
-  So this is the story all about how my life go flip, turned updside -down and I
-  'dd lielkadjflakj
+  https://images.unsplash.com/photo-1547586696-ea22b4d4235d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1679&q=80
+excerpt: 'It''s really nice because you get this live feedback, but it comes at a cost.'
 hashtags:
   - Blog
 ---
