@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       onLogout={() => Cookies.remove("tina-editmode")}
     >
       <div>
-        <div>
+        {/* <div>
           <Link href="/pages">
             <a>Pages</a>
           </Link>
@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Link href="/posts">
             <a>Posts</a>
           </Link>
-        </div>
+        </div> */}
         <Component {...pageProps} />
         <EditLink />
       </div>

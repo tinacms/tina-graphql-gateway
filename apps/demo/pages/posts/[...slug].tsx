@@ -36,7 +36,7 @@ const Home = (props) => {
         />
       </Head>
       <div className="grid grid-cols-2">
-        <div style={{ height: "90vh" }} className="p-24 overflow-scroll">
+        <div className="px-24 mt-6 overflow-scroll">
           <h3 className="mt-2 text-2xl font-extrabold text-gray-900 sm:text-xl">
             Data from our GraphQL query
           </h3>
@@ -46,18 +46,34 @@ const Home = (props) => {
           <h3 className="mt-12 text-2xl font-extrabold text-gray-900 sm:text-xl">
             Data from useForm's "initialValues"
           </h3>
+          <p className="my-3 text-base text-gray-500">
+            Not super useful to us on it's own, some values are "hot" while
+            others will become stale when data changes
+          </p>
           <pre>
             <code>{JSON.stringify(modifiedValues, null, 2)}</code>
           </pre>
           <h3 className="mt-12 text-2xl font-extrabold text-gray-900 sm:text-xl">
             Mixed
           </h3>
+          <p className="my-3 text-base text-gray-500">
+            This is a manual override where we choose which values are "live"
+            and which values must come from the graphql query. This is closer to
+            what I think we'll need to provide, our GraphQL server might return
+            some sort of flag for which values are able to be hot, mostly this
+            relates to relational data but there may also be considerations for
+            data which graphql servers often provide multiple "types" for,
+            rich-text being the best example.
+          </p>
           <pre>
             <code>{JSON.stringify(mixed, null, 2)}</code>
           </pre>
         </div>
-        <div className="max-w-md mx-auto flex items-center justify-center">
+        <div className="max-w-md mx-auto flex items-center justify-center h-screen">
           <div className="flex flex-col space-y-4">
+            <h3 className="text-2xl font-extrabold text-gray-900 sm:text-xl">
+              Data from our GraphQL query
+            </h3>
             <Card
               image={data.image}
               hashtags={data.hashtags}
@@ -65,6 +81,9 @@ const Home = (props) => {
               excerpt={data.excerpt}
               author={data.author.node.data}
             />
+            <h3 className="mt-12 text-2xl font-extrabold text-gray-900 sm:text-xl">
+              Mixed
+            </h3>
             <Card
               image={mixed.image}
               hashtags={mixed.hashtags}
