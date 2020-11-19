@@ -305,7 +305,7 @@ or
 yarn tina-gql server:start
 ```
 
-You can now go to [http://localhost:4001/api/graphql](http://localhost:4001/api/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
+You can now go to [http://localhost:4001/graphql](http://localhost:4001/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
 
 **pages/posts/welcome.tsx**
 
@@ -361,7 +361,7 @@ Next steps:
 We can automatically generate TypeScript types based on your schema by running the following command:
 
 ```bash
-npx tina-gql schema:gen-query --typescript
+yarn tina-gql schema:types
 ```
 
 or
