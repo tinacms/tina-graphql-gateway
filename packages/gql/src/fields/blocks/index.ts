@@ -176,14 +176,16 @@ export const blocks: Blocks = {
       return name;
     },
     initialValue: async ({ cache, field, accumulator }) => {
-      const fieldUnionName = await builder.initialValuesUnion({
-        cache,
-        templates: field.template_types,
-        returnTemplate: true,
-        accumulator,
-      });
+      const name = `${friendlyName(field)}Values`;
 
-      return gql.fieldList({ name: field.name, type: fieldUnionName });
+      accumulator.push(
+        gql.union({
+          name: name,
+          types: field.template_types.map((t) => friendlyName(`${t}Values`)),
+        })
+      );
+
+      return gql.fieldList({ name: field.name, type: name });
     },
     value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = `${friendlyName(field)}Data`;

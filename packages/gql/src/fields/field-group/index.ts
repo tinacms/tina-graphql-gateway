@@ -21,11 +21,6 @@ export const fieldGroup = {
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
       const name = friendlyName(field, "GroupField");
-      // const fieldsUnionName = await builder.documentFormFieldsUnion(
-      //   cache,
-      //   field,
-      //   accumulator
-      // );
       const fieldsUnionName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
@@ -51,10 +46,15 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const initialValueName = await builder.documentInitialValuesObject(
+      // const initialValueName = await builder.documentInitialValuesObject(
+      //   cache,
+      //   field,
+      //   false,
+      //   accumulator
+      // );
+      const initialValueName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
-        false,
         accumulator
       );
 

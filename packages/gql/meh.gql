@@ -111,10 +111,15 @@ type ActionPageReferenceData {
   button_settings: ActionPageReference_ButtonSettingsData
 }
 
+type ActionPageReference_ButtonSettingsValues {
+  _template: String
+  label: String
+}
+
 type ActionPageReferenceValues {
   _template: String
   page: String
-  button_settings: String
+  button_settings: ActionPageReference_ButtonSettingsValues
 }
 
 type SelectField {
@@ -123,11 +128,6 @@ type SelectField {
   component: String
   options: [String]
   refetchPolicy: String
-}
-
-type ActionPageReference_ButtonSettingsValues {
-  _template: String
-  label: String
 }
 
 type ActionPageReference_ButtonSettings_GroupField {
@@ -208,19 +208,19 @@ type AuthorData {
   accolades: [Author_AccoladesData]
 }
 
+type Author_AccoladesValues {
+  _template: String
+  figure: String
+  description: String
+}
+
 type AuthorValues {
   _template: String
   name: String
   image: String
   gallery: String
   anecdotes: [String]
-  accolades: String
-}
-
-type Author_AccoladesValues {
-  _template: String
-  figure: String
-  description: String
+  accolades: [Author_AccoladesValues]
 }
 
 type Author_Accolades_GroupListField {
@@ -246,11 +246,13 @@ type BlockPageData {
   blocks: [BlockPage_BlocksData]
 }
 
+union BlockPage_BlocksValues = SidecarValues | ExcerptPostValues | PostListValues | PriceListValues | AuthorListValues | SponsorListValues | PageReferenceValues | SectionIndexValues
+
 type BlockPageValues {
   _template: String
   title: String
   date: String
-  blocks: String
+  blocks: [BlockPage_BlocksValues]
 }
 
 union BlockPage_Blocks_BlocksFieldTemplates = SidecarForm | ExcerptPostForm | PostListForm | PriceListForm | AuthorListForm | SponsorListForm | PageReferenceForm | SectionIndexForm
@@ -301,16 +303,16 @@ type MenuData {
   menu_item: [Menu_MenuItemData]
 }
 
-type MenuValues {
-  _template: String
-  logo: String
-  menu_item: String
-}
-
 type Menu_MenuItemValues {
   _template: String
   label: String
   page: String
+}
+
+type MenuValues {
+  _template: String
+  logo: String
+  menu_item: [Menu_MenuItemValues]
 }
 
 type Menu_MenuItem_GroupListField {
@@ -355,14 +357,14 @@ type PostListData {
   posts: [PostList_PostsData]
 }
 
-type PostListValues {
-  _template: String
-  posts: String
-}
-
 type PostList_PostsValues {
   _template: String
   post: String
+}
+
+type PostListValues {
+  _template: String
+  posts: [PostList_PostsValues]
 }
 
 type PostList_Posts_GroupListField {
@@ -415,18 +417,18 @@ type PriceListData {
   prices: [PriceList_PricesData]
 }
 
-type PriceListValues {
-  _template: String
-  heading: String
-  prices: String
-}
-
 type PriceList_PricesValues {
   _template: String
   title: String
   description: String
   bullet_points: [String]
   category: String
+}
+
+type PriceListValues {
+  _template: String
+  heading: String
+  prices: [PriceList_PricesValues]
 }
 
 type PriceList_Prices_GroupListField {
@@ -479,18 +481,20 @@ type SidecarData {
   style: String
 }
 
+type Sidecar_CtaValues {
+  _template: String
+  header: String
+}
+
+union Sidecar_ActionsValues = ActionVideoValues | ActionNewsletterValues | ActionPageReferenceValues
+
 type SidecarValues {
   _template: String
   text: String
   image: String
-  cta: String
-  actions: String
+  cta: Sidecar_CtaValues
+  actions: [Sidecar_ActionsValues]
   style: String
-}
-
-type Sidecar_CtaValues {
-  _template: String
-  header: String
 }
 
 type Sidecar_Cta_GroupField {
@@ -528,17 +532,17 @@ type SponsorListData {
   sponsor: [SponsorList_SponsorData]
 }
 
-type SponsorListValues {
-  _template: String
-  description: String
-  sponsor: String
-}
-
 type SponsorList_SponsorValues {
   _template: String
   name: String
   url: String
   image: String
+}
+
+type SponsorListValues {
+  _template: String
+  description: String
+  sponsor: [SponsorList_SponsorValues]
 }
 
 type SponsorList_Sponsor_GroupListField {

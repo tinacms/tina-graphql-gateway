@@ -66,13 +66,13 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      // const initialValueName = await builder.documentInitialValuesObject(
-      //   cache,
-      //   field,
-      //   false,
-      //   accumulator
-      // );
-      // return gql.fieldList({ name: field.name, type: initialValueName });
+      const initialValueName = await builders.buildTemplateOrFieldValues(
+        cache,
+        field,
+        accumulator
+      );
+
+      return gql.fieldList({ name: field.name, type: initialValueName });
     },
     value: async ({
       cache,
