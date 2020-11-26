@@ -683,8 +683,8 @@ const buildTemplateDataField = async (
       return textarea.build.value({ cache, field, accumulator });
     case "select":
       return await select.build.value({ cache, field, accumulator });
-    // case "blocks":
-    //   return blocks.build.value({ cache, field, accumulator });
+    case "blocks":
+      return blocks.build.value({ cache, field, accumulator });
     case "field_group":
       return await fieldGroup.build.value({ cache, field, accumulator });
     case "field_group_list":
@@ -743,4 +743,11 @@ const buildTemplateInputDataField = async (
     default:
       return text.build.input({ cache, field, accumulator });
   }
+};
+
+export const builders = {
+  buildTemplateOrField,
+  buildTemplateOrFieldData,
+  buildTemplateOrFieldValues,
+  buildTemplateOrFieldForm,
 };
