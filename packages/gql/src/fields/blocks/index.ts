@@ -152,29 +152,12 @@ export const blocks: Blocks = {
   build: {
     field: async ({ cache, field, accumulator }) => {
       const name = friendlyName(field, "BlocksField");
-
       const templateName = friendlyName(field, "BlocksFieldTemplates");
-      const possibleTemplates = await sequential(
-        field.template_types,
-        async (templateSlug) => {
-          const template = await cache.datasource.getTemplate(templateSlug);
-          const name = await builder.documentFormObject(
-            cache,
-            template,
-            accumulator
-          );
-          // This might cause issues, need to make sure the resolver which is looking
-          // for the template field uses the same formatting
-          return { name: friendlyName(templateSlug, "", true), value: name };
-        }
-      );
 
       accumulator.push(
-        gql.object({
+        gql.union({
           name: templateName,
-          fields: _.flatten(possibleTemplates).map((formObject) =>
-            gql.field({ name: formObject.name, type: formObject.value })
-          ),
+          types: field.template_types.map((t) => `${friendlyName(t)}Form`),
         })
       );
 
