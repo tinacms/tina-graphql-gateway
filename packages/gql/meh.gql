@@ -194,10 +194,12 @@ type AuthorForm {
   accolades: TextField
 }
 
+union BlockPage_BlocksData = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData
+
 type BlockPageData {
   title: String
   date: String
-  blocks: String
+  blocks: [BlockPage_BlocksData]
 }
 
 type BlockPageValues {
@@ -346,11 +348,13 @@ type Sidecar_CtaData {
   header: String
 }
 
+union Sidecar_ActionsData = ActionVideoData | ActionNewsletterData | ActionPageReferenceData
+
 type SidecarData {
   text: LongTextValue
   image: String
   cta: Sidecar_CtaData
-  actions: String
+  actions: [Sidecar_ActionsData]
   style: String
 }
 

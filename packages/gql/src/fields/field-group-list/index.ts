@@ -2,11 +2,7 @@ import * as yup from "yup";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import {
-  builder,
-  buildTemplateOrFieldValues,
-  buildTemplateOrFieldData,
-} from "../../builder";
+import { builders } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -46,23 +42,23 @@ export const fieldGroupList = {
     }: BuildArgs<FieldGroupListField>) => {
       const name = friendlyName(field, "GroupListField");
 
-      const fieldsUnionName = await builder.documentFormFieldsUnion(
-        cache,
-        field,
-        accumulator
-      );
+      // const fieldsUnionName = await builder.documentFormFieldsUnion(
+      //   cache,
+      //   field,
+      //   accumulator
+      // );
 
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.fieldList({ name: "fields", type: fieldsUnionName }),
-          ],
-        })
-      );
+      // accumulator.push(
+      //   gql.object({
+      //     name,
+      //     fields: [
+      //       gql.string("name"),
+      //       gql.string("label"),
+      //       gql.string("component"),
+      //       gql.fieldList({ name: "fields", type: fieldsUnionName }),
+      //     ],
+      //   })
+      // );
 
       return name;
     },
@@ -71,20 +67,24 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const initialValueName = await builder.documentInitialValuesObject(
-        cache,
-        field,
-        false,
-        accumulator
-      );
-      return gql.fieldList({ name: field.name, type: initialValueName });
+      // const initialValueName = await builder.documentInitialValuesObject(
+      //   cache,
+      //   field,
+      //   false,
+      //   accumulator
+      // );
+      // return gql.fieldList({ name: field.name, type: initialValueName });
     },
     value: async ({
       cache,
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const name = await buildTemplateOrFieldData(cache, field, accumulator);
+      const name = await builders.buildTemplateOrFieldData(
+        cache,
+        field,
+        accumulator
+      );
       return gql.fieldList({ name: field.name, type: `${name}Data` });
     },
     input: async ({
@@ -92,10 +92,10 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      return gql.inputValueList(
-        field.name,
-        await builder.documentDataInputObject(cache, field, false, accumulator)
-      );
+      // return gql.inputValueList(
+      //   field.name,
+      //   await builder.documentDataInputObject(cache, field, false, accumulator)
+      // );
     },
   },
   resolve: {

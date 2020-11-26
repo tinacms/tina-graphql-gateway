@@ -4,7 +4,7 @@ import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
 import { friendlyName } from "@forestryio/graphql-helpers";
-import { builder } from "../../builder";
+import { builder, builders } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -203,12 +203,13 @@ export const blocks: Blocks = {
       return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     value: async ({ cache, field, accumulator }) => {
-      const fieldUnionName = await builder.documentDataUnion({
-        cache,
-        templates: field.template_types,
-        returnTemplate: true,
-        accumulator,
-      });
+      const fieldUnionName = `${friendlyName(field)}Data`;
+      accumulator.push(
+        gql.union({
+          name: fieldUnionName,
+          types: field.template_types.map((t) => `${friendlyName(t)}Data`),
+        })
+      );
       return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
