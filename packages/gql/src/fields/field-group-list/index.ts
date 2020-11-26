@@ -2,7 +2,11 @@ import * as yup from "yup";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
+import {
+  builder,
+  buildTemplateOrFieldValues,
+  buildTemplateOrFieldData,
+} from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -80,13 +84,8 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const valueName = await builder.documentDataObject({
-        cache,
-        template: field,
-        returnTemplate: false,
-        accumulator,
-      });
-      return gql.fieldList({ name: field.name, type: valueName });
+      const name = await buildTemplateOrFieldData(cache, field, accumulator);
+      return gql.fieldList({ name: field.name, type: `${name}Data` });
     },
     input: async ({
       cache,

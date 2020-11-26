@@ -1,5 +1,5 @@
 interface Node {
-  ID: ID!
+  id: ID!
 }
 
 scalar JSON
@@ -15,25 +15,11 @@ type Query {
   node(id: ID!): Node
 }
 
-union PagesData = BlockPageData
+union PostsData = PostData | SectionData
 
-union PagesValues = BlockPageValues
+union PostsValues = PostValues | SectionValues
 
-union PagesForm = BlockPageForm
-
-type PagesDocument implements Node {
-  id: ID!
-  sys: SystemInfo!
-  data: PagesData!
-  values: PagesValues!
-  form: PagesForm!
-}
-
-union PostsData = PostData
-
-union PostsValues = PostValues
-
-union PostsForm = PostForm
+union PostsForm = PostForm | SectionForm
 
 type PostsDocument implements Node {
   id: ID!
@@ -57,55 +43,39 @@ type AuthorsDocument implements Node {
   form: AuthorsForm!
 }
 
-union MenusData = MenuData
-
-union MenusValues = MenuValues
-
-union MenusForm = MenuForm
-
-type MenusDocument implements Node {
-  id: ID!
-  sys: SystemInfo!
-  data: MenusData!
-  values: MenusValues!
-  form: MenusForm!
-}
-
 type LongTextValue {
   raw: String
   markdownAst: JSONObject
   html: String
 }
 
-type ActionNewsletterData {
-  body: LongTextValue
-  footer: LongTextValue
+type Author_AccoladesData {
+  figure: LongTextValue
+  description: LongTextValue
 }
 
-type ActionNewsletterValues {
-  body: String
-  footer: String
+type AuthorData {
+  name: LongTextValue
+  role: String
+  anecdotes: [String]
+  favorite_posts: [AuthorsDocument]
+  all_time_post: PostsDocument
+  accolades: [Author_AccoladesData]
+}
+
+type AuthorValues {
+  name: String
+  role: String
+  anecdotes: [String]
+  favorite_posts: [String]
+  all_time_post: String
+  accolades: String
 }
 
 type TextareaField {
   name: String
   label: String
   component: String
-}
-
-type ActionNewsletterForm {
-  body: TextareaField
-  footer: TextareaField
-}
-
-type ActionPageReferenceData {
-  page: PagesDocument
-  button_settings: String
-}
-
-type ActionPageReferenceValues {
-  page: String
-  button_settings: String
 }
 
 type SelectField {
@@ -122,226 +92,61 @@ type TextField {
   component: String
 }
 
-type ActionPageReferenceForm {
-  page: SelectField
-  button_settings: TextField
-}
+union List_FormFieldsUnion = TextField | SelectField
 
-type ActionVideoData {
-  url: String
-}
-
-type ActionVideoValues {
-  url: String
-}
-
-type ActionVideoForm {
-  url: TextField
-}
-
-type AuthorListData {
-  authors: String
-}
-
-type AuthorListValues {
-  authors: String
-}
-
-type AuthorListForm {
-  authors: TextField
-}
-
-type AuthorData {
+type ListField {
   name: String
-  image: String
-  gallery: String
-  anecdotes: String
-  accolades: String
-}
-
-type AuthorValues {
-  name: String
-  image: String
-  gallery: String
-  anecdotes: String
-  accolades: String
+  label: String
+  component: String
+  defaultItem: String
+  field: List_FormFieldsUnion
 }
 
 type AuthorForm {
-  name: TextField
-  image: TextField
-  gallery: TextField
-  anecdotes: TextField
+  name: TextareaField
+  role: SelectField
+  anecdotes: ListField
+  favorite_posts: ListField
+  all_time_post: SelectField
   accolades: TextField
 }
 
-type BlockPageData {
-  title: String
-  date: String
-  blocks: String
-}
-
-type BlockPageValues {
-  title: String
-  date: String
-  blocks: String
-}
-
-type BlockPageForm {
-  title: TextField
-  date: TextField
-  blocks: TextField
-}
-
-type ExcerptPostData {
-  post: PostsDocument
-  description: LongTextValue
-  style: String
-}
-
-type ExcerptPostValues {
-  post: String
-  description: String
-  style: String
-}
-
-type ExcerptPostForm {
-  post: SelectField
-  description: TextareaField
-  style: SelectField
-}
-
-type MenuData {
-  logo: String
-  menu_item: String
-}
-
-type MenuValues {
-  logo: String
-  menu_item: String
-}
-
-type MenuForm {
-  logo: TextField
-  menu_item: TextField
-}
-
-type PageReferenceData {
-  description: LongTextValue
-  page: PagesDocument
-}
-
-type PageReferenceValues {
-  description: String
-  page: String
-}
-
-type PageReferenceForm {
-  description: TextareaField
-  page: SelectField
-}
-
-type PostListData {
-  posts: String
-}
-
-type PostListValues {
-  posts: String
-}
-
-type PostListForm {
-  posts: TextField
-}
-
 type PostData {
-  title: String
+  title: LongTextValue
   author: AuthorsDocument
-  image: String
-  hashtags: String
+  sections: String
 }
 
 type PostValues {
   title: String
   author: String
-  image: String
-  hashtags: String
+  sections: String
 }
 
 type PostForm {
-  title: TextField
+  title: TextareaField
   author: SelectField
-  image: TextField
-  hashtags: TextField
+  sections: TextField
 }
 
-type PriceListData {
-  heading: LongTextValue
-  prices: String
+type Section_CtaData {
+  header: LongTextValue
 }
 
-type PriceListValues {
-  heading: String
-  prices: String
-}
-
-type PriceListForm {
-  heading: TextareaField
-  prices: TextField
-}
-
-type SectionIndexData {
-  body: LongTextValue
-  limit: String
-  section: String
-}
-
-type SectionIndexValues {
-  body: String
-  limit: String
-  section: String
-}
-
-type SectionIndexForm {
-  body: TextareaField
-  limit: TextField
-  section: SelectField
-}
-
-type SidecarData {
-  text: LongTextValue
-  image: String
-  cta: String
-  actions: String
-  style: String
-}
-
-type SidecarValues {
-  text: String
-  image: String
-  cta: String
-  actions: String
-  style: String
-}
-
-type SidecarForm {
-  text: TextareaField
-  image: TextField
-  cta: TextField
-  actions: TextField
-  style: SelectField
-}
-
-type SponsorListData {
+type SectionData {
   description: LongTextValue
-  sponsor: String
+  cta: Section_CtaData
+  authors: [AuthorsDocument]
 }
 
-type SponsorListValues {
+type SectionValues {
   description: String
-  sponsor: String
+  cta: String
+  authors: [String]
 }
 
-type SponsorListForm {
+type SectionForm {
   description: TextareaField
-  sponsor: TextField
+  cta: TextField
+  authors: ListField
 }

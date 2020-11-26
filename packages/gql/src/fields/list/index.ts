@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
 import { select } from "../select";
@@ -87,17 +88,12 @@ export const list = {
           throw new Error(`document select not implemented`);
         case "pages":
           list = field as SectionList;
-          const section = list.config.source.section;
+          const section = await cache.datasource.getSettingsForSection(
+            list.config.source.section
+          );
+          const name = friendlyName(section.slug);
 
-          const fieldUnionName = await builder.documentUnion({
-            cache,
-            section,
-            accumulator,
-            build: false,
-          });
-
-          // TODO: refactor this to use the select
-          return gql.fieldList({ name: field.name, type: fieldUnionName });
+          return gql.fieldList({ name: field.name, type: `${name}Document` });
         case "simple":
           list = field as SimpleList;
           return gql.stringList(field.name);
