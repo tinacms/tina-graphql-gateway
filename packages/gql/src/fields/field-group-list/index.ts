@@ -41,24 +41,23 @@ export const fieldGroupList = {
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
       const name = friendlyName(field, "GroupListField");
+      const fieldsUnionName = await builders.buildTemplateOrFieldValues(
+        cache,
+        field,
+        accumulator
+      );
 
-      // const fieldsUnionName = await builder.documentFormFieldsUnion(
-      //   cache,
-      //   field,
-      //   accumulator
-      // );
-
-      // accumulator.push(
-      //   gql.object({
-      //     name,
-      //     fields: [
-      //       gql.string("name"),
-      //       gql.string("label"),
-      //       gql.string("component"),
-      //       gql.fieldList({ name: "fields", type: fieldsUnionName }),
-      //     ],
-      //   })
-      // );
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.string("name"),
+            gql.string("label"),
+            gql.string("component"),
+            gql.fieldList({ name: "fields", type: fieldsUnionName }),
+          ],
+        })
+      );
 
       return name;
     },
