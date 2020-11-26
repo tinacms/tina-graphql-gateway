@@ -83,6 +83,7 @@ type ActionNewsletterData {
 }
 
 type ActionNewsletterValues {
+  _template: String
   body: String
   footer: String
 }
@@ -93,9 +94,12 @@ type TextareaField {
   component: String
 }
 
+union ActionNewsletterFormFieldsUnion = TextareaField
+
 type ActionNewsletterForm {
-  body: TextareaField
-  footer: TextareaField
+  label: String
+  name: String
+  fields: [ActionNewsletterFormFieldsUnion]
 }
 
 type ActionPageReference_ButtonSettingsData {
@@ -108,6 +112,7 @@ type ActionPageReferenceData {
 }
 
 type ActionPageReferenceValues {
+  _template: String
   page: String
   button_settings: String
 }
@@ -126,9 +131,12 @@ type TextField {
   component: String
 }
 
+union ActionPageReferenceFormFieldsUnion = SelectField | TextField
+
 type ActionPageReferenceForm {
-  page: SelectField
-  button_settings: TextField
+  label: String
+  name: String
+  fields: [ActionPageReferenceFormFieldsUnion]
 }
 
 type ActionVideoData {
@@ -136,11 +144,16 @@ type ActionVideoData {
 }
 
 type ActionVideoValues {
+  _template: String
   url: String
 }
 
+union ActionVideoFormFieldsUnion = TextField
+
 type ActionVideoForm {
-  url: TextField
+  label: String
+  name: String
+  fields: [ActionVideoFormFieldsUnion]
 }
 
 type AuthorListData {
@@ -148,6 +161,7 @@ type AuthorListData {
 }
 
 type AuthorListValues {
+  _template: String
   authors: [String]
 }
 
@@ -161,8 +175,12 @@ type ListField {
   field: List_FormFieldsUnion
 }
 
+union AuthorListFormFieldsUnion = ListField
+
 type AuthorListForm {
-  authors: ListField
+  label: String
+  name: String
+  fields: [AuthorListFormFieldsUnion]
 }
 
 type Author_AccoladesData {
@@ -179,6 +197,7 @@ type AuthorData {
 }
 
 type AuthorValues {
+  _template: String
   name: String
   image: String
   gallery: String
@@ -186,12 +205,12 @@ type AuthorValues {
   accolades: String
 }
 
+union AuthorFormFieldsUnion = TextField | ListField
+
 type AuthorForm {
-  name: TextField
-  image: TextField
-  gallery: TextField
-  anecdotes: ListField
-  accolades: TextField
+  label: String
+  name: String
+  fields: [AuthorFormFieldsUnion]
 }
 
 union BlockPage_BlocksData = SidecarData | ExcerptPostData | PostListData | PriceListData | AuthorListData | SponsorListData | PageReferenceData | SectionIndexData
@@ -203,15 +222,27 @@ type BlockPageData {
 }
 
 type BlockPageValues {
+  _template: String
   title: String
   date: String
   blocks: String
 }
 
+union BlockPage_Blocks_BlocksFieldTemplates = SidecarForm | ExcerptPostForm | PostListForm | PriceListForm | AuthorListForm | SponsorListForm | PageReferenceForm | SectionIndexForm
+
+type BlockPage_Blocks_BlocksField {
+  name: String
+  label: String
+  component: String
+  templates: BlockPage_Blocks_BlocksFieldTemplates
+}
+
+union BlockPageFormFieldsUnion = TextField | BlockPage_Blocks_BlocksField
+
 type BlockPageForm {
-  title: TextField
-  date: TextField
-  blocks: TextField
+  label: String
+  name: String
+  fields: [BlockPageFormFieldsUnion]
 }
 
 type ExcerptPostData {
@@ -221,15 +252,18 @@ type ExcerptPostData {
 }
 
 type ExcerptPostValues {
+  _template: String
   post: String
   description: String
   style: String
 }
 
+union ExcerptPostFormFieldsUnion = SelectField | TextareaField
+
 type ExcerptPostForm {
-  post: SelectField
-  description: TextareaField
-  style: SelectField
+  label: String
+  name: String
+  fields: [ExcerptPostFormFieldsUnion]
 }
 
 type Menu_MenuItemData {
@@ -243,13 +277,17 @@ type MenuData {
 }
 
 type MenuValues {
+  _template: String
   logo: String
   menu_item: String
 }
 
+union MenuFormFieldsUnion = TextField
+
 type MenuForm {
-  logo: TextField
-  menu_item: TextField
+  label: String
+  name: String
+  fields: [MenuFormFieldsUnion]
 }
 
 type PageReferenceData {
@@ -258,13 +296,17 @@ type PageReferenceData {
 }
 
 type PageReferenceValues {
+  _template: String
   description: String
   page: String
 }
 
+union PageReferenceFormFieldsUnion = TextareaField | SelectField
+
 type PageReferenceForm {
-  description: TextareaField
-  page: SelectField
+  label: String
+  name: String
+  fields: [PageReferenceFormFieldsUnion]
 }
 
 type PostList_PostsData {
@@ -276,11 +318,16 @@ type PostListData {
 }
 
 type PostListValues {
+  _template: String
   posts: String
 }
 
+union PostListFormFieldsUnion = TextField
+
 type PostListForm {
-  posts: TextField
+  label: String
+  name: String
+  fields: [PostListFormFieldsUnion]
 }
 
 type PostData {
@@ -291,17 +338,19 @@ type PostData {
 }
 
 type PostValues {
+  _template: String
   title: String
   author: String
   image: String
   hashtags: String
 }
 
+union PostFormFieldsUnion = TextField | SelectField
+
 type PostForm {
-  title: TextField
-  author: SelectField
-  image: TextField
-  hashtags: TextField
+  label: String
+  name: String
+  fields: [PostFormFieldsUnion]
 }
 
 type PriceList_PricesData {
@@ -317,13 +366,17 @@ type PriceListData {
 }
 
 type PriceListValues {
+  _template: String
   heading: String
   prices: String
 }
 
+union PriceListFormFieldsUnion = TextareaField | TextField
+
 type PriceListForm {
-  heading: TextareaField
-  prices: TextField
+  label: String
+  name: String
+  fields: [PriceListFormFieldsUnion]
 }
 
 type SectionIndexData {
@@ -333,15 +386,18 @@ type SectionIndexData {
 }
 
 type SectionIndexValues {
+  _template: String
   body: String
   limit: String
   section: String
 }
 
+union SectionIndexFormFieldsUnion = TextareaField | TextField | SelectField
+
 type SectionIndexForm {
-  body: TextareaField
-  limit: TextField
-  section: SelectField
+  label: String
+  name: String
+  fields: [SectionIndexFormFieldsUnion]
 }
 
 type Sidecar_CtaData {
@@ -359,6 +415,7 @@ type SidecarData {
 }
 
 type SidecarValues {
+  _template: String
   text: String
   image: String
   cta: String
@@ -366,12 +423,21 @@ type SidecarValues {
   style: String
 }
 
+union Sidecar_Actions_BlocksFieldTemplates = ActionVideoForm | ActionNewsletterForm | ActionPageReferenceForm
+
+type Sidecar_Actions_BlocksField {
+  name: String
+  label: String
+  component: String
+  templates: Sidecar_Actions_BlocksFieldTemplates
+}
+
+union SidecarFormFieldsUnion = TextareaField | TextField | Sidecar_Actions_BlocksField | SelectField
+
 type SidecarForm {
-  text: TextareaField
-  image: TextField
-  cta: TextField
-  actions: TextField
-  style: SelectField
+  label: String
+  name: String
+  fields: [SidecarFormFieldsUnion]
 }
 
 type SponsorList_SponsorData {
@@ -386,11 +452,15 @@ type SponsorListData {
 }
 
 type SponsorListValues {
+  _template: String
   description: String
   sponsor: String
 }
 
+union SponsorListFormFieldsUnion = TextareaField | TextField
+
 type SponsorListForm {
-  description: TextareaField
-  sponsor: TextField
+  label: String
+  name: String
+  fields: [SponsorListFormFieldsUnion]
 }

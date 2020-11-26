@@ -570,9 +570,12 @@ export const buildTemplateOrFieldValues = async (
   accumulator.push(
     gql.object({
       name,
-      fields: await sequential(template.fields, async (field) => {
-        return buildTemplateInitialValueField(cache, field, accumulator);
-      }),
+      fields: [
+        gql.field({ name: "_template", type: "String" }),
+        ...(await sequential(template.fields, async (field) => {
+          return buildTemplateInitialValueField(cache, field, accumulator);
+        })),
+      ],
     })
   );
   return name;
@@ -583,17 +586,32 @@ export const buildTemplateOrFieldForm = async (
   accumulator: Definitions[]
 ) => {
   const name = `${friendlyName(template)}Form`;
+
+  const fields = await sequential(template.fields, async (field) => {
+    return gql.field({
+      name: field.name,
+      type: await buildTemplateFormField(cache, field, accumulator),
+    });
+  });
+
+  accumulator.push(
+    gql.union({
+      name: `${name}FieldsUnion`,
+      types: _.uniq(fields.map((field) => field.type.name.value)),
+    })
+  );
+
   accumulator.push(
     gql.object({
       name,
-      fields: await sequential(template.fields, async (field) => {
-        return gql.field({
-          name: field.name,
-          type: await buildTemplateFormField(cache, field, accumulator),
-        });
-      }),
+      fields: [
+        gql.field({ name: "label", type: `String` }),
+        gql.field({ name: "name", type: `String` }),
+        gql.fieldList({ name: "fields", type: `${name}FieldsUnion` }),
+      ],
     })
   );
+
   return name;
 };
 
@@ -609,8 +627,8 @@ const buildTemplateFormField = async (
       return textarea.build.field({ cache, field, accumulator });
     case "select":
       return select.build.field({ cache, field, accumulator });
-    // case "blocks":
-    //   return blocks.build.field({ cache, field, accumulator });
+    case "blocks":
+      return blocks.build.field({ cache, field, accumulator });
     // case "field_group_list":
     //   return fieldGroupList.build.field({ cache, field, accumulator });
     // case "field_group":
