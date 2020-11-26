@@ -442,7 +442,7 @@ export const builder: Builder = {
     } = {};
 
     const accumulator: Definitions[] = [
-      gql.interface({ name: "Node", fields: [gql.fieldID({ name: "ID" })] }),
+      gql.interface({ name: "Node", fields: [gql.fieldID({ name: "id" })] }),
       gql.scalar("JSON"),
       gql.scalar("JSONObject"),
       gql.object({
@@ -519,35 +519,7 @@ export const builder: Builder = {
 
     const templates = await cache.datasource.getAllTemplates();
     await sequential(templates, async (template) => {
-      const name = friendlyName(template);
-
-      accumulator.push(
-        gql.object({
-          name: `${name}Data`,
-          fields: await sequential(template.fields, async (field) => {
-            return await buildTemplateDataField(cache, field, accumulator);
-          }),
-        })
-      );
-      accumulator.push(
-        gql.object({
-          name: `${name}Values`,
-          fields: await sequential(template.fields, async (field) => {
-            return buildTemplateInitialValueField(cache, field, accumulator);
-          }),
-        })
-      );
-      accumulator.push(
-        gql.object({
-          name: `${name}Form`,
-          fields: await sequential(template.fields, async (field) => {
-            return gql.field({
-              name: field.name,
-              type: await buildTemplateFormField(cache, field, accumulator),
-            });
-          }),
-        })
-      );
+      await buildTemplateOrField(cache, template, accumulator);
     });
 
     const schema: DocumentNode = {
@@ -561,6 +533,68 @@ export const builder: Builder = {
   },
   // FIXME: rename to documentUnion
   sectionUnion: async ({ cache, accumulator, build = true }) => {},
+};
+
+export const buildTemplateOrField = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[]
+) => {
+  await buildTemplateOrFieldData(cache, template, accumulator);
+  await buildTemplateOrFieldValues(cache, template, accumulator);
+  await buildTemplateOrFieldForm(cache, template, accumulator);
+};
+export const buildTemplateOrFieldData = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[]
+) => {
+  const name = friendlyName(template);
+  accumulator.push(
+    gql.object({
+      name: `${name}Data`,
+      fields: await sequential(template.fields, async (field) => {
+        return await buildTemplateDataField(cache, field, accumulator);
+      }),
+    })
+  );
+
+  return name;
+};
+export const buildTemplateOrFieldValues = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[]
+) => {
+  const name = `${friendlyName(template)}Values`;
+  accumulator.push(
+    gql.object({
+      name,
+      fields: await sequential(template.fields, async (field) => {
+        return buildTemplateInitialValueField(cache, field, accumulator);
+      }),
+    })
+  );
+  return name;
+};
+export const buildTemplateOrFieldForm = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[]
+) => {
+  const name = `${friendlyName(template)}Form`;
+  accumulator.push(
+    gql.object({
+      name,
+      fields: await sequential(template.fields, async (field) => {
+        return gql.field({
+          name: field.name,
+          type: await buildTemplateFormField(cache, field, accumulator),
+        });
+      }),
+    })
+  );
+  return name;
 };
 
 const buildTemplateFormField = async (
@@ -581,8 +615,8 @@ const buildTemplateFormField = async (
     //   return fieldGroupList.build.field({ cache, field, accumulator });
     // case "field_group":
     //   return fieldGroup.build.field({ cache, field, accumulator });
-    // case "list":
-    //   return list.build.field({ cache, field, accumulator });
+    case "list":
+      return list.build.field({ cache, field, accumulator });
     // case "boolean":
     //   return boolean.build.field({ cache, field, accumulator });
     // case "datetime":
@@ -618,8 +652,8 @@ const buildTemplateInitialValueField = async (
     //   return fieldGroup.build.initialValue({ cache, field, accumulator });
     // case "field_group_list":
     //   return fieldGroupList.build.initialValue({ cache, field, accumulator });
-    // case "list":
-    //   return list.build.initialValue({ cache, field, accumulator });
+    case "list":
+      return list.build.initialValue({ cache, field, accumulator });
     // case "boolean":
     //   return boolean.build.initialValue({ cache, field, accumulator });
     // case "datetime":
@@ -648,17 +682,15 @@ const buildTemplateDataField = async (
     case "textarea":
       return textarea.build.value({ cache, field, accumulator });
     case "select":
-      const m = await select.build.value({ cache, field, accumulator });
-      console.log("mmm", m);
-      return m;
+      return await select.build.value({ cache, field, accumulator });
     // case "blocks":
     //   return blocks.build.value({ cache, field, accumulator });
-    // case "field_group":
-    //   return fieldGroup.build.value({ cache, field, accumulator });
-    // case "field_group_list":
-    //   return fieldGroupList.build.value({ cache, field, accumulator });
-    // case "list":
-    //   return list.build.value({ cache, field, accumulator });
+    case "field_group":
+      return await fieldGroup.build.value({ cache, field, accumulator });
+    case "field_group_list":
+      return fieldGroupList.build.value({ cache, field, accumulator });
+    case "list":
+      return list.build.value({ cache, field, accumulator });
     // case "boolean":
     //   return boolean.build.value({ cache, field, accumulator });
     // case "datetime":

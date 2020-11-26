@@ -2,7 +2,11 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
+import {
+  builder,
+  buildTemplateOrFieldValues,
+  buildTemplateOrFieldData,
+} from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 
 import type { Field, TinaField } from "../index";
@@ -55,13 +59,8 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const valueName = await builder.documentDataObject({
-        cache,
-        template: field,
-        returnTemplate: false,
-        accumulator,
-      });
-      return gql.field({ name: field.name, type: valueName });
+      const name = await buildTemplateOrFieldData(cache, field, accumulator);
+      return gql.field({ name: field.name, type: `${name}Data` });
     },
     input: async ({
       cache,
