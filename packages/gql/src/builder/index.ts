@@ -629,10 +629,10 @@ const buildTemplateFormField = async (
       return select.build.field({ cache, field, accumulator });
     case "blocks":
       return blocks.build.field({ cache, field, accumulator });
-    // case "field_group_list":
-    //   return fieldGroupList.build.field({ cache, field, accumulator });
-    // case "field_group":
-    //   return fieldGroup.build.field({ cache, field, accumulator });
+    case "field_group_list":
+      return fieldGroupList.build.field({ cache, field, accumulator });
+    case "field_group":
+      return fieldGroup.build.field({ cache, field, accumulator });
     case "list":
       return list.build.field({ cache, field, accumulator });
     // case "boolean":

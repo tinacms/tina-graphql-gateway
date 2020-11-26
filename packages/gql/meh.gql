@@ -125,13 +125,19 @@ type SelectField {
   refetchPolicy: String
 }
 
-type TextField {
+type ActionPageReference_ButtonSettingsValues {
+  _template: String
+  label: String
+}
+
+type ActionPageReference_ButtonSettings_GroupField {
   name: String
   label: String
   component: String
+  fields: [ActionPageReference_ButtonSettingsValues]
 }
 
-union ActionPageReferenceFormFieldsUnion = SelectField | TextField
+union ActionPageReferenceFormFieldsUnion = SelectField | ActionPageReference_ButtonSettings_GroupField
 
 type ActionPageReferenceForm {
   label: String
@@ -146,6 +152,12 @@ type ActionVideoData {
 type ActionVideoValues {
   _template: String
   url: String
+}
+
+type TextField {
+  name: String
+  label: String
+  component: String
 }
 
 union ActionVideoFormFieldsUnion = TextField
@@ -205,7 +217,20 @@ type AuthorValues {
   accolades: String
 }
 
-union AuthorFormFieldsUnion = TextField | ListField
+type Author_AccoladesValues {
+  _template: String
+  figure: String
+  description: String
+}
+
+type Author_Accolades_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_AccoladesValues]
+}
+
+union AuthorFormFieldsUnion = TextField | ListField | Author_Accolades_GroupListField
 
 type AuthorForm {
   label: String
@@ -282,7 +307,20 @@ type MenuValues {
   menu_item: String
 }
 
-union MenuFormFieldsUnion = TextField
+type Menu_MenuItemValues {
+  _template: String
+  label: String
+  page: String
+}
+
+type Menu_MenuItem_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [Menu_MenuItemValues]
+}
+
+union MenuFormFieldsUnion = TextField | Menu_MenuItem_GroupListField
 
 type MenuForm {
   label: String
@@ -322,7 +360,19 @@ type PostListValues {
   posts: String
 }
 
-union PostListFormFieldsUnion = TextField
+type PostList_PostsValues {
+  _template: String
+  post: String
+}
+
+type PostList_Posts_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [PostList_PostsValues]
+}
+
+union PostListFormFieldsUnion = PostList_Posts_GroupListField
 
 type PostListForm {
   label: String
@@ -371,7 +421,22 @@ type PriceListValues {
   prices: String
 }
 
-union PriceListFormFieldsUnion = TextareaField | TextField
+type PriceList_PricesValues {
+  _template: String
+  title: String
+  description: String
+  bullet_points: [String]
+  category: String
+}
+
+type PriceList_Prices_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [PriceList_PricesValues]
+}
+
+union PriceListFormFieldsUnion = TextareaField | PriceList_Prices_GroupListField
 
 type PriceListForm {
   label: String
@@ -423,6 +488,18 @@ type SidecarValues {
   style: String
 }
 
+type Sidecar_CtaValues {
+  _template: String
+  header: String
+}
+
+type Sidecar_Cta_GroupField {
+  name: String
+  label: String
+  component: String
+  fields: [Sidecar_CtaValues]
+}
+
 union Sidecar_Actions_BlocksFieldTemplates = ActionVideoForm | ActionNewsletterForm | ActionPageReferenceForm
 
 type Sidecar_Actions_BlocksField {
@@ -432,7 +509,7 @@ type Sidecar_Actions_BlocksField {
   templates: Sidecar_Actions_BlocksFieldTemplates
 }
 
-union SidecarFormFieldsUnion = TextareaField | TextField | Sidecar_Actions_BlocksField | SelectField
+union SidecarFormFieldsUnion = TextareaField | TextField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
 
 type SidecarForm {
   label: String
@@ -457,7 +534,21 @@ type SponsorListValues {
   sponsor: String
 }
 
-union SponsorListFormFieldsUnion = TextareaField | TextField
+type SponsorList_SponsorValues {
+  _template: String
+  name: String
+  url: String
+  image: String
+}
+
+type SponsorList_Sponsor_GroupListField {
+  name: String
+  label: String
+  component: String
+  fields: [SponsorList_SponsorValues]
+}
+
+union SponsorListFormFieldsUnion = TextareaField | SponsorList_Sponsor_GroupListField
 
 type SponsorListForm {
   label: String

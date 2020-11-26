@@ -6,6 +6,7 @@ import {
   builder,
   buildTemplateOrFieldValues,
   buildTemplateOrFieldData,
+  builders,
 } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 
@@ -20,7 +21,12 @@ export const fieldGroup = {
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
       const name = friendlyName(field, "GroupField");
-      const fieldsUnionName = await builder.documentFormFieldsUnion(
+      // const fieldsUnionName = await builder.documentFormFieldsUnion(
+      //   cache,
+      //   field,
+      //   accumulator
+      // );
+      const fieldsUnionName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
         accumulator
