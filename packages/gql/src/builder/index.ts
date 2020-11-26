@@ -664,12 +664,12 @@ const buildTemplateInitialValueField = async (
       return textarea.build.initialValue({ cache, field, accumulator });
     case "select":
       return await select.build.initialValue({ cache, field, accumulator });
-    // case "blocks":
-    //   return blocks.build.initialValue({ cache, field, accumulator });
-    // case "field_group":
-    //   return fieldGroup.build.initialValue({ cache, field, accumulator });
-    // case "field_group_list":
-    //   return fieldGroupList.build.initialValue({ cache, field, accumulator });
+    case "blocks":
+      return blocks.build.initialValue({ cache, field, accumulator });
+    case "field_group":
+      return fieldGroup.build.initialValue({ cache, field, accumulator });
+    case "field_group_list":
+      return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
       return list.build.initialValue({ cache, field, accumulator });
     // case "boolean":
