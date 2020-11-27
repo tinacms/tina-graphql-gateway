@@ -203,7 +203,7 @@ type Author_AccoladesData {
 type AuthorData {
   name: String
   image: String
-  gallery: String
+  gallery: [String]
   anecdotes: [String]
   accolades: [Author_AccoladesData]
 }
@@ -218,9 +218,15 @@ type AuthorValues {
   _template: String
   name: String
   image: String
-  gallery: String
+  gallery: [String]
   anecdotes: [String]
   accolades: [Author_AccoladesValues]
+}
+
+type FileField {
+  name: String
+  label: String
+  component: String
 }
 
 type Author_Accolades_GroupListField {
@@ -230,7 +236,7 @@ type Author_Accolades_GroupListField {
   fields: [Author_AccoladesValues]
 }
 
-union AuthorFormFieldsUnion = TextField | ListField | Author_Accolades_GroupListField
+union AuthorFormFieldsUnion = TextField | FileField | ListField | Author_Accolades_GroupListField
 
 type AuthorForm {
   label: String
@@ -255,6 +261,12 @@ type BlockPageValues {
   blocks: [BlockPage_BlocksValues]
 }
 
+type DatetimeField {
+  name: String
+  label: String
+  component: String
+}
+
 union BlockPage_Blocks_BlocksFieldTemplates = SidecarForm | ExcerptPostForm | PostListForm | PriceListForm | AuthorListForm | SponsorListForm | PageReferenceForm | SectionIndexForm
 
 type BlockPage_Blocks_BlocksField {
@@ -264,7 +276,7 @@ type BlockPage_Blocks_BlocksField {
   templates: BlockPage_Blocks_BlocksFieldTemplates
 }
 
-union BlockPageFormFieldsUnion = TextField | BlockPage_Blocks_BlocksField
+union BlockPageFormFieldsUnion = TextField | DatetimeField | BlockPage_Blocks_BlocksField
 
 type BlockPageForm {
   label: String
@@ -322,7 +334,7 @@ type Menu_MenuItem_GroupListField {
   fields: [Menu_MenuItemValues]
 }
 
-union MenuFormFieldsUnion = TextField | Menu_MenuItem_GroupListField
+union MenuFormFieldsUnion = FileField | Menu_MenuItem_GroupListField
 
 type MenuForm {
   label: String
@@ -386,7 +398,7 @@ type PostData {
   title: String
   author: AuthorsDocument
   image: String
-  hashtags: String
+  hashtags: [String]
 }
 
 type PostValues {
@@ -394,10 +406,16 @@ type PostValues {
   title: String
   author: String
   image: String
-  hashtags: String
+  hashtags: [String]
 }
 
-union PostFormFieldsUnion = TextField | SelectField
+type TagListField {
+  name: String
+  label: String
+  component: String
+}
+
+union PostFormFieldsUnion = TextField | SelectField | FileField | TagListField
 
 type PostForm {
   label: String
@@ -459,7 +477,13 @@ type SectionIndexValues {
   section: String
 }
 
-union SectionIndexFormFieldsUnion = TextareaField | TextField | SelectField
+type NumberField {
+  name: String
+  label: String
+  component: String
+}
+
+union SectionIndexFormFieldsUnion = TextareaField | NumberField | SelectField
 
 type SectionIndexForm {
   label: String
@@ -513,7 +537,7 @@ type Sidecar_Actions_BlocksField {
   templates: Sidecar_Actions_BlocksFieldTemplates
 }
 
-union SidecarFormFieldsUnion = TextareaField | TextField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
+union SidecarFormFieldsUnion = TextareaField | FileField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
 
 type SidecarForm {
   label: String

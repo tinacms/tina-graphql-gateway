@@ -619,7 +619,7 @@ const buildTemplateFormField = async (
   cache: Cache,
   field: Field,
   accumulator: Definitions[]
-): Promise<string[]> => {
+): Promise<string> => {
   switch (field.type) {
     case "text":
       return text.build.field({ cache, field, accumulator });
@@ -635,18 +635,18 @@ const buildTemplateFormField = async (
       return fieldGroup.build.field({ cache, field, accumulator });
     case "list":
       return list.build.field({ cache, field, accumulator });
-    // case "boolean":
-    //   return boolean.build.field({ cache, field, accumulator });
-    // case "datetime":
-    //   return datetime.build.field({ cache, field, accumulator });
-    // case "file":
-    //   return file.build.field({ cache, field, accumulator });
-    // case "image_gallery":
-    //   return imageGallery.build.field({ cache, field, accumulator });
-    // case "number":
-    //   return number.build.field({ cache, field, accumulator });
-    // case "tag_list":
-    //   return tag_list.build.field({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.field({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.field({ cache, field, accumulator });
+    case "file":
+      return file.build.field({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.field({ cache, field, accumulator });
+    case "number":
+      return number.build.field({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.field({ cache, field, accumulator });
     default:
       return text.build.field({ cache, field, accumulator });
   }
@@ -672,18 +672,18 @@ const buildTemplateInitialValueField = async (
       return fieldGroupList.build.initialValue({ cache, field, accumulator });
     case "list":
       return list.build.initialValue({ cache, field, accumulator });
-    // case "boolean":
-    //   return boolean.build.initialValue({ cache, field, accumulator });
-    // case "datetime":
-    //   return datetime.build.initialValue({ cache, field, accumulator });
-    // case "file":
-    //   return file.build.initialValue({ cache, field, accumulator });
-    // case "image_gallery":
-    //   return imageGallery.build.initialValue({ cache, field, accumulator });
-    // case "number":
-    //   return number.build.initialValue({ cache, field, accumulator });
-    // case "tag_list":
-    //   return tag_list.build.initialValue({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.initialValue({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.initialValue({ cache, field, accumulator });
+    case "file":
+      return file.build.initialValue({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.initialValue({ cache, field, accumulator });
+    case "number":
+      return number.build.initialValue({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.initialValue({ cache, field, accumulator });
     default:
       return text.build.initialValue({ cache, field, accumulator });
   }
@@ -709,18 +709,18 @@ const buildTemplateDataField = async (
       return fieldGroupList.build.value({ cache, field, accumulator });
     case "list":
       return list.build.value({ cache, field, accumulator });
-    // case "boolean":
-    //   return boolean.build.value({ cache, field, accumulator });
-    // case "datetime":
-    //   return datetime.build.value({ cache, field, accumulator });
-    // case "file":
-    //   return file.build.value({ cache, field, accumulator });
-    // case "image_gallery":
-    //   return imageGallery.build.value({ cache, field, accumulator });
-    // case "number":
-    //   return number.build.value({ cache, field, accumulator });
-    // case "tag_list":
-    //   return tag_list.build.value({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.value({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.value({ cache, field, accumulator });
+    case "file":
+      return file.build.value({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.value({ cache, field, accumulator });
+    case "number":
+      return number.build.value({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.value({ cache, field, accumulator });
     default:
       return text.build.value({ cache, field, accumulator });
   }
