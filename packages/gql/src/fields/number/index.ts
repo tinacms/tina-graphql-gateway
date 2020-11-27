@@ -47,17 +47,14 @@ export const number = {
       value,
     }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field initial value" });
-
       return value;
     },
     value: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field value" });
-
       return value;
     },
     input: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field input" });
-
       return value;
     },
   },

@@ -225,7 +225,7 @@ export const gql = {
   }: {
     name: string;
     fields: FieldDefinitionNode[];
-  }) => {
+  }): InterfaceTypeDefinitionNode => {
     return {
       kind: "InterfaceTypeDefinition",
       name: {

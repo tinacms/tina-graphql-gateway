@@ -241,8 +241,9 @@ export const resolver: Resolver = {
     const { datasource } = context;
 
     if (info.fieldName === "node") {
+      const section = await datasource.getSectionByPath(args.id);
       return await resolver.documentObject({
-        args: { fullPath: args.id, section: "pages" },
+        args: { fullPath: args.id, section: section.slug },
         datasource: context.datasource,
       });
     }
@@ -482,32 +483,33 @@ export const resolver: Resolver = {
     );
 
     return {
+      __typename: friendlyName(sectionData.slug, "Document"),
       id: relativePath, // FIXME: this should be full
-      path: relativePath, // FIXME: this should be full
-      relativePath,
-      section: sectionData,
-      breadcrumbs: relativePath.split("/").filter(Boolean),
-      basename,
-      filename,
-      extension,
-      document: {
-        __typename: friendlyName(template),
-        form: await resolver.documentFormObject(datasource, template, true),
-        data: await resolver.documentDataObject({
-          datasource,
-          resolvedTemplate: template,
-          data,
-          includeContent: true,
-          content,
-        }),
-        initialValues: await resolver.documentInitialValuesObject(
-          datasource,
-          template,
-          data,
-          true,
-          content || ""
-        ),
+      sys: {
+        path: relativePath, // FIXME: this should be full
+        relativePath,
+        section: sectionData,
+        breadcrumbs: relativePath.split("/").filter(Boolean),
+        basename,
+        filename,
+        extension,
       },
+      form: await resolver.documentFormObject(datasource, template, true),
+      data: await resolver.documentDataObject({
+        datasource,
+        resolvedTemplate: template,
+        data,
+        includeContent: true,
+        content,
+      }),
+      initialValues: await resolver.documentInitialValuesObject(
+        datasource,
+        template,
+        data,
+        true,
+        content || ""
+      ),
+      // __typename: friendlyName(template),
     };
   },
   documentDataObject: async ({
@@ -533,7 +535,7 @@ export const resolver: Resolver = {
     }
 
     return {
-      __typename: friendlyName(template, "Data"),
+      __typename: friendlyName(resolvedTemplate, "Data"),
       ...accum,
     };
   },

@@ -100,3 +100,15 @@ export function assertIsStringArray(
     );
   }
 }
+
+export function assertShape<T>(
+  value: unknown,
+  schema: yup.Schema<unknown, unknown>
+): asserts value is T {
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockValueArray - ${e.message}`);
+  }
+}

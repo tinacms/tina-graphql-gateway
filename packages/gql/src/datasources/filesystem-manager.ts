@@ -112,6 +112,29 @@ export class FileSystemManager implements DataSource {
 
     return sections as DirectorySection[];
   };
+  // FIXME: clean this up
+  getSectionByPath = async (path: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections.map((section) => {
+      return {
+        ...section,
+        slug: slugify(section.label),
+      };
+    });
+
+    const main = sections.reduce(
+      (previous, section) => {
+        const length = path.replace(section.path, "").length;
+        if (length < previous.length) {
+          return { length, item: section };
+        }
+        return previous;
+      },
+      { length: 1000, item: null }
+    );
+    return main.item;
+  };
   getTemplatesForSection = async (section?: string) => {
     const data = await this.getSettingsData();
 

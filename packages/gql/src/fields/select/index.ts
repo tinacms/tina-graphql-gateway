@@ -1,8 +1,6 @@
 import { gql } from "../../gql";
 import { friendlyName } from "@forestryio/graphql-helpers";
 
-import { builder } from "../../builder";
-
 import { BuildArgs, ResolveArgs } from "../";
 
 export const select = {
@@ -41,7 +39,10 @@ export const select = {
           );
           const name = friendlyName(section.slug);
 
-          return gql.field({ name: field.name, type: `${name}Document` });
+          return gql.field({
+            name: field.name,
+            type: friendlyName(name, "Document"),
+          });
         case "simple":
           return gql.string(field.name);
       }

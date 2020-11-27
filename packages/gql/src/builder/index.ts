@@ -375,67 +375,7 @@ export interface Builder {
 /**
  * @internal this is redundant in documentation
  */
-export const builder: Builder = {
-  documentDataInputObject: async (
-    cache,
-    template,
-    returnTemplate,
-    accumulator,
-    build = true
-  ) => {},
-  documentDataObject: async ({
-    cache,
-    template,
-    returnTemplate,
-    accumulator,
-    includeContent = false,
-  }) => {},
-  documentDataUnion: async ({
-    cache,
-    templates,
-    returnTemplate,
-    accumulator,
-  }) => {},
-  documentFormFieldsUnion: async (
-    cache,
-    template,
-    accumulator,
-    includeContent = false
-  ): Promise<string> => {},
-  documentFormObject: async (
-    cache,
-    template,
-    accumulator,
-    includeContent
-  ) => {},
-  documentInitialValuesObject: async (
-    cache,
-    template,
-    returnTemplate,
-    accumulator,
-    includeContent = false
-  ) => {},
-  documentInputObject: async (cache, template, accumulator) => {},
-  documentObject: async (
-    cache,
-    template,
-    accumulator,
-    build,
-    interfaceString
-  ) => {},
-  documentTaggedUnionInputObject: async ({ cache, section, accumulator }) => {},
-  documentDataTaggedUnionInputObject: async ({
-    cache,
-    templateSlugs,
-    accumulator,
-  }) => {},
-  documentUnion: async ({ cache, section, accumulator, build = true }) => {},
-  initialValuesUnion: async ({
-    cache,
-    templates,
-    returnTemplate,
-    accumulator,
-  }) => {},
+export const builder = {
   schema: async ({ cache }: { cache: Cache }) => {
     const sectionMap: {
       [key: string]: { section: DirectorySection; plural: boolean };
@@ -472,31 +412,31 @@ export const builder: Builder = {
       const name = friendlyName(section.slug);
       accumulator.push(
         gql.union({
-          name: `${name}Data`,
-          types: section.templates.map(
-            (template) => `${friendlyName(template)}Data`
+          name: friendlyName(name, "Data"),
+          types: section.templates.map((template) =>
+            friendlyName(template, "Data")
           ),
         })
       );
       accumulator.push(
         gql.union({
-          name: `${name}Values`,
-          types: section.templates.map(
-            (template) => `${friendlyName(template)}Values`
+          name: friendlyName(name, "Values"),
+          types: section.templates.map((template) =>
+            friendlyName(template, "Values")
           ),
         })
       );
       accumulator.push(
         gql.union({
-          name: `${name}Form`,
-          types: section.templates.map(
-            (template) => `${friendlyName(template)}Form`
+          name: friendlyName(name, "Form"),
+          types: section.templates.map((template) =>
+            friendlyName(template, "Form")
           ),
         })
       );
       accumulator.push(
         gql.object({
-          name: `${name}Document`,
+          name: friendlyName(name, "Document"),
           interfaces: [
             {
               kind: "NamedType",
@@ -509,9 +449,18 @@ export const builder: Builder = {
           fields: [
             gql.fieldID({ name: "id" }),
             gql.fieldRequired({ name: "sys", type: "SystemInfo" }),
-            gql.fieldRequired({ name: "data", type: `${name}Data` }),
-            gql.fieldRequired({ name: "values", type: `${name}Values` }),
-            gql.fieldRequired({ name: "form", type: `${name}Form` }),
+            gql.fieldRequired({
+              name: "data",
+              type: friendlyName(name, "Data"),
+            }),
+            gql.fieldRequired({
+              name: "values",
+              type: friendlyName(name, "Values"),
+            }),
+            gql.fieldRequired({
+              name: "form",
+              type: friendlyName(name, "Form"),
+            }),
           ],
         })
       );
@@ -524,15 +473,11 @@ export const builder: Builder = {
 
     const schema: DocumentNode = {
       kind: "Document",
-      // TODO: we can probably optimize this by not running calculations for fields
-      // whose names we already have, not worth it for the first pass though.
       definitions: _.uniqBy(accumulator, (field) => field.name.value),
     };
 
     return { schema, sectionMap };
   },
-  // FIXME: rename to documentUnion
-  sectionUnion: async ({ cache, accumulator, build = true }) => {},
 };
 
 export const buildTemplateOrField = async (
@@ -552,7 +497,7 @@ export const buildTemplateOrFieldData = async (
   const name = friendlyName(template);
   accumulator.push(
     gql.object({
-      name: `${name}Data`,
+      name: friendlyName(name, "Data"),
       fields: await sequential(template.fields, async (field) => {
         return await buildTemplateDataField(cache, field, accumulator);
       }),
@@ -566,7 +511,7 @@ export const buildTemplateOrFieldValues = async (
   template: TemplateData,
   accumulator: Definitions[]
 ) => {
-  const name = `${friendlyName(template)}Values`;
+  const name = friendlyName(template, "Values");
   accumulator.push(
     gql.object({
       name,
@@ -585,7 +530,7 @@ export const buildTemplateOrFieldForm = async (
   template: TemplateData,
   accumulator: Definitions[]
 ) => {
-  const name = `${friendlyName(template)}Form`;
+  const name = friendlyName(template, "Form");
 
   const fields = await sequential(template.fields, async (field) => {
     return gql.field({

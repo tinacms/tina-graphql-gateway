@@ -1,6 +1,6 @@
 import { gql } from "../../gql";
 
-import type { BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
 export const boolean = {
   build: {
@@ -48,27 +48,15 @@ export const boolean = {
     initialValue: async ({
       value,
     }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "boolean initial value" });
       return value;
     },
     value: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "boolean value" });
       return value;
     },
     input: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "boolean input" });
       return value;
     },
   },
