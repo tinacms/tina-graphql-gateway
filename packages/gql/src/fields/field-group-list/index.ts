@@ -8,7 +8,6 @@ import { sequential } from "../../util";
 
 import { BuildArgs, ResolveArgs } from "../";
 import type { Field, TinaField } from "../index";
-import { FieldGroupField } from "../field-group";
 
 export type FieldGroupListField = {
   label: string;
@@ -84,7 +83,10 @@ export const fieldGroupList = {
         field,
         accumulator
       );
-      return gql.fieldList({ name: field.name, type: `${name}Data` });
+      return gql.fieldList({
+        name: field.name,
+        type: friendlyName(name, "Data"),
+      });
     },
     input: async ({
       cache,

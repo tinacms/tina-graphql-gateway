@@ -46,12 +46,6 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      // const initialValueName = await builder.documentInitialValuesObject(
-      //   cache,
-      //   field,
-      //   false,
-      //   accumulator
-      // );
       const initialValueName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
@@ -66,7 +60,7 @@ export const fieldGroup = {
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
       const name = await buildTemplateOrFieldData(cache, field, accumulator);
-      return gql.field({ name: field.name, type: `${name}Data` });
+      return gql.field({ name: field.name, type: friendlyName(name, "Data") });
     },
     input: async ({
       cache,

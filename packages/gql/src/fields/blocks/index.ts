@@ -4,7 +4,7 @@ import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
 import { friendlyName } from "@forestryio/graphql-helpers";
-import { builder, builders } from "../../builder";
+import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
@@ -157,7 +157,7 @@ export const blocks: Blocks = {
       accumulator.push(
         gql.union({
           name: templateName,
-          types: field.template_types.map((t) => `${friendlyName(t)}Form`),
+          types: field.template_types.map((t) => friendlyName(t, "Form")),
         })
       );
 
@@ -181,18 +181,18 @@ export const blocks: Blocks = {
       accumulator.push(
         gql.union({
           name: name,
-          types: field.template_types.map((t) => friendlyName(`${t}Values`)),
+          types: field.template_types.map((t) => friendlyName(t, "Values")),
         })
       );
 
       return gql.fieldList({ name: field.name, type: name });
     },
     value: async ({ cache, field, accumulator }) => {
-      const fieldUnionName = `${friendlyName(field)}Data`;
+      const fieldUnionName = friendlyName(field, "Data");
       accumulator.push(
         gql.union({
           name: fieldUnionName,
-          types: field.template_types.map((t) => `${friendlyName(t)}Data`),
+          types: field.template_types.map((t) => friendlyName(t, "Data")),
         })
       );
       return gql.fieldList({ name: field.name, type: fieldUnionName });
@@ -241,6 +241,7 @@ export const blocks: Blocks = {
     },
     value: async ({ datasource, field, value }) => {
       assertIsBlockValueArray(value);
+      // assertShape<BlockValue[]>(value, blockInputSchema)
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
@@ -285,6 +286,12 @@ function assertIsArray(value: unknown): asserts value is unknown[] {
     throw new Error("Expected an array for block input value");
   }
 }
+
+const blockInputSchema = yup
+  .object({
+    template: yup.string().required(),
+  })
+  .required();
 
 function assertIsBlockInput(
   value: unknown

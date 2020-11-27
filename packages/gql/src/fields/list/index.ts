@@ -4,9 +4,8 @@ import { gql } from "../../gql";
 
 import { select } from "../select";
 import { text } from "../text";
-import { builder } from "../../builder";
 
-import type { BuildArgs, ResolveArgs } from "../";
+import { assertIsStringArray, BuildArgs, ResolveArgs } from "../";
 import type { TinaField } from "../index";
 import type { ImageGalleryField } from "../image-gallery";
 
@@ -24,7 +23,7 @@ export const list = {
   }),
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
+    field: async ({ cache, accumulator }: BuildArgs<ListField>) => {
       // FIXME: shouldn't have to do this, but if a text or select field
       // is otherwise not present in the schema we need to ensure it's built
       text.build.field({
@@ -91,9 +90,10 @@ export const list = {
           const section = await cache.datasource.getSettingsForSection(
             list.config.source.section
           );
-          const name = friendlyName(section.slug);
-
-          return gql.fieldList({ name: field.name, type: `${name}Document` });
+          return gql.fieldList({
+            name: field.name,
+            type: friendlyName(section.slug, "Document"),
+          });
         case "simple":
           list = field as SimpleList;
           return gql.stringList(field.name);
@@ -172,7 +172,7 @@ export const list = {
         }
       | string[]
     > => {
-      assertIsStringArray(value);
+      assertIsStringArray(value, { source: "list initial values" });
       return value;
     },
     value: async ({
@@ -186,7 +186,7 @@ export const list = {
         }
       | string[]
     > => {
-      assertIsStringArray(value);
+      assertIsStringArray(value, { source: "list values" });
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
       listTypeIdentifier =
         field.config?.source?.type === "documents"
@@ -226,7 +226,7 @@ export const list = {
         }
       | string[]
     > => {
-      assertIsStringArray(value);
+      assertIsStringArray(value, { source: "list input" });
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
       const isSimple = field.config.use_select ? false : true;
       if (!isSimple) {
@@ -253,11 +253,6 @@ export const list = {
     },
   },
 };
-
-function assertIsStringArray(value: unknown): asserts value is string[] {
-  const schema = yup.array().of(yup.string());
-  schema.validateSync(value);
-}
 
 export type BaseListField = {
   label: string;

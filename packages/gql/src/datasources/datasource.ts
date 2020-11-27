@@ -91,6 +91,7 @@ export interface DataSource {
   getDocumentsForSection: (section?: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   getSectionsSettings: () => Promise<DirectorySection[]>;
+  getSectionByPath: (path: string) => Promise<Section>;
   addDocument: (args: AddArgs) => Promise<void>;
   updateDocument: (param: UpdateArgs) => Promise<void>;
 }

@@ -140,18 +140,23 @@ export const Explorer = (
           //     }
           //   }
           // }
-          const q = `query DocumentQuery($relativePath: String!) {
-  getPagesDocument(relativePath: $relativePath) {
-    document {
-      __typename
-      ...on BlockPage {
-        data {
-          title
-        }
-      }
-    }
+          const q = `{
+  node(id: "content/pages/home.md") {
+    __typename
   }
 }`;
+          //           const q = `query DocumentQuery($relativePath: String!) {
+          //   getPagesDocument(relativePath: $relativePath) {
+          //     document {
+          //       __typename
+          //       ...on BlockPage {
+          //         data {
+          //           title
+          //         }
+          //       }
+          //     }
+          //   }
+          // }`;
           newState.query = q;
           setEditQuery(q);
         }

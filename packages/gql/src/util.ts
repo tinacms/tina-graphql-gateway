@@ -32,10 +32,9 @@ export const friendlyName = (field = "", suffix = "") => {
         return suffix;
       }
     } else {
-      const meh = `${
+      return `${
         field.__namespace ? upperFirst(field.__namespace) + "_" : ""
       }${upperFirst(field.name)}${suffix && "_" + suffix}`;
-      return meh;
     }
   }
 };

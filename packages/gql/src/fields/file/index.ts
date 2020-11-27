@@ -1,6 +1,6 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
 export const file = {
   build: {
@@ -47,27 +47,15 @@ export const file = {
     initialValue: async ({
       value,
     }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved file value`
-        );
-      }
+      assertIsString(value, { source: "file initial value" });
       return value;
     },
     value: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved file value`
-        );
-      }
+      assertIsString(value, { source: "file value" });
       return value;
     },
     input: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved file value`
-        );
-      }
+      assertIsString(value, { source: "file input" });
       return value;
     },
   },

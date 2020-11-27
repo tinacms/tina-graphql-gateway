@@ -1,7 +1,7 @@
 import { gql } from "../../gql";
 import { toAst, toHTML } from "../../remark";
 
-import type { BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
 export const textarea = {
   contentField: {
@@ -59,7 +59,6 @@ export const textarea = {
   },
   resolve: {
     field: ({
-      datasource,
       field,
     }: Omit<ResolveArgs<TextareaField>, "value">): TinaTextareaField => {
       const { type, ...rest } = field;
@@ -75,11 +74,7 @@ export const textarea = {
     initialValue: async ({
       value,
     }: ResolveArgs<TextareaField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved textarea value`
-        );
-      }
+      assertIsString(value, { source: "textarea initial value" });
       return value;
     },
     value: async ({
@@ -89,18 +84,13 @@ export const textarea = {
       markdownAst: string;
       html: string;
     }> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved textarea value`
-        );
-      }
+      assertIsString(value, { source: "textarea initial value" });
       const contents = await toAst({
         contents: value,
       });
       const html = await toHTML({
         contents: value,
       });
-      // const markdownAstString = JSON.stringify(contents);
       return {
         raw: value,
         markdownAst: contents,
@@ -108,11 +98,7 @@ export const textarea = {
       };
     },
     input: async ({ value }: ResolveArgs<TextareaField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved textarea value`
-        );
-      }
+      assertIsString(value, { source: "textarea initial value" });
       return value;
     },
   },
