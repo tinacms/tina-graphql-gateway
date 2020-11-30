@@ -539,9 +539,10 @@ export const buildTemplateOrFieldForm = async (
     });
   });
 
+  const fieldsUnionName = `${name}FieldsUnion`;
   accumulator.push(
     gql.union({
-      name: `${name}FieldsUnion`,
+      name: fieldsUnionName,
       types: _.uniq(fields.map((field) => field.type.name.value)),
     })
   );
@@ -552,7 +553,7 @@ export const buildTemplateOrFieldForm = async (
       fields: [
         gql.field({ name: "label", type: `String` }),
         gql.field({ name: "name", type: `String` }),
-        gql.fieldList({ name: "fields", type: `${name}FieldsUnion` }),
+        gql.fieldList({ name: "fields", type: fieldsUnionName }),
       ],
     })
   );
