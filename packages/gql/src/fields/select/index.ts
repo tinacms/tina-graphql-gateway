@@ -8,14 +8,17 @@ const typename = "SelectField";
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({ accumulator }: BuildArgs<SelectField>) => {
+    field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
       accumulator.push(
         gql.formField(typename, [
           gql.stringList("options"),
           gql.string("refetchPolicy"),
         ])
       );
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
       return gql.string(field.name);

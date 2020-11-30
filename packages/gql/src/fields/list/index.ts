@@ -25,7 +25,7 @@ export const list = {
   }),
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({ cache, accumulator }: BuildArgs<ListField>) => {
+    field: async ({ field, cache, accumulator }: BuildArgs<ListField>) => {
       // FIXME: shouldn't have to do this, but if a text or select field
       // is otherwise not present in the schema we need to ensure it's built
       text.build.field({
@@ -60,8 +60,10 @@ export const list = {
           gql.field({ name: "field", type: unionName }),
         ])
       );
-
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({ field }: BuildArgs<ListField>) => {
       return gql.stringList(field.name);

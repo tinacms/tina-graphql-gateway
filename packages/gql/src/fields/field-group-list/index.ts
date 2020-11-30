@@ -50,7 +50,10 @@ export const fieldGroupList = {
           gql.fieldList({ name: "fields", type: fieldsUnionName }),
         ])
       );
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({
       cache,

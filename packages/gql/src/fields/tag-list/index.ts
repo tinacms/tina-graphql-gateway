@@ -6,9 +6,12 @@ const typename = "TagListField";
 
 export const tag_list = {
   build: {
-    field: async ({ accumulator }: BuildArgs<TagListField>) => {
+    field: async ({ field, accumulator }: BuildArgs<TagListField>) => {
       accumulator.push(gql.formField(typename));
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
       return gql.stringList(field.name);

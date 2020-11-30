@@ -32,7 +32,10 @@ export const fieldGroup = {
         ])
       );
 
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({
       cache,
