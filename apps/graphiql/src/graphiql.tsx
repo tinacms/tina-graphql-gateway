@@ -143,8 +143,58 @@ export const Explorer = (
           const q = `{
   node(id: "content/pages/home.md") {
     __typename
+    ...on Pages_Document {
+      id
+      data {
+        __typename
+        ...on BlockPage_Data {
+          title
+          blocks {
+            __typename
+            ...on AuthorList_Data {
+              authors {
+                data {
+                  ...on Author_Data {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      values {
+        __typename
+        ...on BlockPage_Values {
+          _template
+          title
+          blocks {
+            __typename
+            ...on Sidecar_Values {
+              _template
+              text
+            }
+            ...on ExcerptPost_Values {
+              _template
+            }
+          }
+        }
+      }
+      form {
+        __typename
+        ...on BlockPage_Form {
+          label
+          fields {
+            ...on TextField {
+              name
+            }
+          }
+        }
+      }
+    }
   }
-}`;
+}
+          `;
           //           const q = `query DocumentQuery($relativePath: String!) {
           //   getPagesDocument(relativePath: $relativePath) {
           //     document {
