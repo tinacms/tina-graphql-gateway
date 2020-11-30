@@ -6,7 +6,7 @@ import * as jsyaml from "js-yaml";
 import { slugify } from "../util";
 import DataLoader from "dataloader";
 
-import { byTypeWorks } from "../types";
+import { byTypeWorks, Section } from "../types";
 import { FieldGroupField } from "../fields/field-group";
 import { FieldGroupListField } from "../fields/field-group-list";
 import { sequential } from "../util";
@@ -124,7 +124,7 @@ export class FileSystemManager implements DataSource {
     });
 
     const main = sections.reduce(
-      (previous, section) => {
+      (previous: { length: number; item: Section | null }, section) => {
         const length = path.replace(section.path, "").length;
         if (length < previous.length) {
           return { length, item: section };
@@ -133,6 +133,9 @@ export class FileSystemManager implements DataSource {
       },
       { length: 1000, item: null }
     );
+    if (!main.item) {
+      throw new Error(`Unable to find section for path ${path}`);
+    }
     return main.item;
   };
   getTemplatesForSection = async (section?: string) => {

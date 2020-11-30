@@ -60,10 +60,10 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      return gql.inputValue(
-        field.name,
-        await builder.documentDataInputObject(cache, field, false, accumulator)
-      );
+      // return gql.inputValue(
+      //   field.name,
+      //   await builder.documentDataInputObject(cache, field, false, accumulator)
+      // );
     },
   },
   resolve: {

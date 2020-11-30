@@ -73,7 +73,7 @@ export interface Build {
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<unknown>;
 }
 
 export interface Resolve {
@@ -131,16 +131,7 @@ export interface Resolve {
     field,
     value,
   }: ResolveArgs<BlocksField>) => Promise<unknown>;
-  input: ({
-    datasource,
-    field,
-    value,
-  }: ResolveArgs<BlocksField>) => Promise<
-    {
-      template: string;
-      [key: string]: unknown;
-    }[]
-  >;
+  input: ({ datasource, field, value }: ResolveArgs<BlocksField>) => unknown;
 }
 
 export interface Blocks {
@@ -157,7 +148,7 @@ export interface Blocks {
 
 export const blocks: Blocks = {
   build: {
-    field: async ({ cache, field, accumulator }) => {
+    field: async ({ field, accumulator }) => {
       const typename = friendlyName(field, "BlocksField");
       const templateName = friendlyName(field, "BlocksFieldTemplates");
 
@@ -176,7 +167,7 @@ export const blocks: Blocks = {
 
       return typename;
     },
-    initialValue: async ({ cache, field, accumulator }) => {
+    initialValue: async ({ field, accumulator }) => {
       const name = `${friendlyName(field)}Values`;
 
       accumulator.push(
@@ -188,7 +179,7 @@ export const blocks: Blocks = {
 
       return gql.fieldList({ name: field.name, type: name });
     },
-    value: async ({ cache, field, accumulator }) => {
+    value: async ({ field, accumulator }) => {
       const fieldUnionName = friendlyName(field, "Data");
       accumulator.push(
         gql.union({
@@ -199,13 +190,12 @@ export const blocks: Blocks = {
       return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
-      const name = await builder.documentDataTaggedUnionInputObject({
-        cache,
-        templateSlugs: field.template_types,
-        accumulator,
-      });
-
-      return gql.inputValueList(field.name, name);
+      // const name = await builder.documentDataTaggedUnionInputObject({
+      //   cache,
+      //   templateSlugs: field.template_types,
+      //   accumulator,
+      // });
+      // return gql.inputValueList(field.name, name);
     },
   },
   resolve: {
