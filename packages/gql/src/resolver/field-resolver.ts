@@ -502,7 +502,7 @@ export const resolver: Resolver = {
         includeContent: true,
         content,
       }),
-      initialValues: await resolver.documentInitialValuesObject(
+      values: await resolver.documentInitialValuesObject(
         datasource,
         template,
         data,
@@ -564,8 +564,8 @@ export const resolver: Resolver = {
     }
 
     return {
-      __typename: friendlyName(resolvedTemplate, "InitialValues"),
-      _template: friendlyName(data.template, "", true),
+      __typename: friendlyName(resolvedTemplate, "Values"),
+      _template: resolvedTemplate.name,
       ...accum,
     };
   },
