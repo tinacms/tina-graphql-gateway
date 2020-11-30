@@ -60,13 +60,19 @@ export interface Builder {
    *
    * See {@link Resolver.documentDataInputObject} for the equivalent resolver
    */
-  documentDataInputObject: (
-    cache: Cache,
-    template: TemplateData,
-    returnTemplate: boolean,
-    accumulator: Definitions[],
-    build?: boolean
-  ) => Promise<string>;
+  documentDataInputObject: ({
+    cache,
+    template,
+    returnTemplate,
+    accumulator,
+    build,
+  }: {
+    cache: Cache;
+    template: TemplateData;
+    returnTemplate: boolean;
+    accumulator: Definitions[];
+    build?: boolean;
+  }) => Promise<string>;
   /**
    * Similar to documentObject except it only deals with unions on the data layer
    *
@@ -533,6 +539,7 @@ export const buildTemplateOrFieldValues = async (
   );
   return name;
 };
+
 export const buildTemplateOrFieldForm = async (
   cache: Cache,
   template: TemplateData,
@@ -680,42 +687,42 @@ const buildTemplateDataField = async (
   }
 };
 
-const buildTemplateInputDataField = async (
-  cache: Cache,
-  field: Field,
-  accumulator: Definitions[]
-): Promise<InputValueDefinitionNode> => {
-  switch (field.type) {
-    case "text":
-      return text.build.input({ cache, field, accumulator });
-    case "textarea":
-      return textarea.build.input({ cache, field, accumulator });
-    // case "select":
-    //   return select.build.input({ cache, field, accumulator });
-    // case "blocks":
-    //   return await blocks.build.input({ cache, field, accumulator });
-    // case "field_group":
-    //   return fieldGroup.build.input({ cache, field, accumulator });
-    // case "field_group_list":
-    //   return fieldGroupList.build.input({ cache, field, accumulator });
-    // case "list":
-    //   return list.build.input({ cache, field, accumulator });
-    // case "boolean":
-    //   return boolean.build.input({ cache, field, accumulator });
-    // case "datetime":
-    //   return datetime.build.input({ cache, field, accumulator });
-    // case "file":
-    //   return file.build.input({ cache, field, accumulator });
-    // case "image_gallery":
-    //   return imageGallery.build.input({ cache, field, accumulator });
-    // case "number":
-    //   return number.build.input({ cache, field, accumulator });
-    // case "tag_list":
-    //   return tag_list.build.input({ cache, field, accumulator });
-    default:
-      return text.build.input({ cache, field, accumulator });
-  }
-};
+// const buildTemplateInputDataField = async (
+//   cache: Cache,
+//   field: Field,
+//   accumulator: Definitions[]
+// ): Promise<InputValueDefinitionNode> => {
+//   switch (field.type) {
+//     case "text":
+//       return text.build.input({ cache, field, accumulator });
+//     case "textarea":
+//       return textarea.build.input({ cache, field, accumulator });
+//     // case "select":
+//     //   return select.build.input({ cache, field, accumulator });
+//     // case "blocks":
+//     //   return await blocks.build.input({ cache, field, accumulator });
+//     // case "field_group":
+//     //   return fieldGroup.build.input({ cache, field, accumulator });
+//     // case "field_group_list":
+//     //   return fieldGroupList.build.input({ cache, field, accumulator });
+//     // case "list":
+//     //   return list.build.input({ cache, field, accumulator });
+//     // case "boolean":
+//     //   return boolean.build.input({ cache, field, accumulator });
+//     // case "datetime":
+//     //   return datetime.build.input({ cache, field, accumulator });
+//     // case "file":
+//     //   return file.build.input({ cache, field, accumulator });
+//     // case "image_gallery":
+//     //   return imageGallery.build.input({ cache, field, accumulator });
+//     // case "number":
+//     //   return number.build.input({ cache, field, accumulator });
+//     // case "tag_list":
+//     //   return tag_list.build.input({ cache, field, accumulator });
+//     default:
+//       return text.build.input({ cache, field, accumulator });
+//   }
+// };
 
 export const builders = {
   buildTemplateOrField,
