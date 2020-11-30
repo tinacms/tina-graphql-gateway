@@ -578,16 +578,17 @@ export const resolver: Resolver = {
       dataField(datasource, field)
     );
 
-    if (includeContent) {
-      fields.push(
-        await textarea.resolve.field({
-          datasource,
-          field: textarea.contentField,
-        })
-      );
-    }
+    // if (includeContent) {
+    //   fields.push(
+    //     await textarea.resolve.field({
+    //       datasource,
+    //       field: textarea.contentField,
+    //     })
+    //   );
+    // }
 
     return {
+      __typename: friendlyName(template, "Form"),
       ...template,
       fields,
     };

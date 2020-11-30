@@ -1,5 +1,4 @@
 import _ from "lodash";
-import * as yup from "yup";
 import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
@@ -8,6 +7,14 @@ import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
+import {
+  assertIsArray,
+  assertIsBlockInitialValue,
+  assertIsBlockInput,
+  assertIsBlockValue,
+  assertIsBlockValueArray,
+  assertIsObject,
+} from "../";
 import type { BuildArgs, ResolveArgs } from "../";
 import type { TinaTemplateData } from "../../types";
 
@@ -151,7 +158,7 @@ export interface Blocks {
 export const blocks: Blocks = {
   build: {
     field: async ({ cache, field, accumulator }) => {
-      const name = friendlyName(field, "BlocksField");
+      const typename = friendlyName(field, "BlocksField");
       const templateName = friendlyName(field, "BlocksFieldTemplates");
 
       accumulator.push(
@@ -162,18 +169,12 @@ export const blocks: Blocks = {
       );
 
       accumulator.push(
-        gql.object({
-          name: name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.field({ name: "templates", type: templateName }),
-          ],
-        })
+        gql.formField(typename, [
+          gql.field({ name: "templates", type: templateName }),
+        ])
       );
 
-      return name;
+      return typename;
     },
     initialValue: async ({ cache, field, accumulator }) => {
       const name = `${friendlyName(field)}Values`;
@@ -281,81 +282,6 @@ export const blocks: Blocks = {
   },
 };
 
-function assertIsArray(value: unknown): asserts value is unknown[] {
-  if (!Array.isArray(value)) {
-    throw new Error("Expected an array for block input value");
-  }
-}
-
-const blockInputSchema = yup
-  .object({
-    template: yup.string().required(),
-  })
-  .required();
-
-function assertIsBlockInput(
-  value: unknown
-): asserts value is { data: { template: string } & object } {
-  assertIsObject(value);
-  const data = Object.values(value)[0];
-  const schema = yup
-    .object({
-      template: yup.string().required(),
-    })
-    .required();
-  try {
-    schema.validateSync(data);
-  } catch (e) {
-    console.log(value);
-    throw new Error(`Failed to assertIsBlockInput - ${e.message}`);
-  }
-}
-
-function assertIsObject(value: unknown): asserts value is object {
-  const schema = yup.object().required();
-  schema.validateSync(value);
-}
-
-function assertIsBlockInitialValue(
-  value: unknown
-): asserts value is BlockInitialValue {
-  const schema = yup.object({
-    _template: yup.string().required(),
-  });
-  try {
-    schema.validateSync(value);
-  } catch (e) {
-    console.log(value);
-    throw new Error(`Failed to assertIsBlockInitialValue - ${e.message}`);
-  }
-}
-function assertIsBlockValue(value: unknown): asserts value is BlockValue {
-  const schema = yup.object({
-    template: yup.string().required(),
-  });
-  try {
-    schema.validateSync(value);
-  } catch (e) {
-    console.log(value);
-    throw new Error(`Failed to assertIsBlockValue - ${e.message}`);
-  }
-}
-function assertIsBlockValueArray(
-  value: unknown
-): asserts value is BlockValue[] {
-  const schema = yup.array().of(
-    yup.object({
-      template: yup.string().required(),
-    })
-  );
-  try {
-    schema.validateSync(value);
-  } catch (e) {
-    console.log(value);
-    throw new Error(`Failed to assertIsBlockValueArray - ${e.message}`);
-  }
-}
-
 export type BlocksField = {
   label: string;
   name: string;
@@ -378,14 +304,4 @@ export type TinaBlocksField = {
   };
   templates: { [key: string]: TinaTemplateData };
   __typename: string;
-};
-
-type BlockValue = {
-  template: string;
-  [key: string]: unknown;
-};
-
-type BlockInitialValue = {
-  _template: string;
-  [key: string]: unknown;
 };

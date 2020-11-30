@@ -2,23 +2,13 @@ import { gql } from "../../gql";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
+const typename = "FileField";
+
 export const file = {
   build: {
     field: async ({ accumulator }: BuildArgs<FileField>) => {
-      const name = "FileField";
-
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<FileField>) => {
       return gql.string(field.name);
@@ -38,7 +28,7 @@ export const file = {
       return {
         ...rest,
         component: "image",
-        __typename: "FileField",
+        __typename: typename,
         config: rest.config || {
           required: false,
         },
@@ -80,5 +70,5 @@ export type TinaFileField = {
   config?: {
     required?: boolean;
   };
-  __typename: "FileField";
+  __typename: typeof typename;
 };

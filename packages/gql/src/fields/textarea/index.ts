@@ -3,6 +3,8 @@ import { toAst, toHTML } from "../../remark";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
+const typename = "TextareaField";
+
 export const textarea = {
   contentField: {
     type: "textarea" as const,
@@ -17,20 +19,8 @@ export const textarea = {
   },
   build: {
     field: async ({ accumulator }: BuildArgs<TextareaField>) => {
-      const name = "TextareaField";
-
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<TextareaField>) => {
       return gql.string(field.name);
@@ -68,7 +58,7 @@ export const textarea = {
         config: rest.config || {
           required: false,
         },
-        __typename: "TextareaField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -126,5 +116,5 @@ export type TinaTextareaField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TextareaField";
+  __typename: typeof typename;
 };

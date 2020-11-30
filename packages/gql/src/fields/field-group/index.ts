@@ -20,26 +20,19 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const name = friendlyName(field, "GroupField");
+      const typename = friendlyName(field, "GroupField");
       const fieldsUnionName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
         accumulator
       );
-
       accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.fieldList({ name: "fields", type: fieldsUnionName }),
-          ],
-        })
+        gql.formField(typename, [
+          gql.fieldList({ name: "fields", type: fieldsUnionName }),
+        ])
       );
 
-      return name;
+      return typename;
     },
     initialValue: async ({
       cache,

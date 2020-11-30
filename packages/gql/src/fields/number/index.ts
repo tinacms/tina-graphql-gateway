@@ -2,22 +2,13 @@ import { gql } from "../../gql";
 
 import { BuildArgs, ResolveArgs, assertIsNumber } from "../";
 
+const typename = "NumberField";
+
 export const number = {
   build: {
     field: async ({ accumulator }: BuildArgs<NumberField>) => {
-      const name = "NumberField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<NumberField>) => {
       return gql.string(field.name);
@@ -40,7 +31,7 @@ export const number = {
         config: rest.config || {
           required: false,
         },
-        __typename: "NumberField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -79,5 +70,5 @@ export type TinaNumberField = {
   config?: {
     required?: boolean;
   };
-  __typename: "NumberField";
+  __typename: typeof typename;
 };

@@ -2,23 +2,13 @@ import { gql } from "../../gql";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
+const typename = "BooleanField";
+
 export const boolean = {
   build: {
     field: async ({ accumulator }: BuildArgs<BooleanField>) => {
-      const name = "BooleanField";
-
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
       return gql.string(field.name);
@@ -81,5 +71,5 @@ export type TinaBooleanField = {
   config?: {
     required?: boolean;
   };
-  __typename: "BooleanField";
+  __typename: typeof typename;
 };

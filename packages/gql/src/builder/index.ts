@@ -383,6 +383,14 @@ export const builder = {
 
     const accumulator: Definitions[] = [
       gql.interface({ name: "Node", fields: [gql.fieldID({ name: "id" })] }),
+      gql.interface({
+        name: "FormField",
+        fields: [
+          gql.field({ name: "label", type: "String" }),
+          gql.field({ name: "name", type: "String" }),
+          gql.field({ name: "component", type: "String" }),
+        ],
+      }),
       gql.scalar("JSON"),
       gql.scalar("JSONObject"),
       gql.object({

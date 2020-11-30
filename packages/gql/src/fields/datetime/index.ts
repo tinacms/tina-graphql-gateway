@@ -2,22 +2,13 @@ import { gql } from "../../gql";
 
 import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
+const typename = "DatetimeField";
+
 export const datetime = {
   build: {
     field: async ({ accumulator }: BuildArgs<DatetimeField>) => {
-      const name = "DatetimeField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<DatetimeField>) => {
       return gql.string(field.name);
@@ -80,5 +71,5 @@ export type TinaDatetimeField = {
   config?: {
     required?: boolean;
   };
-  __typename: "DatetimeField";
+  __typename: typeof typename;
 };
