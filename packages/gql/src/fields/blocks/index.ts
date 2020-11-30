@@ -58,7 +58,7 @@ export interface Build {
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<string>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
   initialValue: ({
     cache,
     field,
@@ -165,7 +165,10 @@ export const blocks: Blocks = {
         ])
       );
 
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({ field, accumulator }) => {
       const name = `${friendlyName(field)}Values`;

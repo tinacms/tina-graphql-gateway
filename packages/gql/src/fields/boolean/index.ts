@@ -6,9 +6,12 @@ const typename = "BooleanField";
 
 export const boolean = {
   build: {
-    field: async ({ accumulator }: BuildArgs<BooleanField>) => {
+    field: async ({ field, accumulator }: BuildArgs<BooleanField>) => {
       accumulator.push(gql.formField(typename));
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
       return gql.string(field.name);

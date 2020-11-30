@@ -547,18 +547,28 @@ export const buildTemplateOrFieldForm = async (
 ) => {
   const name = friendlyName(template, "Form");
 
-  const fields = await sequential(template.fields, async (field) => {
-    return gql.field({
-      name: field.name,
-      type: await buildTemplateFormField(cache, field, accumulator),
-    });
-  });
+  const fields = await sequential(
+    template.fields,
+    async (field) => await buildTemplateFormField(cache, field, accumulator)
+  );
 
   const fieldsUnionName = `${name}FieldsUnion`;
   accumulator.push(
     gql.union({
       name: fieldsUnionName,
-      types: _.uniq(fields.map((field) => field.type.name.value)),
+      types: _.uniq(
+        fields.map((field) => {
+          switch (field.type.kind) {
+            case "NamedType":
+              return field.type.name.value;
+            case "ListType":
+            case "NonNullType":
+              throw new Error(
+                `Unexpected ${field.type.kind} type for field union field`
+              );
+          }
+        })
+      ),
     })
   );
 
@@ -580,7 +590,7 @@ const buildTemplateFormField = async (
   cache: Cache,
   field: Field,
   accumulator: Definitions[]
-): Promise<string> => {
+): Promise<FieldDefinitionNode> => {
   switch (field.type) {
     case "text":
       return text.build.field({ cache, field, accumulator });

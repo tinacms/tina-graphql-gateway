@@ -6,9 +6,13 @@ const typename = "DatetimeField";
 
 export const datetime = {
   build: {
-    field: async ({ accumulator }: BuildArgs<DatetimeField>) => {
+    field: async ({ field, accumulator }: BuildArgs<DatetimeField>) => {
       accumulator.push(gql.formField(typename));
-      return typename;
+
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<DatetimeField>) => {
       return gql.string(field.name);

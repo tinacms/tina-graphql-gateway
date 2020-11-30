@@ -18,9 +18,12 @@ export const textarea = {
     __namespace: "",
   },
   build: {
-    field: async ({ accumulator }: BuildArgs<TextareaField>) => {
+    field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
       accumulator.push(gql.formField(typename));
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<TextareaField>) => {
       return gql.string(field.name);

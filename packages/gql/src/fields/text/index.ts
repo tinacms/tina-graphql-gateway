@@ -5,9 +5,12 @@ import { assertIsString, BuildArgs, ResolveArgs } from "../";
 const typename = "TextField";
 export const text = {
   build: {
-    field: async ({ accumulator }: BuildArgs<TextField>) => {
+    field: async ({ field, accumulator }: BuildArgs<TextField>) => {
       accumulator.push(gql.formField(typename));
-      return typename;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
       return gql.string(field.name);
