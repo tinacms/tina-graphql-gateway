@@ -2,22 +2,12 @@ import { gql } from "../../gql";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
+const typename = "TextField";
 export const text = {
   build: {
     field: async ({ accumulator }: BuildArgs<TextField>) => {
-      const name = "TextField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
       return gql.string(field.name);
@@ -79,5 +69,5 @@ export type TinaTextField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TextField";
+  __typename: typeof typename;
 };

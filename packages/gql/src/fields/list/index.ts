@@ -9,6 +9,8 @@ import { assertIsStringArray, BuildArgs, ResolveArgs } from "../";
 import type { TinaField } from "../index";
 import type { ImageGalleryField } from "../image-gallery";
 
+const typename = "ListField";
+
 export const list = {
   /**
    * Image Gallery uses list for now, Tina has plans to
@@ -52,21 +54,14 @@ export const list = {
         gql.union({ name: unionName, types: ["TextField", "SelectField"] })
       );
 
-      const name = "ListField";
       accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.string("defaultItem"),
-            gql.field({ name: "field", type: unionName }),
-          ],
-        })
+        gql.formField(typename, [
+          gql.string("defaultItem"),
+          gql.field({ name: "field", type: unionName }),
+        ])
       );
 
-      return name;
+      return typename;
     },
     initialValue: async ({ field }: BuildArgs<ListField>) => {
       return gql.stringList(field.name);
@@ -159,7 +154,7 @@ export const list = {
         component: "list",
         field: fieldComponent,
         defaultItem,
-        __typename: "ListField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -298,5 +293,5 @@ export type TinaListField = {
   component: "list";
   field: TinaField;
   defaultItem: string;
-  __typename: "ListField";
+  __typename: typeof typename;
 };

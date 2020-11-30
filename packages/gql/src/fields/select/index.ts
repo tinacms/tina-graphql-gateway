@@ -3,25 +3,19 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 
 import { BuildArgs, ResolveArgs } from "../";
 
+const typename = "SelectField";
+
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ accumulator }: BuildArgs<SelectField>) => {
-      const name = "SelectField";
       accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.stringList("options"),
-            gql.string("refetchPolicy"),
-          ],
-        })
+        gql.formField(typename, [
+          gql.stringList("options"),
+          gql.string("refetchPolicy"),
+        ])
       );
-
-      return name;
+      return typename;
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
       return gql.string(field.name);
@@ -61,7 +55,7 @@ export const select = {
       const f = {
         ...rest,
         component: "select" as const,
-        __typename: "SelectField",
+        __typename: typename,
       };
       switch (field.config.source.type) {
         case "documents":

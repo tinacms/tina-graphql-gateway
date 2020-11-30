@@ -1,28 +1,14 @@
 import { gql } from "../../gql";
 
-import {
-  BuildArgs,
-  ResolveArgs,
-  assertIsStringArray,
-  assertIsString,
-} from "../";
+import { BuildArgs, ResolveArgs, assertIsStringArray } from "../";
+
+const typename = "TagListField";
 
 export const tag_list = {
   build: {
     field: async ({ accumulator }: BuildArgs<TagListField>) => {
-      const name = "TagListField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+      accumulator.push(gql.formField(typename));
+      return typename;
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
       return gql.stringList(field.name);
@@ -45,7 +31,7 @@ export const tag_list = {
         config: rest.config || {
           required: false,
         },
-        __typename: "TagListField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -84,5 +70,5 @@ export type TinaTagListField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TagListField";
+  __typename: typeof typename;
 };

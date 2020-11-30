@@ -6,9 +6,20 @@ import {
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
 } from "graphql";
-import { InterfaceImplementations } from "graphql/type/schema";
 
 export const gql = {
+  formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
+    return gql.object({
+      name: name,
+      interfaces: [gql.namedType({ name: "FormField" })],
+      fields: [
+        gql.string("name"),
+        gql.string("label"),
+        gql.string("component"),
+        ...(additionalFields || []),
+      ],
+    });
+  },
   scalar: (name: string): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
@@ -320,6 +331,15 @@ export const gql = {
     },
     fields,
   }),
+  namedType: ({ name }: { name: string }): NamedTypeNode => {
+    return {
+      kind: "NamedType",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+    };
+  },
   object: ({
     name,
     fields,

@@ -112,3 +112,84 @@ export function assertShape<T>(
     throw new Error(`Failed to assertIsBlockValueArray - ${e.message}`);
   }
 }
+
+export function assertIsArray(value: unknown): asserts value is unknown[] {
+  if (!Array.isArray(value)) {
+    throw new Error("Expected an array for block input value");
+  }
+}
+
+export function assertIsBlockInput(
+  value: unknown
+): asserts value is { data: { template: string } & object } {
+  assertIsObject(value);
+  const data = Object.values(value)[0];
+  const schema = yup
+    .object({
+      template: yup.string().required(),
+    })
+    .required();
+  try {
+    schema.validateSync(data);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockInput - ${e.message}`);
+  }
+}
+
+export function assertIsObject(value: unknown): asserts value is object {
+  const schema = yup.object().required();
+  schema.validateSync(value);
+}
+
+export function assertIsBlockInitialValue(
+  value: unknown
+): asserts value is BlockInitialValue {
+  const schema = yup.object({
+    _template: yup.string().required(),
+  });
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockInitialValue - ${e.message}`);
+  }
+}
+export function assertIsBlockValue(
+  value: unknown
+): asserts value is BlockValue {
+  const schema = yup.object({
+    template: yup.string().required(),
+  });
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockValue - ${e.message}`);
+  }
+}
+export function assertIsBlockValueArray(
+  value: unknown
+): asserts value is BlockValue[] {
+  const schema = yup.array().of(
+    yup.object({
+      template: yup.string().required(),
+    })
+  );
+  try {
+    schema.validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertIsBlockValueArray - ${e.message}`);
+  }
+}
+
+type BlockValue = {
+  template: string;
+  [key: string]: unknown;
+};
+
+type BlockInitialValue = {
+  _template: string;
+  [key: string]: unknown;
+};

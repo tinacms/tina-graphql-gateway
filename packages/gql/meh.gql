@@ -2,6 +2,12 @@ interface Node {
   id: ID!
 }
 
+interface FormField {
+  label: String
+  name: String
+  component: String
+}
+
 scalar JSON
 
 scalar JSONObject
@@ -88,7 +94,7 @@ type ActionNewsletter_Values {
   footer: String
 }
 
-type TextareaField {
+type TextareaField implements FormField {
   name: String
   label: String
   component: String
@@ -122,7 +128,7 @@ type ActionPageReference_Values {
   button_settings: ActionPageReference_ButtonSettings_Values
 }
 
-type SelectField {
+type SelectField implements FormField {
   name: String
   label: String
   component: String
@@ -130,7 +136,7 @@ type SelectField {
   refetchPolicy: String
 }
 
-type ActionPageReference_ButtonSettings_GroupField {
+type ActionPageReference_ButtonSettings_GroupField implements FormField {
   name: String
   label: String
   component: String
@@ -154,7 +160,7 @@ type ActionVideo_Values {
   url: String
 }
 
-type TextField {
+type TextField implements FormField {
   name: String
   label: String
   component: String
@@ -179,7 +185,7 @@ type AuthorList_Values {
 
 union List_FormFieldsUnion = TextField | SelectField
 
-type ListField {
+type ListField implements FormField {
   name: String
   label: String
   component: String
@@ -223,13 +229,13 @@ type Author_Values {
   accolades: [Author_Accolades_Values]
 }
 
-type FileField {
+type FileField implements FormField {
   name: String
   label: String
   component: String
 }
 
-type Author_Accolades_GroupListField {
+type Author_Accolades_GroupListField implements FormField {
   name: String
   label: String
   component: String
@@ -261,7 +267,7 @@ type BlockPage_Values {
   blocks: [BlockPage_BlocksValues]
 }
 
-type DatetimeField {
+type DatetimeField implements FormField {
   name: String
   label: String
   component: String
@@ -269,7 +275,7 @@ type DatetimeField {
 
 union BlockPage_Blocks_BlocksFieldTemplates = Sidecar_Form | ExcerptPost_Form | PostList_Form | PriceList_Form | AuthorList_Form | SponsorList_Form | PageReference_Form | SectionIndex_Form
 
-type BlockPage_Blocks_BlocksField {
+type BlockPage_Blocks_BlocksField implements FormField {
   name: String
   label: String
   component: String
@@ -327,7 +333,7 @@ type Menu_Values {
   menu_item: [Menu_MenuItem_Values]
 }
 
-type Menu_MenuItem_GroupListField {
+type Menu_MenuItem_GroupListField implements FormField {
   name: String
   label: String
   component: String
@@ -379,7 +385,7 @@ type PostList_Values {
   posts: [PostList_Posts_Values]
 }
 
-type PostList_Posts_GroupListField {
+type PostList_Posts_GroupListField implements FormField {
   name: String
   label: String
   component: String
@@ -409,7 +415,7 @@ type Post_Values {
   hashtags: [String]
 }
 
-type TagListField {
+type TagListField implements FormField {
   name: String
   label: String
   component: String
@@ -449,7 +455,7 @@ type PriceList_Values {
   prices: [PriceList_Prices_Values]
 }
 
-type PriceList_Prices_GroupListField {
+type PriceList_Prices_GroupListField implements FormField {
   name: String
   label: String
   component: String
@@ -477,7 +483,7 @@ type SectionIndex_Values {
   section: String
 }
 
-type NumberField {
+type NumberField implements FormField {
   name: String
   label: String
   component: String
@@ -521,7 +527,7 @@ type Sidecar_Values {
   style: String
 }
 
-type Sidecar_Cta_GroupField {
+type Sidecar_Cta_GroupField implements FormField {
   name: String
   label: String
   component: String
@@ -530,7 +536,7 @@ type Sidecar_Cta_GroupField {
 
 union Sidecar_Actions_BlocksFieldTemplates = ActionVideo_Form | ActionNewsletter_Form | ActionPageReference_Form
 
-type Sidecar_Actions_BlocksField {
+type Sidecar_Actions_BlocksField implements FormField {
   name: String
   label: String
   component: String
@@ -569,7 +575,7 @@ type SponsorList_Values {
   sponsor: [SponsorList_Sponsor_Values]
 }
 
-type SponsorList_Sponsor_GroupListField {
+type SponsorList_Sponsor_GroupListField implements FormField {
   name: String
   label: String
   component: String
