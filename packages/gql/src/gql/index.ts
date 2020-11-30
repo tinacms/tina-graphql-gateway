@@ -305,32 +305,6 @@ export const gql = {
       },
     })),
   }),
-  node: ({
-    name,
-    fields,
-    args = [],
-  }: {
-    name: string;
-    fields: FieldDefinitionNode[];
-    args?: InputValueDefinitionNode[];
-  }): ObjectTypeDefinitionNode => ({
-    kind: "ObjectTypeDefinition" as const,
-    arguments: args,
-    interfaces: [
-      {
-        kind: "NamedType",
-        name: {
-          kind: "Name",
-          value: "Node",
-        },
-      },
-    ],
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    fields,
-  }),
   namedType: ({ name }: { name: string }): NamedTypeNode => {
     return {
       kind: "NamedType",
@@ -352,7 +326,6 @@ export const gql = {
     args?: NamedTypeNode[];
   }): ObjectTypeDefinitionNode => ({
     kind: "ObjectTypeDefinition" as const,
-    arguments: args,
     interfaces,
     name: {
       kind: "Name" as const,
