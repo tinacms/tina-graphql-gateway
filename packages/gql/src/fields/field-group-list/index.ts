@@ -40,10 +40,11 @@ export const fieldGroupList = {
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
       const typename = friendlyName(field, "GroupListField");
-      const fieldsUnionName = await builders.buildTemplateOrFieldValues(
+      const fieldsUnionName = await builders.buildTemplateOrFieldFormFields(
         cache,
         field,
-        accumulator
+        accumulator,
+        false
       );
       accumulator.push(
         gql.formField(typename, [
@@ -63,7 +64,8 @@ export const fieldGroupList = {
       const initialValueName = await builders.buildTemplateOrFieldValues(
         cache,
         field,
-        accumulator
+        accumulator,
+        false
       );
 
       return gql.fieldList({ name: field.name, type: initialValueName });
@@ -76,11 +78,12 @@ export const fieldGroupList = {
       const name = await builders.buildTemplateOrFieldData(
         cache,
         field,
-        accumulator
+        accumulator,
+        false
       );
       return gql.fieldList({
         name: field.name,
-        type: friendlyName(name, "Data"),
+        type: name,
       });
     },
     input: async ({
@@ -102,7 +105,11 @@ export const fieldGroupList = {
       TinaFieldGroupListField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.documentFormObject(datasource, field);
+      const template = await resolver.documentFormObject(
+        datasource,
+        field,
+        false
+      );
 
       return {
         ...rest,
@@ -132,7 +139,7 @@ export const fieldGroupList = {
       return sequential(
         value,
         async (v: any) =>
-          await resolver.documentDataObject({
+          await resolver.dataObject({
             datasource,
             resolvedTemplate: field,
             data: v,

@@ -1,7 +1,9 @@
 import {
   parse,
+  isLeafType,
   printSchema,
   visit,
+  GraphQLNamedType,
   GraphQLSchema,
   Visitor,
   ASTKindToNode,
@@ -10,9 +12,477 @@ import {
   ASTNode,
   SelectionNode,
   NamedTypeNode,
+  NameNode,
+  GraphQLFieldMap,
+  getNamedType,
+  TypeInfo,
+  visitWithTypeInfo,
+  typeFromAST,
+  valueFromAST,
+  FieldNode,
+  InlineFragmentNode,
+  GraphQLInterfaceType,
+  SchemaMetaFieldDef,
+  BREAK,
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLUnionType,
+  GraphQLString,
+  GraphQLNonNull,
 } from "graphql";
+import set from "lodash.set";
+import get from "lodash.get";
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
+
+export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
+  const astNode = parse(printSchema(schema));
+  const typeInfo = new TypeInfo(schema);
+
+  const visitor: VisitorType = {
+    leave(node, key, parent, path, ancestors) {
+      const type = typeInfo.getType();
+      if (type) {
+        const namedType = getNamedType(type);
+
+        if (
+          // @ts-ignore FIXME: find a type-safe way to look up interfaces
+          namedType._interfaces &&
+          // @ts-ignore FIXME: find a type-safe way to look up interfaces
+          namedType._interfaces
+            // @ts-ignore FIXME: find a type-safe way to look up interfaces
+            .map((interface) => interface.name)
+            .includes("Node")
+        ) {
+          // Instead of this, there's probably a more fine-grained visitor key to
+          // use
+          if (typeof path[path.length - 1] === "number") {
+            // visit(node, visitWithTypeInfo(typeInfo, fieldVisitor));
+            let fields: FieldDefinitionNode[] = [];
+
+            const name = namedType.name;
+            const documentConfig = namedType.toConfig();
+            const formNode = documentConfig.fields["form"];
+            const namedFormNode = getNamedType(
+              formNode.type
+            ) as GraphQLNamedType;
+
+            const pathForForm = [...path];
+
+            pathForForm.push("selectionSet");
+            pathForForm.push("selections");
+            // High number to make sure this index isn't taken
+            // might be more performant for it to be a low number though
+            // use setWith instead
+            const formAst = buildFormForType(namedFormNode);
+            pathForForm.push(100);
+            set(
+              ancestors[0],
+              pathForForm.map((p) => p.toString()),
+              formAst
+            );
+
+            const pathForValues = [...path];
+            pathForValues.push("selectionSet");
+            pathForValues.push("selections");
+            // High number to make sure this index isn't taken
+            // might be more performant for it to be a low number though
+            // use setWith instead
+            pathForValues.push(101);
+            set(
+              ancestors[0],
+              pathForValues.map((p) => p.toString()),
+              valuesAST
+            );
+          }
+        }
+      }
+    },
+  };
+
+  visit(query, visitWithTypeInfo(typeInfo, visitor));
+
+  return query;
+};
+
+function assertIsUnionType(
+  type: GraphQLNamedType
+): asserts type is GraphQLUnionType {
+  if (type instanceof GraphQLUnionType) {
+    // do nothing
+  } else {
+    throw new Error(
+      `Expected an instance of GraphQLUnionType for type ${type.name}`
+    );
+  }
+}
+
+const buildFormForType = (type: GraphQLNamedType): FieldNode => {
+  assertIsUnionType(type);
+
+  return {
+    kind: "Field" as const,
+    name: {
+      kind: "Name" as const,
+      value: "form",
+    },
+    selectionSet: {
+      kind: "SelectionSet" as const,
+      selections: [
+        {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: "__typename",
+          },
+        },
+        ...buildTypes(type.getTypes()),
+      ],
+    },
+  };
+};
+
+const buildTypes = (
+  types: GraphQLObjectType<any, any>[]
+): InlineFragmentNode[] => {
+  return types.map((type) => {
+    return {
+      kind: "InlineFragment" as const,
+      typeCondition: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: type.name,
+        },
+      },
+      selectionSet: {
+        kind: "SelectionSet" as const,
+        selections: [
+          {
+            kind: "Field" as const,
+            name: {
+              kind: "Name" as const,
+              value: "__typename",
+            },
+          },
+          ...Object.values(type.getFields()).map(
+            (field): FieldNode => {
+              const namedType = getNamedType(field.type);
+              if (isLeafType(namedType)) {
+                return {
+                  kind: "Field" as const,
+                  name: {
+                    kind: "Name" as const,
+                    value: field.name,
+                  },
+                };
+              } else if (namedType instanceof GraphQLUnionType) {
+                return {
+                  kind: "Field" as const,
+                  name: {
+                    kind: "Name" as const,
+                    value: field.name,
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet" as const,
+                    selections: [
+                      {
+                        kind: "Field" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "__typename",
+                        },
+                      },
+                      ...buildTypes(namedType.getTypes()),
+                    ],
+                  },
+                };
+              } else if (namedType instanceof GraphQLObjectType) {
+                return {
+                  kind: "Field" as const,
+                  name: {
+                    kind: "Name" as const,
+                    value: field.name,
+                  },
+                  selectionSet: {
+                    kind: "SelectionSet" as const,
+                    selections: [
+                      {
+                        kind: "Field" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "__typename",
+                        },
+                      },
+                      ...buildFields(namedType.getFields()),
+                    ],
+                  },
+                };
+              } else {
+                throw new Error(
+                  `Unexpected GraphQL type for field ${namedType.name}`
+                );
+              }
+            }
+          ),
+        ],
+      },
+    };
+  });
+};
+
+const buildFields = (fields: GraphQLFieldMap<any, any>): FieldNode[] => {
+  return Object.values(fields).map(
+    (field): FieldNode => {
+      const namedType = getNamedType(field.type);
+      if (isLeafType(namedType)) {
+        return {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: field.name,
+          },
+        };
+      } else if (namedType instanceof GraphQLUnionType) {
+        return {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: field.name,
+          },
+          selectionSet: {
+            kind: "SelectionSet" as const,
+            selections: [
+              {
+                kind: "Field" as const,
+                name: {
+                  kind: "Name" as const,
+                  value: "__typename",
+                },
+              },
+              ...buildTypes(namedType.getTypes()),
+            ],
+          },
+        };
+      } else if (namedType instanceof GraphQLObjectType) {
+        return {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: field.name,
+          },
+          selectionSet: {
+            kind: "SelectionSet" as const,
+            selections: [
+              {
+                kind: "Field" as const,
+                name: {
+                  kind: "Name" as const,
+                  value: "__typename",
+                },
+              },
+              ...buildFields(namedType.getFields()),
+            ],
+          },
+        };
+      } else {
+        return {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: field.name,
+          },
+          selectionSet: {
+            kind: "SelectionSet" as const,
+            selections: [
+              {
+                kind: "Field" as const,
+                name: {
+                  kind: "Name" as const,
+                  value: "__typename",
+                },
+              },
+            ],
+          },
+        };
+      }
+    }
+  );
+};
+
+const buildFormForType2 = (type: GraphQLNamedType): FieldNode => {
+  assertIsUnionType(type);
+  const types = type.getTypes();
+
+  return {
+    kind: "Field" as const,
+    name: {
+      kind: "Name" as const,
+      value: "form",
+    },
+    selectionSet: {
+      kind: "SelectionSet" as const,
+      selections: [
+        {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: "__typename",
+          },
+        },
+        ...types.map((type) => {
+          return {
+            kind: "InlineFragment" as const,
+            typeCondition: {
+              kind: "NamedType" as const,
+              name: {
+                kind: "Name" as const,
+                value: type.name,
+              },
+            },
+            selectionSet: {
+              kind: "SelectionSet" as const,
+              selections: Object.values(type.getFields()).map(
+                (field): FieldNode => {
+                  const namedType = getNamedType(field.type);
+
+                  if (isLeafType(namedType)) {
+                    return {
+                      kind: "Field" as const,
+                      name: {
+                        kind: "Name" as const,
+                        value: field.name,
+                      },
+                    };
+                  } else if (namedType instanceof GraphQLUnionType) {
+                    const types = namedType.getTypes().map(
+                      (type): InlineFragmentNode => {
+                        return {
+                          kind: "InlineFragment" as const,
+                          typeCondition: {
+                            kind: "NamedType" as const,
+                            name: {
+                              kind: "Name" as const,
+                              value: type.name,
+                            },
+                          },
+                          selectionSet: {
+                            kind: "SelectionSet" as const,
+                            selections: Object.values(type.getFields()).map(
+                              (field): FieldNode => {
+                                if (isLeafType(field)) {
+                                  return {
+                                    kind: "Field" as const,
+                                    name: {
+                                      kind: "Name" as const,
+                                      value: field.name,
+                                    },
+                                  };
+                                } else if (
+                                  namedType instanceof GraphQLUnionType
+                                ) {
+                                  return {
+                                    kind: "Field" as const,
+                                    name: {
+                                      kind: "Name" as const,
+                                      value: field.name,
+                                    },
+                                    selectionSet: {
+                                      kind: "SelectionSet" as const,
+                                      selections: [buildFormForType(namedType)],
+                                    },
+                                  };
+                                } else {
+                                  return {
+                                    kind: "Field" as const,
+                                    name: {
+                                      kind: "Name" as const,
+                                      value: field.name,
+                                    },
+                                  };
+                                }
+                              }
+                            ),
+                          },
+                        };
+                      }
+                    );
+                    return {
+                      kind: "Field" as const,
+                      name: {
+                        kind: "Name" as const,
+                        value: field.name,
+                      },
+                      selectionSet: {
+                        kind: "SelectionSet" as const,
+                        selections: types,
+                      },
+                    };
+                  } else {
+                    return {
+                      kind: "Field" as const,
+                      name: {
+                        kind: "Name" as const,
+                        value: field.name,
+                      },
+                    };
+                  }
+                }
+              ),
+            },
+          };
+        }),
+      ],
+    },
+  };
+};
+
+const valuesAST = {
+  kind: "Field",
+  name: {
+    kind: "Name",
+    value: "values",
+  },
+  arguments: [],
+  directives: [],
+  selectionSet: {
+    kind: "SelectionSet",
+    selections: [
+      {
+        kind: "Field",
+        name: {
+          kind: "Name",
+          value: "__typename",
+        },
+        arguments: [],
+        directives: [],
+      },
+    ],
+  },
+};
+const formAST = {
+  kind: "Field",
+  name: {
+    kind: "Name",
+    value: "form",
+  },
+  arguments: [],
+  directives: [],
+  selectionSet: {
+    kind: "SelectionSet",
+    selections: [
+      {
+        kind: "Field",
+        name: {
+          kind: "Name",
+          value: "__typename",
+        },
+        arguments: [],
+        directives: [],
+      },
+    ],
+  },
+};
 
 const args = {
   document: [
@@ -232,7 +702,6 @@ export const queryBuilder = (
                                   return buildInlineFragment(
                                     item,
                                     astNode,
-                                    depth,
                                     items
                                   );
                                 }) || []),
@@ -257,13 +726,11 @@ export const queryBuilder = (
 };
 
 const buildInlineFragment = (
-  item: NamedTypeNode,
+  item: GraphQLNamedType,
   astNode: DocumentNode,
-  depth: number,
   items: string[]
 ): SelectionNode => {
-  depth = depth + 1;
-  const name = item.name.value;
+  const name = item.name;
   items.push(name);
   let fields: FieldDefinitionNode[] = [];
   const visitor: VisitorType = {
@@ -279,49 +746,30 @@ const buildInlineFragment = (
   };
   visit(astNode, visitor);
 
-  const isDocumentReference =
-    fields.map((f) => f.name.value).includes("form") &&
-    fields.map((f) => f.name.value).includes("data") &&
-    depth > 1;
-
   return {
     kind: "InlineFragment",
     typeCondition: {
       kind: "NamedType",
       name: {
         kind: "Name",
-        value: item.name.value,
+        value: item.name,
       },
     },
     directives: [],
     selectionSet: {
       kind: "SelectionSet",
-      selections: isDocumentReference
-        ? [
-            {
-              kind: "Field",
-              name: {
-                kind: "Name",
-                value: "__typename",
-              },
-            },
-          ]
-        : [
-            {
-              kind: "Field",
-              name: {
-                kind: "Name",
-                value: "__typename",
-              },
-            },
-            ...fields
-              .filter((field) => {
-                return true;
-              })
-              .map((field) => {
-                return buildField(field, astNode, depth, items);
-              }),
-          ],
+      selections: [
+        {
+          kind: "Field",
+          name: {
+            kind: "Name",
+            value: "__typename",
+          },
+        },
+        ...fields.map((field) => {
+          return buildField(field, astNode, items);
+        }),
+      ],
     },
   };
 };
@@ -329,7 +777,6 @@ const buildInlineFragment = (
 const buildField = (
   node: FieldDefinitionNode,
   astNode: DocumentNode,
-  depth: number,
   items: string[]
 ): SelectionNode => {
   const realType = getRealType(node);
@@ -390,10 +837,11 @@ const buildField = (
         selections:
           fields.length > 0
             ? fields.map((item) => {
-                return buildField(item, astNode, depth, items);
+                return buildField(item, astNode, items);
               })
             : union.map((item) => {
-                return buildInlineFragment(item, astNode, depth, items);
+                const namedType = getNamedType(typeFromAST(schema, item));
+                return buildInlineFragment(namedType, astNode, items);
               }),
       },
     };
@@ -409,140 +857,90 @@ const getRealType = (node: FieldDefinitionNode) => {
     return node.type;
   }
 };
-
-export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
-  const astNode = parse(printSchema(schema));
-  const visitor: VisitorType = {
-    leave: {
-      InlineFragment: (node, key, parent, path, ancestors) => {
-        const visitor2: VisitorType = {
-          leave: {
-            FieldDefinition: (nameNode, key, parent, path, ancestors) => {
-              if (
-                getRealType(nameNode).name.value ===
-                `${node.typeCondition?.name.value}_InitialValues`
-              ) {
-                const items: any[] = [];
-                const meh = buildField(nameNode, astNode, 0, items);
-
-                node.selectionSet.selections = [
-                  ...node.selectionSet.selections,
-                  meh,
-                ];
-              }
-            },
-            UnionTypeDefinition: (unionNode) => {
-              if (
-                unionNode.name.value ===
-                `${node.typeCondition?.name.value}_FormFields`
-              ) {
-                const items: any[] = [];
-                const meh = unionNode.types?.map((type) => {
-                  return buildInlineFragment(type, astNode, 0, items);
-                });
-                // console.log(JSON.stringify(meh, null, 2));
-                // FIXME: don't overwrite, replace
-                // @ts-ignore
-                node.selectionSet.selections = [
-                  ...node.selectionSet.selections,
-                  {
-                    name: {
-                      kind: "Name",
-                      value: "form",
-                    },
-                    kind: "Field",
-                    selectionSet: {
-                      kind: "SelectionSet",
-                      selections: [
-                        {
-                          kind: "Field",
-                          name: {
-                            kind: "Name",
-                            value: "label",
-                          },
-                        },
-                        {
-                          kind: "Field",
-                          name: {
-                            kind: "Name",
-                            value: "name",
-                          },
-                        },
-                        {
-                          name: {
-                            kind: "Name",
-                            value: "fields",
-                          },
-                          kind: "Field",
-                          selectionSet: {
-                            kind: "SelectionSet",
-                            selections: meh,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ];
-              }
-            },
-          },
-        };
-
-        visit(astNode, visitor2);
-      },
-    },
-  };
-
-  visit(query, visitor);
-
-  return query;
-};
-
 // export const formBuilder2 = (query: DocumentNode, schema: GraphQLSchema) => {
 //   const astNode = parse(printSchema(schema));
 //   const visitor: VisitorType = {
 //     leave: {
-//       InlineFragment: (node) => {
+//       InlineFragment: (node, key, parent, path, ancestors) => {
 //         const visitor2: VisitorType = {
 //           leave: {
-//             NamedType: (node) => {
-//               buildInlineFragment(node, astNode, 1);
+//             FieldDefinition: (nameNode, key, parent, path, ancestors) => {
+//               if (
+//                 getRealType(nameNode).name.value ===
+//                 `${node.typeCondition?.name.value}_InitialValues`
+//               ) {
+//                 const items: any[] = [];
+//                 const meh = buildField(nameNode, astNode, 0, items);
+
+//                 node.selectionSet.selections = [
+//                   ...node.selectionSet.selections,
+//                   meh,
+//                 ];
+//               }
+//             },
+//             UnionTypeDefinition: (unionNode) => {
+//               if (
+//                 unionNode.name.value ===
+//                 `${node.typeCondition?.name.value}_FormFields`
+//               ) {
+//                 const items: any[] = [];
+//                 const meh = unionNode.types?.map((type) => {
+//                   return buildInlineFragment(type, astNode, 0, items);
+//                 });
+//                 // console.log(JSON.stringify(meh, null, 2));
+//                 // FIXME: don't overwrite, replace
+//                 // @ts-ignore
+//                 node.selectionSet.selections = [
+//                   ...node.selectionSet.selections,
+//                   {
+//                     name: {
+//                       kind: "Name",
+//                       value: "form",
+//                     },
+//                     kind: "Field",
+//                     selectionSet: {
+//                       kind: "SelectionSet",
+//                       selections: [
+//                         {
+//                           kind: "Field",
+//                           name: {
+//                             kind: "Name",
+//                             value: "label",
+//                           },
+//                         },
+//                         {
+//                           kind: "Field",
+//                           name: {
+//                             kind: "Name",
+//                             value: "name",
+//                           },
+//                         },
+//                         {
+//                           name: {
+//                             kind: "Name",
+//                             value: "fields",
+//                           },
+//                           kind: "Field",
+//                           selectionSet: {
+//                             kind: "SelectionSet",
+//                             selections: meh,
+//                           },
+//                         },
+//                       ],
+//                     },
+//                   },
+//                 ];
+//               }
 //             },
 //           },
 //         };
+
 //         visit(astNode, visitor2);
-
-//         node.selectionSet.selections = [
-//           ...node.selectionSet.selections,
-//           {
-//             name: {
-//               kind: "Name",
-//               value: "form",
-//             },
-//             kind: "Field",
-//             selectionSet: {
-//               kind: "SelectionSet",
-//               selections: [
-//                 {
-//                   kind: "Field",
-//                   name: {
-//                     kind: "Name",
-//                     value: "label",
-//                   },
-//                 },
-//               ],
-//             },
-//           },
-//         ];
 //       },
-
-//       // Name: (node, _, other) => {
-//       //   if (node.value === "node") {
-//       //     console.log(JSON.stringify(other, null, 2));
-//       //   }
-//       // },
 //     },
 //   };
 
 //   visit(query, visitor);
+
+//   return query;
 // };

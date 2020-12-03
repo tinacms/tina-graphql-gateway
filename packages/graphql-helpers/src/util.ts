@@ -29,8 +29,9 @@ export const arrayToObject = <T>(
   return accumulator;
 };
 
+type FriendlyType = { __namespace?: string; name: string } | string | string[];
 export const friendlyName2 = (
-  field: { __namespace?: string; name: string } | string | string[] = "",
+  field: FriendlyType = "",
   suffix = "",
   lowerCase = false
 ) => {
@@ -62,4 +63,13 @@ export const friendlyName2 = (
 
 export const templateName = (string: string) => {
   return kebabcase(string);
+};
+
+export const templateTypeName = (
+  template: FriendlyType,
+  suffix: string,
+  includeBody: boolean
+) => {
+  const suffixName = (includeBody ? "Doc_" : "") + suffix;
+  return friendlyName2(template, suffixName);
 };

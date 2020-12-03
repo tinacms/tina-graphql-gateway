@@ -19,13 +19,14 @@ type SystemInfo {
 
 type Query {
   node(id: ID!): Node
+  getPages(id: ID!): Pages_Document
 }
 
-union Pages_Data = BlockPage_Data
+union Pages_Data = BlockPage_Doc_Data
 
-union Pages_Values = BlockPage_Values
+union Pages_Values = BlockPage_Doc_Values
 
-union Pages_Form = BlockPage_Form
+union Pages_Form = BlockPage_Doc_Form
 
 type Pages_Document implements Node {
   id: ID!
@@ -35,11 +36,11 @@ type Pages_Document implements Node {
   form: Pages_Form!
 }
 
-union Posts_Data = Post_Data
+union Posts_Data = Post_Doc_Data
 
-union Posts_Values = Post_Values
+union Posts_Values = Post_Doc_Values
 
-union Posts_Form = Post_Form
+union Posts_Form = Post_Doc_Form
 
 type Posts_Document implements Node {
   id: ID!
@@ -49,11 +50,11 @@ type Posts_Document implements Node {
   form: Posts_Form!
 }
 
-union Authors_Data = Author_Data
+union Authors_Data = Author_Doc_Data
 
-union Authors_Values = Author_Values
+union Authors_Values = Author_Doc_Values
 
-union Authors_Form = Author_Form
+union Authors_Form = Author_Doc_Form
 
 type Authors_Document implements Node {
   id: ID!
@@ -63,11 +64,11 @@ type Authors_Document implements Node {
   form: Authors_Form!
 }
 
-union Menus_Data = Menu_Data
+union Menus_Data = Menu_Doc_Data
 
-union Menus_Values = Menu_Values
+union Menus_Values = Menu_Doc_Values
 
-union Menus_Form = Menu_Form
+union Menus_Form = Menu_Doc_Form
 
 type Menus_Document implements Node {
   id: ID!
@@ -83,6 +84,33 @@ type LongTextValue {
   html: String
 }
 
+type ActionNewsletter_Doc_Data {
+  body: LongTextValue
+  footer: LongTextValue
+  _body: LongTextValue
+}
+
+type ActionNewsletter_Doc_Values {
+  _template: String
+  body: String
+  footer: String
+  _body: String
+}
+
+type TextareaField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union ActionNewsletter_Doc_FormFieldsUnion = TextareaField
+
+type ActionNewsletter_Doc_Form {
+  label: String
+  name: String
+  fields: [ActionNewsletter_Doc_FormFieldsUnion]
+}
+
 type ActionNewsletter_Data {
   body: LongTextValue
   footer: LongTextValue
@@ -94,12 +122,6 @@ type ActionNewsletter_Values {
   footer: String
 }
 
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
 union ActionNewsletter_FormFieldsUnion = TextareaField
 
 type ActionNewsletter_Form {
@@ -108,13 +130,14 @@ type ActionNewsletter_Form {
   fields: [ActionNewsletter_FormFieldsUnion]
 }
 
-type ActionPageReferenceButtonSettings_Data {
+type ActionPageReference_ButtonSettings_Data {
   label: String
 }
 
-type ActionPageReference_Data {
+type ActionPageReference_Doc_Data {
   page: Pages_Document
-  button_settings: ActionPageReferenceButtonSettings_Data
+  button_settings: ActionPageReference_ButtonSettings_Data
+  _body: LongTextValue
 }
 
 type ActionPageReference_ButtonSettings_Values {
@@ -122,10 +145,11 @@ type ActionPageReference_ButtonSettings_Values {
   label: String
 }
 
-type ActionPageReference_Values {
+type ActionPageReference_Doc_Values {
   _template: String
   page: String
   button_settings: ActionPageReference_ButtonSettings_Values
+  _body: String
 }
 
 type SelectField implements FormField {
@@ -136,11 +160,38 @@ type SelectField implements FormField {
   refetchPolicy: String
 }
 
+type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union ActionPageReference_ButtonSettings_FormFieldsUnion = TextField
+
 type ActionPageReference_ButtonSettings_GroupField implements FormField {
   name: String
   label: String
   component: String
-  fields: [ActionPageReference_ButtonSettings_Values]
+  fields: [ActionPageReference_ButtonSettings_FormFieldsUnion]
+}
+
+union ActionPageReference_Doc_FormFieldsUnion = SelectField | ActionPageReference_ButtonSettings_GroupField | TextareaField
+
+type ActionPageReference_Doc_Form {
+  label: String
+  name: String
+  fields: [ActionPageReference_Doc_FormFieldsUnion]
+}
+
+type ActionPageReference_Data {
+  page: Pages_Document
+  button_settings: ActionPageReference_ButtonSettings_Data
+}
+
+type ActionPageReference_Values {
+  _template: String
+  page: String
+  button_settings: ActionPageReference_ButtonSettings_Values
 }
 
 union ActionPageReference_FormFieldsUnion = SelectField | ActionPageReference_ButtonSettings_GroupField
@@ -149,6 +200,25 @@ type ActionPageReference_Form {
   label: String
   name: String
   fields: [ActionPageReference_FormFieldsUnion]
+}
+
+type ActionVideo_Doc_Data {
+  url: String
+  _body: LongTextValue
+}
+
+type ActionVideo_Doc_Values {
+  _template: String
+  url: String
+  _body: String
+}
+
+union ActionVideo_Doc_FormFieldsUnion = TextField | TextareaField
+
+type ActionVideo_Doc_Form {
+  label: String
+  name: String
+  fields: [ActionVideo_Doc_FormFieldsUnion]
 }
 
 type ActionVideo_Data {
@@ -160,12 +230,6 @@ type ActionVideo_Values {
   url: String
 }
 
-type TextField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
 union ActionVideo_FormFieldsUnion = TextField
 
 type ActionVideo_Form {
@@ -174,13 +238,15 @@ type ActionVideo_Form {
   fields: [ActionVideo_FormFieldsUnion]
 }
 
-type AuthorList_Data {
+type AuthorList_Doc_Data {
   authors: [Authors_Document]
+  _body: LongTextValue
 }
 
-type AuthorList_Values {
+type AuthorList_Doc_Values {
   _template: String
   authors: [String]
+  _body: String
 }
 
 union List_FormFieldsUnion = TextField | SelectField
@@ -193,6 +259,23 @@ type ListField implements FormField {
   field: List_FormFieldsUnion
 }
 
+union AuthorList_Doc_FormFieldsUnion = ListField | TextareaField
+
+type AuthorList_Doc_Form {
+  label: String
+  name: String
+  fields: [AuthorList_Doc_FormFieldsUnion]
+}
+
+type AuthorList_Data {
+  authors: [Authors_Document]
+}
+
+type AuthorList_Values {
+  _template: String
+  authors: [String]
+}
+
 union AuthorList_FormFieldsUnion = ListField
 
 type AuthorList_Form {
@@ -201,9 +284,57 @@ type AuthorList_Form {
   fields: [AuthorList_FormFieldsUnion]
 }
 
-type AuthorAccolades_Data {
+type Author_Accolades_Data {
   figure: String
   description: String
+}
+
+type Author_Doc_Data {
+  name: String
+  image: String
+  gallery: [String]
+  anecdotes: [String]
+  accolades: [Author_Accolades_Data]
+  _body: LongTextValue
+}
+
+type Author_Accolades_Values {
+  _template: String
+  figure: String
+  description: String
+}
+
+type Author_Doc_Values {
+  _template: String
+  name: String
+  image: String
+  gallery: [String]
+  anecdotes: [String]
+  accolades: [Author_Accolades_Values]
+  _body: String
+}
+
+type FileField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union Author_Accolades_FormFieldsUnion = TextField
+
+type Author_Accolades_GroupListField implements FormField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_Accolades_FormFieldsUnion]
+}
+
+union Author_Doc_FormFieldsUnion = TextField | FileField | ListField | Author_Accolades_GroupListField | TextareaField
+
+type Author_Doc_Form {
+  label: String
+  name: String
+  fields: [Author_Doc_FormFieldsUnion]
 }
 
 type Author_Data {
@@ -211,13 +342,7 @@ type Author_Data {
   image: String
   gallery: [String]
   anecdotes: [String]
-  accolades: [AuthorAccolades_Data]
-}
-
-type Author_Accolades_Values {
-  _template: String
-  figure: String
-  description: String
+  accolades: [Author_Accolades_Data]
 }
 
 type Author_Values {
@@ -227,19 +352,6 @@ type Author_Values {
   gallery: [String]
   anecdotes: [String]
   accolades: [Author_Accolades_Values]
-}
-
-type FileField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-type Author_Accolades_GroupListField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [Author_Accolades_Values]
 }
 
 union Author_FormFieldsUnion = TextField | FileField | ListField | Author_Accolades_GroupListField
@@ -252,19 +364,21 @@ type Author_Form {
 
 union BlockPage_Blocks_Data = Sidecar_Data | ExcerptPost_Data | PostList_Data | PriceList_Data | AuthorList_Data | SponsorList_Data | PageReference_Data | SectionIndex_Data
 
-type BlockPage_Data {
+type BlockPage_Doc_Data {
   title: String
   date: String
   blocks: [BlockPage_Blocks_Data]
+  _body: LongTextValue
 }
 
 union BlockPage_BlocksValues = Sidecar_Values | ExcerptPost_Values | PostList_Values | PriceList_Values | AuthorList_Values | SponsorList_Values | PageReference_Values | SectionIndex_Values
 
-type BlockPage_Values {
+type BlockPage_Doc_Values {
   _template: String
   title: String
   date: String
   blocks: [BlockPage_BlocksValues]
+  _body: String
 }
 
 type DatetimeField implements FormField {
@@ -273,7 +387,16 @@ type DatetimeField implements FormField {
   component: String
 }
 
-union BlockPage_Blocks_BlocksFieldTemplates = Sidecar_Form | ExcerptPost_Form | PostList_Form | PriceList_Form | AuthorList_Form | SponsorList_Form | PageReference_Form | SectionIndex_Form
+type BlockPage_Blocks_BlocksFieldTemplates {
+  sidecar: Sidecar_Form
+  excerptPost: ExcerptPost_Form
+  postList: PostList_Form
+  priceList: PriceList_Form
+  authorList: AuthorList_Form
+  sponsorList: SponsorList_Form
+  pageReference: PageReference_Form
+  sectionIndex: SectionIndex_Form
+}
 
 type BlockPage_Blocks_BlocksField implements FormField {
   name: String
@@ -282,12 +405,56 @@ type BlockPage_Blocks_BlocksField implements FormField {
   templates: BlockPage_Blocks_BlocksFieldTemplates
 }
 
+union BlockPage_Doc_FormFieldsUnion = TextField | DatetimeField | BlockPage_Blocks_BlocksField | TextareaField
+
+type BlockPage_Doc_Form {
+  label: String
+  name: String
+  fields: [BlockPage_Doc_FormFieldsUnion]
+}
+
+type BlockPage_Data {
+  title: String
+  date: String
+  blocks: [BlockPage_Blocks_Data]
+}
+
+type BlockPage_Values {
+  _template: String
+  title: String
+  date: String
+  blocks: [BlockPage_BlocksValues]
+}
+
 union BlockPage_FormFieldsUnion = TextField | DatetimeField | BlockPage_Blocks_BlocksField
 
 type BlockPage_Form {
   label: String
   name: String
   fields: [BlockPage_FormFieldsUnion]
+}
+
+type ExcerptPost_Doc_Data {
+  post: Posts_Document
+  description: LongTextValue
+  style: String
+  _body: LongTextValue
+}
+
+type ExcerptPost_Doc_Values {
+  _template: String
+  post: String
+  description: String
+  style: String
+  _body: String
+}
+
+union ExcerptPost_Doc_FormFieldsUnion = SelectField | TextareaField
+
+type ExcerptPost_Doc_Form {
+  label: String
+  name: String
+  fields: [ExcerptPost_Doc_FormFieldsUnion]
 }
 
 type ExcerptPost_Data {
@@ -311,14 +478,15 @@ type ExcerptPost_Form {
   fields: [ExcerptPost_FormFieldsUnion]
 }
 
-type MenuMenuItem_Data {
+type Menu_MenuItem_Data {
   label: String
   page: Pages_Document
 }
 
-type Menu_Data {
+type Menu_Doc_Data {
   logo: String
-  menu_item: [MenuMenuItem_Data]
+  menu_item: [Menu_MenuItem_Data]
+  _body: LongTextValue
 }
 
 type Menu_MenuItem_Values {
@@ -327,17 +495,39 @@ type Menu_MenuItem_Values {
   page: String
 }
 
-type Menu_Values {
+type Menu_Doc_Values {
   _template: String
   logo: String
   menu_item: [Menu_MenuItem_Values]
+  _body: String
 }
+
+union Menu_MenuItem_FormFieldsUnion = TextField | SelectField
 
 type Menu_MenuItem_GroupListField implements FormField {
   name: String
   label: String
   component: String
-  fields: [Menu_MenuItem_Values]
+  fields: [Menu_MenuItem_FormFieldsUnion]
+}
+
+union Menu_Doc_FormFieldsUnion = FileField | Menu_MenuItem_GroupListField | TextareaField
+
+type Menu_Doc_Form {
+  label: String
+  name: String
+  fields: [Menu_Doc_FormFieldsUnion]
+}
+
+type Menu_Data {
+  logo: String
+  menu_item: [Menu_MenuItem_Data]
+}
+
+type Menu_Values {
+  _template: String
+  logo: String
+  menu_item: [Menu_MenuItem_Values]
 }
 
 union Menu_FormFieldsUnion = FileField | Menu_MenuItem_GroupListField
@@ -346,6 +536,27 @@ type Menu_Form {
   label: String
   name: String
   fields: [Menu_FormFieldsUnion]
+}
+
+type PageReference_Doc_Data {
+  description: LongTextValue
+  page: Pages_Document
+  _body: LongTextValue
+}
+
+type PageReference_Doc_Values {
+  _template: String
+  description: String
+  page: String
+  _body: String
+}
+
+union PageReference_Doc_FormFieldsUnion = TextareaField | SelectField
+
+type PageReference_Doc_Form {
+  label: String
+  name: String
+  fields: [PageReference_Doc_FormFieldsUnion]
 }
 
 type PageReference_Data {
@@ -367,12 +578,13 @@ type PageReference_Form {
   fields: [PageReference_FormFieldsUnion]
 }
 
-type PostListPosts_Data {
+type PostList_Posts_Data {
   post: Posts_Document
 }
 
-type PostList_Data {
-  posts: [PostListPosts_Data]
+type PostList_Doc_Data {
+  posts: [PostList_Posts_Data]
+  _body: LongTextValue
 }
 
 type PostList_Posts_Values {
@@ -380,16 +592,36 @@ type PostList_Posts_Values {
   post: String
 }
 
-type PostList_Values {
+type PostList_Doc_Values {
   _template: String
   posts: [PostList_Posts_Values]
+  _body: String
 }
+
+union PostList_Posts_FormFieldsUnion = SelectField
 
 type PostList_Posts_GroupListField implements FormField {
   name: String
   label: String
   component: String
-  fields: [PostList_Posts_Values]
+  fields: [PostList_Posts_FormFieldsUnion]
+}
+
+union PostList_Doc_FormFieldsUnion = PostList_Posts_GroupListField | TextareaField
+
+type PostList_Doc_Form {
+  label: String
+  name: String
+  fields: [PostList_Doc_FormFieldsUnion]
+}
+
+type PostList_Data {
+  posts: [PostList_Posts_Data]
+}
+
+type PostList_Values {
+  _template: String
+  posts: [PostList_Posts_Values]
 }
 
 union PostList_FormFieldsUnion = PostList_Posts_GroupListField
@@ -398,6 +630,37 @@ type PostList_Form {
   label: String
   name: String
   fields: [PostList_FormFieldsUnion]
+}
+
+type Post_Doc_Data {
+  title: String
+  author: Authors_Document
+  image: String
+  hashtags: [String]
+  _body: LongTextValue
+}
+
+type Post_Doc_Values {
+  _template: String
+  title: String
+  author: String
+  image: String
+  hashtags: [String]
+  _body: String
+}
+
+type TagListField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union Post_Doc_FormFieldsUnion = TextField | SelectField | FileField | TagListField | TextareaField
+
+type Post_Doc_Form {
+  label: String
+  name: String
+  fields: [Post_Doc_FormFieldsUnion]
 }
 
 type Post_Data {
@@ -415,12 +678,6 @@ type Post_Values {
   hashtags: [String]
 }
 
-type TagListField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
 union Post_FormFieldsUnion = TextField | SelectField | FileField | TagListField
 
 type Post_Form {
@@ -429,16 +686,17 @@ type Post_Form {
   fields: [Post_FormFieldsUnion]
 }
 
-type PriceListPrices_Data {
+type PriceList_Prices_Data {
   title: String
   description: LongTextValue
   bullet_points: [String]
   category: String
 }
 
-type PriceList_Data {
+type PriceList_Doc_Data {
   heading: LongTextValue
-  prices: [PriceListPrices_Data]
+  prices: [PriceList_Prices_Data]
+  _body: LongTextValue
 }
 
 type PriceList_Prices_Values {
@@ -449,17 +707,39 @@ type PriceList_Prices_Values {
   category: String
 }
 
-type PriceList_Values {
+type PriceList_Doc_Values {
   _template: String
   heading: String
   prices: [PriceList_Prices_Values]
+  _body: String
 }
+
+union PriceList_Prices_FormFieldsUnion = TextField | TextareaField | ListField | SelectField
 
 type PriceList_Prices_GroupListField implements FormField {
   name: String
   label: String
   component: String
-  fields: [PriceList_Prices_Values]
+  fields: [PriceList_Prices_FormFieldsUnion]
+}
+
+union PriceList_Doc_FormFieldsUnion = TextareaField | PriceList_Prices_GroupListField
+
+type PriceList_Doc_Form {
+  label: String
+  name: String
+  fields: [PriceList_Doc_FormFieldsUnion]
+}
+
+type PriceList_Data {
+  heading: LongTextValue
+  prices: [PriceList_Prices_Data]
+}
+
+type PriceList_Values {
+  _template: String
+  heading: String
+  prices: [PriceList_Prices_Values]
 }
 
 union PriceList_FormFieldsUnion = TextareaField | PriceList_Prices_GroupListField
@@ -468,6 +748,35 @@ type PriceList_Form {
   label: String
   name: String
   fields: [PriceList_FormFieldsUnion]
+}
+
+type SectionIndex_Doc_Data {
+  body: LongTextValue
+  limit: String
+  section: String
+  _body: LongTextValue
+}
+
+type SectionIndex_Doc_Values {
+  _template: String
+  body: String
+  limit: String
+  section: String
+  _body: String
+}
+
+type NumberField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union SectionIndex_Doc_FormFieldsUnion = TextareaField | NumberField | SelectField
+
+type SectionIndex_Doc_Form {
+  label: String
+  name: String
+  fields: [SectionIndex_Doc_FormFieldsUnion]
 }
 
 type SectionIndex_Data {
@@ -483,12 +792,6 @@ type SectionIndex_Values {
   section: String
 }
 
-type NumberField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
 union SectionIndex_FormFieldsUnion = TextareaField | NumberField | SelectField
 
 type SectionIndex_Form {
@@ -497,18 +800,19 @@ type SectionIndex_Form {
   fields: [SectionIndex_FormFieldsUnion]
 }
 
-type SidecarCta_Data {
+type Sidecar_Cta_Data {
   header: String
 }
 
 union Sidecar_Actions_Data = ActionVideo_Data | ActionNewsletter_Data | ActionPageReference_Data
 
-type Sidecar_Data {
+type Sidecar_Doc_Data {
   text: LongTextValue
   image: String
-  cta: SidecarCta_Data
+  cta: Sidecar_Cta_Data
   actions: [Sidecar_Actions_Data]
   style: String
+  _body: LongTextValue
 }
 
 type Sidecar_Cta_Values {
@@ -517,6 +821,54 @@ type Sidecar_Cta_Values {
 }
 
 union Sidecar_ActionsValues = ActionVideo_Values | ActionNewsletter_Values | ActionPageReference_Values
+
+type Sidecar_Doc_Values {
+  _template: String
+  text: String
+  image: String
+  cta: Sidecar_Cta_Values
+  actions: [Sidecar_ActionsValues]
+  style: String
+  _body: String
+}
+
+union Sidecar_Cta_FormFieldsUnion = TextField
+
+type Sidecar_Cta_GroupField implements FormField {
+  name: String
+  label: String
+  component: String
+  fields: [Sidecar_Cta_FormFieldsUnion]
+}
+
+type Sidecar_Actions_BlocksFieldTemplates {
+  actionVideo: ActionVideo_Form
+  actionNewsletter: ActionNewsletter_Form
+  actionPageReference: ActionPageReference_Form
+}
+
+type Sidecar_Actions_BlocksField implements FormField {
+  name: String
+  label: String
+  component: String
+  templates: Sidecar_Actions_BlocksFieldTemplates
+}
+
+union Sidecar_Doc_FormFieldsUnion = TextareaField | FileField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
+
+type Sidecar_Doc_Form {
+  label: String
+  name: String
+  fields: [Sidecar_Doc_FormFieldsUnion]
+}
+
+type Sidecar_Data {
+  text: LongTextValue
+  image: String
+  cta: Sidecar_Cta_Data
+  actions: [Sidecar_Actions_Data]
+  style: String
+}
 
 type Sidecar_Values {
   _template: String
@@ -527,22 +879,6 @@ type Sidecar_Values {
   style: String
 }
 
-type Sidecar_Cta_GroupField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [Sidecar_Cta_Values]
-}
-
-union Sidecar_Actions_BlocksFieldTemplates = ActionVideo_Form | ActionNewsletter_Form | ActionPageReference_Form
-
-type Sidecar_Actions_BlocksField implements FormField {
-  name: String
-  label: String
-  component: String
-  templates: Sidecar_Actions_BlocksFieldTemplates
-}
-
 union Sidecar_FormFieldsUnion = TextareaField | FileField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
 
 type Sidecar_Form {
@@ -551,15 +887,16 @@ type Sidecar_Form {
   fields: [Sidecar_FormFieldsUnion]
 }
 
-type SponsorListSponsor_Data {
+type SponsorList_Sponsor_Data {
   name: String
   url: String
   image: String
 }
 
-type SponsorList_Data {
+type SponsorList_Doc_Data {
   description: LongTextValue
-  sponsor: [SponsorListSponsor_Data]
+  sponsor: [SponsorList_Sponsor_Data]
+  _body: LongTextValue
 }
 
 type SponsorList_Sponsor_Values {
@@ -569,17 +906,39 @@ type SponsorList_Sponsor_Values {
   image: String
 }
 
-type SponsorList_Values {
+type SponsorList_Doc_Values {
   _template: String
   description: String
   sponsor: [SponsorList_Sponsor_Values]
+  _body: String
 }
+
+union SponsorList_Sponsor_FormFieldsUnion = TextField | FileField
 
 type SponsorList_Sponsor_GroupListField implements FormField {
   name: String
   label: String
   component: String
-  fields: [SponsorList_Sponsor_Values]
+  fields: [SponsorList_Sponsor_FormFieldsUnion]
+}
+
+union SponsorList_Doc_FormFieldsUnion = TextareaField | SponsorList_Sponsor_GroupListField
+
+type SponsorList_Doc_Form {
+  label: String
+  name: String
+  fields: [SponsorList_Doc_FormFieldsUnion]
+}
+
+type SponsorList_Data {
+  description: LongTextValue
+  sponsor: [SponsorList_Sponsor_Data]
+}
+
+type SponsorList_Values {
+  _template: String
+  description: String
+  sponsor: [SponsorList_Sponsor_Values]
 }
 
 union SponsorList_FormFieldsUnion = TextareaField | SponsorList_Sponsor_GroupListField

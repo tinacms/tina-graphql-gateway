@@ -13,7 +13,7 @@ import { file } from "../fields/file";
 import { imageGallery } from "../fields/image-gallery";
 import { number } from "../fields/number";
 import { tag_list } from "../fields/tag-list";
-import { friendlyName } from "@forestryio/graphql-helpers";
+import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 
 import { sequential } from "../util";
 import type { Field } from "../fields";
@@ -84,9 +84,13 @@ export interface Resolver {
     datasource: DataSource;
     resolvedTemplate: TemplateData;
     data: DocumentData;
-    includeContent?: boolean;
     content?: string | undefined;
   }) => Promise<unknown>;
+  dataObject: (args: {
+    datasource: DataSource;
+    resolvedTemplate: TemplateData;
+    data: DocumentData;
+  }) => Promise<object>;
   /**
    *
    * The top-level form type for a document
@@ -132,10 +136,14 @@ export interface Resolver {
    *
    * See {@link Builder.documentFormObject} for the equivalent builder
    */
+  formObject: (
+    datasource: DataSource,
+    template: TemplateData
+  ) => Promise<TinaTemplateData>;
   documentFormObject: (
     datasource: DataSource,
     template: TemplateData,
-    includeContent?: boolean
+    includeBody?: boolean
   ) => Promise<TinaTemplateData>;
   /**
    * Given a template and document data, return the appropriate initialValues along with the _template and __typename
@@ -155,8 +163,16 @@ export interface Resolver {
     datasource: DataSource,
     resolvedTemplate: TemplateData,
     data: DocumentData,
-    includeContent?: boolean,
     content?: string
+  ) => Promise<{
+    __typename: string;
+    _template?: string;
+    [key: string]: unknown;
+  }>;
+  initialValuesObject: (
+    datasource: DataSource,
+    resolvedTemplate: TemplateData,
+    data: DocumentData
   ) => Promise<{
     __typename: string;
     _template?: string;
@@ -466,31 +482,23 @@ export const resolver: Resolver = {
         filename,
         extension,
       },
-      form: await resolver.documentFormObject(datasource, template, true),
+      form: await resolver.documentFormObject(datasource, template),
       data: await resolver.documentDataObject({
         datasource,
         resolvedTemplate: template,
         data,
-        includeContent: true,
         content,
       }),
       values: await resolver.documentInitialValuesObject(
         datasource,
         template,
         data,
-        true,
         content || ""
       ),
       // __typename: friendlyName(template),
     };
   },
-  documentDataObject: async ({
-    datasource,
-    resolvedTemplate,
-    data,
-    includeContent,
-    content,
-  }) => {
+  dataObject: async ({ datasource, resolvedTemplate, data }) => {
     const accum: { [key: string]: unknown } = {};
     const { template, ...rest } = data;
     await sequential(Object.keys(rest), async (key) => {
@@ -498,26 +506,35 @@ export const resolver: Resolver = {
       return (accum[key] = await dataValue(datasource, field, rest[key]));
     });
 
-    if (includeContent) {
-      accum.content = textarea.resolve.value({
-        datasource,
-        field: textarea.contentField,
-        value: content,
-      });
-    }
-
     return {
-      __typename: friendlyName(resolvedTemplate, "Data"),
+      __typename: templateTypeName(resolvedTemplate, "Data", false),
       ...accum,
     };
   },
-  documentInitialValuesObject: async (
+  documentDataObject: async ({
     datasource,
     resolvedTemplate,
     data,
-    includeContent = false,
-    content
-  ) => {
+    content,
+  }) => {
+    const accum = await resolver.dataObject({
+      datasource,
+      resolvedTemplate,
+      data,
+    });
+    accum._body = textarea.resolve.value({
+      datasource,
+      field: textarea.contentField,
+      value: content,
+    });
+
+    return {
+      ...accum,
+      // Overwrite the __typename from dataObject
+      __typename: templateTypeName(resolvedTemplate, "Data", true),
+    };
+  },
+  initialValuesObject: async (datasource, resolvedTemplate, data) => {
     const accum: { [key: string]: unknown } = {};
 
     const { template, ...rest } = data;
@@ -531,37 +548,64 @@ export const resolver: Resolver = {
       ));
     });
 
-    if (includeContent) {
-      accum["content"] = content;
-    }
-
     return {
-      __typename: friendlyName(resolvedTemplate, "Values"),
+      __typename: templateTypeName(resolvedTemplate, "Values", false),
       _template: resolvedTemplate.name,
       ...accum,
+    };
+  },
+  documentInitialValuesObject: async (
+    datasource,
+    resolvedTemplate,
+    data,
+    content
+  ) => {
+    const accum = await resolver.initialValuesObject(
+      datasource,
+      resolvedTemplate,
+      data
+    );
+
+    accum["content"] = content;
+
+    return {
+      _template: resolvedTemplate.name,
+      ...accum,
+      __typename: templateTypeName(resolvedTemplate, "Values", true),
+    };
+  },
+  formObject: async (datasource: DataSource, template: TemplateData) => {
+    const fields = await sequential(template.fields, async (field) =>
+      dataField(datasource, field)
+    );
+
+    return {
+      ...template,
+      __typename: templateTypeName(template, "Form", false),
+      fields,
     };
   },
   documentFormObject: async (
     datasource: DataSource,
     template: TemplateData,
-    includeContent?: boolean
+    includeBody?: boolean
   ) => {
     const fields = await sequential(template.fields, async (field) =>
       dataField(datasource, field)
     );
 
-    // if (includeContent) {
-    //   fields.push(
-    //     await textarea.resolve.field({
-    //       datasource,
-    //       field: textarea.contentField,
-    //     })
-    //   );
-    // }
+    if (includeBody) {
+      fields.push(
+        await textarea.resolve.field({
+          datasource,
+          field: textarea.contentField,
+        })
+      );
+    }
 
     return {
-      __typename: friendlyName(template, "Form"),
       ...template,
+      __typename: templateTypeName(template, "Form", true),
       fields,
     };
   },
