@@ -2106,6 +2106,7 @@ __metadata:
     "@types/node": ^14.0.13
     "@types/react": ^16.9.38
     "@types/styled-components": ^5.1.3
+    "@types/yup": ^0.29.10
     codemirror: ^5.55.0
     cors: ^2.8.5
     crypto-js: ^4.0.0
@@ -2121,6 +2122,7 @@ __metadata:
     tinacms: ^0.31.0
     tsup: ^3.7.0
     typescript: ^3.9.5
+    yup: ^0.32.0
   peerDependencies:
     "@tinacms/core": ">=0.31.0"
     "@tinacms/forms": ">=0.3"
@@ -4499,6 +4501,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.165":
+  version: 4.14.165
+  resolution: "@types/lodash@npm:4.14.165"
+  checksum: 525bfc34b0b591cc957125a961c70e63e5ad8b23cbd89b7594a5ea74823285b6d96993a7eec506e26b379ee52dc9dcd3a894ff210be4c97bccb536e62361dbc8
+  languageName: node
+  linkType: hard
+
 "@types/lru-cache@npm:^5.1.0":
   version: 5.1.0
   resolution: "@types/lru-cache@npm:5.1.0"
@@ -4806,6 +4815,13 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: 2133c8cb5878d13959844f98e546e69dacdf44cd9baf87d84c828a1a093febfc97c8f4df19cffd34a4a4f726a3cdb1851da4391176accf56534c5f8a1c271f46
+  languageName: node
+  linkType: hard
+
+"@types/yup@npm:^0.29.10":
+  version: 0.29.10
+  resolution: "@types/yup@npm:0.29.10"
+  checksum: 6103d7a17e109826dcea41ba33d3591b7d3a2fd5c77f36f27556502971a400e28520159a60c54f4971212d5d1f18c69218ac8202e5918c8d6bc01a2a8f2f990d
   languageName: node
   linkType: hard
 
@@ -17526,6 +17542,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"nanoclone@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "nanoclone@npm:0.2.1"
+  checksum: f624fe519818ac2ab9fc2322d0bd8b54def4c0080123e7e4fa4a8d5fa331862e057a5c8fa1923cce6445d011a66718454750058a16c3a68b1912058288cd71a2
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^3.1.12":
   version: 3.1.12
   resolution: "nanoid@npm:3.1.12"
@@ -20473,6 +20496,13 @@ fsevents@^1.2.7:
   version: 2.0.2
   resolution: "property-expr@npm:2.0.2"
   checksum: c31524b5c2bf94ead23d9b255529bd34c1856161e107fb1eba4adf12c5eb04eb0eee7e1d55b3406da4503879d609663b64d0feef274487d49d7c8ef6b6e51fb8
+  languageName: node
+  linkType: hard
+
+"property-expr@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "property-expr@npm:2.0.4"
+  checksum: fffa6ba8a21cbbf694652755fe2cf4d68bfb8c625f2de6424910edf2c7d50a3f4e7e5ac749b8fe42261cb63d12148d7612f207397d244151e2d7fb853ce7bf5b
   languageName: node
   linkType: hard
 
@@ -27028,6 +27058,21 @@ typescript@~3.7.2:
     synchronous-promise: ^2.0.13
     toposort: ^2.0.2
   checksum: bc07ab697d38169c9fad874696008ec84dab14f5e3559b539c7edb01ea49235808670ea4cb7de64009ed473fb3700e6794ed407c293cb94b2d6c4f34deb16e4b
+  languageName: node
+  linkType: hard
+
+"yup@npm:^0.32.0":
+  version: 0.32.0
+  resolution: "yup@npm:0.32.0"
+  dependencies:
+    "@babel/runtime": ^7.10.5
+    "@types/lodash": ^4.14.165
+    lodash: ^4.17.20
+    lodash-es: ^4.17.11
+    nanoclone: ^0.2.1
+    property-expr: ^2.0.4
+    toposort: ^2.0.2
+  checksum: 4413b8661624a7171375062c275691319b238d5cf51cbe32663c905be2462c0930a160399d80dac6ab2838050279e1d47a4a1a040aeaa9dc75080864dc89b99c
   languageName: node
   linkType: hard
 

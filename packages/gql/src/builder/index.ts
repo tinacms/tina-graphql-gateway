@@ -414,11 +414,11 @@ export const builder = {
             type: "Node",
             args: [gql.inputID("id")],
           }),
-          gql.field({
-            name: "getPages",
-            type: "Pages_Document",
-            args: [gql.inputID("id")],
-          }),
+          // gql.field({
+          //   name: "getPages",
+          //   type: "Pages_Document",
+          //   args: [gql.inputID("id")],
+          // }),
         ],
       }),
     ];

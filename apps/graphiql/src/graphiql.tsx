@@ -4,7 +4,7 @@ import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { formBuilder, queryBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
-import { useForestryForm } from "@forestryio/client";
+import { useForestryForm2 } from "@forestryio/client";
 import { useCMS } from "tinacms";
 import {
   parse,
@@ -18,21 +18,23 @@ const UseIt = ({
   formConfig,
   variables,
   onSubmit,
+  payload,
 }: {
   schema: GraphQLSchema;
   formConfig: any;
   variables: object;
   onSubmit: (values: any) => void;
+  payload: object;
 }) => {
-  useForestryForm(
-    // @ts-ignore
-    { document: formConfig, ...variables },
-    {
-      onSubmit: (values: unknown, transformedValues: unknown) => {
-        onSubmit(transformedValues);
-      },
-    }
-  );
+  // onSubmit: (values: unknown, transformedValues: unknown) => {
+  //   onSubmit(transformedValues);
+  // },
+
+  const { errors } = useForestryForm2({
+    payload,
+    variables,
+    fetcher: async () => {},
+  });
 
   return <div />;
 };
@@ -82,9 +84,7 @@ export const Explorer = (
           variables: graphQLParams.variables || {},
         })
         .then((response: { document: { data: object } }) => {
-          if (response.document) {
-            setQueryResult(response.document);
-          }
+          setQueryResult(response);
           return response;
         });
     } catch (e) {
@@ -140,44 +140,10 @@ export const Explorer = (
           //     }
           //   }
           // }
-          const q = `
-{
+          const q = `{
   node(id: "content/pages/home.md") {
     __typename
-    ... on Pages_Document {
-      id
-      sys {
-        filename
-        basename
-      }
-      data {
-        __typename
-        ... on BlockPage_Doc_Data {
-          title
-          date
-          blocks {
-            __typename
-            ...on AuthorList_Data {
-              authors {
-                id
-              }
-            }
-            ... on Sidecar_Data {
-              text {
-                raw
-              }
-              image
-              cta {
-                header
-              }
-            }
-          }
-          _body {
-            raw
-          }
-        }
-      }
-    }
+    id
   }
 }
 
@@ -241,14 +207,14 @@ export const Explorer = (
 
   return (
     <div id="root" className="graphiql-container">
-      {queryResult && queryResult?.node?.form && (
+      {queryResult && (
         <UseIt
           onSubmit={setVariables}
           variables={variables.variables}
           // @ts-ignore
           project={project}
           schema={schema}
-          formConfig={queryResult}
+          payload={queryResult}
         />
       )}
       <React.Fragment>
