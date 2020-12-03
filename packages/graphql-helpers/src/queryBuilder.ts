@@ -36,8 +36,9 @@ import get from "lodash.get";
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
 export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
-  const astNode = parse(printSchema(schema));
   const typeInfo = new TypeInfo(schema);
+
+  let depth = 0;
 
   const visitor: VisitorType = {
     leave(node, key, parent, path, ancestors) {
@@ -45,55 +46,54 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
       if (type) {
         const namedType = getNamedType(type);
 
-        if (
-          // @ts-ignore FIXME: find a type-safe way to look up interfaces
-          namedType._interfaces &&
-          // @ts-ignore FIXME: find a type-safe way to look up interfaces
-          namedType._interfaces
-            // @ts-ignore FIXME: find a type-safe way to look up interfaces
-            .map((interface) => interface.name)
-            .includes("Node")
-        ) {
-          // Instead of this, there's probably a more fine-grained visitor key to
-          // use
-          if (typeof path[path.length - 1] === "number") {
-            // visit(node, visitWithTypeInfo(typeInfo, fieldVisitor));
-            let fields: FieldDefinitionNode[] = [];
+        if (namedType instanceof GraphQLObjectType) {
+          const hasNodeInterface = !!namedType
+            .getInterfaces()
+            .find((i) => i.name === "Node");
+          if (hasNodeInterface) {
+            // Instead of this, there's probably a more fine-grained visitor key to use
+            if (typeof path[path.length - 1] === "number") {
+              console.log(namedType, path);
+              assertIsObjectType(namedType);
 
-            const name = namedType.name;
-            const documentConfig = namedType.toConfig();
-            const formNode = documentConfig.fields["form"];
-            const namedFormNode = getNamedType(
-              formNode.type
-            ) as GraphQLNamedType;
+              const formNode = namedType.getFields().form;
+              const namedFormNode = getNamedType(
+                formNode.type
+              ) as GraphQLNamedType;
 
-            const pathForForm = [...path];
+              const pathForForm = [...path];
 
-            pathForForm.push("selectionSet");
-            pathForForm.push("selections");
-            // High number to make sure this index isn't taken
-            // might be more performant for it to be a low number though
-            // use setWith instead
-            const formAst = buildFormForType(namedFormNode);
-            pathForForm.push(100);
-            set(
-              ancestors[0],
-              pathForForm.map((p) => p.toString()),
-              formAst
-            );
+              pathForForm.push("selectionSet");
+              pathForForm.push("selections");
+              // High number to make sure this index isn't taken
+              // might be more performant for it to be a low number though
+              // use setWith instead
+              const formAst = buildFormForType(namedFormNode);
+              pathForForm.push(100);
+              set(
+                ancestors[0],
+                pathForForm.map((p) => p.toString()),
+                formAst
+              );
 
-            const pathForValues = [...path];
-            pathForValues.push("selectionSet");
-            pathForValues.push("selections");
-            // High number to make sure this index isn't taken
-            // might be more performant for it to be a low number though
-            // use setWith instead
-            pathForValues.push(101);
-            set(
-              ancestors[0],
-              pathForValues.map((p) => p.toString()),
-              valuesAST
-            );
+              const valuesNode = namedType.getFields().values;
+              const namedValuesNode = getNamedType(
+                valuesNode.type
+              ) as GraphQLNamedType;
+              const pathForValues = [...path];
+              pathForValues.push("selectionSet");
+              pathForValues.push("selections");
+              const valuesAst = buildValuesForType(namedValuesNode);
+              // High number to make sure this index isn't taken
+              // might be more performant for it to be a low number though
+              // use setWith instead
+              pathForValues.push(101);
+              set(
+                ancestors[0],
+                pathForValues.map((p) => p.toString()),
+                valuesAst
+              );
+            }
           }
         }
       }
@@ -105,6 +105,17 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   return query;
 };
 
+function assertIsObjectType(
+  type: GraphQLNamedType
+): asserts type is GraphQLObjectType {
+  if (type instanceof GraphQLObjectType) {
+    // do nothing
+  } else {
+    throw new Error(
+      `Expected an instance of GraphQLObjectType for type ${type.name}`
+    );
+  }
+}
 function assertIsUnionType(
   type: GraphQLNamedType
 ): asserts type is GraphQLUnionType {
@@ -116,6 +127,31 @@ function assertIsUnionType(
     );
   }
 }
+
+const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
+  assertIsUnionType(type);
+
+  return {
+    kind: "Field" as const,
+    name: {
+      kind: "Name" as const,
+      value: "values",
+    },
+    selectionSet: {
+      kind: "SelectionSet" as const,
+      selections: [
+        {
+          kind: "Field" as const,
+          name: {
+            kind: "Name" as const,
+            value: "__typename",
+          },
+        },
+        ...buildTypes(type.getTypes()),
+      ],
+    },
+  };
+};
 
 const buildFormForType = (type: GraphQLNamedType): FieldNode => {
   assertIsUnionType(type);
@@ -308,180 +344,6 @@ const buildFields = (fields: GraphQLFieldMap<any, any>): FieldNode[] => {
       }
     }
   );
-};
-
-const buildFormForType2 = (type: GraphQLNamedType): FieldNode => {
-  assertIsUnionType(type);
-  const types = type.getTypes();
-
-  return {
-    kind: "Field" as const,
-    name: {
-      kind: "Name" as const,
-      value: "form",
-    },
-    selectionSet: {
-      kind: "SelectionSet" as const,
-      selections: [
-        {
-          kind: "Field" as const,
-          name: {
-            kind: "Name" as const,
-            value: "__typename",
-          },
-        },
-        ...types.map((type) => {
-          return {
-            kind: "InlineFragment" as const,
-            typeCondition: {
-              kind: "NamedType" as const,
-              name: {
-                kind: "Name" as const,
-                value: type.name,
-              },
-            },
-            selectionSet: {
-              kind: "SelectionSet" as const,
-              selections: Object.values(type.getFields()).map(
-                (field): FieldNode => {
-                  const namedType = getNamedType(field.type);
-
-                  if (isLeafType(namedType)) {
-                    return {
-                      kind: "Field" as const,
-                      name: {
-                        kind: "Name" as const,
-                        value: field.name,
-                      },
-                    };
-                  } else if (namedType instanceof GraphQLUnionType) {
-                    const types = namedType.getTypes().map(
-                      (type): InlineFragmentNode => {
-                        return {
-                          kind: "InlineFragment" as const,
-                          typeCondition: {
-                            kind: "NamedType" as const,
-                            name: {
-                              kind: "Name" as const,
-                              value: type.name,
-                            },
-                          },
-                          selectionSet: {
-                            kind: "SelectionSet" as const,
-                            selections: Object.values(type.getFields()).map(
-                              (field): FieldNode => {
-                                if (isLeafType(field)) {
-                                  return {
-                                    kind: "Field" as const,
-                                    name: {
-                                      kind: "Name" as const,
-                                      value: field.name,
-                                    },
-                                  };
-                                } else if (
-                                  namedType instanceof GraphQLUnionType
-                                ) {
-                                  return {
-                                    kind: "Field" as const,
-                                    name: {
-                                      kind: "Name" as const,
-                                      value: field.name,
-                                    },
-                                    selectionSet: {
-                                      kind: "SelectionSet" as const,
-                                      selections: [buildFormForType(namedType)],
-                                    },
-                                  };
-                                } else {
-                                  return {
-                                    kind: "Field" as const,
-                                    name: {
-                                      kind: "Name" as const,
-                                      value: field.name,
-                                    },
-                                  };
-                                }
-                              }
-                            ),
-                          },
-                        };
-                      }
-                    );
-                    return {
-                      kind: "Field" as const,
-                      name: {
-                        kind: "Name" as const,
-                        value: field.name,
-                      },
-                      selectionSet: {
-                        kind: "SelectionSet" as const,
-                        selections: types,
-                      },
-                    };
-                  } else {
-                    return {
-                      kind: "Field" as const,
-                      name: {
-                        kind: "Name" as const,
-                        value: field.name,
-                      },
-                    };
-                  }
-                }
-              ),
-            },
-          };
-        }),
-      ],
-    },
-  };
-};
-
-const valuesAST = {
-  kind: "Field",
-  name: {
-    kind: "Name",
-    value: "values",
-  },
-  arguments: [],
-  directives: [],
-  selectionSet: {
-    kind: "SelectionSet",
-    selections: [
-      {
-        kind: "Field",
-        name: {
-          kind: "Name",
-          value: "__typename",
-        },
-        arguments: [],
-        directives: [],
-      },
-    ],
-  },
-};
-const formAST = {
-  kind: "Field",
-  name: {
-    kind: "Name",
-    value: "form",
-  },
-  arguments: [],
-  directives: [],
-  selectionSet: {
-    kind: "SelectionSet",
-    selections: [
-      {
-        kind: "Field",
-        name: {
-          kind: "Name",
-          value: "__typename",
-        },
-        arguments: [],
-        directives: [],
-      },
-    ],
-  },
 };
 
 const args = {
