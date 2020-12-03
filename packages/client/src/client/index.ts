@@ -23,8 +23,8 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_OAUTH_HOST = 'https://hydra.tinajs.dev:4444';
 const DEFAULT_IDENTITY_HOST = "http://identity.tinajs.dev";
+const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX = "auth.us-east-1.amazoncognito.com"
 
 interface ServerOptions {
   realm: string, 
@@ -45,7 +45,7 @@ export class ForestryClient {
   getToken: () => string
   constructor(options: ServerOptions) {
     this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
-    this.oauthHost = process.env.TINAIO_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
+    this.oauthHost = process.env.TINAIO_OAUTH_HOST || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}/login`;
     this.identityHost = options.identityProxy || DEFAULT_IDENTITY_HOST;
     this.redirectURI = options.redirectURI
     this.clientId = options.clientId;
