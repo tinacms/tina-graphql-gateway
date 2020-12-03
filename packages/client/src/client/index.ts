@@ -23,7 +23,6 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_IDENTITY_HOST = "http://identity.tinajs.dev";
 const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX = "auth.us-east-1.amazoncognito.com"
 
 interface ServerOptions {
