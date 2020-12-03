@@ -29,11 +29,12 @@ export const authenticate = (
 ): Promise<void> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
-  const signInUrl = new URL(`${oauthHost}/oauth2/auth`);
+  const signInUrl = new URL(`${oauthHost}/login`);
   signInUrl.searchParams.append("client_id", clientId);
   signInUrl.searchParams.append("redirect_uri", redirectURI);
   signInUrl.searchParams.append("response_type", "code");
   signInUrl.searchParams.append("state", state);
+  signInUrl.searchParams.append("scope", "openid");
   signInUrl.searchParams.append("code_challenge", codeChallenge);
   signInUrl.searchParams.append("code_challenge_method", "S256");
 
@@ -45,18 +46,14 @@ export const authenticate = (
     window.addEventListener("storage", function (e: StorageEvent) {
       if (e.key == TINA_AUTH_CONFIG) {
         const config = JSON.parse(e.newValue);
-        let formData = new FormData();
-        formData.append("grant_type", "authorization_code");
-        formData.append("client_id", clientId);
-        formData.append("redirect_uri", redirectURI);
-        formData.append("code", config.code);
-        formData.append("code_verifier", codeVerifier);
+        
+        const formData = `grant_type=authorization_code&client_id=${clientId}&redirect_uri=${redirectURI}&code=${config.code}&code_verifier=${codeVerifier}`;
 
         fetch(`${oauthHost}/oauth2/token`, {
           method: "POST",
           headers: {
             Accept: "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded', // FOR SOME REASON INCLUDING THIS RUINS EVERYTHING
+            "Content-Type": "application/x-www-form-urlencoded",
           },
           body: formData,
         })
