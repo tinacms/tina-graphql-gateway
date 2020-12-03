@@ -235,7 +235,10 @@ export const blocks: Blocks = {
 
         assertIsBlockInitialValue(itemValue);
 
-        return itemValue;
+        return {
+          ...itemValue,
+          _template: friendlyName(itemValue._template, "", true),
+        };
       });
     },
     value: async ({ datasource, field, value }) => {

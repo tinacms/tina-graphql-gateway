@@ -482,7 +482,7 @@ export const resolver: Resolver = {
         filename,
         extension,
       },
-      form: await resolver.documentFormObject(datasource, template),
+      form: await resolver.documentFormObject(datasource, template, true),
       data: await resolver.documentDataObject({
         datasource,
         resolvedTemplate: template,

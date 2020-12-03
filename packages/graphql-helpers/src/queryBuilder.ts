@@ -38,8 +38,6 @@ type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   const typeInfo = new TypeInfo(schema);
 
-  let depth = 0;
-
   const visitor: VisitorType = {
     leave(node, key, parent, path, ancestors) {
       const type = typeInfo.getType();
@@ -53,7 +51,6 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
           if (hasNodeInterface) {
             // Instead of this, there's probably a more fine-grained visitor key to use
             if (typeof path[path.length - 1] === "number") {
-              console.log(namedType, path);
               assertIsObjectType(namedType);
 
               const formNode = namedType.getFields().form;
@@ -93,6 +90,21 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
                 pathForValues.map((p) => p.toString()),
                 valuesAst
               );
+
+              const sysNode = namedType.getFields().sys;
+              const namedSysNode = getNamedType(
+                sysNode.type
+              ) as GraphQLNamedType;
+              const pathForSys = [...path];
+              pathForSys.push("selectionSet");
+              pathForSys.push("selections");
+              const sysAst = buildSysForType(namedSysNode);
+              pathForSys.push(102);
+              set(
+                ancestors[0],
+                pathForSys.map((p) => p.toString()),
+                sysAst
+              );
             }
           }
         }
@@ -127,6 +139,22 @@ function assertIsUnionType(
     );
   }
 }
+
+const buildSysForType = (type: GraphQLNamedType): FieldNode => {
+  assertIsObjectType(type);
+
+  return {
+    kind: "Field" as const,
+    name: {
+      kind: "Name" as const,
+      value: "sys",
+    },
+    selectionSet: {
+      kind: "SelectionSet" as const,
+      selections: buildFields(type.getFields()),
+    },
+  };
+};
 
 const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
   assertIsUnionType(type);

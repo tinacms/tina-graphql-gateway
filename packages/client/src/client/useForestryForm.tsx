@@ -1,8 +1,113 @@
 import React from "react";
-import { useCMS, useForm, usePlugin } from "tinacms";
+import { useCMS, useForm, usePlugin, Form, FormOptions, Plugin } from "tinacms";
 import { ContentCreatorPlugin } from "./create-page-plugin";
+import * as yup from "yup";
+
+/**
+ * Pulled from https://github.com/tinacms/tinacms/blob/d16ef762d75d2b7845049357431c125ed9ce55ff/packages%2F%40tinacms%2Freact-core%2Fsrc%2Fuse-form.ts#L117-L121
+ */
+function createForm(options: FormOptions<any>, handleChange: any): Form {
+  const form = new Form(options);
+  form.subscribe(handleChange, { values: true });
+  return form;
+}
+
+type Field = {
+  __typename: string;
+  name: string;
+  label: string;
+};
+
+type DocumentNode = {
+  // id: string;
+  __typename: string;
+  sys: {
+    filename: string;
+    basename: string;
+  };
+  form: {
+    __typename: string;
+    fields: Field[];
+    label: string;
+    name: string;
+  };
+  values: {
+    [key: string]: string | string[] | object | object[];
+  };
+};
 
 export function useForestryForm2<T>({
+  payload,
+  variables,
+  fetcher,
+}: {
+  payload: object;
+  variables: object;
+  fetcher: <T>() => Promise<T>;
+}): unknown {
+  const cms = useCMS();
+  const [errors, setErrors] = React.useState([""]);
+
+  const schema = yup.object().required();
+  const nodeSchema = yup
+    .object()
+    .shape({
+      sys: yup.object().required().shape({
+        filename: yup.string().required(),
+        basename: yup.string().required(),
+      }),
+      form: yup.object().required().shape({
+        __typename: yup.string().required(),
+        name: yup.string().required(),
+        label: yup.string().required(),
+      }),
+      values: yup.object().required(),
+      __typename: yup.string().required(),
+    })
+    .required();
+
+  React.useEffect(() => {
+    schema
+      .validate(payload)
+      .then(() => {
+        Object.values(payload).map((maybeNode) => {
+          nodeSchema
+            .validate(maybeNode)
+            .then(() => {
+              const n = maybeNode as DocumentNode;
+              cms.plugins.add(
+                createForm(
+                  {
+                    id: `${n.sys.basename}`,
+                    label: `${n.sys.basename}`,
+                    fields: n.form.fields,
+                    initialValues: n.values,
+                    onSubmit: async (values) => {
+                      console.log(values);
+                    },
+                  },
+                  () => {}
+                )
+              );
+            })
+            .catch(function (err) {
+              // console.error(err.name); // => 'ValidationError'
+              // console.error(err.errors); // => ['Deve ser maior que 18']
+              // setErrors(err.errors);
+            });
+        });
+      })
+      .catch(function (err) {
+        // console.error(err.name); // => 'ValidationError'
+        // console.error(err.errors); // => ['Deve ser maior que 18']
+        // setErrors(err.errors);
+      });
+  }, [payload]);
+
+  return { errors };
+}
+
+export function useForestryForm3<T>({
   props,
   variables,
   fetcher,
