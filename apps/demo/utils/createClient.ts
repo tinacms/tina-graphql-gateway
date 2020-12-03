@@ -1,4 +1,4 @@
-import { ForestryClient } from "@forestryio/client";
+import { ForestryClient, DEFAULT_LOCAL_TINA_GQL_SERVER_URL } from "@forestryio/client";
 
 export const createClient = (editMode: boolean) => {
   
@@ -6,6 +6,6 @@ export const createClient = (editMode: boolean) => {
       realm: "", 
       clientId: process.env.SITE_CLIENT_ID, 
       redirectURI: "", 
-      customAPI: editMode ? `http://localhost:3003/github/${process.env.REALM}/${process.env.SITE_CLIENT_ID}` : undefined
+      customAPI: !editMode ? DEFAULT_LOCAL_TINA_GQL_SERVER_URL : undefined
     })
 }
