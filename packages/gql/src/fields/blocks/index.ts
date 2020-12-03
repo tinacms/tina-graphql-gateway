@@ -153,9 +153,14 @@ export const blocks: Blocks = {
       const templateName = friendlyName(field, "BlocksFieldTemplates");
 
       accumulator.push(
-        gql.union({
+        gql.object({
           name: templateName,
-          types: field.template_types.map((t) => friendlyName(t, "Form")),
+          fields: field.template_types.map((t) => {
+            return gql.field({
+              name: friendlyName(t, "", true),
+              type: friendlyName(t, "Form"),
+            });
+          }),
         })
       );
 
@@ -208,7 +213,7 @@ export const blocks: Blocks = {
         const template = await datasource.getTemplate(templateSlug);
         templates[
           friendlyName(templateSlug, "", true)
-        ] = await resolver.documentFormObject(datasource, template);
+        ] = await resolver.formObject(datasource, template);
       });
 
       return {
@@ -222,7 +227,7 @@ export const blocks: Blocks = {
       assertIsBlockValueArray(value);
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const itemValue = await resolver.documentInitialValuesObject(
+        const itemValue = await resolver.initialValuesObject(
           datasource,
           templateData,
           item
@@ -239,7 +244,7 @@ export const blocks: Blocks = {
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const data = await resolver.documentDataObject({
+        const data = await resolver.dataObject({
           datasource,
           resolvedTemplate: templateData,
           data: item,

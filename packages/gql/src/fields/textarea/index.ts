@@ -8,7 +8,7 @@ const typename = "TextareaField";
 export const textarea = {
   contentField: {
     type: "textarea" as const,
-    name: "content",
+    name: "_body",
     label: "Content",
     config: {
       schema: {

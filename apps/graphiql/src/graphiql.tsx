@@ -140,60 +140,47 @@ export const Explorer = (
           //     }
           //   }
           // }
-          const q = `{
+          const q = `
+{
   node(id: "content/pages/home.md") {
     __typename
-    ...on Pages_Document {
+    ... on Pages_Document {
       id
+      sys {
+        filename
+        basename
+      }
       data {
         __typename
-        ...on BlockPage_Data {
+        ... on BlockPage_Doc_Data {
           title
+          date
           blocks {
             __typename
             ...on AuthorList_Data {
               authors {
-                data {
-                  ...on Author_Data {
-                    name
-                  }
-                }
+                id
+              }
+            }
+            ... on Sidecar_Data {
+              text {
+                raw
+              }
+              image
+              cta {
+                header
               }
             }
           }
-        }
-      }
-      values {
-        __typename
-        ...on BlockPage_Values {
-          _template
-          title
-          blocks {
-            __typename
-            ...on Sidecar_Values {
-              _template
-              text
-            }
-            ...on ExcerptPost_Values {
-              _template
-            }
-          }
-        }
-      }
-      form {
-        __typename
-        ...on BlockPage_Form {
-          label
-          fields {
-            ...on TextField {
-              name
-            }
+          _body {
+            raw
           }
         }
       }
     }
   }
 }
+
           `;
           //           const q = `query DocumentQuery($relativePath: String!) {
           //   getPagesDocument(relativePath: $relativePath) {
@@ -224,7 +211,6 @@ export const Explorer = (
         query: getIntrospectionQuery(),
       }).then((result) => {
         const clientSchema = buildClientSchema(result);
-        console.log(editedQuery);
         const documentNode = parse(editedQuery);
 
         const queryAst = formBuilder(documentNode, clientSchema);

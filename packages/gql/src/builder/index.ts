@@ -15,7 +15,7 @@ import { file } from "../fields/file";
 import { imageGallery } from "../fields/image-gallery";
 import { number } from "../fields/number";
 import { tag_list } from "../fields/tag-list";
-import { friendlyName } from "@forestryio/graphql-helpers";
+import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 import { sequential } from "../util";
 
 import type {
@@ -414,6 +414,11 @@ export const builder = {
             type: "Node",
             args: [gql.inputID("id")],
           }),
+          gql.field({
+            name: "getPages",
+            type: "Pages_Document",
+            args: [gql.inputID("id")],
+          }),
         ],
       }),
     ];
@@ -428,7 +433,7 @@ export const builder = {
         gql.union({
           name: friendlyName(name, "Data"),
           types: section.templates.map((template) =>
-            friendlyName(template, "Data")
+            templateTypeName(template, "Data", true)
           ),
         })
       );
@@ -436,7 +441,7 @@ export const builder = {
         gql.union({
           name: friendlyName(name, "Values"),
           types: section.templates.map((template) =>
-            friendlyName(template, "Values")
+            templateTypeName(template, "Values", true)
           ),
         })
       );
@@ -444,7 +449,7 @@ export const builder = {
         gql.union({
           name: friendlyName(name, "Form"),
           types: section.templates.map((template) =>
-            friendlyName(template, "Form")
+            templateTypeName(template, "Form", true)
           ),
         })
       );
@@ -482,7 +487,16 @@ export const builder = {
 
     const templates = await cache.datasource.getAllTemplates();
     await sequential(templates, async (template) => {
-      await buildTemplateOrField(cache, template, accumulator);
+      /**
+       * Initial build is for documents, meaning an implicit _body
+       * field may be included
+       */
+      await buildTemplateOrField(cache, template, accumulator, true);
+      /**
+       * This build is for block-level values, which don't support
+       * the implicit _body key
+       */
+      await buildTemplateOrField(cache, template, accumulator, false);
     });
 
     const schema: DocumentNode = {
@@ -497,24 +511,35 @@ export const builder = {
 export const buildTemplateOrField = async (
   cache: Cache,
   template: TemplateData,
-  accumulator: Definitions[]
+  accumulator: Definitions[],
+  includeBody: boolean
 ) => {
-  await buildTemplateOrFieldData(cache, template, accumulator);
-  await buildTemplateOrFieldValues(cache, template, accumulator);
-  await buildTemplateOrFieldForm(cache, template, accumulator);
+  await buildTemplateOrFieldData(cache, template, accumulator, includeBody);
+  await buildTemplateOrFieldValues(cache, template, accumulator, includeBody);
+  await buildTemplateOrFieldForm(cache, template, accumulator, includeBody);
 };
 export const buildTemplateOrFieldData = async (
   cache: Cache,
   template: TemplateData,
-  accumulator: Definitions[]
+  accumulator: Definitions[],
+  includeBody: boolean
 ) => {
-  const name = friendlyName(template);
+  const name = templateTypeName(template, "Data", includeBody);
+
+  const fields = await sequential(template.fields, async (field) => {
+    return await buildTemplateDataField(cache, field, accumulator);
+  });
+
+  if (includeBody) {
+    fields.push(
+      await buildTemplateDataField(cache, textarea.contentField, accumulator)
+    );
+  }
+
   accumulator.push(
     gql.object({
-      name: friendlyName(name, "Data"),
-      fields: await sequential(template.fields, async (field) => {
-        return await buildTemplateDataField(cache, field, accumulator);
-      }),
+      name,
+      fields,
     })
   );
 
@@ -523,34 +548,52 @@ export const buildTemplateOrFieldData = async (
 export const buildTemplateOrFieldValues = async (
   cache: Cache,
   template: TemplateData,
-  accumulator: Definitions[]
+  accumulator: Definitions[],
+  includeBody: boolean
 ) => {
-  const name = friendlyName(template, "Values");
+  const name = templateTypeName(template, "Values", includeBody);
+
+  const fields = await sequential(template.fields, async (field) => {
+    return buildTemplateInitialValueField(cache, field, accumulator);
+  });
+
+  if (includeBody) {
+    fields.push(
+      await buildTemplateInitialValueField(
+        cache,
+        textarea.contentField,
+        accumulator
+      )
+    );
+  }
+
   accumulator.push(
     gql.object({
       name,
-      fields: [
-        gql.field({ name: "_template", type: "String" }),
-        ...(await sequential(template.fields, async (field) => {
-          return buildTemplateInitialValueField(cache, field, accumulator);
-        })),
-      ],
+      fields: [gql.field({ name: "_template", type: "String" }), ...fields],
     })
   );
   return name;
 };
 
-export const buildTemplateOrFieldForm = async (
+export const buildTemplateOrFieldFormFields = async (
   cache: Cache,
   template: TemplateData,
-  accumulator: Definitions[]
+  accumulator: Definitions[],
+  includeBody: boolean
 ) => {
-  const name = friendlyName(template, "Form");
+  const name = templateTypeName(template, "Form", includeBody);
 
   const fields = await sequential(
     template.fields,
     async (field) => await buildTemplateFormField(cache, field, accumulator)
   );
+
+  if (includeBody) {
+    fields.push(
+      await buildTemplateFormField(cache, textarea.contentField, accumulator)
+    );
+  }
 
   const fieldsUnionName = `${name}FieldsUnion`;
   accumulator.push(
@@ -564,12 +607,30 @@ export const buildTemplateOrFieldForm = async (
             case "ListType":
             case "NonNullType":
               throw new Error(
-                `Unexpected ${field.type.kind} type for field union field`
+                `Unexpected ${field.type.kind} for field union field`
               );
           }
         })
       ),
     })
+  );
+
+  return fieldsUnionName;
+};
+
+export const buildTemplateOrFieldForm = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[],
+  includeBody: boolean
+) => {
+  const name = templateTypeName(template, "Form", includeBody);
+
+  const fieldsUnionName = await buildTemplateOrFieldFormFields(
+    cache,
+    template,
+    accumulator,
+    includeBody
   );
 
   accumulator.push(
@@ -735,8 +796,7 @@ const buildTemplateDataField = async (
 // };
 
 export const builders = {
-  buildTemplateOrField,
+  buildTemplateOrFieldFormFields,
   buildTemplateOrFieldData,
   buildTemplateOrFieldValues,
-  buildTemplateOrFieldForm,
 };

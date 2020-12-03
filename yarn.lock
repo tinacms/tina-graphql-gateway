@@ -2301,12 +2301,16 @@ __metadata:
   dependencies:
     "@types/jest": ^26.0.4
     "@types/lodash.camelcase": ^4.3.6
+    "@types/lodash.get": ^4.4.6
     "@types/lodash.kebabcase": ^4.1.6
+    "@types/lodash.set": ^4.3.6
     "@types/lodash.upperfirst": ^4.3.6
     graphql: ^15.3.0
     jest: ^26.1.0
     lodash.camelcase: ^4.3.0
+    lodash.get: ^4.4.2
     lodash.kebabcase: ^4.1.1
+    lodash.set: ^4.3.2
     lodash.snakecase: ^4.1.1
     lodash.upperfirst: ^4.3.1
     ts-jest: ^26.1.2
@@ -4460,6 +4464,15 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 4f566c1e829fa7627e94f0ae4ddd45b88c56c261bfb36fd2691c05b5d88f8733c58dc794c88aec84d2ea3d5c241d48e25392204bf98841676f2bd70f59ecd201
+  languageName: node
+  linkType: hard
+
+"@types/lodash.set@npm:^4.3.6":
+  version: 4.3.6
+  resolution: "@types/lodash.set@npm:4.3.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 04a52fea044e0334bc6e9bac5ca1646d6ad8374721dedaa5aa74ad7d26a9769669051cde4942e9f530b5cf336997f33e2d25f1b3afa19f657b045508cb643988
   languageName: node
   linkType: hard
 
@@ -16319,6 +16332,13 @@ fsevents@^1.2.7:
   version: 4.6.1
   resolution: "lodash.padstart@npm:4.6.1"
   checksum: c1fffb1c848c39f5424026641416d1dddeae9e98af5e022945364ba7c06556ea59766b70ffabe9a013538b98d29992f232a0ed02f47d3aef5fc8267780a8a50f
+  languageName: node
+  linkType: hard
+
+"lodash.set@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "lodash.set@npm:4.3.2"
+  checksum: 4dfedacae1c1cf86385a2b6e30ba538f06c90d703a0abd83a11432d80ec24b4016fe27359cdc0554a02a31a468789cbb282801dd755e54581cf0295477e2341d
   languageName: node
   linkType: hard
 
