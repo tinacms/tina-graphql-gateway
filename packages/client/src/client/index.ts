@@ -43,10 +43,8 @@ export class ForestryClient {
   redirectURI: string
   getToken: () => string
   constructor(options: ServerOptions) {
-
-
     this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
-    this.oauthHost = process.env.TINAIO_OAUTH_HOST || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`;
+    this.oauthHost = options.identityProxy || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`;
     this.redirectURI = options.redirectURI
     this.clientId = options.clientId;
 
