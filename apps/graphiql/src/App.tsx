@@ -12,7 +12,7 @@ import {
   TinacmsForestryProvider,
 } from "@forestryio/client";
 
-import { TinaProvider, TinaCMS } from "tinacms";
+import { TinaProvider, TinaCMS, useCMS } from "tinacms";
 
 const Doit = () => {
   const [variables, setVariables] = React.useState<object>({
