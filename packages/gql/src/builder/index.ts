@@ -384,8 +384,28 @@ export interface Builder {
 export const builder = {
   schema: async ({ cache }: { cache: Cache }) => {
     const sectionMap: {
-      [key: string]: { section: DirectorySection; plural: boolean };
+      [key: string]: {
+        section: DirectorySection;
+        plural: boolean;
+        queryName: string;
+        returnType: string;
+      };
     } = {};
+    const sections = await cache.datasource.getSectionsSettings();
+    sections.forEach((section) => {
+      sectionMap[`get${friendlyName(section.slug)}Document`] = {
+        section,
+        plural: false,
+        queryName: `get${friendlyName(section.slug)}Document`,
+        returnType: friendlyName(section.slug, "Document"),
+      };
+      sectionMap[`get${friendlyName(section.slug)}List`] = {
+        section,
+        plural: true,
+        queryName: `get${friendlyName(section.slug)}List`,
+        returnType: friendlyName(section.slug, "Document"),
+      };
+    });
 
     const accumulator: Definitions[] = [
       gql.interface({ name: "Node", fields: [gql.fieldID({ name: "id" })] }),
@@ -404,6 +424,29 @@ export const builder = {
         fields: [
           gql.fieldRequired({ name: "filename", type: "String" }),
           gql.fieldRequired({ name: "basename", type: "String" }),
+          gql.fieldList({
+            name: "breadcrumbs",
+            type: "String",
+            args: [gql.inputBoolean("excludeExtension")],
+          }),
+          gql.fieldRequired({ name: "path", type: "String" }),
+          gql.fieldRequired({ name: "relativePath", type: "String" }),
+          gql.fieldRequired({ name: "extension", type: "String" }),
+          gql.fieldRequired({ name: "section", type: "Section" }),
+        ],
+      }),
+      gql.object({
+        name: "Section",
+        fields: [
+          gql.fieldRequired({ name: "type", type: "String" }),
+          gql.fieldRequired({ name: "path", type: "String" }),
+          gql.fieldRequired({ name: "label", type: "String" }),
+          gql.fieldRequired({ name: "create", type: "String" }),
+          gql.fieldRequired({ name: "match", type: "String" }),
+          gql.fieldRequired({ name: "new_doc_ext", type: "String" }),
+          gql.fieldList({ name: "templates", type: "String" }),
+          gql.fieldRequired({ name: "slug", type: "String" }),
+          gql.fieldList({ name: "documents", type: "Node" }),
         ],
       }),
       gql.object({
@@ -414,11 +457,28 @@ export const builder = {
             type: "Node",
             args: [gql.inputID("id")],
           }),
-          // gql.field({
-          //   name: "getPages",
-          //   type: "Pages_Document",
-          //   args: [gql.inputID("id")],
-          // }),
+          gql.fieldList({
+            name: "getSections",
+            type: "Section",
+          }),
+          gql.field({
+            name: "getSection",
+            type: "Section",
+            args: [gql.inputString("section")],
+          }),
+          ...Object.values(sectionMap).map((section) => {
+            return section.plural
+              ? gql.fieldList({
+                  name: section.queryName,
+                  type: section.returnType,
+                  args: [],
+                })
+              : gql.field({
+                  name: section.queryName,
+                  type: section.returnType,
+                  args: [gql.inputID("relativePath")],
+                });
+          }),
         ],
       }),
     ];

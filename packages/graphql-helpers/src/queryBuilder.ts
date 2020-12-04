@@ -7,6 +7,7 @@ import {
   GraphQLSchema,
   Visitor,
   ASTKindToNode,
+  GraphQLField,
   DocumentNode,
   FieldDefinitionNode,
   ASTNode,
@@ -151,7 +152,12 @@ const buildSysForType = (type: GraphQLNamedType): FieldNode => {
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: buildFields(type.getFields()),
+      selections: buildFields(
+        // Limit this from being recursive
+        Object.values(type.getFields()).filter(
+          (field) => field.name !== "section"
+        )
+      ),
     },
   };
 };
@@ -278,7 +284,7 @@ const buildTypes = (
                           value: "__typename",
                         },
                       },
-                      ...buildFields(namedType.getFields()),
+                      ...buildFields(Object.values(namedType.getFields())),
                     ],
                   },
                 };
@@ -295,8 +301,8 @@ const buildTypes = (
   });
 };
 
-const buildFields = (fields: GraphQLFieldMap<any, any>): FieldNode[] => {
-  return Object.values(fields).map(
+const buildFields = (fields: GraphQLField<any, any>[]): FieldNode[] => {
+  return fields.map(
     (field): FieldNode => {
       const namedType = getNamedType(field.type);
       if (isLeafType(namedType)) {
@@ -345,7 +351,7 @@ const buildFields = (fields: GraphQLFieldMap<any, any>): FieldNode[] => {
                   value: "__typename",
                 },
               },
-              ...buildFields(namedType.getFields()),
+              ...buildFields(Object.values(namedType.getFields())),
             ],
           },
         };
