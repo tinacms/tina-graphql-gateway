@@ -1,4 +1,8 @@
-import { formBuilder, queryBuilder } from "@forestryio/graphql-helpers";
+import {
+  formBuilder,
+  queryGenerator,
+  queryBuilder,
+} from "@forestryio/graphql-helpers";
 import {
   getIntrospectionQuery,
   buildClientSchema,
@@ -148,6 +152,18 @@ export class ForestryClient {
     return this.query;
   };
 
+  generateQuery = async (variables: {
+    relativePath: string;
+    section: string;
+  }) => {
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+    const query = queryGenerator(variables, buildClientSchema(data));
+    // console.log(print(query));
+    return print(query);
+  };
+
   listDocumentsBySection = async ({ section }: { section: string }) => {
     const query = `
     query DocumentQuery($section: String!) {
@@ -283,7 +299,6 @@ export class ForestryClient {
       return null;
     }
   }
-
 
   async requestWithForm<VariableType>({
     query,

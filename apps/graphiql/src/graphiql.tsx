@@ -69,10 +69,6 @@ export const Explorer = (
   const [vars, setVars] = React.useState<object>({});
   const cms = useCMS();
 
-  React.useEffect(() => {
-    setVars(variables.variables);
-  }, [variables]);
-
   const [state, setState] = React.useState<{
     schema: null | GraphQLSchema;
     query: null | string;
@@ -86,10 +82,35 @@ export const Explorer = (
     explorerIsOpen: false,
   });
 
+  React.useEffect(() => {
+    const generateQuery = async () => {
+      const queryString = await cms.api.forestry.generateQuery(
+        variables.variables
+      );
+
+      const newState = {
+        query: queryString,
+      };
+      console.log("setedited");
+      setEditQuery(queryString);
+
+      setState({ ...state, ...newState });
+    };
+
+    // FIXME: this is a race-condition, move everything to state-hooks
+    if (state.schema) {
+      generateQuery();
+    }
+  }, [variables]);
+
+  React.useEffect(() => {
+    setVars({ relativePath: variables.variables.relativePath });
+  }, [variables]);
+
   const [queryResult, setQueryResult] = React.useState<null | { data: object }>(
     null
   );
-  const [editedQuery, setEditQuery] = React.useState("");
+  const [editedQuery, setEditQuery] = React.useState(state.query);
 
   const graphQLFetcher = async (graphQLParams: {
     query: string;
@@ -141,48 +162,6 @@ export const Explorer = (
           query: "",
         };
 
-        if (!newState.query) {
-          // const clientSchema = buildClientSchema(result);
-          // // const query = queryBuilder(clientSchema, "documentForSection");
-          // const query = queryBuilder(clientSchema);
-          // @ts-ignore for some reason query builder shows no return type
-          // newState.query = print(query);
-          //           const q = `query DocumentQuery($relativePath: String!, $section: String!) {
-          //   document(relativePath: $relativePath, section: $section) {
-          //     node {
-          //       __typename
-          //       ... on BlockPage {
-          //         data {
-          //           title
-          //         }
-          //       }
-          //     }
-          //   }
-          // }
-          const q = `{
-  node(id: "content/pages/home.md") {
-    __typename
-    id
-  }
-}
-
-          `;
-          //           const q = `query DocumentQuery($relativePath: String!) {
-          //   getPagesDocument(relativePath: $relativePath) {
-          //     document {
-          //       __typename
-          //       ...on BlockPage {
-          //         data {
-          //           title
-          //         }
-          //       }
-          //     }
-          //   }
-          // }`;
-          newState.query = q;
-          setEditQuery(q);
-        }
-
         setState({ ...state, ...newState });
       });
     } catch (e) {
@@ -203,6 +182,8 @@ export const Explorer = (
           schema: buildClientSchema(result),
           query: print(queryAst),
         };
+        console.log("for9mifty");
+        setEditQuery(print(queryAst));
 
         setState({ ...state, ...newState, outputIsOpen: false });
       });
@@ -247,7 +228,7 @@ export const Explorer = (
       <React.Fragment>
         <GraphiQLExplorer
           schema={schema}
-          query={query || ""}
+          query={editedQuery || ""}
           onEdit={_handleEditQuery}
           explorerIsOpen={state.explorerIsOpen}
           onToggleExplorer={_handleToggleExplorer}
@@ -262,9 +243,10 @@ export const Explorer = (
           fetcher={graphQLFetcher}
           schema={schema}
           onEditQuery={(query) => {
+            console.log("onEdit");
             setEditQuery(query);
           }}
-          query={query}
+          query={editedQuery}
           variables={JSON.stringify(vars, null, 2)}
         >
           {/* Hide GraphiQL logo */}

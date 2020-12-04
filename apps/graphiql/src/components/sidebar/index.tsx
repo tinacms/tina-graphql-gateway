@@ -36,6 +36,8 @@ export const Sidebar = ({
     section: string;
   } | null>(null);
 
+  const [activeSection, setActiveSection] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     if (activeDocument) {
       onFileSelect(activeDocument);
@@ -46,9 +48,16 @@ export const Sidebar = ({
     if (sections.length > 0) {
       if (sections[0].documents) {
         setActiveDocument({
-          relativePath: sections[0].documents[0].relativePath,
+          relativePath: sections[0].documents[0].sys.relativePath,
           section: sections[0].slug,
         });
+        onFileSelect({
+          relativePath: sections[0].documents[0].sys.relativePath,
+          section: sections[0].slug,
+        });
+      }
+      if (!activeSection) {
+        setActiveSection(sections[0].slug);
       }
     }
   }, [sections]);
@@ -58,13 +67,13 @@ export const Sidebar = ({
   React.useEffect(() => {
     const listSections = async () => {
       try {
-        console.log(cms.api.forestry);
         const result2 = await cms.api.forestry.request(
           `{
   getSections {
     path
+    slug
+    label
     documents {
-      __typename
       sys {
         filename
         basename
@@ -82,7 +91,6 @@ export const Sidebar = ({
         `,
           {}
         );
-        console.log("hihihi", result2.getSections);
         setSections(result2.getSections);
       } catch (e) {
         console.log("unable to list documents...");
@@ -261,22 +269,19 @@ export const Sidebar = ({
                     <>
                       <button
                         onClick={() => {
-                          activeDocument?.section === section.slug
-                            ? setActiveDocument(null)
-                            : setActiveDocument({
-                                relativePath: "",
-                                section: section.slug,
-                              });
+                          activeSection === section.slug
+                            ? setActiveSection(null)
+                            : setActiveSection(section.slug);
                         }}
                         className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${
-                          activeDocument?.section === section.slug
-                            ? "bg-gray-600"
-                            : ""
+                          activeSection === section.slug ? "bg-gray-600" : ""
                         }`}
                       >
                         {/* Expanded: "text-gray-200 rotate-90", Collapsed: "text-gray-300" */}
                         <svg
-                          className="mr-2 h-5 w-5 transform group-hover:text-gray-200 group-focus:text-gray-200 transition-colors ease-in-out duration-150"
+                          className={`mr-2 h-5 w-5 transform group-hover:text-gray-200 group-focus:text-gray-200 transition-colors ease-in-out duration-150 ${
+                            activeSection === section.slug ? "rotate-90" : ""
+                          }`}
                           viewBox="0 0 20 20"
                         >
                           <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
@@ -285,9 +290,7 @@ export const Sidebar = ({
                       </button>
                       <div
                         className={`mt-1 space-y-1 ${
-                          activeDocument?.section === section.slug
-                            ? ""
-                            : "hidden"
+                          activeSection === section.slug ? "" : "hidden"
                         }`}
                       >
                         {section.documents?.map((document) => {
@@ -295,6 +298,11 @@ export const Sidebar = ({
                           if (!document) {
                             return null;
                           }
+                          const activeStyles =
+                            activeDocument?.relativePath ===
+                            document.sys.relativePath
+                              ? "text-gray-200 bg-gray-600"
+                              : "";
                           return (
                             <button
                               type="button"
@@ -304,7 +312,7 @@ export const Sidebar = ({
                                   section: section.slug,
                                 })
                               }
-                              className="group w-full flex items-center pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150"
+                              className={`group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
                             >
                               {document.sys.breadcrumbs.join("/")}
                             </button>

@@ -30,11 +30,18 @@ import {
   GraphQLUnionType,
   GraphQLString,
   GraphQLNonNull,
+  isScalarType,
 } from "graphql";
 import set from "lodash.set";
 import get from "lodash.get";
+import { friendlyName2 } from "./util";
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
+
+// FIXME: this is the way we're determining if the node is top-level
+// much better ways to do it but this seems to be working well enough
+// for now
+const MAGIC_DEPTH = 5;
 
 export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   const typeInfo = new TypeInfo(schema);
@@ -51,7 +58,10 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
             .find((i) => i.name === "Node");
           if (hasNodeInterface) {
             // Instead of this, there's probably a more fine-grained visitor key to use
-            if (typeof path[path.length - 1] === "number") {
+            if (
+              typeof path[path.length - 1] === "number" &&
+              path.length === MAGIC_DEPTH
+            ) {
               assertIsObjectType(namedType);
 
               const formNode = namedType.getFields().form;
@@ -116,6 +126,125 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   visit(query, visitWithTypeInfo(typeInfo, visitor));
 
   return query;
+};
+
+/**
+ *
+ * This generates a query to a "reasonable" depth for the data key of a given section
+ * It's not meant for production use
+ */
+export const queryGenerator = (
+  variables: { relativePath: string; section: string },
+  schema: GraphQLSchema
+): DocumentNode => {
+  const t = schema.getQueryType();
+  const queryFields = t?.getFields();
+  if (queryFields) {
+    const queryName = `get${friendlyName2(variables.section)}Document`;
+    const queryField = queryFields[queryName];
+
+    const returnType = getNamedType(queryField.type);
+    if (returnType instanceof GraphQLObjectType) {
+      let depth = 0;
+      const fields = buildFields(
+        Object.values(returnType.getFields()).filter(
+          (field) => field.name === "data"
+        ),
+        (fields) => {
+          const filteredFieldsList = [
+            "sys",
+            "__typename",
+            "template",
+            "html",
+            "form",
+            "values",
+            "markdownAst",
+          ];
+          depth = depth + 1;
+          const filteredFields = fields.filter((field) => {
+            return !filteredFieldsList.includes(field.name);
+          });
+
+          return { continue: depth < 5, filteredFields };
+        }
+      );
+
+      return {
+        kind: "Document" as const,
+        definitions: [
+          {
+            kind: "OperationDefinition" as const,
+            operation: "query",
+            name: {
+              kind: "Name" as const,
+              value: queryName,
+            },
+            variableDefinitions: [
+              {
+                kind: "VariableDefinition" as const,
+                variable: {
+                  kind: "Variable" as const,
+                  name: {
+                    kind: "Name" as const,
+                    value: "relativePath",
+                  },
+                },
+                type: {
+                  kind: "NonNullType" as const,
+                  type: {
+                    kind: "NamedType" as const,
+                    name: {
+                      kind: "Name" as const,
+                      value: "String",
+                    },
+                  },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: {
+                    kind: "Name",
+                    value: queryName,
+                  },
+                  arguments: [
+                    {
+                      kind: "Argument",
+                      name: {
+                        kind: "Name",
+                        value: "relativePath",
+                      },
+                      value: {
+                        kind: "Variable",
+                        name: {
+                          kind: "Name",
+                          value: "relativePath",
+                        },
+                      },
+                    },
+                  ],
+                  directives: [],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: fields,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      };
+    } else {
+      throw new Error(
+        "Expected return type to be an instance of GraphQLObject"
+      );
+    }
+  } else {
+    throw new Error("Unable to find query fields for provided schema");
+  }
 };
 
 function assertIsObjectType(
@@ -213,7 +342,10 @@ const buildFormForType = (type: GraphQLNamedType): FieldNode => {
 };
 
 const buildTypes = (
-  types: GraphQLObjectType<any, any>[]
+  types: GraphQLObjectType<any, any>[],
+  callback?: (
+    fields: GraphQLField<any, any>[]
+  ) => { continue: boolean; filteredFields: GraphQLField<any, any>[] }
 ): InlineFragmentNode[] => {
   return types.map((type) => {
     return {
@@ -228,13 +360,13 @@ const buildTypes = (
       selectionSet: {
         kind: "SelectionSet" as const,
         selections: [
-          {
-            kind: "Field" as const,
-            name: {
-              kind: "Name" as const,
-              value: "__typename",
-            },
-          },
+          // {
+          //   kind: "Field" as const,
+          //   name: {
+          //     kind: "Name" as const,
+          //     value: "__typename",
+          //   },
+          // },
           ...Object.values(type.getFields()).map(
             (field): FieldNode => {
               const namedType = getNamedType(field.type);
@@ -256,14 +388,14 @@ const buildTypes = (
                   selectionSet: {
                     kind: "SelectionSet" as const,
                     selections: [
-                      {
-                        kind: "Field" as const,
-                        name: {
-                          kind: "Name" as const,
-                          value: "__typename",
-                        },
-                      },
-                      ...buildTypes(namedType.getTypes()),
+                      // {
+                      //   kind: "Field" as const,
+                      //   name: {
+                      //     kind: "Name" as const,
+                      //     value: "__typename",
+                      //   },
+                      // },
+                      ...buildTypes(namedType.getTypes(), callback),
                     ],
                   },
                 };
@@ -277,14 +409,17 @@ const buildTypes = (
                   selectionSet: {
                     kind: "SelectionSet" as const,
                     selections: [
-                      {
-                        kind: "Field" as const,
-                        name: {
-                          kind: "Name" as const,
-                          value: "__typename",
-                        },
-                      },
-                      ...buildFields(Object.values(namedType.getFields())),
+                      // {
+                      //   kind: "Field" as const,
+                      //   name: {
+                      //     kind: "Name" as const,
+                      //     value: "__typename",
+                      //   },
+                      // },
+                      ...buildFields(
+                        Object.values(namedType.getFields()),
+                        callback
+                      ),
                     ],
                   },
                 };
@@ -301,8 +436,45 @@ const buildTypes = (
   });
 };
 
-const buildFields = (fields: GraphQLField<any, any>[]): FieldNode[] => {
-  return fields.map(
+const buildFields = (
+  fields: GraphQLField<any, any>[],
+  callback?: (
+    fields: GraphQLField<any, any>[]
+  ) => { continue: boolean; filteredFields: GraphQLField<any, any>[] }
+): FieldNode[] => {
+  let filteredFields = fields;
+  if (callback) {
+    const result = callback(fields);
+    if (!result.continue) {
+      if (
+        fields.every((field) => {
+          return !isScalarType(getNamedType(field.type));
+        })
+      ) {
+        return [
+          {
+            kind: "Field" as const,
+            name: {
+              kind: "Name" as const,
+              value: "__typename",
+            },
+          },
+        ];
+      }
+      return buildFields(
+        result.filteredFields.filter((field) => {
+          if (isScalarType(getNamedType(field.type))) {
+            return true;
+          }
+          return false;
+        })
+      );
+    } else {
+      filteredFields = result.filteredFields;
+    }
+  }
+
+  return filteredFields.map(
     (field): FieldNode => {
       const namedType = getNamedType(field.type);
       if (isLeafType(namedType)) {
@@ -323,14 +495,14 @@ const buildFields = (fields: GraphQLField<any, any>[]): FieldNode[] => {
           selectionSet: {
             kind: "SelectionSet" as const,
             selections: [
-              {
-                kind: "Field" as const,
-                name: {
-                  kind: "Name" as const,
-                  value: "__typename",
-                },
-              },
-              ...buildTypes(namedType.getTypes()),
+              // {
+              //   kind: "Field" as const,
+              //   name: {
+              //     kind: "Name" as const,
+              //     value: "__typename",
+              //   },
+              // },
+              ...buildTypes(namedType.getTypes(), callback),
             ],
           },
         };
@@ -344,14 +516,14 @@ const buildFields = (fields: GraphQLField<any, any>[]): FieldNode[] => {
           selectionSet: {
             kind: "SelectionSet" as const,
             selections: [
-              {
-                kind: "Field" as const,
-                name: {
-                  kind: "Name" as const,
-                  value: "__typename",
-                },
-              },
-              ...buildFields(Object.values(namedType.getFields())),
+              // {
+              //   kind: "Field" as const,
+              //   name: {
+              //     kind: "Name" as const,
+              //     value: "__typename",
+              //   },
+              // },
+              ...buildFields(Object.values(namedType.getFields()), callback),
             ],
           },
         };
@@ -365,13 +537,13 @@ const buildFields = (fields: GraphQLField<any, any>[]): FieldNode[] => {
           selectionSet: {
             kind: "SelectionSet" as const,
             selections: [
-              {
-                kind: "Field" as const,
-                name: {
-                  kind: "Name" as const,
-                  value: "__typename",
-                },
-              },
+              // {
+              //   kind: "Field" as const,
+              //   name: {
+              //     kind: "Name" as const,
+              //     value: "__typename",
+              //   },
+              // },
             ],
           },
         };
