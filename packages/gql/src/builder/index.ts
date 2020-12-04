@@ -410,6 +410,13 @@ export const builder = {
     const accumulator: Definitions[] = [
       gql.interface({ name: "Node", fields: [gql.fieldID({ name: "id" })] }),
       gql.interface({
+        name: "Document",
+        fields: [
+          gql.fieldRequired({ name: "sys", type: "SystemInfo" }),
+          gql.fieldID({ name: "id" }),
+        ],
+      }),
+      gql.interface({
         name: "FormField",
         fields: [
           gql.field({ name: "label", type: "String" }),
@@ -446,7 +453,7 @@ export const builder = {
           gql.fieldRequired({ name: "new_doc_ext", type: "String" }),
           gql.fieldList({ name: "templates", type: "String" }),
           gql.fieldRequired({ name: "slug", type: "String" }),
-          gql.fieldList({ name: "documents", type: "Node" }),
+          gql.fieldList({ name: "documents", type: "Document" }),
         ],
       }),
       gql.object({
@@ -522,6 +529,13 @@ export const builder = {
               name: {
                 kind: "Name",
                 value: "Node",
+              },
+            },
+            {
+              kind: "NamedType",
+              name: {
+                kind: "Name",
+                value: "Document",
               },
             },
           ],

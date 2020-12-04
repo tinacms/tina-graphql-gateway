@@ -258,6 +258,7 @@ export const resolver: Resolver = {
     const { datasource } = context;
 
     let section: Section;
+    let sections: Section[];
     switch (info.fieldName) {
       case "node":
         if (typeof args.id !== "string") {
@@ -269,7 +270,7 @@ export const resolver: Resolver = {
           datasource: context.datasource,
         });
       case "documents":
-        let sections = await context.datasource.getSectionsSettings();
+        sections = await context.datasource.getSectionsSettings();
 
         if (args.section) {
           sections = sections.filter(
