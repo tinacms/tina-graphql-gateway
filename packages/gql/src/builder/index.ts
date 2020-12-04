@@ -476,7 +476,7 @@ export const builder = {
               : gql.field({
                   name: section.queryName,
                   type: section.returnType,
-                  args: [gql.inputID("relativePath")],
+                  args: [gql.inputString("relativePath")],
                 });
           }),
         ],
