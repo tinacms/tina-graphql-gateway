@@ -27,7 +27,7 @@ export const Sidebar = ({
   const [sections, setSections] = React.useState<
     {
       slug: string;
-      documents?: { relativePath: string; breadcrumbs: string[] }[];
+      documents?: { sys: { relativePath: string; breadcrumbs: string[] } }[];
     }[]
   >([]);
 
@@ -58,8 +58,32 @@ export const Sidebar = ({
   React.useEffect(() => {
     const listSections = async () => {
       try {
-        const result2 = await cms.api.forestry.listSections();
-        setSections(result2);
+        console.log(cms.api.forestry);
+        const result2 = await cms.api.forestry.request(
+          `{
+  getSections {
+    path
+    documents {
+      __typename
+      sys {
+        filename
+        basename
+        relativePath
+        breadcrumbs(excludeExtension: true)
+        section {
+          type
+          path
+          slug
+        }
+      }
+    }
+  }
+}
+        `,
+          {}
+        );
+        console.log("hihihi", result2.getSections);
+        setSections(result2.getSections);
       } catch (e) {
         console.log("unable to list documents...");
         console.log(e);
@@ -276,13 +300,13 @@ export const Sidebar = ({
                               type="button"
                               onClick={() =>
                                 setActiveDocument({
-                                  relativePath: document.relativePath,
+                                  relativePath: document.sys.relativePath,
                                   section: section.slug,
                                 })
                               }
                               className="group w-full flex items-center pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150"
                             >
-                              {document.breadcrumbs.join("/")}
+                              {document.sys.breadcrumbs.join("/")}
                             </button>
                           );
                         })}

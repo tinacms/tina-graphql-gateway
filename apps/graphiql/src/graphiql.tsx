@@ -16,12 +16,14 @@ import {
 
 const UseIt = ({
   formConfig,
+  outputIsOpen,
   variables,
   onSubmit,
   payload,
 }: {
   schema: GraphQLSchema;
   formConfig: any;
+  outputIsOpen: boolean;
   variables: object;
   onSubmit: (values: any) => void;
   payload: object;
@@ -30,13 +32,28 @@ const UseIt = ({
   //   onSubmit(transformedValues);
   // },
 
-  const { errors } = useForestryForm2({
+  const { data, errors } = useForestryForm2({
     payload,
     variables,
     fetcher: async () => {},
   });
 
-  return <div />;
+  return (
+    <div
+      style={{ left: "21rem", top: "65px" }}
+      className={`absolute right-0 bottom-0 p-10 bg-white z-20 shadow-lg overflow-scroll ${
+        outputIsOpen
+          ? "opacity-1 pointer-events-all"
+          : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div className="bg-gray-100 p-4">
+        <pre>
+          <code className="text-xs">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      </div>
+    </div>
+  );
 };
 
 export const Explorer = (
@@ -60,10 +77,12 @@ export const Explorer = (
     schema: null | GraphQLSchema;
     query: null | string;
     variables?: object;
+    outputIsOpen: boolean;
     explorerIsOpen: boolean;
   }>({
     schema: null,
     query: null,
+    outputIsOpen: false,
     explorerIsOpen: false,
   });
 
@@ -185,7 +204,7 @@ export const Explorer = (
           query: print(queryAst),
         };
 
-        setState({ ...state, ...newState });
+        setState({ ...state, ...newState, outputIsOpen: false });
       });
     } catch (e) {
       console.log(e);
@@ -196,8 +215,15 @@ export const Explorer = (
     setState({ ...state, query });
   };
 
+  const _handleToggleOutput = () => {
+    setState({ ...state, outputIsOpen: !state.outputIsOpen });
+  };
   const _handleToggleExplorer = () => {
-    setState({ ...state, explorerIsOpen: !state.explorerIsOpen });
+    setState({
+      ...state,
+      explorerIsOpen: !state.explorerIsOpen,
+      outputIsOpen: false,
+    });
   };
   const { query, schema } = state;
 
@@ -212,6 +238,7 @@ export const Explorer = (
           onSubmit={setVariables}
           variables={variables.variables}
           // @ts-ignore
+          outputIsOpen={state.outputIsOpen}
           project={project}
           schema={schema}
           payload={queryResult}
@@ -254,6 +281,12 @@ export const Explorer = (
               className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
             >
               Explorer
+            </button>
+            <button
+              onClick={_handleToggleOutput}
+              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
+            >
+              Output
             </button>
           </GraphiQL.Toolbar>
         </GraphiQL>

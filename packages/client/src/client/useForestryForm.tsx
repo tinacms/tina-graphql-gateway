@@ -47,6 +47,7 @@ export function useForestryForm2<T>({
 }): unknown {
   const cms = useCMS();
   const [errors, setErrors] = React.useState([""]);
+  const [data, setData] = React.useState({});
 
   const schema = yup.object().required();
   const nodeSchema = yup
@@ -73,6 +74,10 @@ export function useForestryForm2<T>({
           nodeSchema
             .validate(maybeNode)
             .then(() => {
+              // We know the payload is valid
+              // this is temporary for playground viewing
+              setData(payload);
+
               const n = maybeNode as DocumentNode;
               cms.plugins.add(
                 createForm(
@@ -90,19 +95,16 @@ export function useForestryForm2<T>({
               );
             })
             .catch(function (err) {
-              console.warn(err.errors); // => ['Deve ser maior que 18']
-              // setErrors(err.errors);
+              console.warn(err.errors);
             });
         });
       })
       .catch(function (err) {
-        // console.error(err.name); // => 'ValidationError'
-        console.warn(err.errors); // => ['Deve ser maior que 18']
-        // setErrors(err.errors);
+        console.warn(err.errors);
       });
   }, [payload]);
 
-  return { errors };
+  return { data: tempRemoveFormKeys(data), errors };
 }
 
 export function useForestryForm3<T>({
@@ -326,7 +328,7 @@ const tempRemoveFormKeys = (data: object) => {
   const accum = {};
   Object.keys(data)
     .filter((key) => {
-      return key !== "form" && key !== "initialValues";
+      return key !== "form" && key !== "values" && key !== "sys";
     })
     .forEach((key) => {
       if (Array.isArray(data[key])) {
