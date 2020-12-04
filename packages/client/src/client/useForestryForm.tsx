@@ -20,10 +20,10 @@ type Field = {
 
 type DocumentNode = {
   // id: string;
-  __typename: string;
   sys: {
     filename: string;
     basename: string;
+    path: string;
   };
   form: {
     __typename: string;
@@ -62,7 +62,6 @@ export function useForestryForm2<T>({
         label: yup.string().required(),
       }),
       values: yup.object().required(),
-      __typename: yup.string().required(),
     })
     .required();
 
@@ -78,7 +77,7 @@ export function useForestryForm2<T>({
               cms.plugins.add(
                 createForm(
                   {
-                    id: `${n.sys.basename}`,
+                    id: n.sys.path,
                     label: `${n.sys.basename}`,
                     fields: n.form.fields,
                     initialValues: n.values,
@@ -91,15 +90,14 @@ export function useForestryForm2<T>({
               );
             })
             .catch(function (err) {
-              // console.error(err.name); // => 'ValidationError'
-              // console.error(err.errors); // => ['Deve ser maior que 18']
+              console.warn(err.errors); // => ['Deve ser maior que 18']
               // setErrors(err.errors);
             });
         });
       })
       .catch(function (err) {
         // console.error(err.name); // => 'ValidationError'
-        // console.error(err.errors); // => ['Deve ser maior que 18']
+        console.warn(err.errors); // => ['Deve ser maior que 18']
         // setErrors(err.errors);
       });
   }, [payload]);
