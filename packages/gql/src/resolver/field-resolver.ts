@@ -1,4 +1,5 @@
 import _ from "lodash";
+import path from "path";
 
 import { text } from "../fields/text";
 import { list } from "../fields/list";
@@ -256,66 +257,34 @@ export const resolver: Resolver = {
     const value = source[info.fieldName];
     const { datasource } = context;
 
-    if (info.fieldName === "node") {
-      const section = await datasource.getSectionByPath(args.id);
-      return await resolver.documentObject({
-        args: { fullPath: args.id, section: section.slug },
-        datasource: context.datasource,
-      });
-    }
-
-    if (info.fieldName === "breadcrumbs") {
-      if (args.excludeExtension) {
-        return value.map((item, i) => {
-          if (i === value.length - 1) {
-            return item.replace(".md", "");
-          }
-          return item;
+    let section: Section;
+    switch (info.fieldName) {
+      case "node":
+        if (typeof args.id !== "string") {
+          throw new Error("Expected argument ID for node query");
+        }
+        section = await datasource.getSectionByPath(args.id);
+        return await resolver.documentObject({
+          args: { fullPath: args.id, section: section.slug },
+          datasource: context.datasource,
         });
-      } else {
-        return value;
-      }
-    }
-    if (info.fieldName === "getSections") {
-      let sections = await context.datasource.getSectionsSettings();
-      return await sequential(sections, async (section) => {
-        return {
-          ...section,
-          documents: {
-            _section: section.slug,
-          },
-        };
-      });
-    }
-    if (info.fieldName === "getSection") {
-      let section = await context.datasource.getSettingsForSection(
-        args.section
-      );
-      return {
-        ...section,
-        documents: {
-          _section: section.slug,
-        },
-      };
-    }
-    if (info.fieldName === "documents") {
-      let sections = await context.datasource.getSectionsSettings();
+      case "documents":
+        let sections = await context.datasource.getSectionsSettings();
 
-      if (args.section) {
-        sections = sections.filter((section) => section.slug === args.section);
-      }
-      if (value && value._section) {
-        sections = sections.filter(
-          (section) => section.slug === value._section
-        );
-      }
+        if (args.section) {
+          sections = sections.filter(
+            (section) => section.slug === args.section
+          );
+        }
+        assertIsSectionDocumentArgs(value);
+        if (value && value._section) {
+          sections = sections.filter(
+            (section) => section.slug === value._section
+          );
+        }
 
-      const sectionDocs = _.flatten(
-        await sequential(
-          // FIXME: pages section not working for demos fixture
-          // sections.filter((s) => s.slug !== "pages"),
-          sections,
-          async (s) => {
+        const sectionDocs = _.flatten(
+          await sequential(sections, async (s) => {
             const paths = await context.datasource.getDocumentsForSection(
               s.slug
             );
@@ -327,16 +296,71 @@ export const resolver: Resolver = {
 
               return document;
             });
+          })
+        );
+        return sectionDocs;
+      case "breadcrumbs":
+        if (args.excludeExtension) {
+          if (!Array.isArray(value)) {
+            throw new Error(`Expected breadcrumb value to be an array`);
           }
-        )
-      );
-      return sectionDocs;
+          return value.map((item, i) => {
+            if (i === value.length - 1) {
+              return item.replace(path.extname, "");
+            }
+            return item;
+          });
+        } else {
+          return value;
+        }
+      case "getSection":
+        assertIsGetSectionArgs(args);
+        section = await context.datasource.getSettingsForSection(args.section);
+        return {
+          ...section,
+          documents: {
+            _section: section.slug,
+          },
+        };
+      case "getSections":
+        sections = await context.datasource.getSectionsSettings();
+        return await sequential(sections, async (section) => {
+          return {
+            ...section,
+            documents: {
+              _section: section.slug,
+            },
+          };
+        });
+      case "updateDocument":
+        assertIsDocumentInputArgs(args);
+
+        await resolver.documentInputObject({
+          args: args,
+          params: args.params,
+          datasource,
+        });
+        return await resolver.documentObject({
+          args: args,
+          datasource,
+        });
+      case "addPendingDocument":
+        assertIsPendingDocumentInputArgs(args);
+
+        await resolver.pendingDocumentInputObject({
+          args: args,
+          datasource,
+        });
+        return await resolver.documentObject({
+          args: args,
+          datasource,
+        });
+      default:
+        break;
     }
 
     const sectionItem = sectionMap[info.fieldName];
     if (sectionItem) {
-      // assertIsDocumentForSectionArgs(args);
-      // console.log(sectionItem);
       if (sectionItem.plural) {
         const { documents } = await resolveDocumentsBySectionLabel({
           label: sectionItem.section.label,
@@ -351,6 +375,7 @@ export const resolver: Resolver = {
           return dd;
         });
       } else {
+        assertIsDocumentForSectionArgs(args);
         const document = await resolver.documentObject({
           args: {
             relativePath: args.relativePath,
@@ -360,53 +385,6 @@ export const resolver: Resolver = {
         });
         return document;
       }
-    }
-
-    if (info.fieldName === "documentListBySection") {
-      assertIsDocumentSection(args);
-
-      const documents = await context.datasource.getDocumentsForSection(
-        args.section
-      );
-      const section = await context.datasource.getSettingsForSection(
-        args.section
-      );
-
-      // FIXME: this might be better to resolve on-demand, if we only want
-      // the path here we're doing extra work.
-      return await sequential(documents, async (documentPath) => {
-        const document = await resolver.documentObject({
-          args: { fullPath: documentPath, section: section.slug },
-          datasource,
-        });
-
-        return document;
-      });
-    }
-    if (info.fieldName === "updateDocument") {
-      assertIsDocumentInputArgs(args);
-
-      await resolver.documentInputObject({
-        args: args,
-        params: args.params,
-        datasource,
-      });
-      return await resolver.documentObject({
-        args: args,
-        datasource,
-      });
-    }
-    if (info.fieldName === "addPendingDocument") {
-      assertIsPendingDocumentInputArgs(args);
-
-      await resolver.pendingDocumentInputObject({
-        args: args,
-        datasource,
-      });
-      return await resolver.documentObject({
-        args: args,
-        datasource,
-      });
     }
 
     if (!value) {
@@ -472,9 +450,9 @@ export const resolver: Resolver = {
 
     return {
       __typename: friendlyName(sectionData.slug, "Document"),
-      id: relativePath, // FIXME: this should be full
+      id: path.join(sectionData.path, realArgs.relativePath),
       sys: {
-        path: relativePath, // FIXME: this should be full
+        path: path.join(sectionData.path, realArgs.relativePath),
         relativePath,
         section: sectionData,
         breadcrumbs: relativePath.split("/").filter(Boolean),
@@ -495,7 +473,6 @@ export const resolver: Resolver = {
         data,
         content || ""
       ),
-      // __typename: friendlyName(template),
     };
   },
   dataObject: async ({ datasource, resolvedTemplate, data }) => {
@@ -928,22 +905,28 @@ function assertIsDocumentInputArgs(
     throw new Error(`Expected args for input document request`);
   }
 }
-
-function assertIsDocumentForSectionArgs(
-  args: FieldResolverArgs
-): asserts args is { section: string; relativePath: string } {
-  if (!args.relativePath || typeof args.relativePath !== "string") {
-    throw new Error(`Expected args for document request`);
+function assertIsSectionDocumentArgs(
+  value: unknown
+): asserts value is { _section: string } {
+  if (!value._section || typeof value._section !== "string") {
+    throw new Error(`Expected _section arg for section document request`);
   }
 }
-function assertIsDocumentSection(
+function assertIsDocumentForSectionArgs(
+  args: FieldResolverArgs
+): asserts args is { relativePath: string } {
+  if (!args.relativePath || typeof args.relativePath !== "string") {
+    throw new Error(`Expected relativePath arg for section request`);
+  }
+}
+
+function assertIsGetSectionArgs(
   args: FieldResolverArgs
 ): asserts args is { section: string } {
   if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected args for document request`);
+    throw new Error(`Expected section arg for section request`);
   }
 }
-
 type DocumentData = {
   [key: string]: unknown;
   /** Only required for data coming from block values */
