@@ -1,11 +1,11 @@
 import React from "react";
 import GraphiQL from "graphiql";
-// @ts-ignore no types provided
-import GraphiQLExplorer from "graphiql-explorer";
-import { formBuilder, queryBuilder } from "@forestryio/graphql-helpers";
+import { formBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
+import { useMachine } from "@xstate/react";
+import { Machine, assign } from "xstate";
 import { useForestryForm2 } from "@forestryio/client";
-import { useCMS } from "tinacms";
+import { useCMS, TinaCMS } from "tinacms";
 import {
   parse,
   getIntrospectionQuery,
@@ -14,35 +14,298 @@ import {
   print,
 } from "graphql";
 
-const UseIt = ({
-  formConfig,
-  outputIsOpen,
-  variables,
-  onSubmit,
-  payload,
-}: {
-  schema: GraphQLSchema;
-  formConfig: any;
-  outputIsOpen: boolean;
-  variables: object;
-  onSubmit: (values: any) => void;
-  payload: object;
-}) => {
-  // onSubmit: (values: unknown, transformedValues: unknown) => {
-  //   onSubmit(transformedValues);
-  // },
+interface GraphiQLStateSchema {
+  states: {
+    explorerIsOpen: {
+      states: {
+        closed: {};
+        open: {};
+      };
+    };
+    outputIsOpen: {
+      states: {
+        closed: {};
+        open: {};
+      };
+    };
+    editor: {
+      states: {
+        fetchingSchema: {};
+        generatingQuery: {};
+        ready: {};
+        error: {};
+        formifyingQuery: {};
+      };
+    };
+  };
+}
 
+// The events that the machine handles
+type GraphiQLEvent =
+  | { type: "TIMER" }
+  | {
+      type: "CHANGE_VARIABLES";
+      value: { section: string; relativePath: string };
+    }
+  | { type: "TOGGLE_EXPLORER" }
+  | { type: "OPEN_EXPLORER" }
+  | { type: "CLOSE_EXPLORER" }
+  | { type: "TOGGLE_OUTPUT" }
+  | { type: "OPEN_OUTPUT" }
+  | { type: "CLOSE_OUTPUT" }
+  | { type: "FORMIFY" }
+  | { type: "EDIT_QUERY"; value: string }
+  | { type: "PED_COUNTDOWN"; duration: number };
+
+interface GraphiQLContext {
+  graphQLFetcher: (args: FetcherArgs) => Promise<object>;
+  cms: TinaCMS;
+  variables: { section: string; relativePath: string };
+  schema: null | GraphQLSchema;
+  queryString: string;
+  explorerIsOpen: boolean;
+  outputIsOpen: boolean;
+}
+
+// This machine is completely decoupled from React
+export const graphiqlMachine = Machine<
+  GraphiQLContext,
+  GraphiQLStateSchema,
+  GraphiQLEvent
+>({
+  id: "graphiql",
+  parallel: true,
+  states: {
+    explorerIsOpen: {
+      initial: "closed",
+      states: {
+        closed: {
+          on: {
+            TOGGLE_EXPLORER: "open",
+            OPEN_EXPLORER: "open",
+          },
+        },
+        open: {
+          on: {
+            TOGGLE_EXPLORER: "closed",
+            CLOSE_EXPLORER: "closed",
+          },
+        },
+      },
+    },
+    outputIsOpen: {
+      initial: "closed",
+      states: {
+        closed: {
+          on: {
+            TOGGLE_OUTPUT: "open",
+            OPEN_OUTPUT: "open",
+          },
+        },
+        open: {
+          on: {
+            TOGGLE_OUTPUT: "closed",
+            CLOSE_OUTPUT: "closed",
+          },
+        },
+      },
+    },
+    editor: {
+      initial: "fetchingSchema",
+      states: {
+        fetchingSchema: {
+          invoke: {
+            id: "fetchSchema",
+            src: async (context) => {
+              return context.graphQLFetcher({ query: getIntrospectionQuery() });
+            },
+            onDone: {
+              target: "generatingQuery",
+              actions: assign({
+                schema: (_context, event) => buildClientSchema(event.data),
+              }),
+            },
+          },
+        },
+        generatingQuery: {
+          invoke: {
+            id: "generateQuery",
+            src: async (context) => {
+              return context.cms.api.forestry.generateQuery(context.variables);
+            },
+            onError: {
+              target: "error",
+            },
+            onDone: {
+              target: "ready",
+              actions: assign({
+                queryString: (_context, event) => event.data,
+              }),
+            },
+          },
+        },
+        error: {
+          type: "final",
+        },
+        ready: {
+          on: {
+            CHANGE_VARIABLES: {
+              target: "generatingQuery",
+              actions: assign({
+                variables: (_context, event) => event.value,
+              }),
+            },
+            EDIT_QUERY: {
+              actions: assign({
+                queryString: (_context, event) => event.value,
+              }),
+            },
+            FORMIFY: "formifyingQuery",
+          },
+        },
+        formifyingQuery: {
+          invoke: {
+            id: "formifyQuery",
+            src: async (context) => {
+              if (!context.schema) {
+                throw new Error("Expected schema to already be defined");
+              }
+
+              const documentNode = parse(context.queryString);
+              return print(formBuilder(documentNode, context.schema));
+            },
+            onError: {
+              target: "error",
+            },
+            onDone: {
+              target: "ready",
+              actions: assign({
+                queryString: (_context, event) => event.data,
+              }),
+            },
+          },
+        },
+      },
+    },
+  },
+});
+
+type FetcherArgs = {
+  query: string;
+  variables?: object;
+  operationName?: string;
+};
+
+export const Explorer = () => {
+  let { project, section, ...path } = useParams();
+  const variables = { section, relativePath: path[0] };
+
+  React.useEffect(() => {
+    send({ type: "CHANGE_VARIABLES", value: variables });
+  }, [variables.section, variables.relativePath]);
+
+  const cms = useCMS();
+  const graphQLFetcher = async (graphQLParams: {
+    query: string;
+    variables?: object;
+    operationName?: string;
+  }) => {
+    try {
+      return cms.api.forestry
+        .request(graphQLParams.query, {
+          variables: graphQLParams.variables || {},
+        })
+        .then((response: unknown) => {
+          return response;
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [current, send] = useMachine(graphiqlMachine, {
+    context: {
+      graphQLFetcher,
+      cms,
+      variables,
+      queryString: "",
+      explorerIsOpen: false,
+      outputIsOpen: false,
+      schema: null,
+    },
+  });
+
+  console.log(current.value);
+
+  const _graphiql = React.useRef();
+
+  if (!current.context.schema) {
+    return <div>Finding schema...</div>;
+  }
+
+  return (
+    <div id="root" className="graphiql-container">
+      <TinaInfo
+        isOpen={current.matches("outputIsOpen.open")}
+        variables={current.context.variables}
+      />
+      <React.Fragment>
+        {/* @ts-ignore */}
+        <GraphiQL
+          ref={_graphiql}
+          fetcher={graphQLFetcher}
+          schema={current.context.schema}
+          onEditQuery={(query: string) => {
+            send({ type: "EDIT_QUERY", value: query });
+          }}
+          query={current.context.queryString}
+          variables={JSON.stringify(
+            { relativePath: variables.relativePath },
+            null,
+            2
+          )}
+        >
+          {/* Hide GraphiQL logo */}
+          <GraphiQL.Logo>{` `}</GraphiQL.Logo>
+          <GraphiQL.Toolbar>
+            <button
+              onClick={() => send("FORMIFY")}
+              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
+              type="button"
+            >
+              Formify
+            </button>
+            <button
+              type="button"
+              onClick={() => send("TOGGLE_OUTPUT")}
+              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
+            >
+              Output
+            </button>
+          </GraphiQL.Toolbar>
+        </GraphiQL>
+      </React.Fragment>
+    </div>
+  );
+};
+
+const TinaInfo = ({
+  variables,
+  isOpen,
+}: {
+  variables: { section: string; relativePath: string };
+  isOpen: boolean;
+}) => {
   const { data, errors } = useForestryForm2({
-    payload,
+    payload: {},
     variables,
     fetcher: async () => {},
   });
-
   return (
     <div
       style={{ left: "21rem", top: "65px" }}
       className={`absolute right-0 bottom-0 p-10 bg-white z-20 shadow-lg overflow-scroll ${
-        outputIsOpen
+        isOpen
           ? "opacity-1 pointer-events-all"
           : "opacity-0 pointer-events-none"
       }`}
@@ -56,223 +319,44 @@ const UseIt = ({
   );
 };
 
-export const Explorer = (
-  variables: { variables: {} | { relativePath: string; section: string } } = {
-    variables: {},
-  }
-) => {
-  const params = useParams();
+// const UseIt = ({
+//   formConfig,
+//   outputIsOpen,
+//   variables,
+//   onSubmit,
+//   payload,
+// }: {
+//   schema: GraphQLSchema;
+//   formConfig: any;
+//   outputIsOpen: boolean;
+//   variables: object;
+//   onSubmit: (values: any) => void;
+//   payload: null | object;
+// }) => {
+//   // onSubmit: (values: unknown, transformedValues: unknown) => {
+//   //   onSubmit(transformedValues);
+//   // },
 
-  // @ts-ignore
-  const project = params.project as string;
+//   const { data, errors } = useForestryForm2({
+//     payload,
+//     variables,
+//     fetcher: async () => {},
+//   });
 
-  const [vars, setVars] = React.useState<object>({});
-  const cms = useCMS();
-
-  const [state, setState] = React.useState<{
-    schema: null | GraphQLSchema;
-    query: null | string;
-    variables?: object;
-    outputIsOpen: boolean;
-    explorerIsOpen: boolean;
-  }>({
-    schema: null,
-    query: null,
-    outputIsOpen: false,
-    explorerIsOpen: false,
-  });
-
-  React.useEffect(() => {
-    const generateQuery = async () => {
-      const queryString = await cms.api.forestry.generateQuery(
-        variables.variables
-      );
-
-      const newState = {
-        query: queryString,
-      };
-      console.log("setedited");
-      setEditQuery(queryString);
-
-      setState({ ...state, ...newState });
-    };
-
-    // FIXME: this is a race-condition, move everything to state-hooks
-    if (state.schema) {
-      generateQuery();
-    }
-  }, [variables]);
-
-  React.useEffect(() => {
-    setVars({ relativePath: variables.variables.relativePath });
-  }, [variables]);
-
-  const [queryResult, setQueryResult] = React.useState<null | { data: object }>(
-    null
-  );
-  const [editedQuery, setEditQuery] = React.useState(state.query);
-
-  const graphQLFetcher = async (graphQLParams: {
-    query: string;
-    variables?: object;
-    operationName?: string;
-  }) => {
-    try {
-      setQueryResult(null);
-      return cms.api.forestry
-        .request(graphQLParams.query, {
-          variables: graphQLParams.variables || {},
-        })
-        .then((response: { document: { data: object } }) => {
-          setQueryResult(response);
-          return response;
-        });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const _graphiql = React.useRef();
-
-  const setVariables = (values: object) => {
-    setVars({
-      // @ts-ignore
-      relativePath: vars.relativePath,
-      // @ts-ignore
-      section: vars.section,
-      params: values,
-    });
-    setState({
-      ...state,
-      query: `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
-  updateDocument(relativePath: $relativePath, section: $section, params: $params) {
-    __typename
-  }
-}`,
-    });
-  };
-
-  React.useEffect(() => {
-    try {
-      graphQLFetcher({
-        query: getIntrospectionQuery(),
-      }).then((result) => {
-        const newState: { schema: GraphQLSchema; query: null | string } = {
-          schema: buildClientSchema(result),
-          query: "",
-        };
-
-        setState({ ...state, ...newState });
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }, [project]);
-
-  const _handleFormifyQuery = () => {
-    try {
-      graphQLFetcher({
-        query: getIntrospectionQuery(),
-      }).then((result) => {
-        const clientSchema = buildClientSchema(result);
-        const documentNode = parse(editedQuery);
-
-        const queryAst = formBuilder(documentNode, clientSchema);
-        const newState: { schema: GraphQLSchema; query: null | string } = {
-          schema: buildClientSchema(result),
-          query: print(queryAst),
-        };
-        console.log("for9mifty");
-        setEditQuery(print(queryAst));
-
-        setState({ ...state, ...newState, outputIsOpen: false });
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const _handleEditQuery = (query: any) => {
-    setState({ ...state, query });
-  };
-
-  const _handleToggleOutput = () => {
-    setState({ ...state, outputIsOpen: !state.outputIsOpen });
-  };
-  const _handleToggleExplorer = () => {
-    setState({
-      ...state,
-      explorerIsOpen: !state.explorerIsOpen,
-      outputIsOpen: false,
-    });
-  };
-  const { query, schema } = state;
-
-  if (!schema) {
-    return <div>Finding schema...</div>;
-  }
-
-  return (
-    <div id="root" className="graphiql-container">
-      {queryResult && (
-        <UseIt
-          onSubmit={setVariables}
-          variables={variables.variables}
-          // @ts-ignore
-          outputIsOpen={state.outputIsOpen}
-          project={project}
-          schema={schema}
-          payload={queryResult}
-        />
-      )}
-      <React.Fragment>
-        <GraphiQLExplorer
-          schema={schema}
-          query={editedQuery || ""}
-          onEdit={_handleEditQuery}
-          explorerIsOpen={state.explorerIsOpen}
-          onToggleExplorer={_handleToggleExplorer}
-          onRunOperation={(operationName: any) => {
-            // @ts-ignore
-            _graphiql.handleRunQuery(operationName);
-          }}
-        />
-        {/* @ts-ignore */}
-        <GraphiQL
-          ref={_graphiql}
-          fetcher={graphQLFetcher}
-          schema={schema}
-          onEditQuery={(query) => {
-            console.log("onEdit");
-            setEditQuery(query);
-          }}
-          query={editedQuery}
-          variables={JSON.stringify(vars, null, 2)}
-        >
-          {/* Hide GraphiQL logo */}
-          <GraphiQL.Logo>{` `}</GraphiQL.Logo>
-          <GraphiQL.Toolbar>
-            <button
-              onClick={_handleFormifyQuery}
-              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
-            >
-              Formify
-            </button>
-            <button
-              onClick={_handleToggleExplorer}
-              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
-            >
-              Explorer
-            </button>
-            <button
-              onClick={_handleToggleOutput}
-              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
-            >
-              Output
-            </button>
-          </GraphiQL.Toolbar>
-        </GraphiQL>
-      </React.Fragment>
-    </div>
-  );
-};
+//   return (
+//     <div
+//       style={{ left: "21rem", top: "65px" }}
+//       className={`absolute right-0 bottom-0 p-10 bg-white z-20 shadow-lg overflow-scroll ${
+//         outputIsOpen
+//           ? "opacity-1 pointer-events-all"
+//           : "opacity-0 pointer-events-none"
+//       }`}
+//     >
+//       <div className="bg-gray-100 p-4">
+//         <pre>
+//           <code className="text-xs">{JSON.stringify(data, null, 2)}</code>
+//         </pre>
+//       </div>
+//     </div>
+//   );
+// };

@@ -14,15 +14,8 @@ type Project = {
   value: string;
 };
 
-export const Sidebar = ({
-  projects,
-  onFileSelect,
-}: {
-  projects: Project[];
-  items?: Item[];
-  onFileSelect: (args: { relativePath: string; section: string }) => void;
-}) => {
-  const { project } = useParams();
+export const Sidebar = ({ projects }: { projects: Project[] }) => {
+  const { project, section, ...path } = useParams();
 
   const [sections, setSections] = React.useState<
     {
@@ -31,36 +24,26 @@ export const Sidebar = ({
     }[]
   >([]);
 
-  const [activeDocument, setActiveDocument] = React.useState<{
-    relativePath: string;
-    section: string;
-  } | null>(null);
+  const [activeSections, setActiveSections] = React.useState<string[]>([
+    section,
+  ]);
 
-  const [activeSection, setActiveSection] = React.useState<string | null>(null);
+  // React.useEffect(() => {
+  //   if (activeDocument) {
+  //     window.location = `/${project}/${section}/${path[0]}`;
+  //   }
+  // }, [activeDocument]);
 
-  React.useEffect(() => {
-    if (activeDocument) {
-      onFileSelect(activeDocument);
-    }
-  }, [activeDocument]);
-
-  React.useEffect(() => {
-    if (sections.length > 0) {
-      if (sections[0].documents) {
-        setActiveDocument({
-          relativePath: sections[0].documents[0].sys.relativePath,
-          section: sections[0].slug,
-        });
-        onFileSelect({
-          relativePath: sections[0].documents[0].sys.relativePath,
-          section: sections[0].slug,
-        });
-      }
-      if (!activeSection) {
-        setActiveSection(sections[0].slug);
-      }
-    }
-  }, [sections]);
+  // React.useEffect(() => {
+  //   if (sections.length > 0) {
+  //     if (sections[0].documents) {
+  //       window.location = `/${project}/${sections[0].slug}/${sections[0].documents[0].sys.relativePath}`;
+  //     }
+  //     if (!activeSection) {
+  //       setActiveSection(sections[0].slug);
+  //     }
+  //   }
+  // }, [sections]);
 
   const cms = useCMS();
 
@@ -264,58 +247,58 @@ export const Sidebar = ({
           <div className="h-0 flex-1 flex flex-col overflow-y-auto">
             <nav className="flex-1 px-2 bg-gray-800 pt-2">
               <div>
-                {sections.map((section) => {
+                {sections.map((s) => {
+                  const isActiveSection = activeSections.includes(s.slug);
                   return (
                     <>
                       <button
                         onClick={() => {
-                          activeSection === section.slug
-                            ? setActiveSection(null)
-                            : setActiveSection(section.slug);
+                          isActiveSection
+                            ? setActiveSections([
+                                ...activeSections.filter(
+                                  (sec) => sec !== s.slug
+                                ),
+                              ])
+                            : setActiveSections([...activeSections, s.slug]);
                         }}
-                        className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${
-                          activeSection === section.slug ? "bg-gray-600" : ""
-                        }`}
+                        className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150`}
                       >
                         {/* Expanded: "text-gray-200 rotate-90", Collapsed: "text-gray-300" */}
                         <svg
                           className={`mr-2 h-5 w-5 transform group-hover:text-gray-200 group-focus:text-gray-200 transition-colors ease-in-out duration-150 ${
-                            activeSection === section.slug ? "rotate-90" : ""
+                            isActiveSection ? "rotate-90" : ""
                           }`}
                           viewBox="0 0 20 20"
                         >
                           <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
                         </svg>
-                        {section.slug}
+                        {s.slug}
                       </button>
                       <div
                         className={`mt-1 space-y-1 ${
-                          activeSection === section.slug ? "" : "hidden"
+                          isActiveSection ? "" : "hidden"
                         }`}
                       >
-                        {section.documents?.map((document) => {
+                        {s.documents?.map((document) => {
                           // FIXME: array with null is returned
                           if (!document) {
                             return null;
                           }
                           const activeStyles =
-                            activeDocument?.relativePath ===
-                            document.sys.relativePath
+                            path[0] === document.sys.relativePath
                               ? "text-gray-200 bg-gray-600"
                               : "";
                           return (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setActiveDocument({
-                                  relativePath: document.sys.relativePath,
-                                  section: section.slug,
-                                })
-                              }
-                              className={`group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
+                            <Link
+                              to={`/${project}/${s.slug}/${document.sys.relativePath}`}
                             >
-                              {document.sys.breadcrumbs.join("/")}
-                            </button>
+                              <a
+                                type="button"
+                                className={`group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
+                              >
+                                {document.sys.breadcrumbs.join("/")}
+                              </a>
+                            </Link>
                           );
                         })}
                       </div>
