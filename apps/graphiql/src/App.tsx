@@ -84,13 +84,17 @@ const TinaWrap = ({
   );
 };
 
-const TinaFixtureProject = ({ children }: { children: React.ReactNode }) => {
-  let { project } = useParams();
-  const client = new ForestryClient({
-    realm: "",
-    clientId: "",
-    redirectURI: "",
-    customAPI: `http://localhost:4002/${project}`,
+const TinaFixtureProject = ({
+  projects,
+}: {
+  projects: {
+    label: string;
+    value: string;
+  }[];
+}) => {
+  let { project, section, ...path } = useParams();
+  const client = new ForestryClient("", {
+    gqlServer: `http://localhost:4002/${project}`,
   });
   const media = new ForestryMediaStore(client);
 
@@ -111,7 +115,12 @@ const TinaFixtureProject = ({ children }: { children: React.ReactNode }) => {
         onLogin={() => alert("enter edit mode")}
         onLogout={() => alert("exit edit mode")}
       >
-        {children}
+        <div className="h-screen flex overflow-hidden bg-gray-100">
+          <Sidebar projects={projects} />
+          <div className="flex flex-col w-0 flex-1 overflow-hidden">
+            <Explorer />
+          </div>
+        </div>
       </TinacmsForestryProvider>
     </TinaProvider>
   );
@@ -121,11 +130,6 @@ const App = () => {
   const [projects, setProjects] = React.useState<
     { label: string; value: string }[]
   >([]);
-
-  const [variables, setVariables] = React.useState<object>({
-    relativePath: "welcome.md",
-    section: "posts",
-  });
 
   React.useEffect(() => {
     const listProjects = async () => {
@@ -152,20 +156,8 @@ const App = () => {
             </Route>
           </Switch>
         </Route>
-        <Route path="/:project" exact>
-          <TinaFixtureProject>
-            <div className="h-screen flex overflow-hidden bg-gray-100">
-              <Sidebar
-                onFileSelect={(variables) => {
-                  setVariables(variables);
-                }}
-                projects={projects}
-              />
-              <div className="flex flex-col w-0 flex-1 overflow-hidden">
-                <Explorer variables={variables} />
-              </div>
-            </div>
-          </TinaFixtureProject>
+        <Route path="/:project/:section/*">
+          <TinaFixtureProject projects={projects} />
         </Route>
       </Switch>
     </Router>
