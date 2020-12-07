@@ -12,10 +12,18 @@ import {
   GraphQLSchema,
   buildClientSchema,
   print,
+  createSourceEventStream,
 } from "graphql";
+import { isContext } from "vm";
 
 interface GraphiQLStateSchema {
   states: {
+    fetcher: {
+      states: {
+        idle: {};
+        fetching: {};
+      };
+    };
     explorerIsOpen: {
       states: {
         closed: {};
@@ -45,8 +53,10 @@ type GraphiQLEvent =
   | { type: "TIMER" }
   | {
       type: "CHANGE_VARIABLES";
-      value: { section: string; relativePath: string };
+      value: { section: string; relativePath: string; payload?: object };
     }
+  | { type: "FETCH"; query: string }
+  | { type: "TOGGLE_EXPLORER" }
   | { type: "TOGGLE_EXPLORER" }
   | { type: "OPEN_EXPLORER" }
   | { type: "CLOSE_EXPLORER" }
@@ -62,6 +72,8 @@ interface GraphiQLContext {
   cms: TinaCMS;
   variables: { section: string; relativePath: string };
   schema: null | GraphQLSchema;
+  result: null | object;
+  section: string;
   queryString: string;
   explorerIsOpen: boolean;
   outputIsOpen: boolean;
@@ -76,6 +88,41 @@ export const graphiqlMachine = Machine<
   id: "graphiql",
   parallel: true,
   states: {
+    fetcher: {
+      initial: "idle",
+      states: {
+        idle: {
+          on: { FETCH: "fetching" },
+        },
+        fetching: {
+          invoke: {
+            id: "fetch",
+            src: async (context, event) => {
+              if (event.type === "FETCH") {
+                return context.cms.api.forestry.request(event.query, {
+                  variables: context.variables,
+                });
+              } else {
+                throw new Error(
+                  `Unexpected payload for fetch service with event type ${event.type}`
+                );
+              }
+            },
+            onError: {
+              target: "idle",
+            },
+            onDone: {
+              target: "idle",
+              actions: assign({
+                result: (_context, event) => {
+                  return event.data;
+                },
+              }),
+            },
+          },
+        },
+      },
+    },
     explorerIsOpen: {
       initial: "closed",
       states: {
@@ -131,7 +178,10 @@ export const graphiqlMachine = Machine<
           invoke: {
             id: "generateQuery",
             src: async (context) => {
-              return context.cms.api.forestry.generateQuery(context.variables);
+              return context.cms.api.forestry.generateQuery({
+                relativePath: context.variables.relativePath,
+                section: context.section,
+              });
             },
             onError: {
               target: "error",
@@ -152,7 +202,10 @@ export const graphiqlMachine = Machine<
             CHANGE_VARIABLES: {
               target: "generatingQuery",
               actions: assign({
-                variables: (_context, event) => event.value,
+                variables: (_context, event) => {
+                  console.log("dddoit", event.value);
+                  return event.value;
+                },
               }),
             },
             EDIT_QUERY: {
@@ -198,11 +251,11 @@ type FetcherArgs = {
 
 export const Explorer = () => {
   let { project, section, ...path } = useParams();
-  const variables = { section, relativePath: path[0] };
+  const variables = { relativePath: path[0] };
 
   React.useEffect(() => {
     send({ type: "CHANGE_VARIABLES", value: variables });
-  }, [variables.section, variables.relativePath]);
+  }, [variables.relativePath]);
 
   const cms = useCMS();
   const graphQLFetcher = async (graphQLParams: {
@@ -211,23 +264,27 @@ export const Explorer = () => {
     operationName?: string;
   }) => {
     try {
-      return cms.api.forestry
+      const result = await cms.api.forestry
         .request(graphQLParams.query, {
           variables: graphQLParams.variables || {},
         })
         .then((response: unknown) => {
           return response;
         });
+
+      return result;
     } catch (e) {
       console.log(e);
     }
   };
 
-  const [current, send] = useMachine(graphiqlMachine, {
+  const [current, send, service] = useMachine(graphiqlMachine, {
     context: {
       graphQLFetcher,
+      result: {},
       cms,
       variables,
+      section,
       queryString: "",
       explorerIsOpen: false,
       outputIsOpen: false,
@@ -235,7 +292,7 @@ export const Explorer = () => {
     },
   });
 
-  console.log(current.value);
+  // console.log(current.context);
 
   const _graphiql = React.useRef();
 
@@ -243,27 +300,39 @@ export const Explorer = () => {
     return <div>Finding schema...</div>;
   }
 
+  const fetcher = async () => {
+    send({ type: "FETCH", query: current.context.queryString });
+    return new Promise((resolve, reject) => {
+      service.onChange((context) => {
+        resolve(context.result);
+      });
+    });
+  };
+
   return (
     <div id="root" className="graphiql-container">
       <TinaInfo
         isOpen={current.matches("outputIsOpen.open")}
         variables={current.context.variables}
+        fetcher={fetcher}
+        result={current.context.result}
+        onFormSubmit={(value) => {
+          console.log("meh", value, current.nextEvents);
+
+          send({ type: "CHANGE_VARIABLES", value });
+        }}
       />
       <React.Fragment>
         {/* @ts-ignore */}
         <GraphiQL
           ref={_graphiql}
-          fetcher={graphQLFetcher}
+          fetcher={fetcher}
           schema={current.context.schema}
           onEditQuery={(query: string) => {
             send({ type: "EDIT_QUERY", value: query });
           }}
           query={current.context.queryString}
-          variables={JSON.stringify(
-            { relativePath: variables.relativePath },
-            null,
-            2
-          )}
+          variables={JSON.stringify(current.context.variables, null, 2)}
         >
           {/* Hide GraphiQL logo */}
           <GraphiQL.Logo>{` `}</GraphiQL.Logo>
@@ -290,17 +359,24 @@ export const Explorer = () => {
 };
 
 const TinaInfo = ({
-  variables,
   isOpen,
+  variables,
+  fetcher,
+  result,
+  onFormSubmit,
 }: {
   variables: { section: string; relativePath: string };
   isOpen: boolean;
+  result: object;
+  onFormSubmit: (payload: object) => void;
 }) => {
   const { data, errors } = useForestryForm2({
-    payload: {},
+    payload: result,
     variables,
-    fetcher: async () => {},
+    fetcher,
+    callback: (payload) => onFormSubmit(payload),
   });
+
   return (
     <div
       style={{ left: "21rem", top: "65px" }}

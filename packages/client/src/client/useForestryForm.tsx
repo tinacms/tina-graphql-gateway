@@ -40,10 +40,12 @@ export function useForestryForm2<T>({
   payload,
   variables,
   fetcher,
+  callback,
 }: {
   payload: object;
   variables: object;
   fetcher: <T>() => Promise<T>;
+  callback?: (payload: object) => void;
 }): unknown {
   const cms = useCMS();
   const [errors, setErrors] = React.useState([""]);
@@ -66,11 +68,12 @@ export function useForestryForm2<T>({
     })
     .required();
 
+  const keys = Object.keys(payload);
   React.useEffect(() => {
     schema
       .validate(payload)
       .then(() => {
-        Object.values(payload).map((maybeNode) => {
+        Object.values(payload).map((maybeNode, index) => {
           nodeSchema
             .validate(maybeNode)
             .then(() => {
@@ -78,24 +81,88 @@ export function useForestryForm2<T>({
               // this is temporary for playground viewing
               setData(payload);
 
+              const submit = async (values) => {
+                // TODO: this should specify the response data
+                // so we don't need another round trip
+                await cms.api.forestry.updateContent({
+                  relativePath: variables.relativePath,
+                  section: variables.section,
+                  payload: values,
+                  form: n.form,
+                });
+                const updatedContent = await fetcher();
+                // FIXME: this is updating the whole document
+                setData(updatedContent);
+              };
+
               const n = maybeNode as DocumentNode;
-              cms.plugins.add(
-                createForm(
-                  {
-                    id: n.sys.path,
-                    label: `${n.sys.basename}`,
-                    fields: n.form.fields,
-                    initialValues: n.values,
-                    onSubmit: async (values) => {
-                      console.log(values);
-                    },
+              const f = createForm(
+                {
+                  id: `${keys[index]}`,
+                  label: `${n.sys.basename}`,
+                  fields: n.form.fields,
+                  initialValues: n.values,
+                  onSubmit: async (values) => {
+                    const payload = await cms.api.forestry.transformPayload({
+                      payload: values,
+                      form: n.form,
+                    });
+                    callback && callback(payload);
                   },
-                  () => {}
-                )
+                },
+                (form) => {
+                  const modifiedValues = form.values;
+                  const hotFields = n.form.fields.filter((field) => {
+                    return field.refetchPolicy !== "onChange";
+                  });
+
+                  const hotFieldsMap = {};
+                  hotFields.forEach((field) => {
+                    hotFieldsMap[field.name] = modifiedValues[field.name];
+                  });
+
+                  const coldFields = n.form.fields.filter((field) => {
+                    return field.refetchPolicy === "onChange";
+                  });
+
+                  let coldValues = [];
+
+                  var proxy = new Proxy(coldValues, {
+                    apply: function (target, thisArg, argumentsList) {
+                      return thisArg[target].apply(this, argumentsList);
+                    },
+                    deleteProperty: function (target, property) {
+                      console.log("Deleted %s", property);
+                      return true;
+                    },
+                    set: function (target, property, value, receiver) {
+                      target[property] = value;
+                      console.log("changed", coldValues);
+                      submit();
+                      return true;
+                    },
+                  });
+
+                  // coldFields.forEach((field) => {
+                  //   proxy.push(modifiedValues[field.name]);
+                  // });
+
+                  setData({
+                    ...data,
+                    [keys[index]]: {
+                      data: Object.assign(n.data, hotFieldsMap),
+                    },
+                  });
+                }
               );
+              cms.plugins.add(f);
             })
             .catch(function (err) {
-              console.warn(err.errors);
+              console.log(err);
+              setData({
+                ...data,
+                [keys[index]]: { data: payload[keys[index]].data },
+              });
             });
         });
       })
@@ -104,7 +171,8 @@ export function useForestryForm2<T>({
       });
   }, [payload]);
 
-  return { data: tempRemoveFormKeys(data), errors };
+  // return { data: tempRemoveFormKeys(data), errors };
+  return { data, errors };
 }
 
 export function useForestryForm3<T>({
