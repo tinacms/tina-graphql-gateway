@@ -548,7 +548,7 @@ input Blocks_Input {
 input BlockPage_Doc_Input {
   title: String
   date: String
-  blockPage_blocks: [Blocks_Input]
+  blocks: [Blocks_Input]
   _body: String
 }
 
@@ -576,7 +576,7 @@ type BlockPage_Form {
 input BlockPage_Input {
   title: String
   date: String
-  blockPage_blocks: [Blocks_Input]
+  blocks: [Blocks_Input]
 }
 
 type ExcerptPost_Doc_Data {
@@ -1120,7 +1120,7 @@ input Sidecar_Doc_Input {
   text: String
   image: String
   cta: Sidecar_Cta_Input
-  sidecar_actions: [Actions_Input]
+  actions: [Actions_Input]
   style: String
   _body: String
 }
@@ -1154,7 +1154,7 @@ input Sidecar_Input {
   text: String
   image: String
   cta: Sidecar_Cta_Input
-  sidecar_actions: [Actions_Input]
+  actions: [Actions_Input]
   style: String
 }
 

@@ -1,5 +1,6 @@
 import {
   formBuilder,
+  mutationGenerator,
   queryGenerator,
   queryBuilder,
 } from "@forestryio/graphql-helpers";
@@ -160,8 +161,22 @@ export class ForestryClient {
       variables: {},
     });
     const query = queryGenerator(variables, buildClientSchema(data));
-    // console.log(print(query));
-    return print(query);
+    const formifiedQuery = formBuilder(query, buildClientSchema(data));
+    const res = await this.request(print(formifiedQuery), { variables });
+    const result = Object.values(res)[0];
+    const mutation = mutationGenerator(
+      variables,
+      Object.values(res)[0],
+      buildClientSchema(data)
+    );
+    // return { queryString: print(query), variables: variables };
+    return {
+      queryString: print(mutation),
+      variables: {
+        ...variables,
+        params: transformPayload(result.values, result.form),
+      },
+    };
   };
 
   listDocumentsBySection = async ({ section }: { section: string }) => {

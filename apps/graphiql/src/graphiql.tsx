@@ -12,9 +12,7 @@ import {
   GraphQLSchema,
   buildClientSchema,
   print,
-  createSourceEventStream,
 } from "graphql";
-import { isContext } from "vm";
 
 interface GraphiQLStateSchema {
   states: {
@@ -73,7 +71,6 @@ interface GraphiQLContext {
   variables: { section: string; relativePath: string };
   schema: null | GraphQLSchema;
   result: null | object;
-  section: string;
   queryString: string;
   explorerIsOpen: boolean;
   outputIsOpen: boolean;
@@ -180,7 +177,7 @@ export const graphiqlMachine = Machine<
             src: async (context) => {
               return context.cms.api.forestry.generateQuery({
                 relativePath: context.variables.relativePath,
-                section: context.section,
+                section: context.variables.section,
               });
             },
             onError: {
@@ -189,7 +186,8 @@ export const graphiqlMachine = Machine<
             onDone: {
               target: "ready",
               actions: assign({
-                queryString: (_context, event) => event.data,
+                queryString: (_context, event) => event.data.queryString,
+                variables: (_context, event) => event.data.variables,
               }),
             },
           },
@@ -203,7 +201,6 @@ export const graphiqlMachine = Machine<
               target: "generatingQuery",
               actions: assign({
                 variables: (_context, event) => {
-                  console.log("dddoit", event.value);
                   return event.value;
                 },
               }),
@@ -251,11 +248,11 @@ type FetcherArgs = {
 
 export const Explorer = () => {
   let { project, section, ...path } = useParams();
-  const variables = { relativePath: path[0] };
+  const variables = { section, relativePath: path[0] };
 
   React.useEffect(() => {
     send({ type: "CHANGE_VARIABLES", value: variables });
-  }, [variables.relativePath]);
+  }, [variables.section, variables.relativePath]);
 
   const cms = useCMS();
   const graphQLFetcher = async (graphQLParams: {
@@ -284,7 +281,6 @@ export const Explorer = () => {
       result: {},
       cms,
       variables,
-      section,
       queryString: "",
       explorerIsOpen: false,
       outputIsOpen: false,
@@ -292,7 +288,7 @@ export const Explorer = () => {
     },
   });
 
-  // console.log(current.context);
+  // console.log(current.value);
 
   const _graphiql = React.useRef();
 
@@ -309,6 +305,8 @@ export const Explorer = () => {
     });
   };
 
+  const { section: _section, ...viewableVariables } = current.context.variables;
+
   return (
     <div id="root" className="graphiql-container">
       <TinaInfo
@@ -317,8 +315,11 @@ export const Explorer = () => {
         fetcher={fetcher}
         result={current.context.result}
         onFormSubmit={(value) => {
-          console.log("meh", value, current.nextEvents);
-
+          send({
+            type: "EDIT_QUERY",
+            value: `
+          `,
+          });
           send({ type: "CHANGE_VARIABLES", value });
         }}
       />
@@ -332,7 +333,7 @@ export const Explorer = () => {
             send({ type: "EDIT_QUERY", value: query });
           }}
           query={current.context.queryString}
-          variables={JSON.stringify(current.context.variables, null, 2)}
+          variables={JSON.stringify(viewableVariables, null, 2)}
         >
           {/* Hide GraphiQL logo */}
           <GraphiQL.Logo>{` `}</GraphiQL.Logo>

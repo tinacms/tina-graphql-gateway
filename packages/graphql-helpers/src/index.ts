@@ -6,12 +6,18 @@ import {
   templateName,
   shortFMTName,
 } from "./util";
-import { queryBuilder, queryGenerator, formBuilder } from "./queryBuilder";
+import {
+  queryBuilder,
+  mutationGenerator,
+  queryGenerator,
+  formBuilder,
+} from "./queryBuilder";
 export {
   formBuilder,
   queryGenerator,
   friendlyFMTName,
   templateTypeName,
+  mutationGenerator,
   templateName,
   friendlyName,
   shortFMTName,

@@ -210,10 +210,7 @@ export const blocks: Blocks = {
         })
       );
 
-      return gql.inputValueList(
-        friendlyName(field, "", true),
-        friendlyName(field.name, "Input")
-      );
+      return gql.inputValueList(field.name, friendlyName(field.name, "Input"));
     },
   },
   resolve: {
