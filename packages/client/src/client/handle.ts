@@ -21,8 +21,8 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
         if (!template) {
           throw new Error(`Unable to find template in field ${field.name}`);
         }
-        acc[friendlyName(template, "InputData")] = {
-          template: templateName(v._template),
+        acc[friendlyName(template, "", true)] = {
+          // template: templateName(v._template),
           ...handleData(v, template),
         };
 
@@ -34,6 +34,14 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
       const { _template, ...rest } = value;
 
       return rest;
+    case "group-list":
+      // FIXME: this shouldn't be sent down for anything other than blocks
+      console.log("gl", value);
+      // const { _template, ...rest } = value;
+      return value.map((item) => {
+        const { _template: __template, ...rest } = item;
+        return rest;
+      });
 
     default:
       return value;
@@ -59,7 +67,7 @@ export const transformPayload = (values, schema: { fields: Field[] }) => {
     });
 
     // @ts-ignore
-    return { [friendlyName(schema, "Input")]: { data: accum } };
+    return { [friendlyName(schema, "", true)]: accum };
   } catch (e) {
     console.error("Error transformaing payload");
     console.log(e);
