@@ -2,7 +2,7 @@ import _ from "lodash";
 import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
-import { friendlyName } from "@forestryio/graphql-helpers";
+import { friendlyName, templateTypeName } from "@forestryio/graphql-helpers";
 import { builder } from "../../builder";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
@@ -73,7 +73,7 @@ export interface Build {
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<unknown>;
+  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
 }
 
 export interface Resolve {
@@ -198,12 +198,22 @@ export const blocks: Blocks = {
       return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
-      // const name = await builder.documentDataTaggedUnionInputObject({
-      //   cache,
-      //   templateSlugs: field.template_types,
-      //   accumulator,
-      // });
-      // return gql.inputValueList(field.name, name);
+      accumulator.push(
+        gql.input({
+          name: friendlyName(field.name, "Input"),
+          fields: field.template_types.map((template) =>
+            gql.inputValue(
+              friendlyName(template, "", true),
+              templateTypeName(template, "Input", true)
+            )
+          ),
+        })
+      );
+
+      return gql.inputValueList(
+        friendlyName(field, "", true),
+        friendlyName(field.name, "Input")
+      );
     },
   },
   resolve: {

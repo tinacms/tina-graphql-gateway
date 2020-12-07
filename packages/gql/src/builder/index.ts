@@ -29,7 +29,7 @@ import type {
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from "graphql";
-import type { TemplateData, DirectorySection } from "../types";
+import type { TemplateData, DirectorySection, Section } from "../types";
 import type { Field } from "../fields";
 
 export type Definitions =
@@ -392,7 +392,20 @@ export const builder = {
       };
     } = {};
     const sections = await cache.datasource.getSectionsSettings();
+    const templates = await cache.datasource.getAllTemplates();
+
+    const mutationsArray: {
+      section: Section;
+      mutationName: string;
+      returnType: string;
+    }[] = [];
+
     sections.forEach((section) => {
+      mutationsArray.push({
+        section,
+        mutationName: `update${friendlyName(section.slug)}Document`,
+        returnType: friendlyName(section.slug, "Document"),
+      });
       sectionMap[`get${friendlyName(section.slug)}Document`] = {
         section,
         plural: false,
@@ -457,6 +470,33 @@ export const builder = {
         ],
       }),
       gql.object({
+        name: "Mutation",
+        fields: [
+          gql.field({
+            name: "addPendingDocument",
+            type: "Node",
+            args: [
+              gql.inputString("relativePath"),
+              gql.inputString("section"),
+              gql.inputString("template"),
+            ],
+          }),
+          ...mutationsArray.map((mutation) => {
+            return gql.field({
+              name: mutation.mutationName,
+              type: mutation.returnType,
+              args: [
+                gql.inputString("relativePath"),
+                gql.inputValue(
+                  "params",
+                  friendlyName(mutation.section.slug, "Input")
+                ),
+              ],
+            });
+          }),
+        ],
+      }),
+      gql.object({
         name: "Query",
         fields: [
           gql.field({
@@ -501,6 +541,17 @@ export const builder = {
           name: friendlyName(name, "Data"),
           types: section.templates.map((template) =>
             templateTypeName(template, "Data", true)
+          ),
+        })
+      );
+      accumulator.push(
+        gql.input({
+          name: friendlyName(name, "Input"),
+          fields: section.templates.map((template) =>
+            gql.inputValue(
+              friendlyName(template, "", true),
+              templateTypeName(template, "Input", true)
+            )
           ),
         })
       );
@@ -559,7 +610,6 @@ export const builder = {
       );
     });
 
-    const templates = await cache.datasource.getAllTemplates();
     await sequential(templates, async (template) => {
       /**
        * Initial build is for documents, meaning an implicit _body
@@ -591,6 +641,7 @@ export const buildTemplateOrField = async (
   await buildTemplateOrFieldData(cache, template, accumulator, includeBody);
   await buildTemplateOrFieldValues(cache, template, accumulator, includeBody);
   await buildTemplateOrFieldForm(cache, template, accumulator, includeBody);
+  await buildTemplateOrFieldInput(cache, template, accumulator, includeBody);
 };
 export const buildTemplateOrFieldData = async (
   cache: Cache,
@@ -690,6 +741,58 @@ export const buildTemplateOrFieldFormFields = async (
   );
 
   return fieldsUnionName;
+};
+
+export const buildTemplateOrFieldInput = async (
+  cache: Cache,
+  template: TemplateData,
+  accumulator: Definitions[],
+  includeBody: boolean
+) => {
+  const name = templateTypeName(template, "Input", includeBody);
+
+  const fields = await sequential(
+    template.fields,
+    async (field) =>
+      await buildTemplateInputDataField(cache, field, accumulator)
+  );
+
+  if (includeBody) {
+    fields.push(
+      await buildTemplateInputDataField(
+        cache,
+        textarea.contentField,
+        accumulator
+      )
+    );
+  }
+
+  accumulator.push(
+    gql.input({
+      name,
+      fields,
+    })
+  );
+  // accumulator.push(
+  //   gql.union({
+  //     name: fieldsUnionName,
+  //     types: _.uniq(
+  //       fields.map((field) => {
+  //         switch (field.type.kind) {
+  //           case "NamedType":
+  //             return field.type.name.value;
+  //           case "ListType":
+  //           case "NonNullType":
+  //             throw new Error(
+  //               `Unexpected ${field.type.kind} for field union field`
+  //             );
+  //         }
+  //       })
+  //     ),
+  //   })
+  // );
+
+  return name;
 };
 
 export const buildTemplateOrFieldForm = async (
@@ -832,45 +935,46 @@ const buildTemplateDataField = async (
   }
 };
 
-// const buildTemplateInputDataField = async (
-//   cache: Cache,
-//   field: Field,
-//   accumulator: Definitions[]
-// ): Promise<InputValueDefinitionNode> => {
-//   switch (field.type) {
-//     case "text":
-//       return text.build.input({ cache, field, accumulator });
-//     case "textarea":
-//       return textarea.build.input({ cache, field, accumulator });
-//     // case "select":
-//     //   return select.build.input({ cache, field, accumulator });
-//     // case "blocks":
-//     //   return await blocks.build.input({ cache, field, accumulator });
-//     // case "field_group":
-//     //   return fieldGroup.build.input({ cache, field, accumulator });
-//     // case "field_group_list":
-//     //   return fieldGroupList.build.input({ cache, field, accumulator });
-//     // case "list":
-//     //   return list.build.input({ cache, field, accumulator });
-//     // case "boolean":
-//     //   return boolean.build.input({ cache, field, accumulator });
-//     // case "datetime":
-//     //   return datetime.build.input({ cache, field, accumulator });
-//     // case "file":
-//     //   return file.build.input({ cache, field, accumulator });
-//     // case "image_gallery":
-//     //   return imageGallery.build.input({ cache, field, accumulator });
-//     // case "number":
-//     //   return number.build.input({ cache, field, accumulator });
-//     // case "tag_list":
-//     //   return tag_list.build.input({ cache, field, accumulator });
-//     default:
-//       return text.build.input({ cache, field, accumulator });
-//   }
-// };
+const buildTemplateInputDataField = async (
+  cache: Cache,
+  field: Field,
+  accumulator: Definitions[]
+): Promise<InputValueDefinitionNode> => {
+  switch (field.type) {
+    case "text":
+      return text.build.input({ cache, field, accumulator });
+    case "textarea":
+      return textarea.build.input({ cache, field, accumulator });
+    case "select":
+      return select.build.input({ cache, field, accumulator });
+    case "blocks":
+      return await blocks.build.input({ cache, field, accumulator });
+    case "field_group":
+      return fieldGroup.build.input({ cache, field, accumulator });
+    case "field_group_list":
+      return fieldGroupList.build.input({ cache, field, accumulator });
+    case "list":
+      return list.build.input({ cache, field, accumulator });
+    case "boolean":
+      return boolean.build.input({ cache, field, accumulator });
+    case "datetime":
+      return datetime.build.input({ cache, field, accumulator });
+    case "file":
+      return file.build.input({ cache, field, accumulator });
+    case "image_gallery":
+      return imageGallery.build.input({ cache, field, accumulator });
+    case "number":
+      return number.build.input({ cache, field, accumulator });
+    case "tag_list":
+      return tag_list.build.input({ cache, field, accumulator });
+    default:
+      return text.build.input({ cache, field, accumulator });
+  }
+};
 
 export const builders = {
   buildTemplateOrFieldFormFields,
   buildTemplateOrFieldData,
   buildTemplateOrFieldValues,
+  buildTemplateOrFieldInput,
 };

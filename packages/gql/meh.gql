@@ -39,6 +39,14 @@ type Section {
   documents: [Document]
 }
 
+type Mutation {
+  addPendingDocument(relativePath: String, section: String, template: String): Node
+  updatePagesDocument(relativePath: String, params: Pages_Input): Pages_Document
+  updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
+  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
+  updateMenusDocument(relativePath: String, params: Menus_Input): Menus_Document
+}
+
 type Query {
   node(id: ID!): Node
   getSections: [Section]
@@ -55,6 +63,10 @@ type Query {
 
 union Pages_Data = BlockPage_Doc_Data
 
+input Pages_Input {
+  blockPage: BlockPage_Doc_Input
+}
+
 union Pages_Values = BlockPage_Doc_Values
 
 union Pages_Form = BlockPage_Doc_Form
@@ -68,6 +80,10 @@ type Pages_Document implements Node & Document {
 }
 
 union Posts_Data = Post_Doc_Data
+
+input Posts_Input {
+  post: Post_Doc_Input
+}
 
 union Posts_Values = Post_Doc_Values
 
@@ -83,6 +99,10 @@ type Posts_Document implements Node & Document {
 
 union Authors_Data = Author_Doc_Data
 
+input Authors_Input {
+  author: Author_Doc_Input
+}
+
 union Authors_Values = Author_Doc_Values
 
 union Authors_Form = Author_Doc_Form
@@ -96,6 +116,10 @@ type Authors_Document implements Node & Document {
 }
 
 union Menus_Data = Menu_Doc_Data
+
+input Menus_Input {
+  menu: Menu_Doc_Input
+}
 
 union Menus_Values = Menu_Doc_Values
 
@@ -142,6 +166,12 @@ type ActionNewsletter_Doc_Form {
   fields: [ActionNewsletter_Doc_FormFieldsUnion]
 }
 
+input ActionNewsletter_Doc_Input {
+  body: String
+  footer: String
+  _body: String
+}
+
 type ActionNewsletter_Data {
   body: LongTextValue
   footer: LongTextValue
@@ -159,6 +189,11 @@ type ActionNewsletter_Form {
   label: String
   name: String
   fields: [ActionNewsletter_FormFieldsUnion]
+}
+
+input ActionNewsletter_Input {
+  body: String
+  footer: String
 }
 
 type ActionPageReference_ButtonSettings_Data {
@@ -214,6 +249,16 @@ type ActionPageReference_Doc_Form {
   fields: [ActionPageReference_Doc_FormFieldsUnion]
 }
 
+input ActionPageReference_ButtonSettings_Input {
+  label: String
+}
+
+input ActionPageReference_Doc_Input {
+  page: String
+  button_settings: ActionPageReference_ButtonSettings_Input
+  _body: String
+}
+
 type ActionPageReference_Data {
   page: Pages_Document
   button_settings: ActionPageReference_ButtonSettings_Data
@@ -231,6 +276,11 @@ type ActionPageReference_Form {
   label: String
   name: String
   fields: [ActionPageReference_FormFieldsUnion]
+}
+
+input ActionPageReference_Input {
+  page: String
+  button_settings: ActionPageReference_ButtonSettings_Input
 }
 
 type ActionVideo_Doc_Data {
@@ -252,6 +302,11 @@ type ActionVideo_Doc_Form {
   fields: [ActionVideo_Doc_FormFieldsUnion]
 }
 
+input ActionVideo_Doc_Input {
+  url: String
+  _body: String
+}
+
 type ActionVideo_Data {
   url: String
 }
@@ -267,6 +322,10 @@ type ActionVideo_Form {
   label: String
   name: String
   fields: [ActionVideo_FormFieldsUnion]
+}
+
+input ActionVideo_Input {
+  url: String
 }
 
 type AuthorList_Doc_Data {
@@ -298,6 +357,11 @@ type AuthorList_Doc_Form {
   fields: [AuthorList_Doc_FormFieldsUnion]
 }
 
+input AuthorList_Doc_Input {
+  authors: [String]
+  _body: String
+}
+
 type AuthorList_Data {
   authors: [Authors_Document]
 }
@@ -313,6 +377,10 @@ type AuthorList_Form {
   label: String
   name: String
   fields: [AuthorList_FormFieldsUnion]
+}
+
+input AuthorList_Input {
+  authors: [String]
 }
 
 type Author_Accolades_Data {
@@ -368,6 +436,20 @@ type Author_Doc_Form {
   fields: [Author_Doc_FormFieldsUnion]
 }
 
+input Author_Accolades_Input {
+  figure: String
+  description: String
+}
+
+input Author_Doc_Input {
+  name: String
+  image: String
+  gallery: [String]
+  anecdotes: [String]
+  accolades: [Author_Accolades_Input]
+  _body: String
+}
+
 type Author_Data {
   name: String
   image: String
@@ -391,6 +473,14 @@ type Author_Form {
   label: String
   name: String
   fields: [Author_FormFieldsUnion]
+}
+
+input Author_Input {
+  name: String
+  image: String
+  gallery: [String]
+  anecdotes: [String]
+  accolades: [Author_Accolades_Input]
 }
 
 union BlockPage_Blocks_Data = Sidecar_Data | ExcerptPost_Data | PostList_Data | PriceList_Data | AuthorList_Data | SponsorList_Data | PageReference_Data | SectionIndex_Data
@@ -444,6 +534,24 @@ type BlockPage_Doc_Form {
   fields: [BlockPage_Doc_FormFieldsUnion]
 }
 
+input Blocks_Input {
+  sidecar: Sidecar_Doc_Input
+  excerptPost: ExcerptPost_Doc_Input
+  postList: PostList_Doc_Input
+  priceList: PriceList_Doc_Input
+  authorList: AuthorList_Doc_Input
+  sponsorList: SponsorList_Doc_Input
+  pageReference: PageReference_Doc_Input
+  sectionIndex: SectionIndex_Doc_Input
+}
+
+input BlockPage_Doc_Input {
+  title: String
+  date: String
+  blockPage_blocks: [Blocks_Input]
+  _body: String
+}
+
 type BlockPage_Data {
   title: String
   date: String
@@ -463,6 +571,12 @@ type BlockPage_Form {
   label: String
   name: String
   fields: [BlockPage_FormFieldsUnion]
+}
+
+input BlockPage_Input {
+  title: String
+  date: String
+  blockPage_blocks: [Blocks_Input]
 }
 
 type ExcerptPost_Doc_Data {
@@ -488,6 +602,13 @@ type ExcerptPost_Doc_Form {
   fields: [ExcerptPost_Doc_FormFieldsUnion]
 }
 
+input ExcerptPost_Doc_Input {
+  post: String
+  description: String
+  style: String
+  _body: String
+}
+
 type ExcerptPost_Data {
   post: Posts_Document
   description: LongTextValue
@@ -507,6 +628,12 @@ type ExcerptPost_Form {
   label: String
   name: String
   fields: [ExcerptPost_FormFieldsUnion]
+}
+
+input ExcerptPost_Input {
+  post: String
+  description: String
+  style: String
 }
 
 type Menu_MenuItem_Data {
@@ -550,6 +677,17 @@ type Menu_Doc_Form {
   fields: [Menu_Doc_FormFieldsUnion]
 }
 
+input Menu_MenuItem_Input {
+  label: String
+  page: String
+}
+
+input Menu_Doc_Input {
+  logo: String
+  menu_item: [Menu_MenuItem_Input]
+  _body: String
+}
+
 type Menu_Data {
   logo: String
   menu_item: [Menu_MenuItem_Data]
@@ -567,6 +705,11 @@ type Menu_Form {
   label: String
   name: String
   fields: [Menu_FormFieldsUnion]
+}
+
+input Menu_Input {
+  logo: String
+  menu_item: [Menu_MenuItem_Input]
 }
 
 type PageReference_Doc_Data {
@@ -590,6 +733,12 @@ type PageReference_Doc_Form {
   fields: [PageReference_Doc_FormFieldsUnion]
 }
 
+input PageReference_Doc_Input {
+  description: String
+  page: String
+  _body: String
+}
+
 type PageReference_Data {
   description: LongTextValue
   page: Pages_Document
@@ -607,6 +756,11 @@ type PageReference_Form {
   label: String
   name: String
   fields: [PageReference_FormFieldsUnion]
+}
+
+input PageReference_Input {
+  description: String
+  page: String
 }
 
 type PostList_Posts_Data {
@@ -646,6 +800,15 @@ type PostList_Doc_Form {
   fields: [PostList_Doc_FormFieldsUnion]
 }
 
+input PostList_Posts_Input {
+  post: String
+}
+
+input PostList_Doc_Input {
+  posts: [PostList_Posts_Input]
+  _body: String
+}
+
 type PostList_Data {
   posts: [PostList_Posts_Data]
 }
@@ -661,6 +824,10 @@ type PostList_Form {
   label: String
   name: String
   fields: [PostList_FormFieldsUnion]
+}
+
+input PostList_Input {
+  posts: [PostList_Posts_Input]
 }
 
 type Post_Doc_Data {
@@ -694,6 +861,14 @@ type Post_Doc_Form {
   fields: [Post_Doc_FormFieldsUnion]
 }
 
+input Post_Doc_Input {
+  title: String
+  author: String
+  image: String
+  hashtags: [String]
+  _body: String
+}
+
 type Post_Data {
   title: String
   author: Authors_Document
@@ -715,6 +890,13 @@ type Post_Form {
   label: String
   name: String
   fields: [Post_FormFieldsUnion]
+}
+
+input Post_Input {
+  title: String
+  author: String
+  image: String
+  hashtags: [String]
 }
 
 type PriceList_Prices_Data {
@@ -762,6 +944,19 @@ type PriceList_Doc_Form {
   fields: [PriceList_Doc_FormFieldsUnion]
 }
 
+input PriceList_Prices_Input {
+  title: String
+  description: String
+  bullet_points: [String]
+  category: String
+}
+
+input PriceList_Doc_Input {
+  heading: String
+  prices: [PriceList_Prices_Input]
+  _body: String
+}
+
 type PriceList_Data {
   heading: LongTextValue
   prices: [PriceList_Prices_Data]
@@ -779,6 +974,11 @@ type PriceList_Form {
   label: String
   name: String
   fields: [PriceList_FormFieldsUnion]
+}
+
+input PriceList_Input {
+  heading: String
+  prices: [PriceList_Prices_Input]
 }
 
 type SectionIndex_Doc_Data {
@@ -810,6 +1010,13 @@ type SectionIndex_Doc_Form {
   fields: [SectionIndex_Doc_FormFieldsUnion]
 }
 
+input SectionIndex_Doc_Input {
+  body: String
+  limit: String
+  section: String
+  _body: String
+}
+
 type SectionIndex_Data {
   body: LongTextValue
   limit: String
@@ -829,6 +1036,12 @@ type SectionIndex_Form {
   label: String
   name: String
   fields: [SectionIndex_FormFieldsUnion]
+}
+
+input SectionIndex_Input {
+  body: String
+  limit: String
+  section: String
 }
 
 type Sidecar_Cta_Data {
@@ -893,6 +1106,25 @@ type Sidecar_Doc_Form {
   fields: [Sidecar_Doc_FormFieldsUnion]
 }
 
+input Sidecar_Cta_Input {
+  header: String
+}
+
+input Actions_Input {
+  actionVideo: ActionVideo_Doc_Input
+  actionNewsletter: ActionNewsletter_Doc_Input
+  actionPageReference: ActionPageReference_Doc_Input
+}
+
+input Sidecar_Doc_Input {
+  text: String
+  image: String
+  cta: Sidecar_Cta_Input
+  sidecar_actions: [Actions_Input]
+  style: String
+  _body: String
+}
+
 type Sidecar_Data {
   text: LongTextValue
   image: String
@@ -916,6 +1148,14 @@ type Sidecar_Form {
   label: String
   name: String
   fields: [Sidecar_FormFieldsUnion]
+}
+
+input Sidecar_Input {
+  text: String
+  image: String
+  cta: Sidecar_Cta_Input
+  sidecar_actions: [Actions_Input]
+  style: String
 }
 
 type SponsorList_Sponsor_Data {
@@ -961,6 +1201,18 @@ type SponsorList_Doc_Form {
   fields: [SponsorList_Doc_FormFieldsUnion]
 }
 
+input SponsorList_Sponsor_Input {
+  name: String
+  url: String
+  image: String
+}
+
+input SponsorList_Doc_Input {
+  description: String
+  sponsor: [SponsorList_Sponsor_Input]
+  _body: String
+}
+
 type SponsorList_Data {
   description: LongTextValue
   sponsor: [SponsorList_Sponsor_Data]
@@ -978,4 +1230,9 @@ type SponsorList_Form {
   label: String
   name: String
   fields: [SponsorList_FormFieldsUnion]
+}
+
+input SponsorList_Input {
+  description: String
+  sponsor: [SponsorList_Sponsor_Input]
 }

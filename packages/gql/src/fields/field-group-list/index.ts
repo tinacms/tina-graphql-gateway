@@ -91,10 +91,13 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      // return gql.inputValueList(
-      //   field.name,
-      //   await builder.documentDataInputObject(cache, field, false, accumulator)
-      // );
+      const name = await builders.buildTemplateOrFieldInput(
+        cache,
+        field,
+        accumulator,
+        false
+      );
+      return gql.inputValueList(field.name, name);
     },
   },
   resolve: {
