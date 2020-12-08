@@ -682,7 +682,8 @@ export const buildTemplateOrFieldValues = async (
   cache: Cache,
   template: TemplateData,
   accumulator: Definitions[],
-  includeBody: boolean
+  includeBody: boolean,
+  includeTemplate: boolean = true
 ) => {
   const name = templateTypeName(template, "Values", includeBody);
 
@@ -700,10 +701,14 @@ export const buildTemplateOrFieldValues = async (
     );
   }
 
+  if (includeTemplate) {
+    fields.push(gql.field({ name: "_template", type: "String" }));
+  }
+
   accumulator.push(
     gql.object({
       name,
-      fields: [gql.field({ name: "_template", type: "String" }), ...fields],
+      fields,
     })
   );
   return name;

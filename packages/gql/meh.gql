@@ -150,10 +150,10 @@ type ActionNewsletter_Doc_Data {
 }
 
 type ActionNewsletter_Doc_Values {
-  _template: String
   body: String
   footer: String
   _body: String
+  _template: String
 }
 
 type TextareaField implements FormField {
@@ -182,9 +182,9 @@ type ActionNewsletter_Data {
 }
 
 type ActionNewsletter_Values {
-  _template: String
   body: String
   footer: String
+  _template: String
 }
 
 union ActionNewsletter_FormFieldsUnion = TextareaField
@@ -211,15 +211,14 @@ type ActionPageReference_Doc_Data {
 }
 
 type ActionPageReference_ButtonSettings_Values {
-  _template: String
   label: String
 }
 
 type ActionPageReference_Doc_Values {
-  _template: String
   page: String
   button_settings: ActionPageReference_ButtonSettings_Values
   _body: String
+  _template: String
 }
 
 type SelectField implements FormField {
@@ -269,9 +268,9 @@ type ActionPageReference_Data {
 }
 
 type ActionPageReference_Values {
-  _template: String
   page: String
   button_settings: ActionPageReference_ButtonSettings_Values
+  _template: String
 }
 
 union ActionPageReference_FormFieldsUnion = SelectField | ActionPageReference_ButtonSettings_GroupField
@@ -293,9 +292,9 @@ type ActionVideo_Doc_Data {
 }
 
 type ActionVideo_Doc_Values {
-  _template: String
   url: String
   _body: String
+  _template: String
 }
 
 union ActionVideo_Doc_FormFieldsUnion = TextField | TextareaField
@@ -316,8 +315,8 @@ type ActionVideo_Data {
 }
 
 type ActionVideo_Values {
-  _template: String
   url: String
+  _template: String
 }
 
 union ActionVideo_FormFieldsUnion = TextField
@@ -338,9 +337,9 @@ type AuthorList_Doc_Data {
 }
 
 type AuthorList_Doc_Values {
-  _template: String
   authors: [String]
   _body: String
+  _template: String
 }
 
 union List_FormFieldsUnion = TextField | SelectField
@@ -371,8 +370,8 @@ type AuthorList_Data {
 }
 
 type AuthorList_Values {
-  _template: String
   authors: [String]
+  _template: String
 }
 
 union AuthorList_FormFieldsUnion = ListField
@@ -402,19 +401,18 @@ type Author_Doc_Data {
 }
 
 type Author_Accolades_Values {
-  _template: String
   figure: String
   description: String
 }
 
 type Author_Doc_Values {
-  _template: String
   name: String
   image: String
   gallery: [String]
   anecdotes: [String]
   accolades: [Author_Accolades_Values]
   _body: String
+  _template: String
 }
 
 type FileField implements FormField {
@@ -463,12 +461,12 @@ type Author_Data {
 }
 
 type Author_Values {
-  _template: String
   name: String
   image: String
   gallery: [String]
   anecdotes: [String]
   accolades: [Author_Accolades_Values]
+  _template: String
 }
 
 union Author_FormFieldsUnion = TextField | FileField | ListField | Author_Accolades_GroupListField
@@ -499,11 +497,11 @@ type BlockPage_Doc_Data {
 union BlockPage_BlocksValues = Sidecar_Values | ExcerptPost_Values | PostList_Values | PriceList_Values | AuthorList_Values | SponsorList_Values | PageReference_Values | SectionIndex_Values
 
 type BlockPage_Doc_Values {
-  _template: String
   title: String
   date: String
   blocks: [BlockPage_BlocksValues]
   _body: String
+  _template: String
 }
 
 type DatetimeField implements FormField {
@@ -563,10 +561,10 @@ type BlockPage_Data {
 }
 
 type BlockPage_Values {
-  _template: String
   title: String
   date: String
   blocks: [BlockPage_BlocksValues]
+  _template: String
 }
 
 union BlockPage_FormFieldsUnion = TextField | DatetimeField | BlockPage_Blocks_BlocksField
@@ -591,11 +589,11 @@ type ExcerptPost_Doc_Data {
 }
 
 type ExcerptPost_Doc_Values {
-  _template: String
   post: String
   description: String
   style: String
   _body: String
+  _template: String
 }
 
 union ExcerptPost_Doc_FormFieldsUnion = SelectField | TextareaField
@@ -620,10 +618,10 @@ type ExcerptPost_Data {
 }
 
 type ExcerptPost_Values {
-  _template: String
   post: String
   description: String
   style: String
+  _template: String
 }
 
 union ExcerptPost_FormFieldsUnion = SelectField | TextareaField
@@ -652,16 +650,15 @@ type Menu_Doc_Data {
 }
 
 type Menu_MenuItem_Values {
-  _template: String
   label: String
   page: String
 }
 
 type Menu_Doc_Values {
-  _template: String
   logo: String
   menu_item: [Menu_MenuItem_Values]
   _body: String
+  _template: String
 }
 
 union Menu_MenuItem_FormFieldsUnion = TextField | SelectField
@@ -698,9 +695,9 @@ type Menu_Data {
 }
 
 type Menu_Values {
-  _template: String
   logo: String
   menu_item: [Menu_MenuItem_Values]
+  _template: String
 }
 
 union Menu_FormFieldsUnion = FileField | Menu_MenuItem_GroupListField
@@ -723,10 +720,10 @@ type PageReference_Doc_Data {
 }
 
 type PageReference_Doc_Values {
-  _template: String
   description: String
   page: String
   _body: String
+  _template: String
 }
 
 union PageReference_Doc_FormFieldsUnion = TextareaField | SelectField
@@ -749,9 +746,9 @@ type PageReference_Data {
 }
 
 type PageReference_Values {
-  _template: String
   description: String
   page: String
+  _template: String
 }
 
 union PageReference_FormFieldsUnion = TextareaField | SelectField
@@ -777,14 +774,13 @@ type PostList_Doc_Data {
 }
 
 type PostList_Posts_Values {
-  _template: String
   post: String
 }
 
 type PostList_Doc_Values {
-  _template: String
   posts: [PostList_Posts_Values]
   _body: String
+  _template: String
 }
 
 union PostList_Posts_FormFieldsUnion = SelectField
@@ -818,8 +814,8 @@ type PostList_Data {
 }
 
 type PostList_Values {
-  _template: String
   posts: [PostList_Posts_Values]
+  _template: String
 }
 
 union PostList_FormFieldsUnion = PostList_Posts_GroupListField
@@ -843,12 +839,12 @@ type Post_Doc_Data {
 }
 
 type Post_Doc_Values {
-  _template: String
   title: String
   author: String
   image: String
   hashtags: [String]
   _body: String
+  _template: String
 }
 
 type TagListField implements FormField {
@@ -881,11 +877,11 @@ type Post_Data {
 }
 
 type Post_Values {
-  _template: String
   title: String
   author: String
   image: String
   hashtags: [String]
+  _template: String
 }
 
 union Post_FormFieldsUnion = TextField | SelectField | FileField | TagListField
@@ -917,7 +913,6 @@ type PriceList_Doc_Data {
 }
 
 type PriceList_Prices_Values {
-  _template: String
   title: String
   description: String
   bullet_points: [String]
@@ -925,10 +920,10 @@ type PriceList_Prices_Values {
 }
 
 type PriceList_Doc_Values {
-  _template: String
   heading: String
   prices: [PriceList_Prices_Values]
   _body: String
+  _template: String
 }
 
 union PriceList_Prices_FormFieldsUnion = TextField | TextareaField | ListField | SelectField
@@ -967,9 +962,9 @@ type PriceList_Data {
 }
 
 type PriceList_Values {
-  _template: String
   heading: String
   prices: [PriceList_Prices_Values]
+  _template: String
 }
 
 union PriceList_FormFieldsUnion = TextareaField | PriceList_Prices_GroupListField
@@ -993,11 +988,11 @@ type SectionIndex_Doc_Data {
 }
 
 type SectionIndex_Doc_Values {
-  _template: String
   body: String
   limit: String
   section: String
   _body: String
+  _template: String
 }
 
 type NumberField implements FormField {
@@ -1028,10 +1023,10 @@ type SectionIndex_Data {
 }
 
 type SectionIndex_Values {
-  _template: String
   body: String
   limit: String
   section: String
+  _template: String
 }
 
 union SectionIndex_FormFieldsUnion = TextareaField | NumberField | SelectField
@@ -1064,20 +1059,19 @@ type Sidecar_Doc_Data {
 }
 
 type Sidecar_Cta_Values {
-  _template: String
   header: String
 }
 
 union Sidecar_ActionsValues = ActionVideo_Values | ActionNewsletter_Values | ActionPageReference_Values
 
 type Sidecar_Doc_Values {
-  _template: String
   text: String
   image: String
   cta: Sidecar_Cta_Values
   actions: [Sidecar_ActionsValues]
   style: String
   _body: String
+  _template: String
 }
 
 union Sidecar_Cta_FormFieldsUnion = TextField
@@ -1138,12 +1132,12 @@ type Sidecar_Data {
 }
 
 type Sidecar_Values {
-  _template: String
   text: String
   image: String
   cta: Sidecar_Cta_Values
   actions: [Sidecar_ActionsValues]
   style: String
+  _template: String
 }
 
 union Sidecar_FormFieldsUnion = TextareaField | FileField | Sidecar_Cta_GroupField | Sidecar_Actions_BlocksField | SelectField
@@ -1175,17 +1169,16 @@ type SponsorList_Doc_Data {
 }
 
 type SponsorList_Sponsor_Values {
-  _template: String
   name: String
   url: String
   image: String
 }
 
 type SponsorList_Doc_Values {
-  _template: String
   description: String
   sponsor: [SponsorList_Sponsor_Values]
   _body: String
+  _template: String
 }
 
 union SponsorList_Sponsor_FormFieldsUnion = TextField | FileField
@@ -1223,9 +1216,9 @@ type SponsorList_Data {
 }
 
 type SponsorList_Values {
-  _template: String
   description: String
   sponsor: [SponsorList_Sponsor_Values]
+  _template: String
 }
 
 union SponsorList_FormFieldsUnion = TextareaField | SponsorList_Sponsor_GroupListField

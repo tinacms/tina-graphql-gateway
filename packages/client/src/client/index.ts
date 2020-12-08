@@ -175,7 +175,10 @@ export class ForestryClient {
       variables: {
         relativePath: variables.relativePath,
         // @ts-ignore
-        params: transformPayload(result.values, result.form),
+        params: await this.transformPayload({
+          payload: result.values,
+          form: result.form,
+        }),
       },
     };
   };
@@ -261,7 +264,10 @@ export class ForestryClient {
     payload: any;
     form: { fields: Field[] };
   }) => {
-    return transformPayload(payload, form);
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+    return transformPayload(payload, form, buildClientSchema(data));
   };
 
   updateContent = async ({
@@ -280,7 +286,7 @@ export class ForestryClient {
         __typename
       }
     }`;
-    const values = transformPayload(payload, form);
+    const values = this.transformPayload(payload, form);
     const variables = { relativePath, section, params: values };
 
     await this.request<UpdateVariables>(mutation, {
