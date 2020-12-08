@@ -51,12 +51,16 @@ type Query {
   node(id: ID!): Node
   getSections: [Section]
   getSection(section: String): Section
+  updatePagesDocument(relativePath: String): Pages_Document
   getPagesDocument(relativePath: String): Pages_Document
   getPagesList: [Pages_Document]
+  updatePostsDocument(relativePath: String): Posts_Document
   getPostsDocument(relativePath: String): Posts_Document
   getPostsList: [Posts_Document]
+  updateAuthorsDocument(relativePath: String): Authors_Document
   getAuthorsDocument(relativePath: String): Authors_Document
   getAuthorsList: [Authors_Document]
+  updateMenusDocument(relativePath: String): Menus_Document
   getMenusDocument(relativePath: String): Menus_Document
   getMenusList: [Menus_Document]
 }

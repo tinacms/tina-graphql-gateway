@@ -250,6 +250,7 @@ export const resolver: Resolver = {
     sectionMap: {
       [key: string]: {
         section: DirectorySection;
+        mutation?: boolean;
         plural: boolean;
       };
     }
@@ -375,6 +376,26 @@ export const resolver: Resolver = {
 
           return dd;
         });
+      } else if (sectionItem.mutation) {
+        // assertIsDocumentInputArgs(args);
+        // console.log("ohhi", args);
+        await resolver.documentInputObject({
+          args: {
+            relativePath: args.relativePath,
+            section: sectionItem.section.slug,
+          },
+          params: args.params,
+          datasource,
+        });
+
+        const document = await resolver.documentObject({
+          args: {
+            relativePath: args.relativePath,
+            section: sectionItem.section.slug,
+          },
+          datasource,
+        });
+        return document;
       } else {
         assertIsDocumentForSectionArgs(args);
         const document = await resolver.documentObject({
@@ -621,23 +642,10 @@ export const resolver: Resolver = {
   }): Promise<boolean> => {
     const template = await datasource.getTemplateForDocument(args);
 
-    // FIXME: we should validate that only one key was passed
-    const data = Object.values(params)[0].data;
-    const { content, ...rest } = data;
-
-    // This doesn't do much at the moment, but it gives us the chance
-    // to run through field-level validations
-    const { _template, ...value } = await resolver.documentDataInputObject({
-      data: rest,
-      template,
-      datasource,
+    await datasource.updateDocument({
+      ...args,
+      params: { data: params[template.name] },
     });
-
-    const payload = {
-      data: value,
-      content,
-    };
-    await datasource.updateDocument({ ...args, params: payload });
 
     return true;
   },

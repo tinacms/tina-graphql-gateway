@@ -387,6 +387,7 @@ export const builder = {
       [key: string]: {
         section: DirectorySection;
         plural: boolean;
+        mutation?: boolean;
         queryName: string;
         returnType: string;
       };
@@ -406,6 +407,13 @@ export const builder = {
         mutationName: `update${friendlyName(section.slug)}Document`,
         returnType: friendlyName(section.slug, "Document"),
       });
+      sectionMap[`update${friendlyName(section.slug)}Document`] = {
+        section,
+        plural: false,
+        mutation: true,
+        queryName: `update${friendlyName(section.slug)}Document`,
+        returnType: friendlyName(section.slug, "Document"),
+      };
       sectionMap[`get${friendlyName(section.slug)}Document`] = {
         section,
         plural: false,

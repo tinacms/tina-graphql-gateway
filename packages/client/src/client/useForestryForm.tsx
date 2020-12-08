@@ -159,10 +159,12 @@ export function useForestryForm2<T>({
             })
             .catch(function (err) {
               console.log(err);
-              setData({
-                ...data,
-                [keys[index]]: { data: payload[keys[index]].data },
-              });
+              if ([keys[index]] && payload[keys[index]]) {
+                setData({
+                  ...data,
+                  [keys[index]]: { data: payload[keys[index]].data },
+                });
+              }
             });
         });
       })
