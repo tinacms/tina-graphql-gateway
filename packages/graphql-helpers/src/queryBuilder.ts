@@ -923,6 +923,7 @@ export const queryBuilder = (
                                 },
                                 ...(node?.types?.map((item) => {
                                   return buildInlineFragment(
+                                    // @ts-ignore
                                     item,
                                     astNode,
                                     items
@@ -1063,6 +1064,7 @@ const buildField = (
                 return buildField(item, astNode, items);
               })
             : union.map((item) => {
+                // @ts-ignore
                 const namedType = getNamedType(typeFromAST(schema, item));
                 return buildInlineFragment(namedType, astNode, items);
               }),

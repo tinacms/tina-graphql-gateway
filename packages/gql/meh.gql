@@ -3,7 +3,7 @@ interface Node {
 }
 
 interface Document {
-  sys: SystemInfo!
+  sys: SystemInfo
   id: ID!
 }
 
@@ -18,24 +18,24 @@ scalar JSON
 scalar JSONObject
 
 type SystemInfo {
-  filename: String!
-  basename: String!
+  filename: String
+  basename: String
   breadcrumbs(excludeExtension: Boolean): [String]
-  path: String!
-  relativePath: String!
-  extension: String!
-  section: Section!
+  path: String
+  relativePath: String
+  extension: String
+  section: Section
 }
 
 type Section {
-  type: String!
-  path: String!
-  label: String!
-  create: String!
-  match: String!
-  new_doc_ext: String!
+  type: String
+  path: String
+  label: String
+  create: String
+  match: String
+  new_doc_ext: String
   templates: [String]
-  slug: String!
+  slug: String
   documents: [Document]
 }
 
@@ -77,10 +77,10 @@ union Pages_Form = BlockPage_Doc_Form
 
 type Pages_Document implements Node & Document {
   id: ID!
-  sys: SystemInfo!
-  data: Pages_Data!
-  values: Pages_Values!
-  form: Pages_Form!
+  sys: SystemInfo
+  data: Pages_Data
+  values: Pages_Values
+  form: Pages_Form
 }
 
 union Posts_Data = Post_Doc_Data
@@ -95,10 +95,10 @@ union Posts_Form = Post_Doc_Form
 
 type Posts_Document implements Node & Document {
   id: ID!
-  sys: SystemInfo!
-  data: Posts_Data!
-  values: Posts_Values!
-  form: Posts_Form!
+  sys: SystemInfo
+  data: Posts_Data
+  values: Posts_Values
+  form: Posts_Form
 }
 
 union Authors_Data = Author_Doc_Data
@@ -113,10 +113,10 @@ union Authors_Form = Author_Doc_Form
 
 type Authors_Document implements Node & Document {
   id: ID!
-  sys: SystemInfo!
-  data: Authors_Data!
-  values: Authors_Values!
-  form: Authors_Form!
+  sys: SystemInfo
+  data: Authors_Data
+  values: Authors_Values
+  form: Authors_Form
 }
 
 union Menus_Data = Menu_Doc_Data
@@ -131,10 +131,10 @@ union Menus_Form = Menu_Doc_Form
 
 type Menus_Document implements Node & Document {
   id: ID!
-  sys: SystemInfo!
-  data: Menus_Data!
-  values: Menus_Values!
-  form: Menus_Form!
+  sys: SystemInfo
+  data: Menus_Data
+  values: Menus_Values
+  form: Menus_Form
 }
 
 type LongTextValue {

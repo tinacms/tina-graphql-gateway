@@ -166,13 +166,15 @@ export class ForestryClient {
     const result = Object.values(res)[0];
     const mutation = mutationGenerator(
       variables,
+      // @ts-ignore
       Object.values(res)[0],
       buildClientSchema(data)
     );
     return {
       queryString: print(mutation),
       variables: {
-        ...variables,
+        relativePath: variables.relativePath,
+        // @ts-ignore
         params: transformPayload(result.values, result.form),
       },
     };
@@ -186,7 +188,10 @@ export class ForestryClient {
       variables: {},
     });
     const query = queryGenerator(variables, buildClientSchema(data));
-    return { queryString: print(query), variables: variables };
+    return {
+      queryString: print(query),
+      variables: { relativePath: variables.relativePath },
+    };
   };
 
   listDocumentsBySection = async ({ section }: { section: string }) => {

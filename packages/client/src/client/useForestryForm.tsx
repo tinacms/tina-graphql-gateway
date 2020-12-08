@@ -36,17 +36,19 @@ type DocumentNode = {
   };
 };
 
-export function useForestryForm2<T>({
+export function useForestryForm2({
   payload,
   variables,
+  section,
   fetcher,
   callback,
 }: {
   payload: object;
-  variables: object;
-  fetcher: <T>() => Promise<T>;
+  variables: { relativePath: string } & object;
+  section: string;
+  fetcher: () => Promise<unknown>;
   callback?: (payload: object) => void;
-}): unknown {
+}): { data: object; errors: unknown } {
   const cms = useCMS();
   const [errors, setErrors] = React.useState([""]);
   const [data, setData] = React.useState({});
@@ -56,12 +58,17 @@ export function useForestryForm2<T>({
     .object()
     .shape({
       sys: yup.object().required().shape({
+        // @ts-ignore
         filename: yup.string().required(),
+        // @ts-ignore
         basename: yup.string().required(),
       }),
       form: yup.object().required().shape({
+        // @ts-ignore
         __typename: yup.string().required(),
+        // @ts-ignore
         name: yup.string().required(),
+        // @ts-ignore
         label: yup.string().required(),
       }),
       values: yup.object().required(),
@@ -86,7 +93,7 @@ export function useForestryForm2<T>({
                 // so we don't need another round trip
                 await cms.api.forestry.updateContent({
                   relativePath: variables.relativePath,
-                  section: variables.section,
+                  section: section,
                   payload: values,
                   form: n.form,
                 });
@@ -100,6 +107,7 @@ export function useForestryForm2<T>({
                 {
                   id: `${keys[index]}`,
                   label: `${n.sys.basename}`,
+                  // @ts-ignore
                   fields: n.form.fields,
                   initialValues: n.values,
                   onSubmit: async (values) => {
@@ -113,6 +121,7 @@ export function useForestryForm2<T>({
                 (form) => {
                   const modifiedValues = form.values;
                   const hotFields = n.form.fields.filter((field) => {
+                    // @ts-ignore
                     return field.refetchPolicy !== "onChange";
                   });
 
@@ -122,6 +131,7 @@ export function useForestryForm2<T>({
                   });
 
                   const coldFields = n.form.fields.filter((field) => {
+                    // @ts-ignore
                     return field.refetchPolicy === "onChange";
                   });
 
@@ -129,6 +139,7 @@ export function useForestryForm2<T>({
 
                   var proxy = new Proxy(coldValues, {
                     apply: function (target, thisArg, argumentsList) {
+                      // @ts-ignore
                       return thisArg[target].apply(this, argumentsList);
                     },
                     deleteProperty: function (target, property) {
@@ -137,19 +148,20 @@ export function useForestryForm2<T>({
                     },
                     set: function (target, property, value, receiver) {
                       target[property] = value;
-                      console.log("changed", coldValues);
+                      // @ts-ignore
                       submit();
                       return true;
                     },
                   });
 
-                  // coldFields.forEach((field) => {
-                  //   proxy.push(modifiedValues[field.name]);
-                  // });
+                  coldFields.forEach((field) => {
+                    proxy.push(modifiedValues[field.name]);
+                  });
 
                   setData({
                     ...data,
                     [keys[index]]: {
+                      // @ts-ignore
                       data: Object.assign(n.data, hotFieldsMap),
                     },
                   });
@@ -158,7 +170,7 @@ export function useForestryForm2<T>({
               cms.plugins.add(f);
             })
             .catch(function (err) {
-              console.log(err);
+              // console.log(err);
               if ([keys[index]] && payload[keys[index]]) {
                 setData({
                   ...data,
@@ -169,11 +181,10 @@ export function useForestryForm2<T>({
         });
       })
       .catch(function (err) {
-        console.warn(err.errors);
+        // console.warn(err.errors);
       });
   }, [payload]);
 
-  // return { data: tempRemoveFormKeys(data), errors };
   return { data, errors };
 }
 
