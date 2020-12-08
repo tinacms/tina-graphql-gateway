@@ -225,6 +225,7 @@ export const graphiqlMachine = Machine<
                   return event.data.queryString;
                 },
                 variables: (_context, event) => {
+                  console.log("gotit", event.data);
                   return event.data.variables;
                 },
               }),
