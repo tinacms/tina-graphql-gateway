@@ -433,7 +433,7 @@ export const builder = {
       gql.interface({
         name: "Document",
         fields: [
-          gql.fieldRequired({ name: "sys", type: "SystemInfo" }),
+          gql.field({ name: "sys", type: "SystemInfo" }),
           gql.fieldID({ name: "id" }),
         ],
       }),
@@ -450,30 +450,30 @@ export const builder = {
       gql.object({
         name: "SystemInfo",
         fields: [
-          gql.fieldRequired({ name: "filename", type: "String" }),
-          gql.fieldRequired({ name: "basename", type: "String" }),
+          gql.field({ name: "filename", type: "String" }),
+          gql.field({ name: "basename", type: "String" }),
           gql.fieldList({
             name: "breadcrumbs",
             type: "String",
             args: [gql.inputBoolean("excludeExtension")],
           }),
-          gql.fieldRequired({ name: "path", type: "String" }),
-          gql.fieldRequired({ name: "relativePath", type: "String" }),
-          gql.fieldRequired({ name: "extension", type: "String" }),
-          gql.fieldRequired({ name: "section", type: "Section" }),
+          gql.field({ name: "path", type: "String" }),
+          gql.field({ name: "relativePath", type: "String" }),
+          gql.field({ name: "extension", type: "String" }),
+          gql.field({ name: "section", type: "Section" }),
         ],
       }),
       gql.object({
         name: "Section",
         fields: [
-          gql.fieldRequired({ name: "type", type: "String" }),
-          gql.fieldRequired({ name: "path", type: "String" }),
-          gql.fieldRequired({ name: "label", type: "String" }),
-          gql.fieldRequired({ name: "create", type: "String" }),
-          gql.fieldRequired({ name: "match", type: "String" }),
-          gql.fieldRequired({ name: "new_doc_ext", type: "String" }),
+          gql.field({ name: "type", type: "String" }),
+          gql.field({ name: "path", type: "String" }),
+          gql.field({ name: "label", type: "String" }),
+          gql.field({ name: "create", type: "String" }),
+          gql.field({ name: "match", type: "String" }),
+          gql.field({ name: "new_doc_ext", type: "String" }),
           gql.fieldList({ name: "templates", type: "String" }),
-          gql.fieldRequired({ name: "slug", type: "String" }),
+          gql.field({ name: "slug", type: "String" }),
           gql.fieldList({ name: "documents", type: "Document" }),
         ],
       }),
@@ -600,16 +600,16 @@ export const builder = {
           ],
           fields: [
             gql.fieldID({ name: "id" }),
-            gql.fieldRequired({ name: "sys", type: "SystemInfo" }),
-            gql.fieldRequired({
+            gql.field({ name: "sys", type: "SystemInfo" }),
+            gql.field({
               name: "data",
               type: friendlyName(name, "Data"),
             }),
-            gql.fieldRequired({
+            gql.field({
               name: "values",
               type: friendlyName(name, "Values"),
             }),
-            gql.fieldRequired({
+            gql.field({
               name: "form",
               type: friendlyName(name, "Form"),
             }),

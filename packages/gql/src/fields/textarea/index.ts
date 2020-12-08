@@ -9,7 +9,7 @@ export const textarea = {
   contentField: {
     type: "textarea" as const,
     name: "_body",
-    label: "Content",
+    label: "Body",
     config: {
       schema: {
         format: "markdown" as const,

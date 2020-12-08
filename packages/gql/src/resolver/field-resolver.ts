@@ -501,7 +501,10 @@ export const resolver: Resolver = {
     const accum: { [key: string]: unknown } = {};
     const { template, ...rest } = data;
     await sequential(Object.keys(rest), async (key) => {
-      const field = findField(resolvedTemplate.fields, key);
+      const field = findField(
+        [...resolvedTemplate.fields, textarea.contentField],
+        key
+      );
       return (accum[key] = await dataValue(datasource, field, rest[key]));
     });
 
@@ -521,11 +524,12 @@ export const resolver: Resolver = {
       resolvedTemplate,
       data,
     });
-    accum._body = textarea.resolve.value({
-      datasource,
-      field: textarea.contentField,
-      value: content,
-    });
+    // accum._body = textarea.resolve.value({
+    //   datasource,
+    //   field: textarea.contentField,
+    //   value: content,
+    // });
+    accum._body = "";
 
     return {
       ...accum,
@@ -539,7 +543,10 @@ export const resolver: Resolver = {
     const { template, ...rest } = data;
 
     await sequential(Object.keys(rest), async (key) => {
-      const field = findField(resolvedTemplate.fields, key);
+      const field = findField(
+        [...resolvedTemplate.fields, textarea.contentField],
+        key
+      );
       return (accum[key] = await dataInitialValuesField(
         datasource,
         field,
@@ -565,7 +572,7 @@ export const resolver: Resolver = {
       data
     );
 
-    accum["content"] = content;
+    accum["_body"] = content;
 
     return {
       _template: resolvedTemplate.name,
