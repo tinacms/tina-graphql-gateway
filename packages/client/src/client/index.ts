@@ -153,7 +153,7 @@ export class ForestryClient {
     return this.query;
   };
 
-  generateQuery = async (variables: {
+  generateMutation = async (variables: {
     relativePath: string;
     section: string;
   }) => {
@@ -169,7 +169,6 @@ export class ForestryClient {
       Object.values(res)[0],
       buildClientSchema(data)
     );
-    // return { queryString: print(query), variables: variables };
     return {
       queryString: print(mutation),
       variables: {
@@ -177,6 +176,17 @@ export class ForestryClient {
         params: transformPayload(result.values, result.form),
       },
     };
+  };
+
+  generateQuery = async (variables: {
+    relativePath: string;
+    section: string;
+  }) => {
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+    const query = queryGenerator(variables, buildClientSchema(data));
+    return { queryString: print(query), variables: variables };
   };
 
   listDocumentsBySection = async ({ section }: { section: string }) => {

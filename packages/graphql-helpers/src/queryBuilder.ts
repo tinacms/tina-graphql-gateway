@@ -256,14 +256,13 @@ export const mutationGenerator = (
   variables: { relativePath: string; section: string },
   payload: object,
   schema: GraphQLSchema
-): { mutation: DocumentNode; newVariables: object } => {
+): DocumentNode => {
   const t = schema.getQueryType();
   const queryFields = t?.getFields();
   if (queryFields) {
     const mutationName = `update${friendlyName2(variables.section)}Document`;
     const queryName = `get${friendlyName2(variables.section)}Document`;
     const queryField = queryFields[queryName];
-    console.log("ok", payload);
 
     const returnType = getNamedType(queryField.type);
     if (returnType instanceof GraphQLObjectType) {

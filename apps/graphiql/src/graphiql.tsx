@@ -1,7 +1,7 @@
 import React from "react";
 import GraphiQL from "graphiql";
 import { formBuilder } from "@forestryio/graphql-helpers";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useMachine } from "@xstate/react";
 import { Machine, assign } from "xstate";
 import { useForestryForm2 } from "@forestryio/client";
@@ -46,12 +46,19 @@ interface GraphiQLStateSchema {
   };
 }
 
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
 // The events that the machine handles
 type GraphiQLEvent =
-  | { type: "TIMER" }
   | {
       type: "CHANGE_VARIABLES";
       value: { section: string; relativePath: string; payload?: object };
+    }
+  | {
+      type: "CHANGE_MUTATE";
+      value: boolean;
     }
   | { type: "FETCH"; query: string }
   | { type: "TOGGLE_EXPLORER" }
@@ -70,6 +77,7 @@ interface GraphiQLContext {
   cms: TinaCMS;
   variables: { section: string; relativePath: string };
   schema: null | GraphQLSchema;
+  isMutate: boolean;
   result: null | object;
   queryString: string;
   explorerIsOpen: boolean;
@@ -175,10 +183,17 @@ export const graphiqlMachine = Machine<
           invoke: {
             id: "generateQuery",
             src: async (context) => {
-              return context.cms.api.forestry.generateQuery({
-                relativePath: context.variables.relativePath,
-                section: context.variables.section,
-              });
+              if (context.isMutate) {
+                return context.cms.api.forestry.generateMutation({
+                  relativePath: context.variables.relativePath,
+                  section: context.variables.section,
+                });
+              } else {
+                return context.cms.api.forestry.generateQuery({
+                  relativePath: context.variables.relativePath,
+                  section: context.variables.section,
+                });
+              }
             },
             onError: {
               target: "error",
@@ -197,10 +212,19 @@ export const graphiqlMachine = Machine<
         },
         ready: {
           on: {
+            CHANGE_MUTATE: {
+              target: "generatingQuery",
+              actions: assign({
+                isMutate: (_context, event) => {
+                  return event.value;
+                },
+              }),
+            },
             CHANGE_VARIABLES: {
               target: "generatingQuery",
               actions: assign({
                 variables: (_context, event) => {
+                  console.log("dddoo it");
                   return event.value;
                 },
               }),
@@ -248,7 +272,14 @@ type FetcherArgs = {
 
 export const Explorer = () => {
   let { project, section, ...path } = useParams();
+  const q = useQuery();
+  const isMutate = q.get("mutate");
+
   const variables = { section, relativePath: path[0] };
+
+  React.useEffect(() => {
+    send({ type: "CHANGE_MUTATE", value: isMutate });
+  }, [isMutate]);
 
   React.useEffect(() => {
     send({ type: "CHANGE_VARIABLES", value: variables });
@@ -282,6 +313,7 @@ export const Explorer = () => {
       cms,
       variables,
       queryString: "",
+      isMutate,
       explorerIsOpen: false,
       outputIsOpen: false,
       schema: null,
