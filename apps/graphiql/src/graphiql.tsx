@@ -70,6 +70,7 @@ type GraphiQLEvent =
   | { type: "CLOSE_OUTPUT" }
   | { type: "FORMIFY" }
   | { type: "EDIT_QUERY"; value: string }
+  | { type: "EDIT_VARIABLES"; value: object }
   | { type: "PED_COUNTDOWN"; duration: number };
 
 interface GraphiQLContext {
@@ -234,6 +235,11 @@ export const graphiqlMachine = Machine<
                 queryString: (_context, event) => event.value,
               }),
             },
+            EDIT_VARIABLES: {
+              actions: assign({
+                variables: (_context, event) => event.value,
+              }),
+            },
             FORMIFY: "formifyingQuery",
           },
         },
@@ -365,6 +371,14 @@ export const Explorer = () => {
             send({ type: "EDIT_QUERY", value: query });
           }}
           query={current.context.queryString}
+          onEditVariables={(variables: object) => {
+            try {
+              const objectVariables = JSON.parse(variables);
+              send({ type: "EDIT_VARIABLES", value: objectVariables });
+            } catch (e) {
+              // likely the input is still being edited
+            }
+          }}
           variables={JSON.stringify(viewableVariables, null, 2)}
         >
           {/* Hide GraphiQL logo */}
