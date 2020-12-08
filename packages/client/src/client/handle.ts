@@ -7,61 +7,10 @@ import {
   GraphQLInputObjectType,
   isScalarType,
   GraphQLList,
+  parse,
 } from "graphql";
 
-const handleInner = (values, field: Field & { fields: Field[] }) => {
-  const value = values[field.name];
-  if (!value) {
-    return;
-  }
-
-  switch (field.component) {
-    case "text":
-      return value;
-    case "blocks":
-      const blockField = field;
-
-      return value.map((v) => {
-        const acc: { [key: string]: any } = {};
-        // @ts-ignore
-        const template = blockField.templates[v._template];
-        if (!template) {
-          throw new Error(`Unable to find template in field ${field.name}`);
-        }
-        acc[friendlyName(template, "", true)] = {
-          // template: templateName(v._template),
-          ...handleData(v, template),
-        };
-
-        return acc;
-      });
-
-    case "group":
-      const { _template, ...rest } = value;
-
-      return rest;
-    case "group-list":
-      return value.map((item) => {
-        const { _template: __template, ...rest } = item;
-        return rest;
-      });
-
-    default:
-      return value;
-  }
-};
-
-export const handleData = (values, schema: { fields: Field[] }) => {
-  const accum: { [key: string]: any } = {};
-  schema.fields.forEach((field) => {
-    // @ts-ignore
-    accum[field.name] = handleInner(values, field);
-  });
-
-  return accum;
-};
-
-const doit = (
+const transformInputObject = (
   values: object,
   accum: { [key: string]: unknown },
   payloadType: GraphQLInputObjectType
@@ -107,13 +56,25 @@ const doit = (
 };
 
 export const transformPayload = (
-  values,
-  form: { fields: Field[] },
+  mutation: string,
+  values: object,
   schema: GraphQLSchema
 ) => {
   const accum = {};
-  const payloadType = schema.getType("Pages_Input");
-  if (payloadType instanceof GraphQLInputObjectType) {
-    return doit(values, accum, payloadType);
+  // @ts-ignore FIXME: this is assuming we're passing in a valid mutation with the top-level
+  // selection being the mutation
+  const mutationName = parse(mutation).definitions[0].selectionSet.selections[0]
+    .name.value;
+  const mutationType = schema.getMutationType();
+  const inputType = mutationType
+    .getFields()
+    [mutationName].args.find((arg) => arg.name === "params").type;
+
+  if (inputType instanceof GraphQLInputObjectType) {
+    return transformInputObject(values, accum, inputType);
+  } else {
+    throw new Error(
+      `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
+    );
   }
 };
