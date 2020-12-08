@@ -191,12 +191,15 @@ We'll also want to wrap our main layout in the `TinacmsForestryProvider` to supp
 //...
 
 function MyApp({ Component, pageProps }) {
+
+  const forestryClient = useCMS().api.forestry
+
   return (<TinacmsForestryProvider
     onLogin={() => {
       const headers = new Headers()
 
       //TODO - the token should could as a param from onLogin
-      headers.append('Authorization', 'Bearer ' + Cookies.get("tinacms-auth"))
+      headers.append('Authorization', 'Bearer ' + forestryClient.getToken())
       fetch('/api/preview', {
         method: 'POST',
         headers: headers,
@@ -355,6 +358,36 @@ Next steps:
 
 - Make changes to our data-model, and verify our templates with `$ tina-gql schema:audit`
 - Setup typescript types for your data-model
+
+## Token storage
+
+There are a few ways to store the authentication token:
+
+### Local storage (Default)
+
+Storing tokens in browser local storage persists the user session between refreshes & across browser tabs. One thing to note is; if an attacker is able to inject code in your site using a cross-site scripting (XSS) attack, your token would be vulernable.
+To add extra security, a CSRF token can be implemented by using a proxy.
+
+Within your client instantiation:
+
+```ts
+new ForestryClient({
+  // ...
+  identityProxy: "/api/auth/token",
+});
+```
+
+From your site's server (This example uses NextJS's API functions)
+
+```ts
+// pages/api/auth/token
+
+// ... Example coming soon
+```
+
+## In memory (Coming soon)
+
+This is our recommended token storage mechanism if possible. Storing tokens in memory means that the user session will not be persisted between refreshes or across browser tabs. This approach does not require a server to handle auth, and is the least vulernable to attacks.
 
 **(Optional) Generate TypeScript types**
 
