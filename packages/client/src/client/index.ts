@@ -102,7 +102,7 @@ export class ForestryClient {
     }`;
 
     // @ts-ignore
-    const values = this.transformPayload(payload, form);
+    const values = this.transformPayload({ mutation, payload });
 
     await this.request<AddVariables>(mutation, {
       variables: {
@@ -176,8 +176,8 @@ export class ForestryClient {
         relativePath: variables.relativePath,
         // @ts-ignore
         params: await this.transformPayload({
+          mutation: print(mutation),
           payload: result.values,
-          form: result.form,
         }),
       },
     };
@@ -258,16 +258,17 @@ export class ForestryClient {
   };
 
   transformPayload = async ({
+    mutation,
     payload,
-    form,
   }: {
+    mutation: string;
     payload: any;
-    form: { fields: Field[] };
   }) => {
     const data = await this.request(getIntrospectionQuery(), {
       variables: {},
     });
-    return transformPayload(payload, form, buildClientSchema(data));
+
+    return transformPayload(mutation, payload, buildClientSchema(data));
   };
 
   updateContent = async ({
@@ -286,7 +287,7 @@ export class ForestryClient {
         __typename
       }
     }`;
-    const values = this.transformPayload(payload, form);
+    const values = this.transformPayload({ mutation, payload });
     const variables = { relativePath, section, params: values };
 
     await this.request<UpdateVariables>(mutation, {
