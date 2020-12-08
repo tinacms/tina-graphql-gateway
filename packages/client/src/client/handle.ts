@@ -30,14 +30,10 @@ const handleInner = (values, field: Field & { fields: Field[] }) => {
       });
 
     case "group":
-      // FIXME: this shouldn't be sent down for anything other than blocks
       const { _template, ...rest } = value;
 
       return rest;
     case "group-list":
-      // FIXME: this shouldn't be sent down for anything other than blocks
-      console.log("gl", value);
-      // const { _template, ...rest } = value;
       return value.map((item) => {
         const { _template: __template, ...rest } = item;
         return rest;

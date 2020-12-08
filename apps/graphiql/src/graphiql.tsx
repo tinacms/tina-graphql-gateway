@@ -54,11 +54,11 @@ const useQuery = () => {
 type GraphiQLEvent =
   | {
       type: "CHANGE_VARIABLES";
-      value: { section: string; relativePath: string; payload?: object };
+      value: object;
     }
   | {
-      type: "CHANGE_MUTATE";
-      value: boolean;
+      type: "SET_MUTATION";
+      value: object;
     }
   | { type: "FETCH"; query: string }
   | { type: "TOGGLE_EXPLORER" }
@@ -81,6 +81,7 @@ interface GraphiQLContext {
   isMutate: boolean;
   result: null | object;
   queryString: string;
+  section: string;
   explorerIsOpen: boolean;
   outputIsOpen: boolean;
 }
@@ -187,36 +188,41 @@ export const graphiqlMachine = Machine<
               if (context.isMutate) {
                 return context.cms.api.forestry.generateMutation({
                   relativePath: context.variables.relativePath,
-                  section: context.variables.section,
+                  section: context.section,
                 });
               } else {
                 return context.cms.api.forestry.generateQuery({
                   relativePath: context.variables.relativePath,
-                  section: context.variables.section,
+                  section: context.section,
                 });
               }
             },
             onError: {
-              target: "error",
+              target: "ready",
+              actions: (_context, event) => {
+                console.log(event);
+              },
             },
             onDone: {
               target: "ready",
               actions: assign({
-                queryString: (_context, event) => event.data.queryString,
+                queryString: (_context, event) => {
+                  return event.data.queryString;
+                },
                 variables: (_context, event) => event.data.variables,
               }),
             },
           },
         },
-        error: {
-          type: "final",
-        },
         ready: {
           on: {
-            CHANGE_MUTATE: {
+            SET_MUTATION: {
               target: "generatingQuery",
               actions: assign({
-                isMutate: (_context, event) => {
+                isMutate: () => {
+                  return true;
+                },
+                variables: (_context, event) => {
                   return event.value;
                 },
               }),
@@ -225,7 +231,6 @@ export const graphiqlMachine = Machine<
               target: "generatingQuery",
               actions: assign({
                 variables: (_context, event) => {
-                  console.log("dddoo it");
                   return event.value;
                 },
               }),
@@ -255,7 +260,10 @@ export const graphiqlMachine = Machine<
               return print(formBuilder(documentNode, context.schema));
             },
             onError: {
-              target: "error",
+              target: "ready",
+              actions: (_context, event) => {
+                console.log(event);
+              },
             },
             onDone: {
               target: "ready",
@@ -289,7 +297,7 @@ export const Explorer = () => {
 
   React.useEffect(() => {
     send({ type: "CHANGE_VARIABLES", value: variables });
-  }, [variables.section, variables.relativePath]);
+  }, [section, variables.relativePath]);
 
   const cms = useCMS();
   const graphQLFetcher = async (graphQLParams: {
@@ -318,6 +326,7 @@ export const Explorer = () => {
       result: {},
       cms,
       variables,
+      section,
       queryString: "",
       isMutate,
       explorerIsOpen: false,
@@ -353,12 +362,14 @@ export const Explorer = () => {
         fetcher={fetcher}
         result={current.context.result}
         onFormSubmit={(value) => {
+          console.log(value);
           send({
-            type: "EDIT_QUERY",
-            value: `
-          `,
+            type: "SET_MUTATION",
+            value: {
+              relativePath: current.context.variables.relativePath,
+              params: value,
+            },
           });
-          send({ type: "CHANGE_VARIABLES", value });
         }}
       />
       <React.Fragment>
