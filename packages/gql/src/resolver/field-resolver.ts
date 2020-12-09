@@ -196,7 +196,7 @@ export interface Resolver {
    */
   documentInputObject: (params: {
     args: { relativePath: string; section: string };
-    params: object;
+    params: { [key: string]: object };
     datasource: DataSource;
   }) => Promise<boolean>;
   pendingDocumentInputObject: (params: {
@@ -651,7 +651,7 @@ export const resolver: Resolver = {
 
     await datasource.updateDocument({
       ...args,
-      params: { data: params[template.name] },
+      params: params[template.name],
     });
 
     return true;

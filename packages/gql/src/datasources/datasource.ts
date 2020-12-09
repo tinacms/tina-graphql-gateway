@@ -18,7 +18,7 @@ export type TinaDocument = {
 export type UpdateArgs = {
   relativePath: string;
   section: string;
-  params: { content?: string; data: object };
+  params: { _body?: string } & object;
 };
 export type DocumentArgs = {
   relativePath: string;
