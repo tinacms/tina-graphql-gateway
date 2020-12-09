@@ -1,13 +1,11 @@
 ---
-title: Love More Than Ever!
-author: content/authors/nikki.md
+title: dLove More Than Ever!!dd
+author: content/authors/eric.md
 image: /uploads/pride-nikki-2.JPG
 hashtags: []
 ---
 
 For the past few years I’ve been labeled “The Gay Runner.” And that’s great, really. Those are two things about me that I am actually quite proud of. I am proud of my sexuality and I’m proud of my running career. In fact, one of my main goals in 2019 was to really embrace being “The Gay Runner.” I made sure to wear a rainbow bracelet during every race, I became more vulnerable and honest on all my social platforms, and, after winning the adidas Boston Boost games last June, I proudly carried a pride flag on my shoulders.
-
-<!-- excerpt -->
 
 I think being labeled as this has really helped me as an athlete. At every race, and on every start line, I’m motivated to show up for my community and put a show so that anyone who may need a queer role model has one in me. How do you put on a show in running? You win. And so this past year, I won. A lot. Winning was thrilling and exciting, but as the season progressed, the pressure to win began to wear me out. I was exhausted and overwhelmed. I had gotten so caught up in the idea that I had to win every race in order to make an impact that I lost sight of what being “The Gay Runner” was really about. I then realized that it was never about winning, and it wasn’t about losing either, it was about showing up and being seen.
 
