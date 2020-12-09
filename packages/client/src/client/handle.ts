@@ -37,7 +37,7 @@ const transformInputObject = (
         if (field.type instanceof GraphQLList) {
           fieldTypes[field.name] = (valueForField || []).map((val) => {
             if (fieldType instanceof GraphQLInputObjectType) {
-              return doit(val, {}, fieldType);
+              return transformInputObject(val, {}, fieldType);
             } else {
               throw new Error(
                 `Expected instance of GraphQLInputObjectType but got ${fieldType}`
