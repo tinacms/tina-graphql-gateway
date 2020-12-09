@@ -55,20 +55,37 @@ const transformInputObject = (
   return accum;
 };
 
-export const transformPayload = (
-  mutation: string,
-  values: object,
-  schema: GraphQLSchema
-) => {
+export const transformPayload = ({
+  mutation,
+  inputName,
+  values,
+  schema,
+}: {
+  mutation?: string;
+  inputName?: string;
+  values: object;
+  schema: GraphQLSchema;
+}) => {
   const accum = {};
   // @ts-ignore FIXME: this is assuming we're passing in a valid mutation with the top-level
   // selection being the mutation
-  const mutationName = parse(mutation).definitions[0].selectionSet.selections[0]
-    .name.value;
+  const mutationName =
+    inputName ||
+    parse(mutation).definitions[0].selectionSet.selections[0].name.value;
   const mutationType = schema.getMutationType();
-  const inputType = mutationType
-    .getFields()
-    [mutationName].args.find((arg) => arg.name === "params").type;
+
+  if (!mutationType) {
+    throw new Error(`Expected to find mutation type in schema`);
+  }
+
+  const mutationNameType = mutationType.getFields()[mutationName];
+
+  if (!mutationNameType) {
+    throw new Error(`Expected to find mutation type ${mutationNameType}`);
+  }
+
+  const inputType = mutationNameType.args.find((arg) => arg.name === "params")
+    .type;
 
   if (inputType instanceof GraphQLInputObjectType) {
     return transformInputObject(values, accum, inputType);

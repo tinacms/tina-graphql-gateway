@@ -88,18 +88,18 @@ export function useForestryForm2({
               // this is temporary for playground viewing
               setData(payload);
 
+              const getterName = Object.keys(payload)[index];
+
               const submit = async (values) => {
-                // TODO: this should specify the response data
-                // so we don't need another round trip
-                await cms.api.forestry.updateContent({
-                  relativePath: variables.relativePath,
-                  section: section,
+                const payload = await cms.api.forestry.transformPayload({
+                  inputName: getterName.replace("get", "update"),
                   payload: values,
-                  form: n.form,
                 });
-                const updatedContent = await fetcher();
-                // FIXME: this is updating the whole document
-                setData(updatedContent);
+
+                callback && callback(payload);
+                // const updatedContent = await fetcher();
+                // // FIXME: this is updating the whole document
+                // setData(updatedContent);
               };
 
               const n = maybeNode as DocumentNode;
@@ -111,9 +111,10 @@ export function useForestryForm2({
                   fields: n.form.fields,
                   initialValues: n.values,
                   onSubmit: async (values) => {
+                    // await submit(values);
                     const payload = await cms.api.forestry.transformPayload({
+                      inputName: getterName.replace("get", "update"),
                       payload: values,
-                      form: n.form,
                     });
                     callback && callback(payload);
                   },
@@ -149,7 +150,7 @@ export function useForestryForm2({
                     set: function (target, property, value, receiver) {
                       target[property] = value;
                       // @ts-ignore
-                      submit();
+                      // submit();
                       return true;
                     },
                   });
