@@ -34,6 +34,11 @@ interface GraphiQLStateSchema {
         open: {};
       };
     };
+    variables: {
+      states: {
+        idle: {};
+      };
+    };
     editor: {
       states: {
         fetchingSchema: {};
@@ -72,11 +77,12 @@ type GraphiQLEvent =
       type: "SET_MUTATION";
       value: object;
     }
-  | { type: "FETCH"; query: string }
+  | { type: "FETCH" }
   | { type: "TOGGLE_EXPLORER" }
   | { type: "TOGGLE_EXPLORER" }
   | { type: "OPEN_EXPLORER" }
   | { type: "CLOSE_EXPLORER" }
+  | { type: "QUERY_TO_MUTATION" }
   | { type: "TOGGLE_OUTPUT" }
   | { type: "OPEN_OUTPUT" }
   | { type: "CLOSE_OUTPUT" }
@@ -86,11 +92,9 @@ type GraphiQLEvent =
   | { type: "PED_COUNTDOWN"; duration: number };
 
 interface GraphiQLContext {
-  graphQLFetcher: (args: FetcherArgs) => Promise<object>;
   cms: TinaCMS;
   variables: object;
   schema: null | GraphQLSchema;
-  isMutate: boolean;
   result: null | object;
   queryString: string;
   section: string;
@@ -119,7 +123,7 @@ export const graphiqlMachine = Machine<
             id: "fetch",
             src: async (context, event) => {
               if (event.type === "FETCH") {
-                return context.cms.api.forestry.request(event.query, {
+                return context.cms.api.forestry.request(context.queryString, {
                   variables: context.variables,
                 });
               } else {
@@ -177,6 +181,31 @@ export const graphiqlMachine = Machine<
         },
       },
     },
+    variables: {
+      initial: "idle",
+      states: {
+        idle: {
+          on: {
+            CHANGE_RELATIVE_PATH: {
+              target: "idle",
+              actions: assign({
+                variables: (context, event) => {
+                  return { relativePath: event.value };
+                },
+              }),
+            },
+            EDIT_VARIABLES: {
+              target: "idle",
+              actions: assign({
+                variables: (context, event) => {
+                  return event.value;
+                },
+              }),
+            },
+          },
+        },
+      },
+    },
     editor: {
       initial: "fetchingSchema",
       states: {
@@ -184,7 +213,10 @@ export const graphiqlMachine = Machine<
           invoke: {
             id: "fetchSchema",
             src: async (context) => {
-              return context.graphQLFetcher({ query: getIntrospectionQuery() });
+              return await context.cms.api.forestry.request(
+                getIntrospectionQuery(),
+                { variables: {} }
+              );
             },
             onDone: {
               target: "generatingQuery",
@@ -199,7 +231,7 @@ export const graphiqlMachine = Machine<
             id: "generateQuery",
             src: async (context, event) => {
               return context.cms.api.forestry.generateQuery({
-                relativePath: context.relativePath,
+                relativePath: context.variables.relativePath,
                 section: context.section,
               });
             },
@@ -215,9 +247,6 @@ export const graphiqlMachine = Machine<
                 queryString: (_context, event) => {
                   return event.data.queryString;
                 },
-                variables: (_context, event) => {
-                  return event.data.variables;
-                },
               }),
             },
           },
@@ -229,7 +258,7 @@ export const graphiqlMachine = Machine<
               const {
                 queryString,
               } = await context.cms.api.forestry.generateMutation({
-                relativePath: context.relativePath,
+                relativePath: context.variables.relativePath,
                 section: context.section,
               });
 
@@ -248,60 +277,9 @@ export const graphiqlMachine = Machine<
               actions: assign((_context, event) => {
                 return {
                   queryString: event.data.queryString,
-                  isMutate: true,
                 };
               }),
             },
-          },
-        },
-        ready: {
-          on: {
-            SET_MUTATION: {
-              type: "generatingMutation",
-              actions: assign({
-                variables: (context, event) => ({
-                  ...context.variables,
-                  params: event.value,
-                }),
-              }),
-            },
-            CHANGE_VARIABLES: {
-              target: "generatingQuery",
-              actions: assign({
-                variables: (_context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-            CHANGE_SECTION: {
-              target: "generatingQuery",
-              actions: assign({
-                section: (_context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-            CHANGE_MUTATE: {
-              target: "generatingQuery",
-              actions: assign({
-                isMutate: (_context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-            EDIT_QUERY: {
-              actions: assign({
-                queryString: (_context, event) => event.value,
-              }),
-            },
-            EDIT_VARIABLES: {
-              actions: assign({
-                variables: (_context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-            FORMIFY: "formifyingQuery",
           },
         },
         formifyingQuery: {
@@ -329,53 +307,52 @@ export const graphiqlMachine = Machine<
             },
           },
         },
+        ready: {
+          on: {
+            QUERY_TO_MUTATION: "generatingMutation",
+            FORMIFY: "formifyingQuery",
+            CHANGE_RELATIVE_PATH: {
+              target: "generatingQuery",
+            },
+            CHANGE_SECTION: {
+              target: "generatingQuery",
+              actions: assign({
+                section: (context, event) => {
+                  return event.value;
+                },
+              }),
+            },
+            EDIT_QUERY: {
+              target: "ready",
+              actions: assign({
+                queryString: (context, event) => {
+                  return event.value;
+                },
+              }),
+            },
+          },
+        },
       },
     },
   },
 });
 
-type FetcherArgs = {
-  query: string;
-  variables?: object;
-  operationName?: string;
-};
-
 export const Explorer = () => {
   let { project, section, ...path } = useParams();
   const q = useQuery();
-  const isMutate = !!q.get("mutate");
+  const isMutation = !!q.get("mutate");
+
   const cms = useCMS();
-
-  const graphQLFetcher = async (graphQLParams: {
-    query: string;
-    variables?: object;
-    operationName?: string;
-  }) => {
-    try {
-      const result = await cms.api.forestry
-        .request(graphQLParams.query, {
-          variables: graphQLParams.variables || {},
-        })
-        .then((response: unknown) => {
-          return response;
-        });
-
-      return result;
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const [current, send, service] = useMachine(graphiqlMachine, {
     context: {
-      graphQLFetcher,
-      result: {},
       cms,
-      variables: {},
-      section,
-      relativePath: path[0],
       queryString: "",
-      isMutate: isMutate,
+      result: {},
+      variables: {
+        relativePath: path[0],
+      },
+      section,
       explorerIsOpen: false,
       outputIsOpen: false,
       schema: null,
@@ -383,16 +360,12 @@ export const Explorer = () => {
   });
 
   React.useEffect(() => {
-    send({ type: "CHANGE_MUTATE", value: isMutate });
-  }, [isMutate]);
+    send({ type: "CHANGE_RELATIVE_PATH", value: path[0] });
+  }, [path[0]]);
 
   React.useEffect(() => {
     send({ type: "CHANGE_SECTION", value: section });
   }, [section]);
-
-  React.useEffect(() => {
-    send({ type: "CHANGE_RELATIVE_PATH", value: path[0] });
-  }, [path[0]]);
 
   const _graphiql = React.useRef();
 
@@ -401,7 +374,7 @@ export const Explorer = () => {
   }
 
   const fetcher = async () => {
-    send({ type: "FETCH", query: current.context.queryString });
+    send({ type: "FETCH" });
 
     return new Promise((resolve) => {
       service.onChange((context) => {
@@ -410,24 +383,23 @@ export const Explorer = () => {
     });
   };
 
-  const variables = {
-    relativePath: current.context.relativePath,
-    ...current.context.variables,
-  };
-
   return (
     <div id="root" className="graphiql-container">
       <TinaInfo
         isOpen={current.matches("outputIsOpen.open")}
-        variables={variables}
+        variables={current.context.variables}
         section={current.context.section}
         fetcher={fetcher}
         result={current.context.result}
         onFormSubmit={(value) => {
           send({
-            type: "SET_MUTATION",
-            value,
+            type: "EDIT_VARIABLES",
+            value: {
+              relativePath: current.context.variables.relativePath,
+              params: value,
+            },
           });
+          send({ type: "QUERY_TO_MUTATION" });
         }}
       />
       <React.Fragment>
@@ -437,7 +409,7 @@ export const Explorer = () => {
           fetcher={fetcher}
           schema={current.context.schema}
           onEditQuery={(query: string) => {
-            // send({ type: "EDIT_QUERY", value: query });
+            send({ type: "EDIT_QUERY", value: query });
           }}
           query={current.context.queryString}
           onEditVariables={(variables: string) => {
@@ -447,7 +419,7 @@ export const Explorer = () => {
               // likely the input is still being edited
             }
           }}
-          variables={JSON.stringify(variables, null, 2)}
+          variables={JSON.stringify(current.context.variables, null, 2)}
         >
           {/* Hide GraphiQL logo */}
           <GraphiQL.Logo>{` `}</GraphiQL.Logo>
@@ -481,7 +453,7 @@ const TinaInfo = ({
   result,
   onFormSubmit,
 }: {
-  variables: { relativePath: string } & object;
+  variables: object;
   section: string;
   isOpen: boolean;
   fetcher: () => Promise<unknown>;

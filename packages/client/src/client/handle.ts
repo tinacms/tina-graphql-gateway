@@ -66,32 +66,36 @@ export const transformPayload = ({
   values: object;
   schema: GraphQLSchema;
 }) => {
-  const accum = {};
-  // @ts-ignore FIXME: this is assuming we're passing in a valid mutation with the top-level
-  // selection being the mutation
-  const mutationName =
-    inputName ||
-    parse(mutation).definitions[0].selectionSet.selections[0].name.value;
-  const mutationType = schema.getMutationType();
+  try {
+    const accum = {};
+    // @ts-ignore FIXME: this is assuming we're passing in a valid mutation with the top-level
+    // selection being the mutation
+    const mutationName =
+      inputName ||
+      parse(mutation).definitions[0].selectionSet.selections[0].name.value;
+    const mutationType = schema.getMutationType();
 
-  if (!mutationType) {
-    throw new Error(`Expected to find mutation type in schema`);
-  }
+    if (!mutationType) {
+      throw new Error(`Expected to find mutation type in schema`);
+    }
 
-  const mutationNameType = mutationType.getFields()[mutationName];
+    const mutationNameType = mutationType.getFields()[mutationName];
 
-  if (!mutationNameType) {
-    throw new Error(`Expected to find mutation type ${mutationNameType}`);
-  }
+    if (!mutationNameType) {
+      throw new Error(`Expected to find mutation type ${mutationNameType}`);
+    }
 
-  const inputType = mutationNameType.args.find((arg) => arg.name === "params")
-    .type;
+    const inputType = mutationNameType.args.find((arg) => arg.name === "params")
+      .type;
 
-  if (inputType instanceof GraphQLInputObjectType) {
-    return transformInputObject(values, accum, inputType);
-  } else {
-    throw new Error(
-      `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
-    );
+    if (inputType instanceof GraphQLInputObjectType) {
+      return transformInputObject(values, accum, inputType);
+    } else {
+      throw new Error(
+        `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
+      );
+    }
+  } catch (e) {
+    console.log("oh no", e);
   }
 };
