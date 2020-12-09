@@ -522,14 +522,8 @@ export const resolver: Resolver = {
     const accum = await resolver.dataObject({
       datasource,
       resolvedTemplate,
-      data,
+      data: { ...data, _body: content },
     });
-    // accum._body = textarea.resolve.value({
-    //   datasource,
-    //   field: textarea.contentField,
-    //   value: content,
-    // });
-    accum._body = "";
 
     return {
       ...accum,

@@ -41,12 +41,14 @@ export function useForestryForm2({
   variables,
   section,
   fetcher,
+  onChange,
   callback,
 }: {
   payload: object;
   variables: { relativePath: string } & object;
   section: string;
   fetcher: () => Promise<unknown>;
+  onChange?: (payload: object) => void;
   callback?: (payload: object) => void;
 }): { data: object; errors: unknown } {
   const cms = useCMS();
@@ -88,18 +90,36 @@ export function useForestryForm2({
               // this is temporary for playground viewing
               setData(payload);
 
-              const getterName = Object.keys(payload)[index];
-
-              const submit = async (values) => {
+              const submit = async (
+                values: object,
+                triggerCallback: boolean = false
+              ) => {
+                const { queryString } = await cms.api.forestry.generateMutation(
+                  {
+                    relativePath: variables.relativePath,
+                    section,
+                  }
+                );
                 const payload = await cms.api.forestry.transformPayload({
-                  inputName: getterName.replace("get", "update"),
+                  mutation: queryString,
                   payload: values,
                 });
 
-                callback && callback(payload);
-                // const updatedContent = await fetcher();
-                // // FIXME: this is updating the whole document
-                // setData(updatedContent);
+                // console.log("oh running?");
+                const updatedContent = await fetcher();
+                // FIXME: this is updating the whole document
+                setData(updatedContent);
+                if (triggerCallback) {
+                  console.log("callit", payload);
+                  callback && callback(payload);
+                } else {
+                  await cms.api.forestry.request(queryString, {
+                    variables: {
+                      relativePath: variables.relativePath,
+                      params: payload,
+                    },
+                  });
+                }
               };
 
               const n = maybeNode as DocumentNode;
@@ -111,12 +131,7 @@ export function useForestryForm2({
                   fields: n.form.fields,
                   initialValues: n.values,
                   onSubmit: async (values) => {
-                    // await submit(values);
-                    const payload = await cms.api.forestry.transformPayload({
-                      inputName: getterName.replace("get", "update"),
-                      payload: values,
-                    });
-                    callback && callback(payload);
+                    await submit(values, true);
                   },
                 },
                 (form) => {
@@ -150,7 +165,8 @@ export function useForestryForm2({
                     set: function (target, property, value, receiver) {
                       target[property] = value;
                       // @ts-ignore
-                      // submit();
+                      // submit(modifiedValues);
+                      console.log("setit");
                       return true;
                     },
                   });
@@ -159,13 +175,15 @@ export function useForestryForm2({
                     proxy.push(modifiedValues[field.name]);
                   });
 
-                  setData({
+                  const d = {
                     ...data,
                     [keys[index]]: {
                       // @ts-ignore
                       data: Object.assign(n.data, hotFieldsMap),
                     },
-                  });
+                  };
+                  setData(d);
+                  onChange(d);
                 }
               );
               cms.plugins.add(f);
