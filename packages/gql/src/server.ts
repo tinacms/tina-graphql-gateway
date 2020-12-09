@@ -164,15 +164,6 @@ export const startFixtureServer = async ({
     const cache = cacheInit(datasource);
     const { schema, sectionMap } = await builder.schema({ cache });
 
-    // const datasource2 = new FileSystemManager(projectRoot);
-    // const cache2 = cacheInit(datasource2);
-    // const schema2 = await builder.schema({ cache: cache2 });
-    // await fs.writeFileSync("./fs.graphql", print(schema2));
-
-    console.log("done...");
-
-    await fs.writeFileSync("./meh.gql", print(schema));
-
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
       source: query,
@@ -180,6 +171,7 @@ export const startFixtureServer = async ({
       variableValues: variables,
       sectionMap,
     });
+
     if (result.errors) {
       console.error(result.errors);
     }
