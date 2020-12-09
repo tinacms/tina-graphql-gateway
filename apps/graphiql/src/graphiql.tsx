@@ -38,6 +38,7 @@ interface GraphiQLStateSchema {
       states: {
         fetchingSchema: {};
         generatingQuery: {};
+        generatingMutation: {};
         ready: {};
         formifyingQuery: {};
       };
@@ -69,10 +70,7 @@ type GraphiQLEvent =
     }
   | {
       type: "SET_MUTATION";
-      value: {
-        relativePath: string;
-        params: object;
-      };
+      value: object;
     }
   | { type: "FETCH"; query: string }
   | { type: "TOGGLE_EXPLORER" }
@@ -199,18 +197,11 @@ export const graphiqlMachine = Machine<
         generatingQuery: {
           invoke: {
             id: "generateQuery",
-            src: async (context) => {
-              if (context.isMutate) {
-                return context.cms.api.forestry.generateMutation({
-                  relativePath: context.relativePath,
-                  section: context.section,
-                });
-              } else {
-                return context.cms.api.forestry.generateQuery({
-                  relativePath: context.relativePath,
-                  section: context.section,
-                });
-              }
+            src: async (context, event) => {
+              return context.cms.api.forestry.generateQuery({
+                relativePath: context.relativePath,
+                section: context.section,
+              });
             },
             onError: {
               target: "ready",
@@ -231,22 +222,48 @@ export const graphiqlMachine = Machine<
             },
           },
         },
+        generatingMutation: {
+          invoke: {
+            id: "generateMutation",
+            src: async (context, event) => {
+              const {
+                queryString,
+              } = await context.cms.api.forestry.generateMutation({
+                relativePath: context.relativePath,
+                section: context.section,
+              });
+
+              return {
+                queryString,
+              };
+            },
+            onError: {
+              target: "ready",
+              actions: (_context, event) => {
+                console.log(event);
+              },
+            },
+            onDone: {
+              target: "ready",
+              actions: assign((_context, event) => {
+                return {
+                  queryString: event.data.queryString,
+                  isMutate: true,
+                };
+              }),
+            },
+          },
+        },
         ready: {
           on: {
             SET_MUTATION: {
-              target: "generatingQuery",
-              actions: [
-                assign({
-                  isMutate: (context, event) => {
-                    return true;
-                  },
+              type: "generatingMutation",
+              actions: assign({
+                variables: (context, event) => ({
+                  ...context.variables,
+                  params: event.value,
                 }),
-                assign({
-                  variables: (_context, event) => {
-                    return event.value;
-                  },
-                }),
-              ],
+              }),
             },
             CHANGE_VARIABLES: {
               target: "generatingQuery",
@@ -409,10 +426,7 @@ export const Explorer = () => {
         onFormSubmit={(value) => {
           send({
             type: "SET_MUTATION",
-            value: {
-              relativePath: current.context.relativePath,
-              params: value,
-            },
+            value,
           });
         }}
       />
@@ -423,7 +437,7 @@ export const Explorer = () => {
           fetcher={fetcher}
           schema={current.context.schema}
           onEditQuery={(query: string) => {
-            send({ type: "EDIT_QUERY", value: query });
+            // send({ type: "EDIT_QUERY", value: query });
           }}
           query={current.context.queryString}
           onEditVariables={(variables: string) => {
@@ -479,7 +493,9 @@ const TinaInfo = ({
     variables,
     section,
     fetcher,
-    callback: (payload) => onFormSubmit(payload),
+    callback: (payload) => {
+      onFormSubmit(payload);
+    },
   });
 
   return (
