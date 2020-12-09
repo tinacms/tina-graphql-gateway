@@ -28,23 +28,6 @@ export const Sidebar = ({ projects }: { projects: Project[] }) => {
     section,
   ]);
 
-  // React.useEffect(() => {
-  //   if (activeDocument) {
-  //     window.location = `/${project}/${section}/${path[0]}`;
-  //   }
-  // }, [activeDocument]);
-
-  // React.useEffect(() => {
-  //   if (sections.length > 0) {
-  //     if (sections[0].documents) {
-  //       window.location = `/${project}/${sections[0].slug}/${sections[0].documents[0].sys.relativePath}`;
-  //     }
-  //     if (!activeSection) {
-  //       setActiveSection(sections[0].slug);
-  //     }
-  //   }
-  // }, [sections]);
-
   const cms = useCMS();
 
   React.useEffect(() => {
@@ -296,7 +279,7 @@ export const Sidebar = ({ projects }: { projects: Project[] }) => {
                                 className={`mb-1 group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
                               >
                                 {document.sys.breadcrumbs.join("/")}
-                                <Link
+                                {/* <Link
                                   to={`/${project}/${s.slug}/${document.sys.relativePath}?mutate=true`}
                                 >
                                   <a
@@ -305,7 +288,7 @@ export const Sidebar = ({ projects }: { projects: Project[] }) => {
                                   >
                                     mutate
                                   </a>
-                                </Link>
+                                </Link> */}
                               </a>
                             </Link>
                           );

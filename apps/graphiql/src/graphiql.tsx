@@ -318,9 +318,6 @@ export const graphiqlMachine = Machine<
           on: {
             QUERY_TO_MUTATION: "generatingMutation",
             FORMIFY: "formifyingQuery",
-            CHANGE_RELATIVE_PATH: {
-              target: "generatingQuery",
-            },
             CHANGE_SECTION: {
               target: "generatingQuery",
               actions: assign({
@@ -382,6 +379,7 @@ export const Explorer = () => {
   }, [section]);
 
   const _graphiql = React.useRef();
+  console.log(current.value.editor);
 
   if (!current.context.schema) {
     return <div>Finding schema...</div>;

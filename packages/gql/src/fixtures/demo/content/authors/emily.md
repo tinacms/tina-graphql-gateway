@@ -1,11 +1,11 @@
 ---
-name: Emily Lipari
-image: "/uploads/bio-1.jpg"
+name: Emily Lipari@
+image: /uploads/bio-1.jpg
 gallery:
-- "/uploads/3.jpg"
-- "/uploads/2.jpg"
-- "/uploads/1.jpg"
-
+  - /uploads/3.jpg
+  - /uploads/2.jpg
+  - /uploads/1.jpg
+accolades: []
 ---
 ###### favorite thing about san diego?
 
