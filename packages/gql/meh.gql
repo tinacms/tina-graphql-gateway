@@ -978,14 +978,14 @@ input PriceList_Input {
 
 type SectionIndex_Doc_Data {
   body: LongTextValue
-  limit: String
+  limit: Int
   section: String
   _body: LongTextValue
 }
 
 type SectionIndex_Doc_Values {
   body: String
-  limit: String
+  limit: Int
   section: String
   _body: String
   _template: String
@@ -1007,20 +1007,20 @@ type SectionIndex_Doc_Form {
 
 input SectionIndex_Doc_Input {
   body: String
-  limit: String
+  limit: Int
   section: String
   _body: String
 }
 
 type SectionIndex_Data {
   body: LongTextValue
-  limit: String
+  limit: Int
   section: String
 }
 
 type SectionIndex_Values {
   body: String
-  limit: String
+  limit: Int
   section: String
   _template: String
 }
@@ -1035,7 +1035,7 @@ type SectionIndex_Form {
 
 input SectionIndex_Input {
   body: String
-  limit: String
+  limit: Int
   section: String
 }
 

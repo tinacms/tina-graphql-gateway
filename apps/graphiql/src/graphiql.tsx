@@ -42,6 +42,7 @@ interface GraphiQLStateSchema {
     editor: {
       states: {
         fetchingSchema: {};
+        isMutation: {};
         generatingQuery: {};
         generatingMutation: {};
         ready: {};
@@ -96,6 +97,7 @@ interface GraphiQLContext {
   variables: object;
   schema: null | GraphQLSchema;
   result: null | object;
+  isMutation: boolean;
   queryString: string;
   section: string;
   relativePath: string;
@@ -219,11 +221,22 @@ export const graphiqlMachine = Machine<
               );
             },
             onDone: {
-              target: "generatingQuery",
+              target: "isMutation",
               actions: assign({
                 schema: (_context, event) => buildClientSchema(event.data),
               }),
             },
+          },
+        },
+        isMutation: {
+          invoke: {
+            src: async (context) => {
+              if (context.isMutation) {
+                throw "Mutation";
+              }
+            },
+            onDone: "generatingQuery",
+            onError: "generatingMutation",
           },
         },
         generatingQuery: {
@@ -255,16 +268,10 @@ export const graphiqlMachine = Machine<
           invoke: {
             id: "generateMutation",
             src: async (context, event) => {
-              const {
-                queryString,
-              } = await context.cms.api.forestry.generateMutation({
+              return await context.cms.api.forestry.generateMutation({
                 relativePath: context.variables.relativePath,
                 section: context.section,
               });
-
-              return {
-                queryString,
-              };
             },
             onError: {
               target: "ready",
@@ -352,6 +359,7 @@ export const Explorer = () => {
       variables: {
         relativePath: path[0],
       },
+      isMutation,
       section,
       explorerIsOpen: false,
       outputIsOpen: false,
@@ -362,6 +370,12 @@ export const Explorer = () => {
   React.useEffect(() => {
     send({ type: "CHANGE_RELATIVE_PATH", value: path[0] });
   }, [path[0]]);
+
+  React.useEffect(() => {
+    if (isMutation) {
+      send({ type: "QUERY_TO_MUTATION" });
+    }
+  }, [isMutation]);
 
   React.useEffect(() => {
     send({ type: "CHANGE_SECTION", value: section });

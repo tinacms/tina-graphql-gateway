@@ -73,3 +73,8 @@ export const templateTypeName = (
   const suffixName = (includeBody ? "Doc_" : "") + suffix;
   return friendlyName2(template, suffixName);
 };
+
+export const slugify = (string: string) => {
+  console.log("slugify", string, kebabcase(string));
+  return kebabcase(string);
+};

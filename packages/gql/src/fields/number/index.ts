@@ -14,13 +14,13 @@ export const number = {
       });
     },
     initialValue: ({ field }: BuildArgs<NumberField>) => {
-      return gql.string(field.name);
+      return gql.number(field.name);
     },
     value: ({ field }: BuildArgs<NumberField>) => {
-      return gql.string(field.name);
+      return gql.number(field.name);
     },
     input: ({ field }: BuildArgs<NumberField>) => {
-      return gql.inputString(field.name);
+      return gql.inputNumber(field.name);
     },
   },
   resolve: {
@@ -45,6 +45,7 @@ export const number = {
     },
     value: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field value" });
+      console.log("its a number", value);
       return value;
     },
     input: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
