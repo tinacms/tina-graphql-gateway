@@ -84,6 +84,7 @@ type GraphiQLEvent =
   | { type: "OPEN_EXPLORER" }
   | { type: "CLOSE_EXPLORER" }
   | { type: "QUERY_TO_MUTATION" }
+  | { type: "MODIFY_RESULT"; value: object }
   | { type: "TOGGLE_OUTPUT" }
   | { type: "OPEN_OUTPUT" }
   | { type: "CLOSE_OUTPUT" }
@@ -96,6 +97,7 @@ interface GraphiQLContext {
   cms: TinaCMS;
   variables: object;
   schema: null | GraphQLSchema;
+  fetcherType: "tina" | "default";
   result: null | object;
   isMutation: boolean;
   queryString: string;
@@ -118,7 +120,15 @@ export const graphiqlMachine = Machine<
       initial: "idle",
       states: {
         idle: {
-          on: { FETCH: "fetching" },
+          on: {
+            FETCH: "fetching",
+            MODIFY_RESULT: {
+              actions: assign({
+                fetcherType: "tina",
+                result: (context, event) => event.value,
+              }),
+            },
+          },
         },
         fetching: {
           invoke: {
@@ -284,6 +294,7 @@ export const graphiqlMachine = Machine<
               actions: assign((_context, event) => {
                 return {
                   queryString: event.data.queryString,
+                  // fetcherType: "default",
                 };
               }),
             },
@@ -316,7 +327,9 @@ export const graphiqlMachine = Machine<
         },
         ready: {
           on: {
-            QUERY_TO_MUTATION: "generatingMutation",
+            QUERY_TO_MUTATION: {
+              target: "generatingMutation",
+            },
             FORMIFY: "formifyingQuery",
             CHANGE_SECTION: {
               target: "generatingQuery",
@@ -345,6 +358,7 @@ export const Explorer = () => {
   let { project, section, ...path } = useParams();
   const q = useQuery();
   const isMutation = !!q.get("mutate");
+  let submitButtonRef = null;
 
   const cms = useCMS();
 
@@ -352,6 +366,7 @@ export const Explorer = () => {
     context: {
       cms,
       queryString: "",
+      fetcherType: "default",
       result: {},
       variables: {
         relativePath: path[0],
@@ -379,7 +394,13 @@ export const Explorer = () => {
   }, [section]);
 
   const _graphiql = React.useRef();
-  console.log(current.value.editor);
+  // console.log(current.value.editor);
+  React.useEffect(() => {
+    const button = document.getElementsByClassName("execute-button").item(0);
+    if (button) {
+      submitButtonRef = button;
+    }
+  });
 
   if (!current.context.schema) {
     return <div>Finding schema...</div>;
@@ -403,6 +424,12 @@ export const Explorer = () => {
         section={current.context.section}
         fetcher={fetcher}
         result={current.context.result}
+        onDataChange={(value) => {
+          send({ type: "MODIFY_RESULT", value });
+          service.onChange((s) => {
+            submitButtonRef.click();
+          });
+        }}
         onFormSubmit={(value) => {
           send({
             type: "EDIT_VARIABLES",
@@ -418,7 +445,13 @@ export const Explorer = () => {
         {/* @ts-ignore */}
         <GraphiQL
           ref={_graphiql}
-          fetcher={fetcher}
+          // fetcher={fetcher}
+          fetcher={async (args) => {
+            if (current.context.fetcherType === "default") {
+              return fetcher(args);
+            }
+            return current.context.result;
+          }}
           schema={current.context.schema}
           onEditQuery={(query: string) => {
             send({ type: "EDIT_QUERY", value: query });
@@ -464,6 +497,7 @@ const TinaInfo = ({
   fetcher,
   result,
   onFormSubmit,
+  onDataChange,
 }: {
   variables: object;
   section: string;
@@ -471,12 +505,16 @@ const TinaInfo = ({
   fetcher: () => Promise<unknown>;
   result: object | null;
   onFormSubmit: (payload: object) => void;
+  onDataChange: (payload: object) => void;
 }) => {
   const { data, errors } = useForestryForm2({
     payload: result || {},
     variables,
     section,
     fetcher,
+    onChange: (data) => {
+      onDataChange(data);
+    },
     callback: (payload) => {
       onFormSubmit(payload);
     },
