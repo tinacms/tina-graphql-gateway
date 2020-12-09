@@ -1,5 +1,5 @@
 ---
-title: sdOur Pros
+title: Our Pros
 blocks:
   - template: section-index
     limit: 12
