@@ -278,7 +278,8 @@ export class FileSystemManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
-    const string = matter.stringify(params.content || "", params.data);
+    const { _body, ...data } = params;
+    const string = matter.stringify(_body || "", data);
     await fs.outputFile(fullPath, string);
   };
 }

@@ -521,19 +521,21 @@ export const builder = {
             type: "Section",
             args: [gql.inputString("section")],
           }),
-          ...Object.values(sectionMap).map((section) => {
-            return section.plural
-              ? gql.fieldList({
-                  name: section.queryName,
-                  type: section.returnType,
-                  args: [],
-                })
-              : gql.field({
-                  name: section.queryName,
-                  type: section.returnType,
-                  args: [gql.inputString("relativePath")],
-                });
-          }),
+          ...Object.values(sectionMap)
+            .filter((section) => !section.mutation)
+            .map((section) => {
+              return section.plural
+                ? gql.fieldList({
+                    name: section.queryName,
+                    type: section.returnType,
+                    args: [],
+                  })
+                : gql.field({
+                    name: section.queryName,
+                    type: section.returnType,
+                    args: [gql.inputString("relativePath")],
+                  });
+            }),
         ],
       }),
     ];
