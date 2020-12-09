@@ -48,6 +48,24 @@ export const gql = {
       directives: [],
     };
   },
+  number: (name: string) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      arguments: [],
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "Int",
+        },
+      },
+      directives: [],
+    };
+  },
   stringList: (name: string) => ({
     kind: "FieldDefinition" as const,
     name: {
@@ -94,6 +112,20 @@ export const gql = {
       name: {
         kind: "Name" as const,
         value: "String",
+      },
+    },
+  }),
+  inputNumber: (name: string) => ({
+    kind: "InputValueDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: "Int",
       },
     },
   }),

@@ -2,15 +2,17 @@ import _ from "lodash";
 import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import { gql } from "../../gql";
 
-import { friendlyName, templateTypeName } from "@forestryio/graphql-helpers";
-import { builder } from "../../builder";
+import {
+  friendlyName,
+  slugify,
+  templateTypeName,
+} from "@forestryio/graphql-helpers";
 import { resolver } from "../../resolver/field-resolver";
 import { sequential } from "../../util";
 
 import {
   assertIsArray,
   assertIsBlockInitialValue,
-  assertIsBlockInput,
   assertIsBlockValue,
   assertIsBlockValueArray,
   assertIsObject,
@@ -273,17 +275,13 @@ export const blocks: Blocks = {
       assertIsArray(value);
 
       return await sequential(value, async (item) => {
-        assertIsBlockInput(item);
+        // assertIsBlockInput(item);
+        const key = Object.keys(item)[0];
         const data = Object.values(item)[0];
-        const template = await datasource.getTemplate(data.template);
-        const inputData = await resolver.documentDataInputObject({
-          data,
-          template,
-          datasource,
-        });
+
         return {
-          template: data.template,
-          ...inputData,
+          template: slugify(key),
+          ...data,
         };
       });
     },

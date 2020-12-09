@@ -1,7 +1,7 @@
 ---
+title: Love More Than Ever!
 author: content/authors/nikki.md
-title: Love More Than Ever
-image: "/uploads/pride-nikki-2.JPG"
+image: /uploads/pride-nikki-2.JPG
 hashtags: []
 ---
 

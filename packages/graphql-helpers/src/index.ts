@@ -5,6 +5,7 @@ import {
   templateTypeName,
   templateName,
   shortFMTName,
+  slugify,
 } from "./util";
 import {
   queryBuilder,
@@ -13,6 +14,7 @@ import {
   formBuilder,
 } from "./queryBuilder";
 export {
+  slugify,
   formBuilder,
   queryGenerator,
   friendlyFMTName,

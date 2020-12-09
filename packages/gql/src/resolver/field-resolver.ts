@@ -649,13 +649,40 @@ export const resolver: Resolver = {
   }): Promise<boolean> => {
     const template = await datasource.getTemplateForDocument(args);
 
+    const { _body, ...data } = params[friendlyName(template.name, "", true)];
+
+    const accum: { [key: string]: unknown } = { _body };
+    await sequential(template.fields, async (field) => {
+      const value = data[field.name];
+      if (!value) {
+        return null;
+      }
+      accum[field.name] = await documentInputDataField({
+        datasource,
+        field,
+        value,
+      });
+    });
+
     await datasource.updateDocument({
       ...args,
-      params: params[template.name],
+      params: removeEmpty(accum),
     });
 
     return true;
   },
+};
+
+const removeEmpty = (obj: object): object => {
+  if (Array.isArray(obj)) {
+    return obj
+      .map((v) => (v && typeof v === "object" ? removeEmpty(v) : v))
+      .filter((v) => !(v == null));
+  } else {
+    return Object.entries(obj)
+      .map(([k, v]) => [k, v && typeof v === "object" ? removeEmpty(v) : v])
+      .reduce((a, [k, v]) => (v == null ? a : ((a[k] = v), a)), {});
+  }
 };
 
 const dataInitialValuesField = async (
