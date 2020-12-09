@@ -45,7 +45,6 @@ export const number = {
     },
     value: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field value" });
-      console.log("its a number", value);
       return value;
     },
     input: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
