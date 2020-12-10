@@ -96,11 +96,14 @@ interface NodeType {
 //   }
 // });
 
-const pongMachine = Machine({
-  id: "pong",
+const tinaFormMachine = Machine({
+  id: "tina-form",
   initial: "active",
   states: {
     active: {
+      entry: sendParent("PONG", {
+        delay: 1000,
+      }),
       on: {
         PING: {
           // Sends 'PONG' event to parent machine
@@ -119,13 +122,14 @@ export const createFormService = (initialContext: {
   client: ForestryClient;
   cms: TinaCMS;
 }) => {
+  const id = initialContext.queryFieldName + "_NodeFormMachine";
   const formMachine = createMachine<
     NodeFormContext,
     NodeFormEvent,
     NodeFormState
   >(
     {
-      id: initialContext.queryFieldName + "_NodeFormMachine",
+      id,
       initial: "idle",
       states: {
         idle: {
@@ -144,15 +148,13 @@ export const createFormService = (initialContext: {
         loading: {},
         ready: {
           invoke: {
-            id: "pong",
-            src: pongMachine,
+            id: id + "_tinaForm",
+            src: tinaFormMachine,
           },
-          // Sends 'PING' event to child machine with ID 'pong'
-          onEntry: send("PING", { to: "pong" }),
           on: {
             PONG: {
               actions: send("PING", {
-                to: "pong",
+                to: id + "_tinaForm",
                 delay: 1000,
               }),
             },
