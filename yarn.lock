@@ -2107,6 +2107,7 @@ __metadata:
     "@types/react": ^16.9.38
     "@types/styled-components": ^5.1.3
     "@types/yup": ^0.29.10
+    "@xstate/react": ^1.1.0
     codemirror: ^5.55.0
     cors: ^2.8.5
     crypto-js: ^4.0.0
@@ -2122,6 +2123,7 @@ __metadata:
     tinacms: ^0.31.0
     tsup: ^3.7.0
     typescript: ^3.9.5
+    xstate: ^4.15.1
     yup: ^0.32.0
   peerDependencies:
     "@tinacms/core": ">=0.31.0"
@@ -5337,6 +5339,25 @@ __metadata:
     xstate:
       optional: true
   checksum: cf3312e9bd59185b76a32b248e58268040feb9d1ec043c6fbcc71e3fbe7dedbf068b34193acda0e98a197e0ff18e1d3b61a48a66bb5dfde4ad63c16011a73edc
+  languageName: node
+  linkType: hard
+
+"@xstate/react@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@xstate/react@npm:1.1.0"
+  dependencies:
+    use-isomorphic-layout-effect: ^1.0.0
+    use-subscription: ^1.3.0
+  peerDependencies:
+    "@xstate/fsm": ^1.0.0
+    react: ^16.8.0 || ^17.0.0
+    xstate: ^4.11.0
+  peerDependenciesMeta:
+    "@xstate/fsm":
+      optional: true
+    xstate:
+      optional: true
+  checksum: 3caa98ba54366a8b7913d73a54b3bbc64c78679123d9ad0ebdeda68b1b793ea0587025eea13355eb8b888573add81ed16c11c0b1dfa4a76ada87eae96c3d6509
   languageName: node
   linkType: hard
 
@@ -26696,6 +26717,13 @@ typescript@~3.7.2:
   version: 4.13.0
   resolution: "xstate@npm:4.13.0"
   checksum: fd79c89c5e1706d9717ea32a649399aa99507b414d6c82328698e9d18a16051974ae491a935ec679e15a4904fb84db8fc5e757f059c3b86a6800c445b35d57b6
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^4.15.1":
+  version: 4.15.1
+  resolution: "xstate@npm:4.15.1"
+  checksum: 24def9ddb01616cefc4a6e69bac01a92f3d19ae7b04dcfc331a21f573e517eed958a3d18e2ff6927206263c1a82cd064d14a550f2dc662658bfbae1dd1e879d6
   languageName: node
   linkType: hard
 
