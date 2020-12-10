@@ -5,11 +5,12 @@ import {
   sendParent,
   interpret,
   send,
+  spawn,
+  SpawnedActorRef,
 } from "xstate";
 import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import * as yup from "yup";
-import { isContext } from "vm";
 
 interface NodeFormContext {
   queryFieldName: string;
@@ -17,7 +18,7 @@ interface NodeFormContext {
   cms: TinaCMS;
   client: ForestryClient;
   coldFields: { name: string; refetchPolicy?: null | "onChange" };
-  form: null | Form;
+  formRef: null | SpawnedActorRef<any, any>;
   modifiedValues: object;
   error: null | string;
 }
@@ -44,7 +45,7 @@ type NodeFormState =
         client: ForestryClient;
         coldFields: { name: string; refetchPolicy?: null | "onChange" };
         modifiedValues: object;
-        form: null;
+        formRef: SpawnedActorRef<any, any>;
         error: null;
       };
     }
@@ -57,7 +58,7 @@ type NodeFormState =
         client: ForestryClient;
         coldFields: { name: string; refetchPolicy?: null | "onChange" };
         modifiedValues: object;
-        form: Form;
+        formRef: SpawnedActorRef<any, any>;
         error: null;
       };
     }
@@ -70,7 +71,7 @@ type NodeFormState =
         client: ForestryClient;
         coldFields: { name: string; refetchPolicy?: null | "onChange" };
         modifiedValues: object;
-        form: null | Form;
+        formRef: null | SpawnedActorRef<any, any>;
         error: string;
       };
     };
@@ -82,39 +83,30 @@ interface NodeType {
   values: object;
 }
 
-// const tinaFormMachine = Machine({
-//   id: 'tina-form-machine',
-//   initial: 'waitingForCode',
-//   states: {
-//     waitingForCode: {
-//       on: {
-//         CODE: {
-//           actions: respond('TOKEN', { delay: 1000 })
-//         }
-//       }
-//     }
-//   }
-// });
-
-const tinaFormMachine = Machine({
-  id: "tina-form",
-  initial: "active",
-  states: {
-    active: {
-      entry: sendParent("PONG", {
-        delay: 1000,
-      }),
-      on: {
-        PING: {
-          // Sends 'PONG' event to parent machine
-          actions: sendParent("PONG", {
-            delay: 1000,
-          }),
-        },
-      },
+const formCallback = (context) => (callback, receive) => {
+  const form = new Form({
+    id: context.queryFieldName,
+    // @ts-ignore
+    label: `${context.node.sys.basename}`,
+    // @ts-ignore
+    fields: context.node.form.fields,
+    initialValues: context.node.values,
+    onSubmit: async (values) => {
+      console.log("submit it", values);
     },
-  },
-});
+  });
+
+  context.cms.plugins.add(form);
+
+  form.subscribe(
+    (values) => {
+      callback({ type: "PONG", values });
+    },
+    { values: true }
+  );
+
+  return () => context.cms.plugins.remove(form);
+};
 
 export const createFormService = (initialContext: {
   queryFieldName: string;
@@ -130,33 +122,18 @@ export const createFormService = (initialContext: {
   >(
     {
       id,
-      initial: "idle",
+      initial: "ready",
       states: {
-        idle: {
-          invoke: {
-            src: "createForm",
-            onDone: {
-              target: "ready",
-              actions: assign({ form: (context, event) => event.data }),
-            },
-            onError: {
-              target: "failure",
-              actions: assign({ error: (context, event) => event.data }),
-            },
-          },
-        },
         loading: {},
         ready: {
-          invoke: {
-            id: id + "_tinaForm",
-            src: tinaFormMachine,
-          },
+          entry: assign({
+            formRef: (context) => spawn(formCallback(context)),
+          }),
           on: {
             PONG: {
-              actions: send("PING", {
-                to: id + "_tinaForm",
-                delay: 1000,
-              }),
+              actions: (context, event) => {
+                console.log("PONG", event);
+              },
             },
           },
         },
@@ -173,7 +150,7 @@ export const createFormService = (initialContext: {
         cms: initialContext.cms,
         client: initialContext.client,
         error: null,
-        form: null,
+        formRef: null,
       },
     },
     {
@@ -207,7 +184,10 @@ export const createFormService = (initialContext: {
   //   .start();
 
   const service = interpret(formMachine)
-    .onTransition((state) => console.log(state))
+    .onTransition((state) => console.log(state.value))
+    .onEvent((event) => {
+      console.log("event received", event.type);
+    })
     .start();
 
   // service.subscribe((state) => {
