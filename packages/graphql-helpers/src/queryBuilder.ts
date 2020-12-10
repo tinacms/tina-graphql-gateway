@@ -29,6 +29,7 @@ import {
   GraphQLInputObjectType,
   GraphQLUnionType,
   GraphQLString,
+  print,
   GraphQLNonNull,
   isScalarType,
 } from "graphql";
@@ -1082,90 +1083,177 @@ const getRealType = (node: FieldDefinitionNode) => {
     return node.type;
   }
 };
-// export const formBuilder2 = (query: DocumentNode, schema: GraphQLSchema) => {
-//   const astNode = parse(printSchema(schema));
-//   const visitor: VisitorType = {
-//     leave: {
-//       InlineFragment: (node, key, parent, path, ancestors) => {
-//         const visitor2: VisitorType = {
-//           leave: {
-//             FieldDefinition: (nameNode, key, parent, path, ancestors) => {
-//               if (
-//                 getRealType(nameNode).name.value ===
-//                 `${node.typeCondition?.name.value}_InitialValues`
-//               ) {
-//                 const items: any[] = [];
-//                 const meh = buildField(nameNode, astNode, 0, items);
 
-//                 node.selectionSet.selections = [
-//                   ...node.selectionSet.selections,
-//                   meh,
-//                 ];
-//               }
-//             },
-//             UnionTypeDefinition: (unionNode) => {
-//               if (
-//                 unionNode.name.value ===
-//                 `${node.typeCondition?.name.value}_FormFields`
-//               ) {
-//                 const items: any[] = [];
-//                 const meh = unionNode.types?.map((type) => {
-//                   return buildInlineFragment(type, astNode, 0, items);
-//                 });
-//                 // console.log(JSON.stringify(meh, null, 2));
-//                 // FIXME: don't overwrite, replace
-//                 // @ts-ignore
-//                 node.selectionSet.selections = [
-//                   ...node.selectionSet.selections,
-//                   {
-//                     name: {
-//                       kind: "Name",
-//                       value: "form",
-//                     },
-//                     kind: "Field",
-//                     selectionSet: {
-//                       kind: "SelectionSet",
-//                       selections: [
-//                         {
-//                           kind: "Field",
-//                           name: {
-//                             kind: "Name",
-//                             value: "label",
-//                           },
-//                         },
-//                         {
-//                           kind: "Field",
-//                           name: {
-//                             kind: "Name",
-//                             value: "name",
-//                           },
-//                         },
-//                         {
-//                           name: {
-//                             kind: "Name",
-//                             value: "fields",
-//                           },
-//                           kind: "Field",
-//                           selectionSet: {
-//                             kind: "SelectionSet",
-//                             selections: meh,
-//                           },
-//                         },
-//                       ],
-//                     },
-//                   },
-//                 ];
-//               }
-//             },
-//           },
-//         };
+interface NodeType {
+  sys: object;
+  data: object;
+  form: object;
+  values: object;
+}
 
-//         visit(astNode, visitor2);
-//       },
-//     },
-//   };
+export const splitDataNode = (args: {
+  queryFieldName: string;
+  queryString: string;
+  node: NodeType;
+  schema: GraphQLSchema;
+}) => {
+  const { schema, queryFieldName } = args;
+  const typeInfo = new TypeInfo(schema);
+  const queryType = schema.getQueryType();
+  const queries: {
+    path: readonly (string | number)[];
+    newAst: DocumentNode;
+  }[] = [];
+  const queryAst = parse(args.queryString);
+  const visitor: VisitorType = {
+    leave: {
+      Field(node, key, parent, path, ancestors) {
+        const type = typeInfo.getType();
+        if (type) {
+          const namedType = getNamedType(type);
+          if (namedType instanceof GraphQLObjectType) {
+            const implementsNodeInterface = !!namedType
+              .getInterfaces()
+              .find((i) => i.name === "Node");
 
-//   visit(query, visitor);
+            if (implementsNodeInterface) {
+              // @ts-ignore
+              const f = Object.values(queryType?.getFields()).find((field) => {
+                const queryNamedType = getNamedType(field.type);
+                return queryNamedType.name === namedType.name;
+              });
+              if (!f) {
+                throw new Error("oh no");
+              }
+              // console.log(path);
+              // ancestors.map((a, index) => console.log(a));
+              const docAst = get(queryAst, path);
+              const newQuery: DocumentNode = {
+                kind: "Document" as const,
+                definitions: [
+                  {
+                    kind: "OperationDefinition" as const,
+                    operation: "query",
+                    name: {
+                      kind: "Name" as const,
+                      value: f.name,
+                    },
+                    variableDefinitions: [
+                      {
+                        kind: "VariableDefinition" as const,
+                        variable: {
+                          kind: "Variable" as const,
+                          name: {
+                            kind: "Name" as const,
+                            value: "relativePath",
+                          },
+                        },
+                        type: {
+                          kind: "NonNullType" as const,
+                          type: {
+                            kind: "NamedType" as const,
+                            name: {
+                              kind: "Name" as const,
+                              value: "String",
+                            },
+                          },
+                        },
+                      },
+                    ],
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        {
+                          kind: "Field",
+                          name: {
+                            kind: "Name",
+                            value: f.name,
+                          },
+                          arguments: [
+                            {
+                              kind: "Argument",
+                              name: {
+                                kind: "Name",
+                                value: "relativePath",
+                              },
+                              value: {
+                                kind: "Variable",
+                                name: {
+                                  kind: "Name",
+                                  value: "relativePath",
+                                },
+                              },
+                            },
+                          ],
+                          directives: [],
+                          selectionSet: docAst.selectionSet,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              };
+              queries.push({ path: [...path], queryAst: newQuery });
+            }
+          }
+        }
+      },
+    },
+  };
+  visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
+  const valuesVisitor: VisitorType = {
+    leave: {
+      Field(node, key, parent, path, ancestors) {
+        const type = typeInfo.getType();
+        if (type) {
+          const namedType = getNamedType(type);
+          if (namedType instanceof GraphQLObjectType) {
+            console.log(namedType);
+            // const implementsNodeInterface = !!namedType
+            //   .getInterfaces()
+            //   .find((i) => i.name === "Node");
+            // }
+          }
+        }
+      },
+    },
+  };
+  visit(queryAst, visitWithTypeInfo(typeInfo, valuesVisitor));
+  console.log(queries[0]);
 
-//   return query;
-// };
+  // const queryType = schema.getQueryType();
+  // const queryField = queryType?.getFields()[queryFieldName];
+  // console.log("hi");
+  // if (queryField) {
+  //   const queryFieldType = getNamedType(queryField.type);
+  //   if (queryFieldType instanceof GraphQLObjectType) {
+  //     Object.values(queryFieldType.getFields()).map((field, index) => {
+  //       const fieldType = getNamedType(field.type);
+  //       if (fieldType instanceof GraphQLObjectType) {
+  //       }
+  //       if (fieldType instanceof GraphQLUnionType) {
+  //         fieldType.getTypes().map((type, index) => {
+  //           Object.values(type.getFields()).map((field, innerIndex) => {
+  //             const innerFieldType = getNamedType(field.type);
+  //             if (innerFieldType instanceof GraphQLObjectType) {
+  //               const implementsNodeInterface = !!innerFieldType
+  //                 .getInterfaces()
+  //                 .find((i) => i.name === "Node");
+  //               if (implementsNodeInterface) {
+  //                 console.log("otherDoc", innerFieldType);
+  //                 // @ts-ignore
+  //                 const f = Object.values(queryType?.getFields()).find(
+  //                   (field) => {
+  //                     const namedType = getNamedType(field.type);
+  //                     return namedType.name === innerFieldType.name;
+  //                   }
+  //                 );
+  //               }
+  //             }
+  //           });
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
+};
