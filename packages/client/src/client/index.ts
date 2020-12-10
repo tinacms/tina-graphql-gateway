@@ -130,6 +130,14 @@ export class ForestryClient {
     return result;
   };
 
+  getSchema = async () => {
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
+    });
+
+    return buildClientSchema(data);
+  };
+
   getQuery = async () => {
     if (!this.query) {
       const data = await this.request(getIntrospectionQuery(), {

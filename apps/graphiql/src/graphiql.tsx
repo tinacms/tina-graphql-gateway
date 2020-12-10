@@ -422,6 +422,7 @@ export const Explorer = () => {
         isOpen={current.matches("outputIsOpen.open")}
         variables={current.context.variables}
         section={current.context.section}
+        queryString={current.context.queryString}
         fetcher={fetcher}
         result={current.context.result}
         onDataChange={(value) => {
@@ -493,6 +494,7 @@ export const Explorer = () => {
 const TinaInfo = ({
   isOpen,
   variables,
+  queryString,
   section,
   fetcher,
   result,
@@ -501,6 +503,7 @@ const TinaInfo = ({
 }: {
   variables: object;
   section: string;
+  queryString: string;
   isOpen: boolean;
   fetcher: () => Promise<unknown>;
   result: object | null;
@@ -508,6 +511,7 @@ const TinaInfo = ({
   onDataChange: (payload: object) => void;
 }) => {
   const { data, errors } = useForestryForm2({
+    queryString,
     payload: result || {},
     variables,
     section,

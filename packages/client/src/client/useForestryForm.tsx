@@ -40,6 +40,7 @@ type DocumentNode = {
 export function useForestryForm2({
   payload,
   variables,
+  queryString,
   section,
   fetcher,
   onChange,
@@ -47,6 +48,7 @@ export function useForestryForm2({
 }: {
   payload: object;
   variables: { relativePath: string } & object;
+  queryString: string;
   section: string;
   fetcher: () => Promise<unknown>;
   onChange?: (payload: object) => void;
@@ -91,6 +93,7 @@ export function useForestryForm2({
 
             createFormService({
               queryFieldName: keys[index],
+              queryString: queryString,
               node: maybeNode,
               client: cms.api.forestry,
               cms: cms,

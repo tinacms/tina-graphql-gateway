@@ -8,12 +8,14 @@ import {
   spawn,
   SpawnedActorRef,
 } from "xstate";
+import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import * as yup from "yup";
 
 interface NodeFormContext {
   queryFieldName: string;
+  queryString: string;
   node: NodeType;
   cms: TinaCMS;
   client: ForestryClient;
@@ -40,6 +42,7 @@ type NodeFormState =
       value: "loading";
       context: {
         queryFieldName: string;
+        queryString: string;
         node: NodeType;
         cms: TinaCMS;
         client: ForestryClient;
@@ -53,6 +56,7 @@ type NodeFormState =
       value: "ready";
       context: {
         queryFieldName: string;
+        queryString: string;
         node: NodeType;
         cms: TinaCMS;
         client: ForestryClient;
@@ -66,6 +70,7 @@ type NodeFormState =
       value: "failure";
       context: {
         queryFieldName: string;
+        queryString: string;
         node: NodeType;
         cms: TinaCMS;
         client: ForestryClient;
@@ -110,6 +115,7 @@ const formCallback = (context) => (callback, receive) => {
 
 export const createFormService = (initialContext: {
   queryFieldName: string;
+  queryString: string;
   node: NodeType;
   client: ForestryClient;
   cms: TinaCMS;
@@ -122,9 +128,16 @@ export const createFormService = (initialContext: {
   >(
     {
       id,
-      initial: "ready",
+      initial: "loading",
       states: {
-        loading: {},
+        loading: {
+          invoke: {
+            id: id + "breakdownData",
+            src: "breakdownData",
+            onDone: "ready",
+            onError: "failure",
+          },
+        },
         ready: {
           entry: assign({
             formRef: (context) => spawn(formCallback(context)),
@@ -141,6 +154,7 @@ export const createFormService = (initialContext: {
       },
       context: {
         queryFieldName: initialContext.queryFieldName,
+        queryString: initialContext.queryString,
         node: initialContext.node,
         modifiedValues: initialContext.node.values,
         // @ts-ignore
@@ -155,6 +169,14 @@ export const createFormService = (initialContext: {
     },
     {
       services: {
+        breakdownData: async (context, event) => {
+          splitDataNode({
+            queryFieldName: context.queryFieldName,
+            queryString: context.queryString,
+            node: context.node,
+            schema: await context.client.getSchema(),
+          });
+        },
         createForm: async (context, event) => {
           const form = new Form({
             id: context.queryFieldName,
