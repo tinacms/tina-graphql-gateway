@@ -92,49 +92,54 @@ const formCallback = (context) => (callback, receive) => {
   const magicQueryName = "getPostsDocument";
 
   const keys = Object.keys(context.node.data);
-  Object.values(context.node.data).map((value, index) => {
-    const key = keys[index];
-    const field = context.node.form.fields.find((f) => f.name === key);
-    // items like __typename don't have a corresponding field
-    if (field) {
-      if (field.component === "select" && field.refetchPolicy === "onChange") {
-        const path = [magicQueryName, "data", key].join("-");
+  const fields = Object.values(context.node.data)
+    .map((value, index) => {
+      const key = keys[index];
+      const field = context.node.form.fields.find((f) => f.name === key);
+      // items like __typename don't have a corresponding field
+      if (field) {
+        if (
+          field.component === "select" &&
+          field.refetchPolicy === "onChange"
+        ) {
+          const path = [magicQueryName, "data", key].join("-");
 
-        const query = context.queries[path].query;
-        if (query) {
-          field.onSelect = async (value) => {
-            const res = await context.client.request(query, {
-              variables: {
-                relativePath: value.replace("content/authors", ""),
-              },
-            });
-            return res;
-          };
+          const query = context.queries[path].query;
+          if (query) {
+            field.onSelect = async (value) => {
+              const res = await context.client.request(query, {
+                variables: {
+                  relativePath: value.replace("content/authors", ""),
+                },
+              });
+              return res;
+            };
+          }
         }
+        return {
+          ...field,
+          parse: (value, name) => {
+            field.onSelect && field.onSelect(value);
+            if (field.onSelect) {
+              field.onSelect(value).then((res) => {
+                callback({
+                  type: "PONG",
+                  values: { name, value: res.getAuthorsDocument },
+                });
+              });
+              return value;
+            } else {
+              callback({ type: "PONG", values: { name, value } });
+              return value;
+            }
+          },
+        };
+      } else {
+        return false;
       }
-    }
-  });
-  const fields = context.node.form.fields.map((f) => {
-    return {
-      ...f,
-      parse: (value, name) => {
-        f.onSelect && f.onSelect(value);
-        if (f.onSelect) {
-          f.onSelect(value).then((res) => {
-            callback({
-              type: "PONG",
-              values: { name, value: res.getAuthorsDocument },
-            });
-          });
-          return value;
-        } else {
-          console.log("submit it", name);
-          callback({ type: "PONG", values: { name, value } });
-          return value;
-        }
-      },
-    };
-  });
+    })
+    .filter(Boolean);
+
   const form = new Form({
     id: context.queryFieldName,
     // @ts-ignore
