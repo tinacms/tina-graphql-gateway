@@ -445,6 +445,10 @@ export const builder = {
           gql.field({ name: "component", type: "String" }),
         ],
       }),
+      gql.scalar(
+        "Reference",
+        "References another document, used as a foreign key"
+      ),
       gql.scalar("JSON"),
       gql.scalar("JSONObject"),
       gql.object({

@@ -21,7 +21,7 @@ export const select = {
       });
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.string(field.name);
+      return gql.reference(field.name);
     },
     value: async ({ cache, field, accumulator }: BuildArgs<SelectField>) => {
       let select;

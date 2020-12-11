@@ -9,7 +9,7 @@ import {
   SpawnedActorRef,
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
-import { Form, TinaCMS } from "tinacms";
+import { Form, TinaCMS, FieldDescription } from "tinacms";
 import type { ForestryClient } from "../client";
 import * as yup from "yup";
 
@@ -89,12 +89,57 @@ interface NodeType {
 }
 
 const formCallback = (context) => (callback, receive) => {
+  const magicQueryName = "getPostsDocument";
+
+  const keys = Object.keys(context.node.data);
+  Object.values(context.node.data).map((value, index) => {
+    const key = keys[index];
+    const field = context.node.form.fields.find((f) => f.name === key);
+    // items like __typename don't have a corresponding field
+    if (field) {
+      if (field.component === "select" && field.refetchPolicy === "onChange") {
+        const path = [magicQueryName, "data", key].join("-");
+
+        const query = context.queries[path].query;
+        if (query) {
+          field.onSelect = async (value) => {
+            const res = await context.client.request(query, {
+              variables: {
+                relativePath: value.replace("content/authors", ""),
+              },
+            });
+            return res;
+          };
+        }
+      }
+    }
+  });
+  const fields = context.node.form.fields.map((f) => {
+    return {
+      ...f,
+      parse: (value, name) => {
+        f.onSelect && f.onSelect(value);
+        if (f.onSelect) {
+          f.onSelect(value).then((res) => {
+            callback({
+              type: "PONG",
+              values: { name, value: res.getAuthorsDocument },
+            });
+          });
+          return value;
+        } else {
+          console.log("submit it", name);
+          callback({ type: "PONG", values: { name, value } });
+          return value;
+        }
+      },
+    };
+  });
   const form = new Form({
     id: context.queryFieldName,
     // @ts-ignore
     label: `${context.node.sys.basename}`,
-    // @ts-ignore
-    fields: context.node.form.fields,
+    fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
       console.log("submit it", values);
@@ -103,23 +148,19 @@ const formCallback = (context) => (callback, receive) => {
 
   context.cms.plugins.add(form);
 
-  form.subscribe(
-    (values) => {
-      callback({ type: "PONG", values });
-    },
-    { values: true }
-  );
-
   return () => context.cms.plugins.remove(form);
 };
 
-export const createFormService = (initialContext: {
-  queryFieldName: string;
-  queryString: string;
-  node: NodeType;
-  client: ForestryClient;
-  cms: TinaCMS;
-}) => {
+export const createFormService = (
+  initialContext: {
+    queryFieldName: string;
+    queryString: string;
+    node: NodeType;
+    client: ForestryClient;
+    cms: TinaCMS;
+  },
+  onChange
+) => {
   const id = initialContext.queryFieldName + "_NodeFormMachine";
   const formMachine = createMachine<
     NodeFormContext,
@@ -134,8 +175,18 @@ export const createFormService = (initialContext: {
           invoke: {
             id: id + "breakdownData",
             src: "breakdownData",
-            onDone: "ready",
+            onDone: "assigningQueries",
             onError: "failure",
+          },
+        },
+        assigningQueries: {
+          entry: assign({
+            queries: (context, event) => {
+              return event.data;
+            },
+          }),
+          on: {
+            "": "ready",
           },
         },
         ready: {
@@ -145,7 +196,8 @@ export const createFormService = (initialContext: {
           on: {
             PONG: {
               actions: (context, event) => {
-                console.log("PONG", event);
+                // console.log("PONG", event.values);
+                onChange(event.values);
               },
             },
           },
@@ -170,7 +222,7 @@ export const createFormService = (initialContext: {
     {
       services: {
         breakdownData: async (context, event) => {
-          splitDataNode({
+          return splitDataNode({
             queryFieldName: context.queryFieldName,
             queryString: context.queryString,
             node: context.node,
@@ -206,10 +258,10 @@ export const createFormService = (initialContext: {
   //   .start();
 
   const service = interpret(formMachine)
-    .onTransition((state) => console.log(state.value))
-    .onEvent((event) => {
-      console.log("event received", event.type);
-    })
+    // .onTransition((state) => console.log(state.value))
+    // .onEvent((event) => {
+    //   console.log("event received", event.type);
+    // })
     .start();
 
   // service.subscribe((state) => {

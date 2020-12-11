@@ -20,12 +20,34 @@ export const gql = {
       ],
     });
   },
-  scalar: (name: string): ScalarTypeDefinitionNode => {
+  scalar: (name: string, description?: string): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
       name: {
         kind: "Name",
         value: name,
+      },
+      description: {
+        kind: "StringValue",
+        value: description || "",
+      },
+      directives: [],
+    };
+  },
+  reference: (name: string) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      arguments: [],
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "Reference" as const,
+        },
       },
       directives: [],
     };
