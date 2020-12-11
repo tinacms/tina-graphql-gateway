@@ -1,6 +1,7 @@
 import {
   parse,
   isLeafType,
+  lex,
   printSchema,
   visit,
   GraphQLNamedType,
@@ -1101,9 +1102,11 @@ export const splitDataNode = (args: {
   const typeInfo = new TypeInfo(schema);
   const queryType = schema.getQueryType();
   const queries: {
-    path: readonly (string | number)[];
-    newAst: DocumentNode;
-  }[] = [];
+    [key: string]: {
+      path: readonly (string | number)[];
+      newAst: DocumentNode;
+    };
+  } = [];
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
@@ -1125,8 +1128,6 @@ export const splitDataNode = (args: {
               if (!f) {
                 throw new Error("oh no");
               }
-              // console.log(path);
-              // ancestors.map((a, index) => console.log(a));
               const docAst = get(queryAst, path);
               const newQuery: DocumentNode = {
                 kind: "Document" as const,
@@ -1193,7 +1194,33 @@ export const splitDataNode = (args: {
                   },
                 ],
               };
-              queries.push({ path: [...path], queryAst: newQuery });
+              let dataPath = [];
+              const anc = ancestors[0];
+              const pathAccum: (string | number)[] = [];
+              path.map((p, i) => {
+                pathAccum.push(p);
+                const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+                if (Array.isArray(item)) {
+                } else {
+                  switch (item.kind) {
+                    case "OperationDefinition":
+                      break;
+                    case "SelectionSet":
+                      break;
+                    case "Field":
+                      dataPath.push({ name: item.name?.value });
+                      break;
+                    case "InlineFragment":
+                      dataPath[dataPath.length - 1]["fragment"] =
+                        item.typeCondition?.name.value;
+                      break;
+                  }
+                }
+              });
+              queries[dataPath.map((dp) => dp.name).join("-")] = {
+                path: dataPath,
+                query: print(newQuery),
+              };
             }
           }
         }
@@ -1201,59 +1228,6 @@ export const splitDataNode = (args: {
     },
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
-  const valuesVisitor: VisitorType = {
-    leave: {
-      Field(node, key, parent, path, ancestors) {
-        const type = typeInfo.getType();
-        if (type) {
-          const namedType = getNamedType(type);
-          if (namedType instanceof GraphQLObjectType) {
-            console.log(namedType);
-            // const implementsNodeInterface = !!namedType
-            //   .getInterfaces()
-            //   .find((i) => i.name === "Node");
-            // }
-          }
-        }
-      },
-    },
-  };
-  visit(queryAst, visitWithTypeInfo(typeInfo, valuesVisitor));
-  console.log(queries[0]);
 
-  // const queryType = schema.getQueryType();
-  // const queryField = queryType?.getFields()[queryFieldName];
-  // console.log("hi");
-  // if (queryField) {
-  //   const queryFieldType = getNamedType(queryField.type);
-  //   if (queryFieldType instanceof GraphQLObjectType) {
-  //     Object.values(queryFieldType.getFields()).map((field, index) => {
-  //       const fieldType = getNamedType(field.type);
-  //       if (fieldType instanceof GraphQLObjectType) {
-  //       }
-  //       if (fieldType instanceof GraphQLUnionType) {
-  //         fieldType.getTypes().map((type, index) => {
-  //           Object.values(type.getFields()).map((field, innerIndex) => {
-  //             const innerFieldType = getNamedType(field.type);
-  //             if (innerFieldType instanceof GraphQLObjectType) {
-  //               const implementsNodeInterface = !!innerFieldType
-  //                 .getInterfaces()
-  //                 .find((i) => i.name === "Node");
-  //               if (implementsNodeInterface) {
-  //                 console.log("otherDoc", innerFieldType);
-  //                 // @ts-ignore
-  //                 const f = Object.values(queryType?.getFields()).find(
-  //                   (field) => {
-  //                     const namedType = getNamedType(field.type);
-  //                     return namedType.name === innerFieldType.name;
-  //                   }
-  //                 );
-  //               }
-  //             }
-  //           });
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
+  return queries;
 };

@@ -2,6 +2,8 @@ import React from "react";
 import { useCMS, useForm, usePlugin, Form, FormOptions, Plugin } from "tinacms";
 import { createFormService } from "./form-state-machine";
 import { ContentCreatorPlugin } from "./create-page-plugin";
+import set from "lodash.set";
+import get from "lodash.get";
 import * as yup from "yup";
 
 /**
@@ -91,109 +93,23 @@ export function useForestryForm2({
             // this is temporary for playground viewing
             setData(payload);
 
-            createFormService({
-              queryFieldName: keys[index],
-              queryString: queryString,
-              node: maybeNode,
-              client: cms.api.forestry,
-              cms: cms,
-            });
-
-            const submit = async (
-              values: object,
-              triggerCallback: boolean = false
-            ) => {
-              const { queryString } = await cms.api.forestry.generateMutation({
-                relativePath: variables.relativePath,
-                section,
-              });
-              const payload = await cms.api.forestry.transformPayload({
-                mutation: queryString,
-                payload: values,
-              });
-
-              // console.log("oh running?");
-              const updatedContent = await fetcher();
-              // FIXME: this is updating the whole document
-              setData(updatedContent);
-              if (triggerCallback) {
-                console.log("callit", payload);
-                callback && callback(payload);
-              } else {
-                await cms.api.forestry.request(queryString, {
-                  variables: {
-                    relativePath: variables.relativePath,
-                    params: payload,
-                  },
-                });
+            createFormService(
+              {
+                queryFieldName: keys[index],
+                queryString: queryString,
+                node: maybeNode,
+                client: cms.api.forestry,
+                cms: cms,
+              },
+              (data) => {
+                // FIXME: ideally we have a way of setting data effeciently
+                // this only works for top-level keys, needs to work no
+                // matter how deep
+                set(payload, [[keys[index]], "data", data.name], data.value);
+                setData(payload);
+                onChange(payload);
               }
-            };
-
-            const n = maybeNode as DocumentNode;
-            // const f = createForm(
-            //   {
-            //     id: `${keys[index]}`,
-            //     label: `${n.sys.basename}`,
-            //     // @ts-ignore
-            //     fields: n.form.fields,
-            //     initialValues: n.values,
-            //     onSubmit: async (values) => {
-            //       await submit(values, true);
-            //     },
-            //   },
-            //   (form) => {
-            //     const modifiedValues = form.values;
-            //     const hotFields = n.form.fields.filter((field) => {
-            //       // @ts-ignore
-            //       return field.refetchPolicy !== "onChange";
-            //     });
-
-            //     const hotFieldsMap = {};
-            //     hotFields.forEach((field) => {
-            //       hotFieldsMap[field.name] = modifiedValues[field.name];
-            //     });
-
-            //     const coldFields = n.form.fields.filter((field) => {
-            //       // @ts-ignore
-            //       return field.refetchPolicy === "onChange";
-            //     });
-
-            //     let coldValues = [];
-
-            //     var proxy = new Proxy(coldValues, {
-            //       apply: function (target, thisArg, argumentsList) {
-            //         // @ts-ignore
-            //         return thisArg[target].apply(this, argumentsList);
-            //       },
-            //       deleteProperty: function (target, property) {
-            //         console.log("Deleted %s", property);
-            //         return true;
-            //       },
-            //       set: function (target, property, value, receiver) {
-            //         target[property] = value;
-            //         // @ts-ignore
-            //         // submit(modifiedValues);
-            //         console.log("setit");
-            //         return true;
-            //       },
-            //     });
-
-            //     coldFields.forEach((field) => {
-            //       proxy.push(modifiedValues[field.name]);
-            //     });
-
-            //     const d = {
-            //       ...data,
-            //       [keys[index]]: {
-            //         // @ts-ignore
-            //         data: Object.assign(n.data, hotFieldsMap),
-            //       },
-            //     };
-            //     setData(d);
-            //     onChange(d);
-            //   }
-            // );
-            // cms.plugins.add(f);
+            );
           });
         });
       })
