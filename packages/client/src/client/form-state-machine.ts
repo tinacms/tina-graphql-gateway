@@ -9,9 +9,8 @@ import {
   SpawnedActorRef,
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
-import { Form, TinaCMS, FieldDescription } from "tinacms";
+import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
-import * as yup from "yup";
 
 interface NodeFormContext {
   queryFieldName: string;
@@ -89,22 +88,19 @@ interface NodeType {
 }
 
 const formCallback = (context) => (callback, receive) => {
-  const magicQueryName = "getPostsDocument";
-
   const keys = Object.keys(context.node.data);
   const fields = Object.values(context.node.data)
     .map((value, index) => {
       const key = keys[index];
       const field = context.node.form.fields.find((f) => f.name === key);
       // items like __typename don't have a corresponding field
+      const path = [context.queryFieldName, "data", key];
       if (field) {
         if (
           field.component === "select" &&
           field.refetchPolicy === "onChange"
         ) {
-          const path = [magicQueryName, "data", key].join("-");
-
-          const query = context.queries[path].query;
+          const query = context.queries[path.join("-")].query;
           if (query) {
             field.onSelect = async (value) => {
               const res = await context.client.request(query, {
@@ -124,12 +120,12 @@ const formCallback = (context) => (callback, receive) => {
               field.onSelect(value).then((res) => {
                 callback({
                   type: "PONG",
-                  values: { path: [name], value: res.getAuthorsDocument },
+                  values: { path: path, value: res.getAuthorsDocument },
                 });
               });
               return value;
             } else {
-              callback({ type: "PONG", values: { path: [name], value } });
+              callback({ type: "PONG", values: { path: path, value } });
               return value;
             }
           },
