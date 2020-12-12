@@ -109,7 +109,7 @@ const formCallback = (context) => (callback, receive) => {
             field.onSelect = async (value) => {
               const res = await context.client.request(query, {
                 variables: {
-                  relativePath: value.replace("content/authors", ""),
+                  relativePath: value,
                 },
               });
               return res;
@@ -124,12 +124,12 @@ const formCallback = (context) => (callback, receive) => {
               field.onSelect(value).then((res) => {
                 callback({
                   type: "PONG",
-                  values: { name, value: res.getAuthorsDocument },
+                  values: { path: [name], value: res.getAuthorsDocument },
                 });
               });
               return value;
             } else {
-              callback({ type: "PONG", values: { name, value } });
+              callback({ type: "PONG", values: { path: [name], value } });
               return value;
             }
           },
@@ -201,7 +201,6 @@ export const createFormService = (
           on: {
             PONG: {
               actions: (context, event) => {
-                // console.log("PONG", event.values);
                 onChange(event.values);
               },
             },

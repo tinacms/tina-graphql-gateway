@@ -455,14 +455,21 @@ export const resolver: Resolver = {
   },
   documentObject: async ({ args, datasource }) => {
     const sectionData = await datasource.getSettingsForSection(args.section);
+
+    // FIXME: we're supporting both full path and relative path args, when we use this from the hook we only have
+    // access to the documents full id, not the relative path, this should support both kinds of calls, but
+    // probably needs a better argument option as relativePath is misleading
     const relativePath = args.fullPath
       ? args.fullPath
           .replace(sectionData.path, "")
           .replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "")
+      : args.relativePath?.startsWith(sectionData.path)
+      ? args.relativePath.replace(sectionData.path, "")
       : args.relativePath;
     if (!relativePath) {
       throw new Error(`Expected either relativePath or fullPath arguments`);
     }
+
     const realArgs = { relativePath, section: args.section };
     const { data, content } = await datasource.getData(realArgs);
     const template = await datasource.getTemplateForDocument(realArgs);

@@ -105,7 +105,7 @@ export function useForestryForm2({
                 // FIXME: ideally we have a way of setting data effeciently
                 // this only works for top-level keys, needs to work no
                 // matter how deep
-                set(payload, [[keys[index]], "data", data.name], data.value);
+                set(payload, [[keys[index]], "data", ...data.path], data.value);
                 setData(payload);
                 onChange(payload);
               }
