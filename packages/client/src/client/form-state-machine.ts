@@ -11,6 +11,7 @@ import {
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
+import { fieldSubscriptionItems } from "final-form";
 
 interface NodeFormContext {
   queryFieldName: string;
@@ -87,54 +88,114 @@ interface NodeType {
   values: object;
 }
 
-const formCallback = (context) => (callback, receive) => {
-  const keys = Object.keys(context.node.data);
-  const fields = Object.values(context.node.data)
-    .map((value, index) => {
-      const key = keys[index];
-      const field = context.node.form.fields.find((f) => f.name === key);
-      // items like __typename don't have a corresponding field
-      const path = [context.queryFieldName, "data", key];
-      if (field) {
-        if (
-          field.component === "select" &&
-          field.refetchPolicy === "onChange"
-        ) {
-          const query = context.queries[path.join("-")].query;
-          if (query) {
-            field.onSelect = async (value) => {
-              const res = await context.client.request(query, {
+const buildFields = ({
+  parentPath,
+  form,
+  context,
+  callback,
+}: {
+  parentPath: string[];
+  form: Pick<NodeType, "form">;
+  context: NodeFormContext;
+  callback: (args: NodeFormEvent) => void;
+}) => {
+  return form.fields.map((field) => {
+    if (field.fields) {
+      field.fields = field.fields = buildFields({
+        parentPath: parentPath,
+        form: field,
+        context,
+        callback,
+      });
+    }
+    if (field.component === "list") {
+      field.field = {
+        ...field.field,
+        parse: (value, name) => {
+          callback({
+            type: "PONG",
+            values: {
+              path: [...parentPath, ...name.split(".")],
+              value,
+            },
+          });
+          return value;
+        },
+      };
+    }
+
+    if (field.templates) {
+      const templateKeys = Object.keys(field.templates);
+      Object.values(field.templates).map((template, index) => {
+        field.templates[templateKeys[index]].fields = buildFields({
+          parentPath,
+          context,
+          form: template,
+          callback,
+        });
+      });
+    }
+
+    return {
+      ...field,
+      parse: (value, name) => {
+        if (field.component === "select") {
+          const queryPath = [...parentPath, ...name.split(".")]
+            .filter((item) => {
+              return isNaN(parseInt(item));
+            })
+            .join(".");
+
+          console.log(queryPath, context.queries[queryPath]);
+          if (context.queries[queryPath]) {
+            context.client
+              .request(context.queries[queryPath], {
                 variables: {
                   relativePath: value,
                 },
-              });
-              return res;
-            };
-          }
-        }
-        return {
-          ...field,
-          parse: (value, name) => {
-            field.onSelect && field.onSelect(value);
-            if (field.onSelect) {
-              field.onSelect(value).then((res) => {
+              })
+              .then((res) => {
                 callback({
                   type: "PONG",
-                  values: { path: path, value: res.getAuthorsDocument },
+                  values: {
+                    path: [...parentPath, ...name.split(".")],
+                    value: Object.values(res)[0],
+                  },
                 });
               });
-              return value;
-            } else {
-              callback({ type: "PONG", values: { path: path, value } });
-              return value;
-            }
-          },
-        };
-      } else {
-        return false;
-      }
-    })
-    .filter(Boolean);
+          } else {
+            callback({
+              type: "PONG",
+              values: {
+                path: [...parentPath, ...name.split(".")],
+                value,
+              },
+            });
+          }
+        } else {
+          callback({
+            type: "PONG",
+            values: {
+              path: [...parentPath, ...name.split(".")],
+              value,
+            },
+          });
+        }
+        return value;
+      },
+    };
+  });
+};
+
+const formCallback = (context) => (callback, receive) => {
+  const path = [context.queryFieldName, "data"];
+  console.log(context.queries);
+  const fields = buildFields({
+    parentPath: path,
+    context,
+    callback,
+    ...context.node,
+  });
 
   const form = new Form({
     id: context.queryFieldName,
@@ -247,15 +308,11 @@ export const createFormService = (
           return form;
         },
         evaluateColdFields: async () => {
-          console.log;
+          // console.log;
         },
       },
     }
   );
-
-  // const service2 = interpret(pingMachine)
-  //   .onTransition((state) => console.log(state.value))
-  //   .start();
 
   const service = interpret(formMachine)
     // .onTransition((state) => console.log(state.value))
@@ -264,28 +321,5 @@ export const createFormService = (
     // })
     .start();
 
-  // service.subscribe((state) => {
-  //   console.log(state.value);
-  //   console.log(state.nextEvents);
-  // });
-
   return service;
 };
-
-// // Invoked child machine
-// const pongMachine = Machine({
-//   id: "pong",
-//   initial: "active",
-//   states: {
-//     active: {
-//       on: {
-//         PING: {
-//           // Sends 'PONG' event to parent machine
-//           actions: sendParent("PONG", {
-//             delay: 1000
-//           })
-//         }
-//       }
-//     }
-//   }
-// });
