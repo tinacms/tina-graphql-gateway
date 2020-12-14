@@ -55,6 +55,16 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
         const namedType = getNamedType(type);
 
         if (namedType instanceof GraphQLObjectType) {
+          // FIXME: adds __typename to each field, probably a nicer way to do this
+          if (node.kind === "Field" || node.kind === "InlineFragment") {
+            node.selectionSet?.selections.push({
+              kind: "Field" as const,
+              name: {
+                kind: "Name" as const,
+                value: "__typename",
+              },
+            });
+          }
           const hasNodeInterface = !!namedType
             .getInterfaces()
             .find((i) => i.name === "Node");
@@ -1208,19 +1218,15 @@ export const splitDataNode = (args: {
                     case "SelectionSet":
                       break;
                     case "Field":
-                      dataPath.push({ name: item.name?.value });
+                      dataPath.push(item.name?.value);
                       break;
                     case "InlineFragment":
-                      dataPath[dataPath.length - 1]["fragment"] =
-                        item.typeCondition?.name.value;
+                      // dataPath.push("INDEX");
                       break;
                   }
                 }
               });
-              queries[dataPath.map((dp) => dp.name).join("-")] = {
-                path: dataPath,
-                query: print(newQuery),
-              };
+              queries[dataPath.join(".")] = print(newQuery);
             }
           }
         }

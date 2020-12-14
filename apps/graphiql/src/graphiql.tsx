@@ -125,7 +125,9 @@ export const graphiqlMachine = Machine<
             MODIFY_RESULT: {
               actions: assign({
                 fetcherType: "tina",
-                result: (context, event) => event.value,
+                result: (context, event) => {
+                  return event.value;
+                },
               }),
             },
           },
