@@ -2182,13 +2182,15 @@ __metadata:
     lodash: ^4.17.20
     lru-cache: ^6.0.0
     nodemon: ^2.0.4
+    prettier: ^2.2.1
     rehype-format: ^3.1.0
     rehype-stringify: ^8.0.0
     remark: ^13.0.0
+    remark-frontmatter: ^3.0.0
     remark-mdx: 2.0.0-next.8
     remark-parse: ^8.0.2
     remark-rehype: ^8.0.0
-    remark-stringify: ^9.0.0
+    remark-stringify: ^8.1.1
     ts-jest: ^26.1.2
     tslib: ^1.11.1
     tsup: ^3.6.1
@@ -11128,6 +11130,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fault@npm:^1.0.0":
+  version: 1.0.4
+  resolution: "fault@npm:1.0.4"
+  dependencies:
+    format: ^0.2.0
+  checksum: 6b8ef4f7439b21a3c319e45ff68b31e1ca5de4e27f2aa5fd2138909b77e18e8fabaa131953aeb0be7038951c7d5a9f5394f81b06c5a1e41ea8a442e867b69bbb
+  languageName: node
+  linkType: hard
+
 "faye-websocket@npm:^0.10.0":
   version: 0.10.0
   resolution: "faye-websocket@npm:0.10.0"
@@ -11613,6 +11624,13 @@ __metadata:
     combined-stream: ^1.0.6
     mime-types: ^2.1.12
   checksum: 862e686b105634222db77138d5f5ae08ba85f88c04925de5be86b2b9d03cf671d86566ad10f1dd5217634c0f1634069dfc1a663a1cc13e8fbac0ce8f670ad070
+  languageName: node
+  linkType: hard
+
+"format@npm:^0.2.0":
+  version: 0.2.2
+  resolution: "format@npm:0.2.2"
+  checksum: 0740f5212144e63dad4b3b2156d84a875c0649f4976ecfa91f21b086ad007e9af575e88cf782b202c5f5783fb6d4ee3cebcd357b79aa82d556f8401dc1762f55
   languageName: node
   linkType: hard
 
@@ -16820,6 +16838,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"mdast-util-frontmatter@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "mdast-util-frontmatter@npm:0.2.0"
+  dependencies:
+    micromark-extension-frontmatter: ^0.2.0
+  checksum: 7ad4406e4537f68a5d421cc97ddda4ecc49eeb5c885fde2fd805f187c2ec46cf9726f4871195a2ca0f865be94840051c7632e05d793bc44c5881b50acda220b3
+  languageName: node
+  linkType: hard
+
 "mdast-util-to-hast@npm:^10.0.0":
   version: 10.0.0
   resolution: "mdast-util-to-hast@npm:10.0.0"
@@ -17033,6 +17060,15 @@ fsevents@^1.2.7:
   version: 0.1.1
   resolution: "microevent.ts@npm:0.1.1"
   checksum: fc547fd00a14e8aae4d02b293c6f0b0e03435baf8bcaac48e5d0d0b86752db3cf9cc0fb3d88d22361887b75fcff33b4e6f263d86046f226b3ad10ae86a829b2e
+  languageName: node
+  linkType: hard
+
+"micromark-extension-frontmatter@npm:^0.2.0":
+  version: 0.2.2
+  resolution: "micromark-extension-frontmatter@npm:0.2.2"
+  dependencies:
+    fault: ^1.0.0
+  checksum: 52715e92407e75b54a904c9e571ae6a95c5e839b40fb39b807f735bae65af64fc8ad8b1033eea405aa48ef7d9a240110e15c6c9788d2edc97ba54b0f7fc8dcc7
   languageName: node
   linkType: hard
 
@@ -20348,6 +20384,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"prettier@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "prettier@npm:2.2.1"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 92c6c9f4b87eba1f28466edee57dd18c80d00b858edda77d46d1950d20e6e302b68ee255fc91133ba931e63c4577b5ae30da194d9626a8f3c0177778b91bf056
+  languageName: node
+  linkType: hard
+
 "pretty-bytes@npm:^5.1.0, pretty-bytes@npm:^5.2.0":
   version: 5.3.0
   resolution: "pretty-bytes@npm:5.3.0"
@@ -21624,6 +21669,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"remark-frontmatter@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "remark-frontmatter@npm:3.0.0"
+  dependencies:
+    mdast-util-frontmatter: ^0.2.0
+    micromark-extension-frontmatter: ^0.2.0
+  checksum: 9c70abea78f42453893e5c121e99292b650e1433214e2596fd744a0043630a74dca60688ff7392c7c384321c5bc350fe726ef4f22a08a33a47828ec88f58abe7
+  languageName: node
+  linkType: hard
+
 "remark-mdx@npm:2.0.0-next.8":
   version: 2.0.0-next.8
   resolution: "remark-mdx@npm:2.0.0-next.8"
@@ -21702,7 +21757,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"remark-stringify@npm:^8.1.0":
+"remark-stringify@npm:^8.1.0, remark-stringify@npm:^8.1.1":
   version: 8.1.1
   resolution: "remark-stringify@npm:8.1.1"
   dependencies:

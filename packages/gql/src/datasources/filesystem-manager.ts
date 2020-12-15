@@ -280,6 +280,7 @@ export class FileSystemManager implements DataSource {
     this.loader.clear(fullPath);
     const { _body, ...data } = params;
     const string = matter.stringify(_body || "", data);
+
     await fs.outputFile(fullPath, string);
   };
 }
