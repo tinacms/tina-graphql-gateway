@@ -1217,11 +1217,10 @@ export const splitDataNode = (args: {
                       break;
                     case "SelectionSet":
                       break;
+                    case "InlineFragment":
+                      break;
                     case "Field":
                       dataPath.push(item.name?.value);
-                      break;
-                    case "InlineFragment":
-                      // dataPath.push("INDEX");
                       break;
                   }
                 }

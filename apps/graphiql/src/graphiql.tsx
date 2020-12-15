@@ -526,20 +526,5 @@ const TinaInfo = ({
     },
   });
 
-  return (
-    <div
-      style={{ left: "21rem", top: "65px" }}
-      className={`absolute right-0 bottom-0 p-10 bg-white z-20 shadow-lg overflow-scroll ${
-        isOpen
-          ? "opacity-1 pointer-events-all"
-          : "opacity-0 pointer-events-none"
-      }`}
-    >
-      <div className="bg-gray-100 p-4">
-        <pre>
-          <code className="text-xs">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      </div>
-    </div>
-  );
+  return null;
 };

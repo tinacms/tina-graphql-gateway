@@ -140,13 +140,13 @@ const buildFields = ({
       ...field,
       parse: (value, name) => {
         if (field.component === "select") {
+          // Remove indexes in path, ex. "data.0.blocks.2.author" -> "data.blocks.author"
           const queryPath = [...parentPath, ...name.split(".")]
             .filter((item) => {
               return isNaN(parseInt(item));
             })
             .join(".");
 
-          console.log(queryPath, context.queries[queryPath]);
           if (context.queries[queryPath]) {
             context.client
               .request(context.queries[queryPath], {
@@ -189,7 +189,6 @@ const buildFields = ({
 
 const formCallback = (context) => (callback, receive) => {
   const path = [context.queryFieldName, "data"];
-  console.log(context.queries);
   const fields = buildFields({
     parentPath: path,
     context,
