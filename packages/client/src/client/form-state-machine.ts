@@ -65,7 +65,7 @@ const buildFields = ({
   return form.fields.map((field) => {
     // Group List and Group
     if (field.component === "group" || field.component === "group-list") {
-      field.fields = field.fields = buildFields({
+      field.fields = buildFields({
         parentPath: parentPath,
         form: field,
         context,

@@ -22,18 +22,6 @@ interface GraphiQLStateSchema {
         fetching: {};
       };
     };
-    explorerIsOpen: {
-      states: {
-        closed: {};
-        open: {};
-      };
-    };
-    outputIsOpen: {
-      states: {
-        closed: {};
-        open: {};
-      };
-    };
     variables: {
       states: {
         idle: {};
@@ -58,10 +46,12 @@ const useQuery = () => {
 
 // The events that the machine handles
 type GraphiQLEvent =
-  | {
-      type: "CHANGE_MUTATE";
-      value: boolean;
-    }
+  | { type: "FETCH" }
+  | { type: "QUERY_TO_MUTATION" }
+  | { type: "MODIFY_RESULT"; value: object }
+  | { type: "FORMIFY" }
+  | { type: "EDIT_QUERY"; value: string }
+  | { type: "EDIT_VARIABLES"; value: object }
   | {
       type: "CHANGE_SECTION";
       value: string;
@@ -77,21 +67,7 @@ type GraphiQLEvent =
   | {
       type: "SET_MUTATION";
       value: object;
-    }
-  | { type: "FETCH" }
-  | { type: "TOGGLE_EXPLORER" }
-  | { type: "TOGGLE_EXPLORER" }
-  | { type: "OPEN_EXPLORER" }
-  | { type: "CLOSE_EXPLORER" }
-  | { type: "QUERY_TO_MUTATION" }
-  | { type: "MODIFY_RESULT"; value: object }
-  | { type: "TOGGLE_OUTPUT" }
-  | { type: "OPEN_OUTPUT" }
-  | { type: "CLOSE_OUTPUT" }
-  | { type: "FORMIFY" }
-  | { type: "EDIT_QUERY"; value: string }
-  | { type: "EDIT_VARIABLES"; value: object }
-  | { type: "PED_COUNTDOWN"; duration: number };
+    };
 
 interface GraphiQLContext {
   cms: TinaCMS;
@@ -103,8 +79,6 @@ interface GraphiQLContext {
   queryString: string;
   section: string;
   relativePath: string;
-  explorerIsOpen: boolean;
-  outputIsOpen: boolean;
 }
 
 // This machine is completely decoupled from React
@@ -157,40 +131,6 @@ export const graphiqlMachine = Machine<
                 },
               }),
             },
-          },
-        },
-      },
-    },
-    explorerIsOpen: {
-      initial: "closed",
-      states: {
-        closed: {
-          on: {
-            TOGGLE_EXPLORER: "open",
-            OPEN_EXPLORER: "open",
-          },
-        },
-        open: {
-          on: {
-            TOGGLE_EXPLORER: "closed",
-            CLOSE_EXPLORER: "closed",
-          },
-        },
-      },
-    },
-    outputIsOpen: {
-      initial: "closed",
-      states: {
-        closed: {
-          on: {
-            TOGGLE_OUTPUT: "open",
-            OPEN_OUTPUT: "open",
-          },
-        },
-        open: {
-          on: {
-            TOGGLE_OUTPUT: "closed",
-            CLOSE_OUTPUT: "closed",
           },
         },
       },
@@ -360,7 +300,7 @@ export const Explorer = () => {
   let { project, section, ...path } = useParams();
   const q = useQuery();
   const isMutation = !!q.get("mutate");
-  let submitButtonRef = null;
+  let submitButtonRef: unknown = null;
 
   const cms = useCMS();
 
@@ -375,8 +315,6 @@ export const Explorer = () => {
       },
       isMutation,
       section,
-      explorerIsOpen: false,
-      outputIsOpen: false,
       schema: null,
     },
   });
@@ -421,7 +359,6 @@ export const Explorer = () => {
   return (
     <div id="root" className="graphiql-container">
       <TinaInfo
-        isOpen={current.matches("outputIsOpen.open")}
         variables={current.context.variables}
         section={current.context.section}
         queryString={current.context.queryString}
@@ -430,6 +367,7 @@ export const Explorer = () => {
         onDataChange={(value) => {
           send({ type: "MODIFY_RESULT", value });
           service.onChange((s) => {
+            // @ts-ignore
             submitButtonRef.click();
           });
         }}
@@ -448,7 +386,6 @@ export const Explorer = () => {
         {/* @ts-ignore */}
         <GraphiQL
           ref={_graphiql}
-          // fetcher={fetcher}
           fetcher={async (args) => {
             if (current.context.fetcherType === "default") {
               return fetcher(args);
@@ -478,13 +415,6 @@ export const Explorer = () => {
               type="button"
             >
               Formify
-            </button>
-            <button
-              type="button"
-              onClick={() => send("TOGGLE_OUTPUT")}
-              className="ml-4 group flex items-center px-3 py-3 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150 tracking-wider"
-            >
-              Output
             </button>
           </GraphiQL.Toolbar>
         </GraphiQL>
