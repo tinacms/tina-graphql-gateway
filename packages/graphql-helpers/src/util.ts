@@ -75,6 +75,5 @@ export const templateTypeName = (
 };
 
 export const slugify = (string: string) => {
-  console.log("slugify", string, kebabcase(string));
   return kebabcase(string);
 };

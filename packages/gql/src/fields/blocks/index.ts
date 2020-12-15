@@ -271,17 +271,21 @@ export const blocks: Blocks = {
       });
     },
     input: async ({ datasource, field, value }) => {
-      // FIXME: we should validate that only one key was passed
       assertIsArray(value);
 
       return await sequential(value, async (item) => {
-        // assertIsBlockInput(item);
         const key = Object.keys(item)[0];
         const data = Object.values(item)[0];
 
+        const resolvedData = await resolver.documentDataInputObject({
+          data,
+          template: await datasource.getTemplate(slugify(key)),
+          datasource,
+        });
+
         return {
           template: slugify(key),
-          ...data,
+          ...resolvedData,
         };
       });
     },

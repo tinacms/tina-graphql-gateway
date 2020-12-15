@@ -12,14 +12,6 @@ import {
 } from "graphql";
 import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
 import { transformPayload } from "./handle";
-import type { Field } from "tinacms";
-
-interface AddProps {
-  url: string;
-  path: string;
-  template: string;
-  payload: any;
-}
 
 interface UpdateVariables {
   relativePath: string;
@@ -138,6 +130,7 @@ export class ForestryClient {
 
     const params = await transformPayload({
       mutation: print(mutation),
+      // @ts-ignore FIXME: this needs an assertion
       values: result.values,
       schema,
     });
