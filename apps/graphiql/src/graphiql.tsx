@@ -367,10 +367,7 @@ export const Explorer = () => {
   return (
     <div id="root" className="graphiql-container">
       <TinaInfo
-        variables={current.context.variables}
-        section={current.context.section}
         queryString={current.context.queryString}
-        fetcher={fetcher}
         result={current.context.result}
         onDataChange={(value) => {
           service.onTransition(() => {
@@ -381,16 +378,6 @@ export const Explorer = () => {
           });
 
           send({ type: "MODIFY_RESULT", value });
-        }}
-        onFormSubmit={(value) => {
-          send({
-            type: "EDIT_VARIABLES",
-            value: {
-              relativePath: current.context.variables.relativePath,
-              params: value,
-            },
-          });
-          send({ type: "QUERY_TO_MUTATION" });
         }}
       />
       <React.Fragment>
@@ -435,35 +422,19 @@ export const Explorer = () => {
 };
 
 const TinaInfo = ({
-  isOpen,
-  variables,
   queryString,
-  section,
-  fetcher,
   result,
-  onFormSubmit,
   onDataChange,
 }: {
-  variables: object;
-  section: string;
   queryString: string;
-  isOpen: boolean;
-  fetcher: () => Promise<unknown>;
   result: object | null;
-  onFormSubmit: (payload: object) => void;
   onDataChange: (payload: object) => void;
 }) => {
-  const { data, errors } = useForestryForm({
+  useForestryForm({
     queryString,
     payload: result || {},
-    variables,
-    section,
-    fetcher,
     onChange: (data) => {
       onDataChange(data);
-    },
-    callback: (payload) => {
-      onFormSubmit(payload);
     },
   });
 

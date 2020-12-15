@@ -5,35 +5,6 @@ import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
 import * as yup from "yup";
 
-type Field = {
-  __typename: string;
-  name: string;
-  label: string;
-  component: string;
-};
-
-export type DocumentNode = {
-  // id: string;
-  sys: {
-    filename: string;
-    relativePath: string;
-    basename: string;
-    path: string;
-  };
-  form: {
-    __typename: string;
-    fields: Field[];
-    label: string;
-    name: string;
-  };
-  values: {
-    [key: string]: string | string[] | object | object[];
-  };
-  data: {
-    [key: string]: string | string[] | object | object[];
-  };
-};
-
 export function useForestryForm({
   payload,
   queryString,
@@ -42,14 +13,13 @@ export function useForestryForm({
   payload: object;
   queryString: string;
   onChange?: (payload: object) => void;
-}): { data: object; errors: unknown } {
+}): { data: object } {
   const cms = useCMS();
-  const [errors, setErrors] = React.useState([""]);
   const [data, setData] = React.useState({});
 
   useCreateDocumentPlugin("posts");
 
-  const schema = yup.object().required();
+  const payloadSchema = yup.object().required();
   const nodeSchema = yup
     .object()
     .shape({
@@ -73,13 +43,11 @@ export function useForestryForm({
 
   const keys = Object.keys(payload);
   React.useEffect(() => {
-    schema
+    payloadSchema
       .validate(payload)
       .then(() => {
         Object.values(payload).map((maybeNode, index) => {
           nodeSchema.validate(maybeNode).then(() => {
-            // We know the payload is valid
-            // this is temporary for playground viewing
             setData(payload);
 
             createFormService(
@@ -104,7 +72,7 @@ export function useForestryForm({
       });
   }, [payload]);
 
-  return { data, errors };
+  return { data };
 }
 
 const useCreateDocumentPlugin = (section: string) => {
@@ -171,4 +139,33 @@ const useCreateDocumentPlugin = (section: string) => {
   }, [section]);
 
   usePlugin(createPagePlugin);
+};
+
+type Field = {
+  __typename: string;
+  name: string;
+  label: string;
+  component: string;
+};
+
+export type DocumentNode = {
+  // id: string;
+  sys: {
+    filename: string;
+    relativePath: string;
+    basename: string;
+    path: string;
+  };
+  form: {
+    __typename: string;
+    fields: Field[];
+    label: string;
+    name: string;
+  };
+  values: {
+    [key: string]: string | string[] | object | object[];
+  };
+  data: {
+    [key: string]: string | string[] | object | object[];
+  };
 };

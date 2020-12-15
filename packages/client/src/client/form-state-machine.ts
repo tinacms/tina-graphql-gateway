@@ -10,46 +10,6 @@ import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import type { DocumentNode } from "./useForestryForm";
 
-type NodeFormContext = {
-  queryFieldName: string;
-  queryString: string;
-  node: DocumentNode;
-  cms: TinaCMS;
-  client: ForestryClient;
-  formRef: null | SpawnedActorRef<any, any>;
-  queries: { [key: string]: { query: string; mutation: string } } | null;
-  error: null | string;
-};
-
-type NodeFormEvent = {
-  type: "ON_FIELD_CHANGE";
-  values: { path: (string | number)[]; value: unknown };
-};
-
-type NodeFormState =
-  | {
-      value: "idle";
-      context: NodeFormContext;
-    }
-  | {
-      value: "loading";
-      context: NodeFormContext & {
-        error: null;
-      };
-    }
-  | {
-      value: "ready";
-      context: NodeFormContext & {
-        error: null;
-      };
-    }
-  | {
-      value: "failure";
-      context: NodeFormContext & {
-        error: string;
-      };
-    };
-
 const buildFields = ({
   parentPath,
   form,
@@ -107,11 +67,6 @@ const buildFields = ({
   });
 };
 
-/**
- *
- * Provides
- *
- */
 const buildParseFunction = ({
   parentPath,
   context,
@@ -165,7 +120,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
   const fields = buildFields({
     parentPath: path,
     context,
-    // @ts-ignore FIXME: Pick<> isn't working properly for some reason
+    // @ts-ignore FIXME: Pick< isn't working properly for some reason
     form: context.node.form,
     callback,
   });
@@ -204,66 +159,99 @@ export const createFormService = (
     NodeFormContext,
     NodeFormEvent,
     NodeFormState
-  >(
-    {
-      id,
-      initial: "loading",
-      states: {
-        loading: {
-          invoke: {
-            id: id + "breakdownData",
-            src: "breakdownData",
-            onDone: {
-              target: "ready",
-              actions: assign({
-                queries: (context, event) => {
-                  return event.data;
-                },
-              }),
-            },
-            onError: "failure",
+  >({
+    id,
+    initial: "loading",
+    states: {
+      loading: {
+        invoke: {
+          id: id + "breakdownData",
+          src: async (context, event) => {
+            return splitDataNode({
+              queryFieldName: context.queryFieldName,
+              queryString: context.queryString,
+              node: context.node,
+              schema: await context.client.getSchema(),
+            });
           },
-        },
-        ready: {
-          entry: assign({
-            formRef: (context) => spawn(formCallback(context)),
-          }),
-          on: {
-            ON_FIELD_CHANGE: {
-              actions: (context, event) => {
-                onChange(event.values);
+          onDone: {
+            target: "ready",
+            actions: assign({
+              queries: (context, event) => {
+                return event.data;
               },
+            }),
+          },
+          onError: "failure",
+        },
+      },
+      ready: {
+        entry: assign({
+          formRef: (context) => spawn(formCallback(context)),
+        }),
+        on: {
+          ON_FIELD_CHANGE: {
+            actions: (context, event) => {
+              onChange(event.values);
             },
           },
         },
-        failure: {},
       },
-      context: {
-        queryFieldName: initialContext.queryFieldName,
-        queryString: initialContext.queryString,
-        node: initialContext.node,
-        cms: initialContext.cms,
-        client: initialContext.client,
-        queries: null,
-        error: null,
-        formRef: null,
-      },
+      failure: {},
     },
-    {
-      services: {
-        breakdownData: async (context, event) => {
-          return splitDataNode({
-            queryFieldName: context.queryFieldName,
-            queryString: context.queryString,
-            node: context.node,
-            schema: await context.client.getSchema(),
-          });
-        },
-      },
-    }
-  );
+    context: {
+      queryFieldName: initialContext.queryFieldName,
+      queryString: initialContext.queryString,
+      node: initialContext.node,
+      cms: initialContext.cms,
+      client: initialContext.client,
+      queries: null,
+      error: null,
+      formRef: null,
+    },
+  });
 
   const service = interpret(formMachine).start();
 
   return service;
 };
+
+type NodeFormContext = {
+  queryFieldName: string;
+  queryString: string;
+  node: DocumentNode;
+  cms: TinaCMS;
+  client: ForestryClient;
+  formRef: null | SpawnedActorRef<any, any>;
+  queries: { [key: string]: { query: string; mutation: string } } | null;
+  error: null | string;
+};
+
+type NodeFormEvent = {
+  type: "ON_FIELD_CHANGE";
+  values: { path: (string | number)[]; value: unknown };
+};
+
+type NodeFormState =
+  | {
+      value: "idle";
+      context: NodeFormContext;
+    }
+  | {
+      value: "loading";
+      context: NodeFormContext & {
+        error: null;
+      };
+    }
+  | {
+      value: "ready";
+      context: NodeFormContext & {
+        error: null;
+      };
+    }
+  | {
+      value: "failure";
+      context: NodeFormContext & {
+        error: string;
+      };
+    };

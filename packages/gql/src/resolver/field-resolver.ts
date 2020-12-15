@@ -378,7 +378,6 @@ export const resolver: Resolver = {
         });
       } else if (sectionItem.mutation) {
         // assertIsDocumentInputArgs(args);
-        // console.log("ohhi", args);
         await resolver.documentInputObject({
           args: {
             relativePath: args.relativePath,
