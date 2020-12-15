@@ -1,34 +1,33 @@
 import {
   createMachine,
-  Machine,
   assign,
-  sendParent,
   interpret,
-  send,
   spawn,
   SpawnedActorRef,
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
-import { fieldSubscriptionItems } from "final-form";
+import type { DocumentNode } from "./useForestryForm";
 
 interface NodeFormContext {
   queryFieldName: string;
   queryString: string;
-  node: NodeType;
+  node: DocumentNode;
   cms: TinaCMS;
   client: ForestryClient;
-  coldFields: { name: string; refetchPolicy?: null | "onChange" };
   formRef: null | SpawnedActorRef<any, any>;
-  modifiedValues: object;
+  queries: { [key: string]: string };
   error: null | string;
 }
 
 type NodeFormEvent =
   | { type: "FETCH"; id: string }
   | { type: "PING" }
-  | { type: "PONG" }
+  | {
+      type: "ON_FIELD_CHANGE";
+      values: { path: (string | number)[]; value: unknown };
+    }
   | { type: "RESOLVE"; form: Form }
   | { type: "UPDATE_VALUES"; values: object }
   | { type: "REJECT"; error: string };
@@ -43,11 +42,9 @@ type NodeFormState =
       context: {
         queryFieldName: string;
         queryString: string;
-        node: NodeType;
+        node: DocumentNode;
         cms: TinaCMS;
         client: ForestryClient;
-        coldFields: { name: string; refetchPolicy?: null | "onChange" };
-        modifiedValues: object;
         formRef: SpawnedActorRef<any, any>;
         error: null;
       };
@@ -57,11 +54,9 @@ type NodeFormState =
       context: {
         queryFieldName: string;
         queryString: string;
-        node: NodeType;
+        node: DocumentNode;
         cms: TinaCMS;
         client: ForestryClient;
-        coldFields: { name: string; refetchPolicy?: null | "onChange" };
-        modifiedValues: object;
         formRef: SpawnedActorRef<any, any>;
         error: null;
       };
@@ -71,22 +66,13 @@ type NodeFormState =
       context: {
         queryFieldName: string;
         queryString: string;
-        node: NodeType;
+        node: DocumentNode;
         cms: TinaCMS;
         client: ForestryClient;
-        coldFields: { name: string; refetchPolicy?: null | "onChange" };
-        modifiedValues: object;
         formRef: null | SpawnedActorRef<any, any>;
         error: string;
       };
     };
-
-interface NodeType {
-  sys: object;
-  data: object;
-  form: object;
-  values: object;
-}
 
 const buildFields = ({
   parentPath,
@@ -95,7 +81,7 @@ const buildFields = ({
   callback,
 }: {
   parentPath: string[];
-  form: Pick<NodeType, "form">;
+  form: Pick<DocumentNode, "form">;
   context: NodeFormContext;
   callback: (args: NodeFormEvent) => void;
 }) => {
@@ -113,7 +99,7 @@ const buildFields = ({
         ...field.field,
         parse: (value, name) => {
           callback({
-            type: "PONG",
+            type: "ON_FIELD_CHANGE",
             values: {
               path: [...parentPath, ...name.split(".")],
               value,
@@ -156,7 +142,7 @@ const buildFields = ({
               })
               .then((res) => {
                 callback({
-                  type: "PONG",
+                  type: "ON_FIELD_CHANGE",
                   values: {
                     path: [...parentPath, ...name.split(".")],
                     value: Object.values(res)[0],
@@ -165,7 +151,7 @@ const buildFields = ({
               });
           } else {
             callback({
-              type: "PONG",
+              type: "ON_FIELD_CHANGE",
               values: {
                 path: [...parentPath, ...name.split(".")],
                 value,
@@ -174,7 +160,7 @@ const buildFields = ({
           }
         } else {
           callback({
-            type: "PONG",
+            type: "ON_FIELD_CHANGE",
             values: {
               path: [...parentPath, ...name.split(".")],
               value,
@@ -216,7 +202,7 @@ export const createFormService = (
   initialContext: {
     queryFieldName: string;
     queryString: string;
-    node: NodeType;
+    node: DocumentNode;
     client: ForestryClient;
     cms: TinaCMS;
   },
@@ -255,7 +241,7 @@ export const createFormService = (
             formRef: (context) => spawn(formCallback(context)),
           }),
           on: {
-            PONG: {
+            ON_FIELD_CHANGE: {
               actions: (context, event) => {
                 onChange(event.values);
               },
@@ -268,11 +254,6 @@ export const createFormService = (
         queryFieldName: initialContext.queryFieldName,
         queryString: initialContext.queryString,
         node: initialContext.node,
-        modifiedValues: initialContext.node.values,
-        // @ts-ignore
-        coldFields: initialContext.node.form.fields.filter((field) => {
-          return field.refetchPolicy === "onChange";
-        }),
         cms: initialContext.cms,
         client: initialContext.client,
         error: null,
@@ -305,9 +286,6 @@ export const createFormService = (
 
           // return form.unsubscribe() // Should support this
           return form;
-        },
-        evaluateColdFields: async () => {
-          // console.log;
         },
       },
     }
