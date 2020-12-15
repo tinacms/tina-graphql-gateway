@@ -8,17 +8,14 @@ import {
   slugify,
 } from "./util";
 import {
-  queryBuilder,
   mutationGenerator,
   queryGenerator,
   formBuilder,
-  queryToMutation,
   splitDataNode,
 } from "./queryBuilder";
 export {
   slugify,
   splitDataNode,
-  queryToMutation,
   formBuilder,
   queryGenerator,
   friendlyFMTName,
@@ -28,5 +25,4 @@ export {
   friendlyName,
   shortFMTName,
   arrayToObject,
-  queryBuilder,
 };

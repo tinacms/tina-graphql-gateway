@@ -16,6 +16,7 @@ export type DocumentNode = {
   // id: string;
   sys: {
     filename: string;
+    relativePath: string;
     basename: string;
     path: string;
   };
