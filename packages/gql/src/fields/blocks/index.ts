@@ -1,15 +1,13 @@
 import _ from "lodash";
-import { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
-import { gql } from "../../gql";
-
 import {
   friendlyName,
   slugify,
   templateTypeName,
 } from "@forestryio/graphql-helpers";
-import { resolver } from "../../resolver/field-resolver";
-import { sequential } from "../../util";
 
+import { gql } from "../../gql";
+import { resolver } from "../../resolver";
+import { sequential } from "../../util";
 import {
   assertIsArray,
   assertIsBlockInitialValue,
@@ -17,136 +15,10 @@ import {
   assertIsBlockValueArray,
   assertIsObject,
 } from "../";
+
+import type { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import type { BuildArgs, ResolveArgs } from "../";
 import type { TinaTemplateData } from "../../types";
-
-export interface Build {
-  /**
-     * Builds a union type which adheres to the [Tina Block](https://tinacms.org/docs/plugins/fields/blocks/) shape.
-     *
-     * Since blocks need to be unique from one another depending on the templates they support, this is field
-     * builds a union which is namespaced by the template name:
-     *
-     * Given the following template definition:
-     * ```yaml
-     * label: MyPage
-     * fields:
-     * - name: sections
-     *   type: blocks
-     *   label: Sections
-     *   template_types:
-     *     - cta
-     *     - hero
-     * ```
-
-     * Builds:
-     * ```graphql
-     * type MyPageSectionsBlocksField {
-     *   name: String
-     *   label: String
-     *   component: String
-     *   templates: SomeTemplateSectionsBlocksFieldTemplates
-     * }
-     * type SomeTemplateSectionsBlocksFieldTemplates {
-     *   sectionTemplateFields: SectionForm
-     * }
-     * type SectionForm {
-     *   fields: [MyPageSectionFormFields]
-     * }
-     * union MyPageSectionFormFields = CtaFormFields | HeroFormFields
-     * ```
-     */
-  field: ({
-    cache,
-    field,
-    accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
-  initialValue: ({
-    cache,
-    field,
-    accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
-  value: ({
-    cache,
-    field,
-    accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
-  input: ({
-    cache,
-    field,
-    accumulator,
-  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
-}
-
-export interface Resolve {
-  /**
-   * Resolves the values with their respective templates, specified by
-   * the template key.
-   *
-   * ```js
-   * // given
-   * {
-   *   name: 'sections',
-   *   type: 'blocks',
-   *   label: 'Sections',
-   *   template_types: [ 'section' ]
-   * }
-   *
-   * // expect
-   * {
-   *   name: 'sections',
-   *   type: 'blocks',
-   *   label: 'Sections',
-   *   template_types: [ 'section' ],
-   *   component: 'blocks',
-   *   templates: {
-   *     section: {
-   *       __typename: 'Section',
-   *       label: 'Section',
-   *       hide_body: false,
-   *       fields: [Array]
-   *     }
-   *   },
-   *   __typename: 'BlocksFormField'
-   * }
-   *
-   * ```
-   */
-  field: ({
-    datasource,
-    field,
-  }: Omit<ResolveArgs<BlocksField>, "value">) => Promise<TinaBlocksField>;
-  initialValue: ({
-    datasource,
-    field,
-    value,
-  }: ResolveArgs<BlocksField>) => Promise<
-    {
-      __typename: string;
-      // FIXME: this should exist for blocks, but
-      _template: string;
-      [key: string]: unknown;
-    }[]
-  >;
-  value: ({
-    datasource,
-    field,
-    value,
-  }: ResolveArgs<BlocksField>) => Promise<unknown>;
-  input: ({ datasource, field, value }: ResolveArgs<BlocksField>) => unknown;
-}
-
-export interface Blocks {
-  /**
-   * Build properties are functions which build the various schemas for objects
-   * related to block data
-   *
-   * The build process is done ahead of time and can be cached as a static GraphQL SDL file
-   *
-   */
-  build: Build;
-  resolve: Resolve;
-}
 
 export const blocks: Blocks = {
   build: {
@@ -315,3 +187,130 @@ export type TinaBlocksField = {
   templates: { [key: string]: TinaTemplateData };
   __typename: string;
 };
+
+export interface Build {
+  /**
+     * Builds a union type which adheres to the [Tina Block](https://tinacms.org/docs/plugins/fields/blocks/) shape.
+     *
+     * Since blocks need to be unique from one another depending on the templates they support, this is field
+     * builds a union which is namespaced by the template name:
+     *
+     * Given the following template definition:
+     * ```yaml
+     * label: MyPage
+     * fields:
+     * - name: sections
+     *   type: blocks
+     *   label: Sections
+     *   template_types:
+     *     - cta
+     *     - hero
+     * ```
+
+     * Builds:
+     * ```graphql
+     * type MyPageSectionsBlocksField {
+     *   name: String
+     *   label: String
+     *   component: String
+     *   templates: SomeTemplateSectionsBlocksFieldTemplates
+     * }
+     * type SomeTemplateSectionsBlocksFieldTemplates {
+     *   sectionTemplateFields: SectionForm
+     * }
+     * type SectionForm {
+     *   fields: [MyPageSectionFormFields]
+     * }
+     * union MyPageSectionFormFields = CtaFormFields | HeroFormFields
+     * ```
+     */
+  field: ({
+    cache,
+    field,
+    accumulator,
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  initialValue: ({
+    cache,
+    field,
+    accumulator,
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  value: ({
+    cache,
+    field,
+    accumulator,
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  input: ({
+    cache,
+    field,
+    accumulator,
+  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
+}
+
+export interface Resolve {
+  /**
+   * Resolves the values with their respective templates, specified by
+   * the template key.
+   *
+   * ```js
+   * // given
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ]
+   * }
+   *
+   * // expect
+   * {
+   *   name: 'sections',
+   *   type: 'blocks',
+   *   label: 'Sections',
+   *   template_types: [ 'section' ],
+   *   component: 'blocks',
+   *   templates: {
+   *     section: {
+   *       __typename: 'Section',
+   *       label: 'Section',
+   *       hide_body: false,
+   *       fields: [Array]
+   *     }
+   *   },
+   *   __typename: 'BlocksFormField'
+   * }
+   *
+   * ```
+   */
+  field: ({
+    datasource,
+    field,
+  }: Omit<ResolveArgs<BlocksField>, "value">) => Promise<TinaBlocksField>;
+  initialValue: ({
+    datasource,
+    field,
+    value,
+  }: ResolveArgs<BlocksField>) => Promise<
+    {
+      __typename: string;
+      // FIXME: this should exist for blocks, but
+      _template: string;
+      [key: string]: unknown;
+    }[]
+  >;
+  value: ({
+    datasource,
+    field,
+    value,
+  }: ResolveArgs<BlocksField>) => Promise<unknown>;
+  input: ({ datasource, field, value }: ResolveArgs<BlocksField>) => unknown;
+}
+export interface Blocks {
+  /**
+   * Build properties are functions which build the various schemas for objects
+   * related to block data
+   *
+   * The build process is done ahead of time and can be cached as a static GraphQL SDL file
+   *
+   */
+  build: Build;
+  resolve: Resolve;
+}
