@@ -337,6 +337,8 @@ export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {
   let res;
   res = matter(data, { excerpt_separator: "<!-- excerpt -->" });
+  // Remove line break at top of _body
+  res.content = res.content.replace(/^\n|\n$/g, "");
 
   // @ts-ignore
   return res;
