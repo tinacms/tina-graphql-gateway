@@ -7,7 +7,7 @@ import express from "express";
 // @ts-ignore
 import bodyParser from "body-parser";
 
-import { builder } from "./builder";
+import { schemaBuilder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
@@ -27,7 +27,7 @@ export const gql = async ({
   const cache = cacheInit(datasource);
 
   try {
-    const { schema, sectionMap } = await builder.schema({ cache });
+    const { schema, sectionMap } = await schemaBuilder({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
@@ -64,7 +64,7 @@ export const githubRoute = async ({
     repo,
   });
   const cache = cacheInit(datasource);
-  const { schema, sectionMap } = await builder.schema({ cache });
+  const { schema, sectionMap } = await schemaBuilder({ cache });
 
   const result = await graphqlInit({
     schema: buildASTSchema(schema),
@@ -78,14 +78,6 @@ export const githubRoute = async ({
   }
 
   return result;
-};
-
-export const buildSchema = async (projectRoot: string) => {
-  const datasource = new FileSystemManager(projectRoot);
-  const cache = cacheInit(datasource);
-  const schema = await builder.schema({ cache });
-
-  return buildASTSchema(schema);
 };
 
 export const demo = async ({
@@ -102,7 +94,7 @@ export const demo = async ({
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
   try {
-    const { schema, sectionMap } = await builder.schema({ cache });
+    const { schema, sectionMap } = await schemaBuilder({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
@@ -162,12 +154,7 @@ export const startFixtureServer = async ({
     const projectRoot = root ? root : path.join(fixturePath, req.path);
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const { schema, sectionMap } = await builder.schema({ cache });
-
-    // const datasource2 = new FileSystemManager(projectRoot);
-    // const cache2 = cacheInit(datasource2);
-    // const schema2 = await builder.schema({ cache: cache2 });
-    // await fs.writeFileSync("./fs.graphql", print(schema2));
+    const { schema, sectionMap } = await schemaBuilder({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
@@ -212,7 +199,7 @@ export const startServer = async ({ port }: { port: number }) => {
     // const projectRoot = "/Users/jeffsee/code/graphql-demo/apps/demo";
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
-    const { schema, sectionMap } = await builder.schema({ cache });
+    const { schema, sectionMap } = await schemaBuilder({ cache });
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),

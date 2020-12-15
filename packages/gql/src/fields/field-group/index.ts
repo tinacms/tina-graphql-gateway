@@ -3,7 +3,7 @@ import * as yup from "yup";
 import { gql } from "../../gql";
 
 import { builders } from "../../builder";
-import { resolver } from "../../resolver/field-resolver";
+import { resolver } from "../../resolver";
 
 import type { Field, TinaField } from "../index";
 import { BuildArgs, ResolveArgs } from "../";

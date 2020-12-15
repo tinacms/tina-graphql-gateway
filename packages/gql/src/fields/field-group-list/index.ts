@@ -3,7 +3,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
 import { builders } from "../../builder";
-import { resolver } from "../../resolver/field-resolver";
+import { resolver } from "../../resolver";
 import { sequential } from "../../util";
 
 import { BuildArgs, ResolveArgs } from "../";
