@@ -32,8 +32,8 @@ export const datetime = {
 
       return {
         ...rest,
-        component: "datetime",
-        __typename: "DatetimeField",
+        component: "date",
+        __typename: typename,
         config: rest.config || {
           required: false,
         },
@@ -47,7 +47,7 @@ export const datetime = {
     },
     value: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
       assertIsString(value, { source: "datetime" });
-      return "";
+      return value;
     },
     input: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
       assertIsString(value, { source: "datetime" });
@@ -70,7 +70,7 @@ export type DatetimeField = {
 export type TinaDatetimeField = {
   label: string;
   name: string;
-  component: "datetime";
+  component: "date";
   default?: string;
   config?: {
     required?: boolean;
