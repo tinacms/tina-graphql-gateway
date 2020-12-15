@@ -12,7 +12,7 @@ import {
   TinacmsForestryProvider,
 } from "@forestryio/client";
 
-import { TinaProvider, TinaCMS, useCMS } from "tinacms";
+import { TinaProvider, TinaCMS } from "tinacms";
 
 const Doit = () => {
   const [variables, setVariables] = React.useState<object>({
@@ -92,7 +92,7 @@ const TinaFixtureProject = ({
     value: string;
   }[];
 }) => {
-  let { project, section, ...path } = useParams();
+  let { project } = useParams();
   const client = new ForestryClient("", {
     gqlServer: `http://localhost:4002/${project}`,
   });
@@ -146,9 +146,6 @@ const App = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/" exact>
-          Hang on....
-        </Route>
         <Route path="/external">
           <Switch>
             <Route path="/:ignore/:externalURL/:clientID">
@@ -157,6 +154,9 @@ const App = () => {
           </Switch>
         </Route>
         <Route path="/:project/:section/*">
+          <TinaFixtureProject projects={projects} />
+        </Route>
+        <Route path="/:project/">
           <TinaFixtureProject projects={projects} />
         </Route>
       </Switch>
