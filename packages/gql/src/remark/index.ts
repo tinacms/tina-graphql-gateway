@@ -1,13 +1,12 @@
 import unified from "unified";
 import remark2rehype from "remark-rehype";
-import stringify from "rehype-stringify";
-import remark from "remark";
+import htmlStringify from "rehype-stringify";
 import parse from "remark-parse";
 import mdx from "remark-mdx";
 import removePosition from "unist-util-remove-position";
 
 export const toHTML = async ({ contents: c }: { contents: string }) => {
-  var compiler = unified().use(parse).use(remark2rehype).use(stringify);
+  var compiler = unified().use(parse).use(remark2rehype).use(htmlStringify);
 
   const { contents } = compiler.processSync({ contents: c });
 
