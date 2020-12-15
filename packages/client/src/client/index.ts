@@ -2,14 +2,13 @@ import {
   formBuilder,
   mutationGenerator,
   queryGenerator,
-  queryBuilder,
-  queryToMutation,
 } from "@forestryio/graphql-helpers";
 import {
   getIntrospectionQuery,
   buildClientSchema,
   print,
   DocumentNode,
+  GraphQLSchema,
 } from "graphql";
 import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
 import { transformPayload } from "./handle";
@@ -23,8 +22,8 @@ interface AddProps {
 }
 
 interface UpdateVariables {
-  path: string;
-  params?: any;
+  relativePath: string;
+  params: unknown;
 }
 
 interface AddVariables {
@@ -49,6 +48,8 @@ interface ServerOptions {
 export class ForestryClient {
   serverURL: string;
   oauthHost: string;
+  identityHost: string;
+  schema: GraphQLSchema;
   clientId: string;
   query: string;
   redirectURI: string;
@@ -95,25 +96,6 @@ export class ForestryClient {
     }
   }
 
-  addContent = async ({ path, template, payload }: AddProps) => {
-    const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
-      addDocument(path: $path, template: $template, params: $params) {
-        __typename
-      }
-    }`;
-
-    // @ts-ignore
-    const values = this.transformPayload({ mutation, payload });
-
-    await this.request<AddVariables>(mutation, {
-      variables: {
-        path: path,
-        template: template + ".yml",
-        params: values,
-      },
-    });
-  };
-
   addPendingContent = async (props) => {
     const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $section: String!) {
       addPendingDocument(relativePath: $relativePath, template: $template, section: $section) {
@@ -132,65 +114,38 @@ export class ForestryClient {
   };
 
   getSchema = async () => {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-
-    return buildClientSchema(data);
-  };
-
-  getQuery = async () => {
-    if (!this.query) {
+    if (!this.schema) {
       const data = await this.request(getIntrospectionQuery(), {
         variables: {},
       });
 
-      this.query = print(queryBuilder(buildClientSchema(data)));
+      this.schema = buildClientSchema(data);
     }
 
-    return this.query;
-  };
-  getSectionQuery = async () => {
-    if (!this.query) {
-      const data = await this.request(getIntrospectionQuery(), {
-        variables: {},
-      });
-
-      this.query = print(queryBuilder(buildClientSchema(data)));
-    }
-
-    return this.query;
+    return this.schema;
   };
 
   generateMutation = async (variables: {
     relativePath: string;
     section: string;
   }) => {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-    const query = queryGenerator(variables, buildClientSchema(data));
-    const formifiedQuery = formBuilder(query, buildClientSchema(data));
+    const schema = await this.getSchema();
+    const query = queryGenerator(variables, schema);
+    const formifiedQuery = formBuilder(query, schema);
     const res = await this.request(print(formifiedQuery), { variables });
     const result = Object.values(res)[0];
-    const mutation = mutationGenerator(
-      variables,
-      // @ts-ignore
-      Object.values(res)[0],
-      buildClientSchema(data)
-    );
+    const mutation = mutationGenerator(variables, schema);
 
-    const params = await this.transformPayload({
+    const params = await transformPayload({
       mutation: print(mutation),
-      // @ts-ignore FIXME: unknown -> assert is object
-      payload: result.values,
+      values: result.values,
+      schema,
     });
 
     return {
       queryString: print(mutation),
       variables: {
         relativePath: variables.relativePath,
-        // @ts-ignore
         params,
       },
     };
@@ -200,123 +155,36 @@ export class ForestryClient {
     relativePath: string;
     section: string;
   }) => {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-    const query = queryGenerator(variables, buildClientSchema(data));
+    const schema = await this.getSchema();
+    const query = queryGenerator(variables, schema);
     return {
       queryString: print(query),
       variables: { relativePath: variables.relativePath },
     };
   };
 
-  listDocumentsBySection = async ({ section }: { section: string }) => {
-    const query = `
-    query DocumentQuery($section: String!) {
-      documents(section: $section) {
-        relativePath
-        breadcrumbs(excludeExtension: true)
-      }
-    }
-    `;
-    const result = await this.request(query, { variables: { section } });
-
-    return result.documents;
-  };
-
-  listSections = async () => {
-    const query = `
-    {
-      getSections {
-        slug
-        documents {
-          relativePath
-          breadcrumbs
-        }
-      }
-    }
-    `;
-    const result = await this.request(query, { variables: {} });
-
-    return result.getSections;
-  };
-
-  getContent = async <T>({
-    path,
-  }: {
-    path?: string;
-  }): Promise<{
-    data: T;
-  }> => {
-    const query = await this.getQuery();
-    const data = await this.request(query, {
-      variables: { path },
-    });
-
-    return data;
-  };
-  getContentForSection = async <T>({
-    relativePath,
-    section,
-  }: {
-    relativePath?: string;
-    section?: string;
-  }): Promise<T> => {
-    const query = await this.getSectionQuery();
-    const data = await this.request(query, {
-      variables: { relativePath, section },
-    });
-
-    return data;
-  };
-
-  transformPayload = async ({
-    mutation,
-    inputName,
-    payload,
-  }: {
-    mutation?: string;
-    inputName?: string;
-    payload: any;
-  }) => {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-
-    return transformPayload({
-      mutation,
-      inputName,
-      values: payload,
-      schema: buildClientSchema(data),
-    });
-  };
-
   updateContent = async ({
-    queryString,
-    payload,
+    mutationString,
+    relativePath,
+    values,
   }: {
-    queryString: string;
-    payload: object;
+    mutationString: string;
+    relativePath: string;
+    values: object;
   }) => {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-    console.log("ohhi", queryString, data);
-    const mutation = queryToMutation({
-      queryString,
-      schema: buildClientSchema(data),
+    const schema = await this.getSchema();
+    const params = transformPayload({
+      mutation: mutationString,
+      values: values,
+      schema,
     });
 
-    // const params = await this.transformPayload({
-    //   mutation: print(mutation),
-    //   // @ts-ignore FIXME: unknown -> assert is object
-    //   payload: result.values,
-    // });
-
-    // await this.request<UpdateVariables>(mutation, {
-    //   // @ts-ignore
-    //   variables,
-    // });
+    await this.request<UpdateVariables>(mutationString, {
+      variables: {
+        relativePath,
+        params,
+      },
+    });
   };
 
   async isAuthorized(): Promise<boolean> {
@@ -367,30 +235,10 @@ export class ForestryClient {
     query: DocumentNode;
     variables: VariableType;
   }) {
-    const data = await this.request(getIntrospectionQuery(), {
-      variables: {},
-    });
-    const formifiedQuery = formBuilder(query, buildClientSchema(data));
+    const schema = await this.getSchema();
+    const formifiedQuery = formBuilder(query, schema);
 
-    const body = {
-      query: print(formifiedQuery),
-      variables,
-    };
-    const res = await fetch(this.serverURL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.getToken(),
-      },
-      body: JSON.stringify(body),
-    });
-
-    const json = await res.json();
-    if (json.errors) {
-      console.error(json.errors);
-      // throw new Error("Failed to fetch API");
-    }
-    return json.data;
+    return this.request(print(formifiedQuery), { variables });
   }
 
   async request<VariableType>(

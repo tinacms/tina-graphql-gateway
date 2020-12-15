@@ -17,7 +17,7 @@ type NodeFormContext = {
   cms: TinaCMS;
   client: ForestryClient;
   formRef: null | SpawnedActorRef<any, any>;
-  queries: { [key: string]: string } | null;
+  queries: { [key: string]: { query: string; mutation: string } } | null;
   error: null | string;
 };
 
@@ -112,7 +112,17 @@ const buildFields = ({
  * Provides
  *
  */
-const buildParseFunction = ({ parentPath, context, field, callback }) => {
+const buildParseFunction = ({
+  parentPath,
+  context,
+  field,
+  callback,
+}: {
+  parentPath;
+  context: NodeFormContext;
+  field;
+  callback;
+}) => {
   return (value, name) => {
     // Remove indexes in path, ex. "data.0.blocks.2.author" -> "data.blocks.author"
     const queryPath = [...parentPath, ...name.split(".")]
@@ -123,7 +133,7 @@ const buildParseFunction = ({ parentPath, context, field, callback }) => {
 
     if (field.component === "select" && context.queries[queryPath]) {
       context.client
-        .request(context.queries[queryPath], {
+        .request(context.queries[queryPath].query, {
           variables: {
             relativePath: value,
           },
@@ -150,13 +160,14 @@ const buildParseFunction = ({ parentPath, context, field, callback }) => {
   };
 };
 
-const formCallback = (context) => (callback, receive) => {
+const formCallback = (context: NodeFormContext) => (callback, receive) => {
   const path = [context.queryFieldName, "data"];
   const fields = buildFields({
     parentPath: path,
     context,
+    // @ts-ignore FIXME: Pick<> isn't working properly for some reason
+    form: context.node.form,
     callback,
-    ...context.node,
   });
 
   const form = new Form({
@@ -166,8 +177,9 @@ const formCallback = (context) => (callback, receive) => {
     initialValues: context.node.values,
     onSubmit: async (values) => {
       context.client.updateContent({
-        queryString: context.queryString,
-        payload: values,
+        mutationString: context.queries[context.queryFieldName].mutation,
+        relativePath: context.node.sys.relativePath,
+        values: values,
       });
     },
   });
