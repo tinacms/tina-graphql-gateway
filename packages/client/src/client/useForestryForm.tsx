@@ -3,7 +3,6 @@ import { useCMS, useForm, usePlugin, Form, FormOptions } from "tinacms";
 import { createFormService } from "./form-state-machine";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
-import get from "lodash.get";
 import * as yup from "yup";
 
 /**
@@ -21,7 +20,7 @@ type Field = {
   label: string;
 };
 
-type DocumentNode = {
+export type DocumentNode = {
   // id: string;
   sys: {
     filename: string;
@@ -37,24 +36,19 @@ type DocumentNode = {
   values: {
     [key: string]: string | string[] | object | object[];
   };
+  data: {
+    [key: string]: string | string[] | object | object[];
+  };
 };
 
 export function useForestryForm2({
   payload,
-  variables,
   queryString,
-  section,
-  fetcher,
   onChange,
-  callback,
 }: {
   payload: object;
-  variables: { relativePath: string } & object;
   queryString: string;
-  section: string;
-  fetcher: () => Promise<unknown>;
   onChange?: (payload: object) => void;
-  callback?: (payload: object) => void;
 }): { data: object; errors: unknown } {
   const cms = useCMS();
   const [errors, setErrors] = React.useState([""]);
@@ -102,9 +96,6 @@ export function useForestryForm2({
                 cms: cms,
               },
               (data) => {
-                // FIXME: ideally we have a way of setting data effeciently
-                // this only works for top-level keys, needs to work no
-                // matter how deep
                 set(payload, data.path, data.value);
                 setData(payload);
                 onChange(payload);
