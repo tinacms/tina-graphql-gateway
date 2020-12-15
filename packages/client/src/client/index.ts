@@ -181,6 +181,7 @@ export class ForestryClient {
 
     const params = await this.transformPayload({
       mutation: print(mutation),
+      // @ts-ignore FIXME: unknown -> assert is object
       payload: result.values,
     });
 

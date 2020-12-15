@@ -18,6 +18,7 @@ type Field = {
   __typename: string;
   name: string;
   label: string;
+  component: string;
 };
 
 export type DocumentNode = {

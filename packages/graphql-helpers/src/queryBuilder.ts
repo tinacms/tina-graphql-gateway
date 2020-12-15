@@ -55,16 +55,6 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
         const namedType = getNamedType(type);
 
         if (namedType instanceof GraphQLObjectType) {
-          // FIXME: adds __typename to each field, probably a nicer way to do this
-          if (node.kind === "Field" || node.kind === "InlineFragment") {
-            node.selectionSet?.selections.push({
-              kind: "Field" as const,
-              name: {
-                kind: "Name" as const,
-                value: "__typename",
-              },
-            });
-          }
           const hasNodeInterface = !!namedType
             .getInterfaces()
             .find((i) => i.name === "Node");
