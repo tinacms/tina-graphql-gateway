@@ -10,27 +10,21 @@ import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import type { DocumentNode } from "./useForestryForm";
 
-interface NodeFormContext {
+type NodeFormContext = {
   queryFieldName: string;
   queryString: string;
   node: DocumentNode;
   cms: TinaCMS;
   client: ForestryClient;
   formRef: null | SpawnedActorRef<any, any>;
-  queries: { [key: string]: string };
+  queries: { [key: string]: string } | null;
   error: null | string;
-}
+};
 
-type NodeFormEvent =
-  | { type: "FETCH"; id: string }
-  | { type: "PING" }
-  | {
-      type: "ON_FIELD_CHANGE";
-      values: { path: (string | number)[]; value: unknown };
-    }
-  | { type: "RESOLVE"; form: Form }
-  | { type: "UPDATE_VALUES"; values: object }
-  | { type: "REJECT"; error: string };
+type NodeFormEvent = {
+  type: "ON_FIELD_CHANGE";
+  values: { path: (string | number)[]; value: unknown };
+};
 
 type NodeFormState =
   | {
@@ -39,37 +33,19 @@ type NodeFormState =
     }
   | {
       value: "loading";
-      context: {
-        queryFieldName: string;
-        queryString: string;
-        node: DocumentNode;
-        cms: TinaCMS;
-        client: ForestryClient;
-        formRef: SpawnedActorRef<any, any>;
+      context: NodeFormContext & {
         error: null;
       };
     }
   | {
       value: "ready";
-      context: {
-        queryFieldName: string;
-        queryString: string;
-        node: DocumentNode;
-        cms: TinaCMS;
-        client: ForestryClient;
-        formRef: SpawnedActorRef<any, any>;
+      context: NodeFormContext & {
         error: null;
       };
     }
   | {
       value: "failure";
-      context: {
-        queryFieldName: string;
-        queryString: string;
-        node: DocumentNode;
-        cms: TinaCMS;
-        client: ForestryClient;
-        formRef: null | SpawnedActorRef<any, any>;
+      context: NodeFormContext & {
         error: string;
       };
     };
@@ -85,8 +61,10 @@ const buildFields = ({
   context: NodeFormContext;
   callback: (args: NodeFormEvent) => void;
 }) => {
+  // @ts-ignore FIXME: gotta do a type assertion here
   return form.fields.map((field) => {
-    if (field.fields) {
+    // Group List and Group
+    if (field.component === "group" || field.component === "group-list") {
       field.fields = field.fields = buildFields({
         parentPath: parentPath,
         form: field,
@@ -94,28 +72,28 @@ const buildFields = ({
         callback,
       });
     }
+
+    // List
     if (field.component === "list") {
       field.field = {
         ...field.field,
-        parse: (value, name) => {
-          callback({
-            type: "ON_FIELD_CHANGE",
-            values: {
-              path: [...parentPath, ...name.split(".")],
-              value,
-            },
-          });
-          return value;
-        },
+        parse: buildParseFunction({
+          parentPath,
+          callback,
+          context,
+          field: field.field,
+        }),
       };
     }
 
-    if (field.templates) {
+    // Blocks
+    if (field.component === "blocks") {
       const templateKeys = Object.keys(field.templates);
       Object.values(field.templates).map((template, index) => {
         field.templates[templateKeys[index]].fields = buildFields({
           parentPath,
           context,
+          // @ts-ignore FIXME: gotta do a type assertion here
           form: template,
           callback,
         });
@@ -124,53 +102,52 @@ const buildFields = ({
 
     return {
       ...field,
-      parse: (value, name) => {
-        if (field.component === "select") {
-          // Remove indexes in path, ex. "data.0.blocks.2.author" -> "data.blocks.author"
-          const queryPath = [...parentPath, ...name.split(".")]
-            .filter((item) => {
-              return isNaN(parseInt(item));
-            })
-            .join(".");
+      parse: buildParseFunction({ parentPath, context, field, callback }),
+    };
+  });
+};
 
-          if (context.queries[queryPath]) {
-            context.client
-              .request(context.queries[queryPath], {
-                variables: {
-                  relativePath: value,
-                },
-              })
-              .then((res) => {
-                callback({
-                  type: "ON_FIELD_CHANGE",
-                  values: {
-                    path: [...parentPath, ...name.split(".")],
-                    value: Object.values(res)[0],
-                  },
-                });
-              });
-          } else {
-            callback({
-              type: "ON_FIELD_CHANGE",
-              values: {
-                path: [...parentPath, ...name.split(".")],
-                value,
-              },
-            });
-          }
-        } else {
+/**
+ *
+ * Provides
+ *
+ */
+const buildParseFunction = ({ parentPath, context, field, callback }) => {
+  return (value, name) => {
+    // Remove indexes in path, ex. "data.0.blocks.2.author" -> "data.blocks.author"
+    const queryPath = [...parentPath, ...name.split(".")]
+      .filter((item) => {
+        return isNaN(parseInt(item));
+      })
+      .join(".");
+
+    if (field.component === "select" && context.queries[queryPath]) {
+      context.client
+        .request(context.queries[queryPath], {
+          variables: {
+            relativePath: value,
+          },
+        })
+        .then((res) => {
           callback({
             type: "ON_FIELD_CHANGE",
             values: {
               path: [...parentPath, ...name.split(".")],
-              value,
+              value: Object.values(res)[0],
             },
           });
-        }
-        return value;
-      },
-    };
-  });
+        });
+    } else {
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [...parentPath, ...name.split(".")],
+          value,
+        },
+      });
+    }
+    return value;
+  };
 };
 
 const formCallback = (context) => (callback, receive) => {
@@ -184,8 +161,7 @@ const formCallback = (context) => (callback, receive) => {
 
   const form = new Form({
     id: context.queryFieldName,
-    // @ts-ignore
-    label: `${context.node.sys.basename}`,
+    label: context.node.sys.basename,
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
@@ -222,18 +198,15 @@ export const createFormService = (
           invoke: {
             id: id + "breakdownData",
             src: "breakdownData",
-            onDone: "assigningQueries",
-            onError: "failure",
-          },
-        },
-        assigningQueries: {
-          entry: assign({
-            queries: (context, event) => {
-              return event.data;
+            onDone: {
+              target: "ready",
+              actions: assign({
+                queries: (context, event) => {
+                  return event.data;
+                },
+              }),
             },
-          }),
-          on: {
-            "": "ready",
+            onError: "failure",
           },
         },
         ready: {
@@ -256,6 +229,7 @@ export const createFormService = (
         node: initialContext.node,
         cms: initialContext.cms,
         client: initialContext.client,
+        queries: null,
         error: null,
         formRef: null,
       },
@@ -273,9 +247,7 @@ export const createFormService = (
         createForm: async (context, event) => {
           const form = new Form({
             id: context.queryFieldName,
-            // @ts-ignore
-            label: `${context.node.sys.basename}`,
-            // @ts-ignore
+            label: context.node.sys.basename,
             fields: context.node.form.fields,
             initialValues: context.node.values,
             onSubmit: async (values) => {
@@ -291,12 +263,7 @@ export const createFormService = (
     }
   );
 
-  const service = interpret(formMachine)
-    // .onTransition((state) => console.log(state.value))
-    // .onEvent((event) => {
-    //   console.log("event received", event.type);
-    // })
-    .start();
+  const service = interpret(formMachine).start();
 
   return service;
 };

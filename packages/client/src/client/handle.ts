@@ -67,10 +67,11 @@ export const transformPayload = ({
 }) => {
   try {
     const accum = {};
-    // @ts-ignore FIXME: this is assuming we're passing in a valid mutation with the top-level
+    // FIXME: this is assuming we're passing in a valid mutation with the top-level
     // selection being the mutation
     const mutationName =
       inputName ||
+      // @ts-ignore
       parse(mutation).definitions[0].selectionSet.selections[0].name.value;
     const mutationType = schema.getMutationType();
 
