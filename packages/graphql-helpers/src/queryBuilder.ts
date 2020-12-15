@@ -1,7 +1,6 @@
 import {
   parse,
   isLeafType,
-  lex,
   printSchema,
   visit,
   GraphQLNamedType,
@@ -14,24 +13,15 @@ import {
   ASTNode,
   SelectionNode,
   NamedTypeNode,
-  NameNode,
-  GraphQLFieldMap,
   getNamedType,
   TypeInfo,
   visitWithTypeInfo,
   typeFromAST,
-  valueFromAST,
   FieldNode,
   InlineFragmentNode,
-  GraphQLInterfaceType,
-  SchemaMetaFieldDef,
-  BREAK,
   GraphQLObjectType,
-  GraphQLInputObjectType,
   GraphQLUnionType,
-  GraphQLString,
   print,
-  GraphQLNonNull,
   isScalarType,
 } from "graphql";
 import set from "lodash.set";
@@ -249,6 +239,25 @@ export const queryGenerator = (
   }
 };
 
+export const queryToMutation = (args: {
+  queryString: string;
+  schema: GraphQLSchema;
+}) => {
+  // // console.log("ok i got it", args.queryString, args.schema);
+  // const typeInfo = new TypeInfo(args.schema);
+  // const queryAst = parse(args.queryString);
+  // const visitor: VisitorType = {
+  //   leave: {
+  //     OperationDefinition(node, key, parent, path, ancestors) {
+  //       const type = typeInfo.getType();
+  //       console.log(node);
+  //     },
+  //   },
+  // };
+  // visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
+  // console.log(queryAst);
+};
+
 /**
  *
  * This generates a query to a "reasonable" depth for the data key of a given section
@@ -256,7 +265,6 @@ export const queryGenerator = (
  */
 export const mutationGenerator = (
   variables: { relativePath: string; section: string },
-  payload: object,
   schema: GraphQLSchema
 ): DocumentNode => {
   const t = schema.getQueryType();
@@ -517,13 +525,6 @@ const buildTypes = (
       selectionSet: {
         kind: "SelectionSet" as const,
         selections: [
-          // {
-          //   kind: "Field" as const,
-          //   name: {
-          //     kind: "Name" as const,
-          //     value: "__typename",
-          //   },
-          // },
           ...Object.values(type.getFields()).map(
             (field): FieldNode => {
               const namedType = getNamedType(field.type);
@@ -544,16 +545,7 @@ const buildTypes = (
                   },
                   selectionSet: {
                     kind: "SelectionSet" as const,
-                    selections: [
-                      // {
-                      //   kind: "Field" as const,
-                      //   name: {
-                      //     kind: "Name" as const,
-                      //     value: "__typename",
-                      //   },
-                      // },
-                      ...buildTypes(namedType.getTypes(), callback),
-                    ],
+                    selections: [...buildTypes(namedType.getTypes(), callback)],
                   },
                 };
               } else if (namedType instanceof GraphQLObjectType) {
@@ -566,13 +558,6 @@ const buildTypes = (
                   selectionSet: {
                     kind: "SelectionSet" as const,
                     selections: [
-                      // {
-                      //   kind: "Field" as const,
-                      //   name: {
-                      //     kind: "Name" as const,
-                      //     value: "__typename",
-                      //   },
-                      // },
                       ...buildFields(
                         Object.values(namedType.getFields()),
                         callback
@@ -651,16 +636,7 @@ const buildFields = (
           },
           selectionSet: {
             kind: "SelectionSet" as const,
-            selections: [
-              // {
-              //   kind: "Field" as const,
-              //   name: {
-              //     kind: "Name" as const,
-              //     value: "__typename",
-              //   },
-              // },
-              ...buildTypes(namedType.getTypes(), callback),
-            ],
+            selections: [...buildTypes(namedType.getTypes(), callback)],
           },
         };
       } else if (namedType instanceof GraphQLObjectType) {
@@ -673,13 +649,6 @@ const buildFields = (
           selectionSet: {
             kind: "SelectionSet" as const,
             selections: [
-              // {
-              //   kind: "Field" as const,
-              //   name: {
-              //     kind: "Name" as const,
-              //     value: "__typename",
-              //   },
-              // },
               ...buildFields(Object.values(namedType.getFields()), callback),
             ],
           },
@@ -693,396 +662,12 @@ const buildFields = (
           },
           selectionSet: {
             kind: "SelectionSet" as const,
-            selections: [
-              // {
-              //   kind: "Field" as const,
-              //   name: {
-              //     kind: "Name" as const,
-              //     value: "__typename",
-              //   },
-              // },
-            ],
+            selections: [],
           },
         };
       }
     }
   );
-};
-
-const args = {
-  document: [
-    {
-      kind: "Argument",
-      name: {
-        kind: "Name",
-        value: "relativePath",
-      },
-      value: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "relativePath",
-        },
-      },
-    },
-    {
-      kind: "Argument",
-      name: {
-        kind: "Name",
-        value: "section",
-      },
-      value: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "section",
-        },
-      },
-    },
-  ],
-  documentForSection: [
-    {
-      kind: "Argument",
-      name: {
-        kind: "Name",
-        value: "relativePath",
-      },
-      value: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "relativePath",
-        },
-      },
-    },
-    {
-      kind: "Argument",
-      name: {
-        kind: "Name",
-        value: "section",
-      },
-      value: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "section",
-        },
-      },
-    },
-  ],
-};
-
-const variableDefinitions = {
-  document: [
-    {
-      kind: "VariableDefinition",
-      variable: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "relativePath",
-        },
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-      },
-      directives: [],
-    },
-    {
-      kind: "VariableDefinition",
-      variable: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "section",
-        },
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-      },
-      directives: [],
-    },
-  ],
-  documentForSection: [
-    {
-      kind: "VariableDefinition",
-      variable: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "relativePath",
-        },
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-      },
-      directives: [],
-    },
-    {
-      kind: "VariableDefinition",
-      variable: {
-        kind: "Variable",
-        name: {
-          kind: "Name",
-          value: "section",
-        },
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "String",
-          },
-        },
-      },
-      directives: [],
-    },
-  ],
-};
-
-export const queryBuilder = (
-  schema: GraphQLSchema,
-  argumentKind: "document" | "documentForSection" = "document"
-) => {
-  const variableDefinitions2 = variableDefinitions[argumentKind];
-  const args2 = args[argumentKind];
-
-  let depth = 0;
-  let items: string[] = [];
-  let accumulator;
-  const astNode = parse(printSchema(schema));
-  const visitor: VisitorType = {
-    leave: {
-      UnionTypeDefinition: (node) => {
-        if (node.name.value === "DocumentUnion") {
-          accumulator = {
-            kind: "Document",
-            definitions: [
-              {
-                kind: "OperationDefinition",
-                operation: "query",
-                name: {
-                  kind: "Name",
-                  value: "DocumentQuery",
-                },
-                variableDefinitions: variableDefinitions2,
-                directives: [],
-                selectionSet: {
-                  kind: "SelectionSet",
-                  selections: [
-                    {
-                      kind: "Field",
-                      name: {
-                        kind: "Name",
-                        value: argumentKind,
-                      },
-                      arguments: args2,
-                      selectionSet: {
-                        kind: "SelectionSet",
-                        selections: [
-                          {
-                            kind: "Field",
-                            name: {
-                              kind: "Name",
-                              value: "node",
-                            },
-                            arguments: [],
-                            directives: [],
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                {
-                                  kind: "Field",
-                                  name: {
-                                    kind: "Name",
-                                    value: "__typename",
-                                  },
-                                  arguments: [],
-                                  directives: [],
-                                },
-                                ...(node?.types?.map((item) => {
-                                  return buildInlineFragment(
-                                    // @ts-ignore
-                                    item,
-                                    astNode,
-                                    items
-                                  );
-                                }) || []),
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          };
-        }
-      },
-    },
-  };
-
-  visit(astNode, visitor);
-  return accumulator;
-};
-
-const buildInlineFragment = (
-  item: GraphQLNamedType,
-  astNode: DocumentNode,
-  items: string[]
-): SelectionNode => {
-  const name = item.name;
-  items.push(name);
-  let fields: FieldDefinitionNode[] = [];
-  const visitor: VisitorType = {
-    leave: {
-      ObjectTypeDefinition: (node) => {
-        if (node.name.value === name) {
-          if (node.fields) {
-            fields = node.fields as FieldDefinitionNode[];
-          }
-        }
-      },
-    },
-  };
-  visit(astNode, visitor);
-
-  return {
-    kind: "InlineFragment",
-    typeCondition: {
-      kind: "NamedType",
-      name: {
-        kind: "Name",
-        value: item.name,
-      },
-    },
-    directives: [],
-    selectionSet: {
-      kind: "SelectionSet",
-      selections: [
-        {
-          kind: "Field",
-          name: {
-            kind: "Name",
-            value: "__typename",
-          },
-        },
-        ...fields.map((field) => {
-          return buildField(field, astNode, items);
-        }),
-      ],
-    },
-  };
-};
-
-const buildField = (
-  node: FieldDefinitionNode,
-  astNode: DocumentNode,
-  items: string[]
-): SelectionNode => {
-  const realType = getRealType(node);
-
-  // @ts-ignore
-  if (realType.name.value === "String") {
-    return {
-      kind: "Field",
-      name: {
-        kind: "Name",
-        value: node.name.value,
-      },
-      arguments: [],
-      directives: [],
-    };
-  } else {
-    let fields: FieldDefinitionNode[] = [];
-    let union: NamedTypeNode[] = [];
-    const visitor: VisitorType = {
-      leave: {
-        ObjectTypeDefinition: (node) => {
-          // @ts-ignore
-          if (node.name.value === realType.name.value) {
-            if (node.name.value === "SectionUnion") {
-              fields = node.fields
-                ? node.fields.filter(
-                    (field) => field.name.value !== "documents"
-                  )
-                : [];
-            } else {
-              fields = node.fields?.filter(
-                (field) =>
-                  // NOTE: we might want to remove this from the schema if we're not using it
-                  field.name.value !== "absolutePath"
-              ) as FieldDefinitionNode[];
-            }
-          }
-        },
-        UnionTypeDefinition: (node) => {
-          // @ts-ignore
-          if (node.name.value === realType.name.value) {
-            union = node.types as NamedTypeNode[];
-          }
-        },
-      },
-    };
-    visit(astNode, visitor);
-    return {
-      kind: "Field",
-      name: {
-        kind: "Name",
-        value: node.name.value,
-      },
-      arguments: [],
-      directives: [],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections:
-          fields.length > 0
-            ? fields.map((item) => {
-                return buildField(item, astNode, items);
-              })
-            : union.map((item) => {
-                // @ts-ignore
-                const namedType = getNamedType(typeFromAST(schema, item));
-                return buildInlineFragment(namedType, astNode, items);
-              }),
-      },
-    };
-  }
-};
-
-const getRealType = (node: FieldDefinitionNode) => {
-  if (node.type.kind === "NonNullType") {
-    return node.type.type;
-  } else if (node.type.kind === "ListType") {
-    return node.type.type;
-  } else {
-    return node.type;
-  }
 };
 
 interface NodeType {
