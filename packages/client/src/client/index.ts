@@ -3,6 +3,7 @@ import {
   mutationGenerator,
   queryGenerator,
   queryBuilder,
+  queryToMutation,
 } from "@forestryio/graphql-helpers";
 import {
   getIntrospectionQuery,
@@ -291,28 +292,31 @@ export class ForestryClient {
   };
 
   updateContent = async ({
-    relativePath,
-    section,
+    queryString,
     payload,
-    form,
   }: {
-    relativePath: string;
-    section: string;
-    payload: any;
-    form: { fields: Field[] };
+    queryString: string;
+    payload: object;
   }) => {
-    const mutation = `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
-      updateDocument(relativePath: $relativePath, section: $section, params: $params) {
-        __typename
-      }
-    }`;
-    const values = this.transformPayload({ mutation, payload });
-    const variables = { relativePath, section, params: values };
-
-    await this.request<UpdateVariables>(mutation, {
-      // @ts-ignore
-      variables,
+    const data = await this.request(getIntrospectionQuery(), {
+      variables: {},
     });
+    console.log("ohhi", queryString, data);
+    const mutation = queryToMutation({
+      queryString,
+      schema: buildClientSchema(data),
+    });
+
+    // const params = await this.transformPayload({
+    //   mutation: print(mutation),
+    //   // @ts-ignore FIXME: unknown -> assert is object
+    //   payload: result.values,
+    // });
+
+    // await this.request<UpdateVariables>(mutation, {
+    //   // @ts-ignore
+    //   variables,
+    // });
   };
 
   async isAuthorized(): Promise<boolean> {
@@ -414,7 +418,7 @@ export class ForestryClient {
   }
 }
 
-export { useForestryForm, useForestryForm2 } from "./useForestryForm";
+export { useForestryForm } from "./useForestryForm";
 
 export { ForestryMediaStore } from "./media-store";
 

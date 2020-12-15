@@ -12,11 +12,13 @@ import {
   mutationGenerator,
   queryGenerator,
   formBuilder,
+  queryToMutation,
   splitDataNode,
 } from "./queryBuilder";
 export {
   slugify,
   splitDataNode,
+  queryToMutation,
   formBuilder,
   queryGenerator,
   friendlyFMTName,

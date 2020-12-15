@@ -4,7 +4,7 @@ import { formBuilder } from "@forestryio/graphql-helpers";
 import { useParams, useLocation } from "react-router-dom";
 import { useMachine } from "@xstate/react";
 import { Machine, assign } from "xstate";
-import { useForestryForm2 } from "@forestryio/client";
+import { useForestryForm } from "@forestryio/client";
 import { useCMS, TinaCMS } from "tinacms";
 import {
   parse,
@@ -97,12 +97,20 @@ export const graphiqlMachine = Machine<
           on: {
             FETCH: "fetching",
             MODIFY_RESULT: {
+              target: "updatingResult",
               actions: assign({
-                fetcherType: "tina",
+                fetcherType: () => "tina",
                 result: (context, event) => {
                   return event.value;
                 },
               }),
+            },
+          },
+        },
+        updatingResult: {
+          on: {
+            RESULT_UPDATED: {
+              target: "idle",
             },
           },
         },
@@ -365,11 +373,14 @@ export const Explorer = () => {
         fetcher={fetcher}
         result={current.context.result}
         onDataChange={(value) => {
-          send({ type: "MODIFY_RESULT", value });
-          service.onChange((s) => {
-            // @ts-ignore
-            submitButtonRef.click();
+          service.onTransition(() => {
+            if (service.state.matches("fetcher.updatingResult")) {
+              send("RESULT_UPDATED");
+              submitButtonRef.click();
+            }
           });
+
+          send({ type: "MODIFY_RESULT", value });
         }}
         onFormSubmit={(value) => {
           send({
@@ -442,7 +453,7 @@ const TinaInfo = ({
   onFormSubmit: (payload: object) => void;
   onDataChange: (payload: object) => void;
 }) => {
-  const { data, errors } = useForestryForm2({
+  const { data, errors } = useForestryForm({
     queryString,
     payload: result || {},
     variables,

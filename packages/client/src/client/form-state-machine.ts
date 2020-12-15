@@ -165,7 +165,10 @@ const formCallback = (context) => (callback, receive) => {
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
-      console.log("submit it", values);
+      context.client.updateContent({
+        queryString: context.queryString,
+        payload: values,
+      });
     },
   });
 
@@ -243,21 +246,6 @@ export const createFormService = (
             node: context.node,
             schema: await context.client.getSchema(),
           });
-        },
-        createForm: async (context, event) => {
-          const form = new Form({
-            id: context.queryFieldName,
-            label: context.node.sys.basename,
-            fields: context.node.form.fields,
-            initialValues: context.node.values,
-            onSubmit: async (values) => {
-              console.log("submit it", values);
-            },
-          });
-          context.cms.plugins.add(form);
-
-          // return form.unsubscribe() // Should support this
-          return form;
         },
       },
     }
