@@ -1,5 +1,6 @@
 export * from "./client";
 export * from "./auth";
+export * from "./hooks/use-forestry-form";
 
 /**
  * A passthru function which allows editors
