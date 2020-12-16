@@ -1,6 +1,6 @@
 import React from "react";
 import { useCMS, usePlugin } from "tinacms";
-import { createFormService } from "./form-state-machine";
+import { createFormService } from "./form-service";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
 import * as yup from "yup";

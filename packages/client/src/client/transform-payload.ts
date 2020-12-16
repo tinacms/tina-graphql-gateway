@@ -9,6 +9,49 @@ import {
   parse,
 } from "graphql";
 
+export const transformPayload = ({
+  mutation,
+  values,
+  schema,
+}: {
+  mutation: string;
+  values: object;
+  schema: GraphQLSchema;
+}) => {
+  try {
+    const accum = {};
+    // FIXME: this is assuming we're passing in a valid mutation with the top-level
+    // selection being the mutation
+    // @ts-ignore
+    const mutationName = parse(mutation).definitions[0].selectionSet
+      .selections[0].name.value;
+    const mutationType = schema.getMutationType();
+
+    if (!mutationType) {
+      throw new Error(`Expected to find mutation type in schema`);
+    }
+
+    const mutationNameType = mutationType.getFields()[mutationName];
+
+    if (!mutationNameType) {
+      throw new Error(`Expected to find mutation type ${mutationNameType}`);
+    }
+
+    const inputType = mutationNameType.args.find((arg) => arg.name === "params")
+      .type;
+
+    if (inputType instanceof GraphQLInputObjectType) {
+      return transformInputObject(values, accum, inputType);
+    } else {
+      throw new Error(
+        `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
+      );
+    }
+  } catch (e) {
+    console.log("oh no", e);
+  }
+};
+
 const transformInputObject = (
   values: object,
   accum: { [key: string]: unknown },
@@ -52,50 +95,4 @@ const transformInputObject = (
     accum[templateNameString] = fieldTypes;
   }
   return accum;
-};
-
-export const transformPayload = ({
-  mutation,
-  inputName,
-  values,
-  schema,
-}: {
-  mutation?: string;
-  inputName?: string;
-  values: object;
-  schema: GraphQLSchema;
-}) => {
-  try {
-    const accum = {};
-    // FIXME: this is assuming we're passing in a valid mutation with the top-level
-    // selection being the mutation
-    const mutationName =
-      inputName ||
-      // @ts-ignore
-      parse(mutation).definitions[0].selectionSet.selections[0].name.value;
-    const mutationType = schema.getMutationType();
-
-    if (!mutationType) {
-      throw new Error(`Expected to find mutation type in schema`);
-    }
-
-    const mutationNameType = mutationType.getFields()[mutationName];
-
-    if (!mutationNameType) {
-      throw new Error(`Expected to find mutation type ${mutationNameType}`);
-    }
-
-    const inputType = mutationNameType.args.find((arg) => arg.name === "params")
-      .type;
-
-    if (inputType instanceof GraphQLInputObjectType) {
-      return transformInputObject(values, accum, inputType);
-    } else {
-      throw new Error(
-        `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
-      );
-    }
-  } catch (e) {
-    console.log("oh no", e);
-  }
 };

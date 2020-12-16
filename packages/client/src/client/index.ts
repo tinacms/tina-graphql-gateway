@@ -11,7 +11,7 @@ import {
   GraphQLSchema,
 } from "graphql";
 import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
-import { transformPayload } from "./handle";
+import { transformPayload } from "./transform-payload";
 
 interface UpdateVariables {
   relativePath: string;
@@ -180,6 +180,43 @@ export class ForestryClient {
     });
   };
 
+  async requestWithForm<VariableType>({
+    query,
+    variables,
+  }: {
+    query: DocumentNode;
+    variables: VariableType;
+  }) {
+    const schema = await this.getSchema();
+    const formifiedQuery = formBuilder(query, schema);
+
+    return this.request(print(formifiedQuery), { variables });
+  }
+
+  async request<VariableType>(
+    query: string,
+    { variables }: { variables: VariableType }
+  ) {
+    const res = await fetch(this.serverURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.getToken(),
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    });
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error(json.errors);
+      // throw new Error("Failed to fetch API");
+    }
+    return json.data;
+  }
+
   async isAuthorized(): Promise<boolean> {
     return this.isAuthenticated(); // TODO - check access
   }
@@ -221,41 +258,8 @@ export class ForestryClient {
     }
   }
 
-  async requestWithForm<VariableType>({
-    query,
-    variables,
-  }: {
-    query: DocumentNode;
-    variables: VariableType;
-  }) {
-    const schema = await this.getSchema();
-    const formifiedQuery = formBuilder(query, schema);
-
-    return this.request(print(formifiedQuery), { variables });
-  }
-
-  async request<VariableType>(
-    query: string,
-    { variables }: { variables: VariableType }
-  ) {
-    const res = await fetch(this.serverURL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.getToken(),
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
-
-    const json = await res.json();
-    if (json.errors) {
-      console.error(json.errors);
-      // throw new Error("Failed to fetch API");
-    }
-    return json.data;
+  private getCookie(cookieName: string): string | undefined {
+    return Cookies.get(cookieName);
   }
 }
 

@@ -1,42 +1,7 @@
-import { upperFirst, snakeCase, toLower } from "lodash";
+import { snakeCase, toLower } from "lodash";
 
 export const slugify = (string: string) => {
   return toLower(snakeCase(string));
-};
-
-export const FMT_BASE = ".forestry/front_matter/templates";
-export const shortFMTName = (path: string) => {
-  return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
-};
-
-export const friendlyName = (field = "", suffix = "") => {
-  if (Array.isArray(field)) {
-    const meh = `${field.map((f) => upperFirst(f)).join("_")}${
-      suffix && "_" + suffix
-    }`;
-    return meh;
-  } else {
-    if (typeof field === "string") {
-      if (field) {
-        return `${upperFirst(field)}${suffix ? "_" + suffix : ""}`;
-      } else {
-        return suffix;
-      }
-    } else {
-      return `${
-        field.__namespace ? upperFirst(field.__namespace) + "_" : ""
-      }${upperFirst(field.name)}${suffix && "_" + suffix}`;
-    }
-  }
-};
-
-export const sequential2 = async (promises: Promise<unknown>[]) => {
-  const reducePromises = async (previous: Promise<unknown>, endpoint) => {
-    await previous;
-    return endpoint;
-  };
-
-  return promises.reduce(reducePromises, Promise.resolve());
 };
 
 /**
