@@ -21,7 +21,7 @@ import {
 } from "graphql";
 import set from "lodash.set";
 import get from "lodash.get";
-import { friendlyName2 } from "./util";
+import { friendlyName } from "./util";
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
@@ -692,7 +692,7 @@ export const queryGenerator = (
   const t = schema.getQueryType();
   const queryFields = t?.getFields();
   if (queryFields) {
-    const queryName = `get${friendlyName2(variables.section)}Document`;
+    const queryName = `get${friendlyName(variables.section)}Document`;
     const queryField = queryFields[queryName];
 
     const returnType = getNamedType(queryField.type);
@@ -811,8 +811,8 @@ export const mutationGenerator = (
   const t = schema.getQueryType();
   const queryFields = t?.getFields();
   if (queryFields) {
-    const mutationName = `update${friendlyName2(variables.section)}Document`;
-    const queryName = `get${friendlyName2(variables.section)}Document`;
+    const mutationName = `update${friendlyName(variables.section)}Document`;
+    const queryName = `get${friendlyName(variables.section)}Document`;
     const queryField = queryFields[queryName];
 
     const returnType = getNamedType(queryField.type);
@@ -887,7 +887,7 @@ export const mutationGenerator = (
                     kind: "NamedType" as const,
                     name: {
                       kind: "Name" as const,
-                      value: `${friendlyName2(variables.section)}_Input`,
+                      value: `${friendlyName(variables.section)}_Input`,
                     },
                   },
                 },
