@@ -1,8 +1,8 @@
 import _ from "lodash";
 import { graphql } from "graphql";
-import { GraphQLSchema, Source } from "graphql";
 import path from "path";
 import { sequential } from "../util";
+import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 
 import { text } from "../fields/text";
 import { list } from "../fields/list";
@@ -17,11 +17,10 @@ import { file } from "../fields/file";
 import { imageGallery } from "../fields/image-gallery";
 import { number } from "../fields/number";
 import { tag_list } from "../fields/tag-list";
-import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 
 import type { DataSource } from "../datasources/datasource";
+import type { GraphQLSchema, GraphQLResolveInfo, Source } from "graphql";
 import type { DirectorySection } from "../types";
-import type { GraphQLResolveInfo } from "graphql";
 import type { Field } from "../fields";
 import type { sectionMap } from "../builder";
 import type { TemplateData } from "../types";
@@ -49,7 +48,7 @@ export const graphqlInit = async (a: {
 };
 
 /**
- * The schemaResolver function runs for __every__ field we process for queries and mutations.
+ * The `schemaResolver` function runs for __every__ field we process for queries and mutations.
  *
  * That means that for this query:
  *
@@ -111,11 +110,11 @@ const schemaResolver = async (
     case "breadcrumbs":
       return resolveBreadcrumbs(value, args, context);
     case "getSection":
-      return resolveSection(value, args, context);
+      return resolveSection(args, context);
     case "getSections":
-      return resolveSections(value, args, context);
+      return resolveSections(context);
     case "addPendingDocument":
-      await addPendingDocument(value, args, context);
+      await addPendingDocument(args, context);
       return resolveDocument({ args, context });
     default:
       break;
@@ -124,9 +123,24 @@ const schemaResolver = async (
   const sectionItem = sectionMap[info.fieldName];
   if (sectionItem) {
     if (sectionItem.plural) {
-      return resolveDocumentsBySection(args, context, sectionItem);
+      const documents = await context.datasource.getDocumentsForSection(
+        sectionItem.section.slug
+      );
+      return sequential(documents, async (documentPath) =>
+        resolveDocument({
+          args: { fullPath: documentPath, section: sectionItem.section.slug },
+          context: context,
+        })
+      );
     } else if (sectionItem.mutation) {
-      await updateDocumentBySection(args, context, sectionItem);
+      await resolver.input({
+        args: {
+          relativePath: args.relativePath,
+          section: sectionItem.section.slug,
+        },
+        params: args.params,
+        datasource: context.datasource,
+      });
       return resolveDocument({ args, context });
     } else {
       return resolveDocument({
@@ -394,130 +408,6 @@ const documentInputDataField = async ({
   }
 };
 
-const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => {
-    return f?.name === fieldName;
-  });
-  if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
-  }
-  return field;
-};
-
-const resolveDocumentsBySectionLabel = async ({
-  label,
-  context,
-}: {
-  label: String;
-  context: ContextT;
-}) => {
-  const sections = await context.datasource.getSectionsSettings();
-  const section = sections.find((section) => section.label === label);
-
-  if (!section) {
-    throw new Error(`Expected to find section with label ${label}`);
-  }
-
-  return {
-    section,
-    documents: await context.datasource.getDocumentsForSection(section.slug),
-  };
-};
-
-const resolveDocumentsBySection = async (
-  args: FieldResolverArgs,
-  context: ContextT,
-  sectionItem: any
-) => {
-  const { documents } = await resolveDocumentsBySectionLabel({
-    label: sectionItem.section.label,
-    context,
-  });
-  return await sequential(documents, async (d) => {
-    const dd = await resolveDocument({
-      args: { fullPath: d, section: sectionItem.section.slug },
-      context: context,
-    });
-
-    return dd;
-  });
-};
-
-const updateDocumentBySection = async (
-  args: FieldResolverArgs,
-  context: ContextT,
-  sectionItem: any
-) => {
-  assertIsDocumentInputArgs(args);
-  await resolver.input({
-    args: {
-      relativePath: args.relativePath,
-      section: sectionItem.section.slug,
-    },
-    params: args.params,
-    datasource: context.datasource,
-  });
-};
-
-/**
- * Each document request should populate these reserved
- * properties so we know how to delegate them, for fields
- * list "select" fields which reference another document
- * it is responsible for providing these in the field
- * value resolver
- */
-function isReferenceField(
-  item: unknown | FieldResolverSource
-): item is InitialSource {
-  if (typeof item === "object") {
-    return !!item && item.hasOwnProperty("_resolver");
-  } else {
-    return false;
-  }
-}
-
-function assertIsPendingDocumentInputArgs(
-  args: FieldResolverArgs
-): asserts args is { relativePath: string; section: string; params: object } {
-  if (!args.relativePath || typeof args.relativePath !== "string") {
-    throw new Error(`Expected relativePath for input document request`);
-  }
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected section for input document request`);
-  }
-  if (!args.template || typeof args.template !== "string") {
-    throw new Error(`Expected args for input document request`);
-  }
-}
-function assertIsDocumentInputArgs(
-  args: FieldResolverArgs
-): asserts args is { relativePath: string; section: string; params: object } {
-  if (!args.relativePath || typeof args.relativePath !== "string") {
-    throw new Error(`Expected relativePath for input document request`);
-  }
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected section for input document request`);
-  }
-  if (!args.params || typeof args.params !== "object") {
-    throw new Error(`Expected args for input document request`);
-  }
-}
-function assertIsSectionDocumentArgs(
-  value: unknown
-): asserts value is { _section: string } {
-  if (!value._section || typeof value._section !== "string") {
-    throw new Error(`Expected _section arg for section document request`);
-  }
-}
-
-function assertIsGetSectionArgs(
-  args: FieldResolverArgs
-): asserts args is { section: string } {
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected section arg for section request`);
-  }
-}
-
 const resolveNode = async (args: FieldResolverArgs, context: ContextT) => {
   if (typeof args.id !== "string") {
     throw new Error("Expected argument ID for node query");
@@ -534,12 +424,12 @@ const resolveDocuments = async (
   args: FieldResolverArgs,
   context: ContextT
 ) => {
+  assertIsSectionDocumentArgs(value);
   let sections = await context.datasource.getSectionsSettings();
 
   if (args.section) {
     sections = sections.filter((section) => section.slug === args.section);
   }
-  assertIsSectionDocumentArgs(value);
   if (value && value._section) {
     sections = sections.filter((section) => section.slug === value._section);
   }
@@ -580,11 +470,7 @@ const resolveBreadcrumbs = async (
   }
 };
 
-const resolveSection = async (
-  value: unknown,
-  args: FieldResolverArgs,
-  context: ContextT
-) => {
+const resolveSection = async (args: FieldResolverArgs, context: ContextT) => {
   assertIsGetSectionArgs(args);
   let section = await context.datasource.getSettingsForSection(args.section);
   return {
@@ -595,24 +481,14 @@ const resolveSection = async (
   };
 };
 
-const resolveSections = async (
-  value: unknown,
-  args: FieldResolverArgs,
-  context: ContextT
-) => {
+const resolveSections = async (context: ContextT) => {
   let sections = await context.datasource.getSectionsSettings();
-  return await sequential(sections, async (section) => {
-    return {
-      ...section,
-      documents: {
-        _section: section.slug,
-      },
-    };
+  return sequential(sections, async (section) => {
+    return resolveSection({ section: section.slug }, context);
   });
 };
 
 const addPendingDocument = async (
-  value: unknown,
   args: FieldResolverArgs,
   context: ContextT
 ) => {
@@ -620,28 +496,6 @@ const addPendingDocument = async (
   await context.datasource.addDocument(args);
 
   return true;
-};
-
-export type ContextT = {
-  datasource: DataSource;
-};
-type FieldResolverArgs = { [argName: string]: unknown };
-
-export type InitialSource =
-  | { _resolver_kind: null }
-  | {
-      _resolver: "_resource";
-      _resolver_kind: "_nested_source";
-      _args: { fullPath: string; section: string };
-    }
-  | {
-      _resolver: "_resource";
-      _resolver_kind: "_nested_sources";
-      _args: { fullPaths: string[]; section: string };
-    };
-
-type FieldResolverSource = {
-  [key: string]: InitialSource | unknown;
 };
 
 const resolveDocument = async ({ args, context }) => {
@@ -696,4 +550,83 @@ const resolveDocument = async ({ args, context }) => {
       content: content || "",
     }),
   };
+};
+
+const findField = (fields: Field[], fieldName: string) => {
+  const field = fields.find((f) => {
+    return f?.name === fieldName;
+  });
+  if (!field) {
+    throw new Error(`Unable to find field for item with name: ${fieldName}`);
+  }
+  return field;
+};
+
+/**
+ * Each document request should populate these reserved
+ * properties so we know how to delegate them, for fields
+ * list "select" fields which reference another document
+ * it is responsible for providing these in the field
+ * value resolver
+ */
+function isReferenceField(
+  item: unknown | FieldResolverSource
+): item is InitialSource {
+  if (typeof item === "object") {
+    return !!item && item.hasOwnProperty("_resolver");
+  } else {
+    return false;
+  }
+}
+
+function assertIsPendingDocumentInputArgs(
+  args: FieldResolverArgs
+): asserts args is { relativePath: string; section: string; params: object } {
+  if (!args.relativePath || typeof args.relativePath !== "string") {
+    throw new Error(`Expected relativePath for input document request`);
+  }
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected section for input document request`);
+  }
+  if (!args.template || typeof args.template !== "string") {
+    throw new Error(`Expected args for input document request`);
+  }
+}
+
+function assertIsSectionDocumentArgs(
+  value: unknown
+): asserts value is { _section: string } {
+  if (!value._section || typeof value._section !== "string") {
+    throw new Error(`Expected _section arg for section document request`);
+  }
+}
+
+function assertIsGetSectionArgs(
+  args: FieldResolverArgs
+): asserts args is { section: string } {
+  if (!args.section || typeof args.section !== "string") {
+    throw new Error(`Expected section arg for section request`);
+  }
+}
+
+export type ContextT = {
+  datasource: DataSource;
+};
+type FieldResolverArgs = { [argName: string]: unknown };
+
+export type InitialSource =
+  | { _resolver_kind: null }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_source";
+      _args: { fullPath: string; section: string };
+    }
+  | {
+      _resolver: "_resource";
+      _resolver_kind: "_nested_sources";
+      _args: { fullPaths: string[]; section: string };
+    };
+
+type FieldResolverSource = {
+  [key: string]: InitialSource | unknown;
 };
