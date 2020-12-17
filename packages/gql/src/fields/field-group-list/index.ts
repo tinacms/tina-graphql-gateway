@@ -8,6 +8,7 @@ import { sequential } from "../../util";
 
 import { BuildArgs, ResolveArgs } from "../";
 import type { Field, TinaField } from "../index";
+import { fieldGroup } from "../field-group";
 
 export type FieldGroupListField = {
   label: string;
@@ -109,11 +110,11 @@ export const fieldGroupList = {
       TinaFieldGroupListField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.documentFormObject(
+      const template = await resolver.form({
         datasource,
-        field,
-        false
-      );
+        template: field,
+        includeBody: false,
+      });
 
       return {
         ...rest,
@@ -131,7 +132,7 @@ export const fieldGroupList = {
       return sequential(
         value,
         async (v: any) =>
-          await resolver.documentInitialValuesObject(datasource, field, v)
+          await resolver.values({ datasource, template: field, data: v })
       );
     },
     value: async ({
@@ -143,9 +144,9 @@ export const fieldGroupList = {
       return sequential(
         value,
         async (v: any) =>
-          await resolver.dataObject({
+          await resolver.data({
             datasource,
-            resolvedTemplate: field,
+            template: field,
             data: v,
           })
       );
