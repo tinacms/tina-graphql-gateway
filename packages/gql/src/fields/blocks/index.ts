@@ -92,9 +92,10 @@ export const blocks: Blocks = {
       const templates: { [key: string]: TinaTemplateData } = {};
       await sequential(field.template_types, async (templateSlug) => {
         const template = await datasource.getTemplate(templateSlug);
-        templates[
-          friendlyName(templateSlug, "", true)
-        ] = await resolver.formObject(datasource, template);
+        templates[friendlyName(templateSlug, "", true)] = await resolver.form({
+          datasource,
+          template,
+        });
       });
 
       return {
@@ -108,11 +109,11 @@ export const blocks: Blocks = {
       assertIsBlockValueArray(value);
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const itemValue = await resolver.initialValuesObject(
+        const itemValue = await resolver.values({
           datasource,
-          templateData,
-          item
-        );
+          template: templateData,
+          data: item,
+        });
 
         assertIsBlockInitialValue(itemValue);
 
@@ -128,9 +129,9 @@ export const blocks: Blocks = {
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const data = await resolver.dataObject({
+        const data = await resolver.data({
           datasource,
-          resolvedTemplate: templateData,
+          template: templateData,
           data: item,
         });
         assertIsObject(data);

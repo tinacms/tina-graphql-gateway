@@ -5,6 +5,7 @@ import {
   ObjectTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
+  UnionTypeDefinitionNode,
 } from "graphql";
 
 export const gql = {
@@ -344,7 +345,13 @@ export const gql = {
     },
     fields,
   }),
-  union: ({ name, types }: { name: string; types: string[] }) => ({
+  union: ({
+    name,
+    types,
+  }: {
+    name: string;
+    types: string[];
+  }): UnionTypeDefinitionNode => ({
     kind: "UnionTypeDefinition" as const,
     name: {
       kind: "Name" as const,

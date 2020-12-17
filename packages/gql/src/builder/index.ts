@@ -695,7 +695,7 @@ export type Definitions =
   | InterfaceTypeDefinitionNode
   | EnumTypeDefinitionNode;
 
-type sectionMap = {
+export type sectionMap = {
   [key: string]: {
     section: DirectorySection;
     plural: boolean;

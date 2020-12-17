@@ -83,11 +83,11 @@ export const fieldGroup = {
       TinaFieldGroupField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.documentFormObject(
+      const template = await resolver.form({
         datasource,
-        field,
-        false
-      );
+        template: field,
+        includeBody: false,
+      });
 
       return {
         ...rest,
@@ -103,7 +103,11 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.initialValuesObject(datasource, field, value);
+      return await resolver.values({
+        datasource,
+        template: field,
+        data: value,
+      });
     },
     value: async ({
       datasource,
@@ -112,9 +116,9 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.dataObject({
+      return await resolver.data({
         datasource,
-        resolvedTemplate: field,
+        template: field,
         data: value,
       });
     },
