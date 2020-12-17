@@ -107,6 +107,7 @@ export const blocks: Blocks = {
     },
     initialValue: async ({ datasource, field, value }) => {
       assertIsBlockValueArray(value);
+
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
         const itemValue = await resolver.values({
@@ -114,8 +115,6 @@ export const blocks: Blocks = {
           template: templateData,
           data: item,
         });
-
-        assertIsBlockInitialValue(itemValue);
 
         return {
           ...itemValue,
@@ -125,7 +124,6 @@ export const blocks: Blocks = {
     },
     value: async ({ datasource, field, value }) => {
       assertIsBlockValueArray(value);
-      // assertShape<BlockValue[]>(value, blockInputSchema)
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
@@ -134,13 +132,8 @@ export const blocks: Blocks = {
           template: templateData,
           data: item,
         });
-        assertIsObject(data);
 
-        const value = { template: item.template, ...data };
-
-        assertIsBlockValue(value);
-
-        return value;
+        return { template: item.template, ...data };
       });
     },
     input: async ({ datasource, field, value }) => {
@@ -150,7 +143,7 @@ export const blocks: Blocks = {
         const key = Object.keys(item)[0];
         const data = Object.values(item)[0];
 
-        const resolvedData = await resolver.documentDataInputObject({
+        const resolvedData = await resolver.input({
           data,
           template: await datasource.getTemplate(slugify(key)),
           datasource,

@@ -105,18 +105,18 @@ const schemaResolver = async (
 
   switch (info.fieldName) {
     case "node":
-      return await resolveNode(args, context);
+      return resolveNode(args, context);
     case "documents":
-      return await resolveDocuments(value, args, context);
+      return resolveDocuments(value, args, context);
     case "breadcrumbs":
-      return await resolveBreadcrumbs(value, args, context);
+      return resolveBreadcrumbs(value, args, context);
     case "getSection":
-      return await resolveSection(value, args, context);
+      return resolveSection(value, args, context);
     case "getSections":
-      return await resolveSections(value, args, context);
+      return resolveSections(value, args, context);
     case "addPendingDocument":
       await addPendingDocument(value, args, context);
-      return await resolveDocument({ args, context });
+      return resolveDocument({ args, context });
     default:
       break;
   }
@@ -124,12 +124,18 @@ const schemaResolver = async (
   const sectionItem = sectionMap[info.fieldName];
   if (sectionItem) {
     if (sectionItem.plural) {
-      return await resolveDocumentsBySection(args, context, sectionItem);
+      return resolveDocumentsBySection(args, context, sectionItem);
     } else if (sectionItem.mutation) {
       await updateDocumentBySection(args, context, sectionItem);
-      return await resolveDocument(value, args, context);
+      return resolveDocument({ args, context });
     } else {
-      return await resolveDocumentBySection(args, context, sectionItem);
+      return resolveDocument({
+        args: {
+          relativePath: args.relativePath,
+          section: sectionItem.section.slug,
+        },
+        context,
+      });
     }
   }
 
@@ -150,11 +156,11 @@ const schemaResolver = async (
           args: value._args,
           context,
         };
-        return await resolveDocument(documentArgs);
+        return resolveDocument(documentArgs);
 
       case "_nested_sources":
-        return await sequential(value._args.fullPaths, async (p) => {
-          return await resolveDocument({
+        return sequential(value._args.fullPaths, async (p) => {
+          return resolveDocument({
             args: { fullPath: p, section: value._args.section, ...args },
             context,
           });
@@ -237,6 +243,10 @@ export const resolver = {
       __typename: templateTypeName(template, "Form", !!includeBody),
       fields,
     };
+  },
+  // FIXME
+  input: async (args: any) => {
+    return args;
   },
 };
 
@@ -439,7 +449,7 @@ const updateDocumentBySection = async (
   sectionItem: any
 ) => {
   assertIsDocumentInputArgs(args);
-  await resolver.documentInputObject({
+  await resolver.input({
     args: {
       relativePath: args.relativePath,
       section: sectionItem.section.slug,
@@ -507,11 +517,6 @@ function assertIsGetSectionArgs(
     throw new Error(`Expected section arg for section request`);
   }
 }
-type DocumentData = {
-  [key: string]: unknown;
-  /** Only required for data coming from block values */
-  template?: string;
-};
 
 const resolveNode = async (args: FieldResolverArgs, context: ContextT) => {
   if (typeof args.id !== "string") {
@@ -603,20 +608,6 @@ const resolveSections = async (
         _section: section.slug,
       },
     };
-  });
-};
-
-const resolveDocumentBySection = async (
-  args: FieldResolverArgs,
-  context: ContextT,
-  sectionItem: any
-) => {
-  return await resolveDocument({
-    args: {
-      relativePath: args.relativePath,
-      section: sectionItem.section.slug,
-    },
-    context,
   });
 };
 

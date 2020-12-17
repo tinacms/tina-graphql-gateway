@@ -129,7 +129,7 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.documentDataInputObject({
+      return await resolver.input({
         data: value,
         template: field,
         datasource,
