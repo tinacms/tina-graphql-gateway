@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { graphql } from "graphql";
 import path from "path";
-import { sequential } from "../util";
+import { assertShape, sequential } from "../util";
 import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 
 import { text } from "../fields/text";
@@ -135,7 +135,7 @@ const schemaResolver = async (
     } else if (sectionItem.mutation) {
       await resolver.input({
         args: {
-          relativePath: args.relativePath,
+          ...args,
           section: sectionItem.section.slug,
         },
         params: args.params,
@@ -408,6 +408,84 @@ const documentInputDataField = async ({
   }
 };
 
+/**
+ *
+ * Most of the starts here, field-level form, data and value resolvers initiate here.
+ *
+ */
+const resolveDocument = async ({
+  args,
+  context,
+}: {
+  args: FieldResolverArgs;
+  context: ContextT;
+}) => {
+  const { datasource } = context;
+
+  assertShape<{
+    relativePath?: string;
+    fullPath?: string;
+    section: string;
+  }>(args, (yup) =>
+    yup.object({
+      relativePath: yup.string(),
+      fullPath: yup.string(),
+      section: yup.string().required(),
+    })
+  );
+
+  const sectionData = await datasource.getSettingsForSection(args.section);
+
+  // FIXME: we're supporting both full path and relative path args, when we use this from the hook we only have
+  // access to the documents full id, not the relative path, this should support both kinds of calls, but
+  // probably needs a better argument option as relativePath is misleading
+  const relativePath = args.fullPath
+    ? args.fullPath
+        .replace(sectionData.path, "")
+        .replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "")
+    : args.relativePath?.startsWith(sectionData.path)
+    ? args.relativePath.replace(sectionData.path, "")
+    : args.relativePath;
+
+  if (!relativePath) {
+    throw new Error(`Expected either relativePath or fullPath arguments`);
+  }
+
+  const realArgs = { relativePath, section: args.section };
+  const { data, content } = await datasource.getData(realArgs);
+  const template = await datasource.getTemplateForDocument(realArgs);
+  const { basename, filename, extension } = await datasource.getDocumentMeta(
+    realArgs
+  );
+
+  return {
+    __typename: friendlyName(sectionData.slug, "Document"),
+    id: path.join(sectionData.path, realArgs.relativePath),
+    sys: {
+      path: path.join(sectionData.path, realArgs.relativePath),
+      relativePath,
+      section: sectionData,
+      breadcrumbs: relativePath.split("/").filter(Boolean),
+      basename,
+      filename,
+      extension,
+    },
+    form: await resolver.form({ datasource, template, includeBody: true }),
+    data: await resolver.data({
+      datasource,
+      template: template,
+      data,
+      content,
+    }),
+    values: await resolver.values({
+      datasource,
+      template,
+      data,
+      content: content || "",
+    }),
+  };
+};
+
 const resolveNode = async (args: FieldResolverArgs, context: ContextT) => {
   if (typeof args.id !== "string") {
     throw new Error("Expected argument ID for node query");
@@ -424,7 +502,13 @@ const resolveDocuments = async (
   args: FieldResolverArgs,
   context: ContextT
 ) => {
-  assertIsSectionDocumentArgs(value);
+  assertShape<{ _section: string }>(value, (yup) =>
+    yup.object({ _section: yup.string().required() })
+  );
+  assertShape<{ section: string }>(args, (yup) =>
+    yup.object({ section: yup.string().required() })
+  );
+
   let sections = await context.datasource.getSectionsSettings();
 
   if (args.section) {
@@ -471,7 +555,10 @@ const resolveBreadcrumbs = async (
 };
 
 const resolveSection = async (args: FieldResolverArgs, context: ContextT) => {
-  assertIsGetSectionArgs(args);
+  assertShape<{ section: string }>(args, (yup) =>
+    yup.object({ section: yup.string().required() })
+  );
+
   let section = await context.datasource.getSettingsForSection(args.section);
   return {
     ...section,
@@ -492,64 +579,18 @@ const addPendingDocument = async (
   args: FieldResolverArgs,
   context: ContextT
 ) => {
-  assertIsPendingDocumentInputArgs(args);
+  assertShape<{ relativePath: string; section: string; template: string }>(
+    args,
+    (yup) =>
+      yup.object({
+        relativePath: yup.string(),
+        section: yup.string(),
+        template: yup.string(),
+      })
+  );
   await context.datasource.addDocument(args);
 
   return true;
-};
-
-const resolveDocument = async ({ args, context }) => {
-  const { datasource } = context;
-
-  const sectionData = await datasource.getSettingsForSection(args.section);
-
-  // FIXME: we're supporting both full path and relative path args, when we use this from the hook we only have
-  // access to the documents full id, not the relative path, this should support both kinds of calls, but
-  // probably needs a better argument option as relativePath is misleading
-  const relativePath = args.fullPath
-    ? args.fullPath
-        .replace(sectionData.path, "")
-        .replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "")
-    : args.relativePath?.startsWith(sectionData.path)
-    ? args.relativePath.replace(sectionData.path, "")
-    : args.relativePath;
-  if (!relativePath) {
-    throw new Error(`Expected either relativePath or fullPath arguments`);
-  }
-
-  const realArgs = { relativePath, section: args.section };
-  const { data, content } = await datasource.getData(realArgs);
-  const template = await datasource.getTemplateForDocument(realArgs);
-  const { basename, filename, extension } = await datasource.getDocumentMeta(
-    realArgs
-  );
-
-  return {
-    __typename: friendlyName(sectionData.slug, "Document"),
-    id: path.join(sectionData.path, realArgs.relativePath),
-    sys: {
-      path: path.join(sectionData.path, realArgs.relativePath),
-      relativePath,
-      section: sectionData,
-      breadcrumbs: relativePath.split("/").filter(Boolean),
-      basename,
-      filename,
-      extension,
-    },
-    form: await resolver.form({ datasource, template, includeBody: true }),
-    data: await resolver.data({
-      datasource,
-      template: template,
-      data,
-      content,
-    }),
-    values: await resolver.values({
-      datasource,
-      template,
-      data,
-      content: content || "",
-    }),
-  };
 };
 
 const findField = (fields: Field[], fieldName: string) => {
@@ -571,42 +612,12 @@ const findField = (fields: Field[], fieldName: string) => {
  */
 function isReferenceField(
   item: unknown | FieldResolverSource
-): item is InitialSource {
-  if (typeof item === "object") {
-    return !!item && item.hasOwnProperty("_resolver");
-  } else {
-    return false;
-  }
-}
+): item is ReferenceSource {
+  assertShape<{ _resolver: string }>(item, (yup) =>
+    yup.object({ _resolver: yup.string().required() })
+  );
 
-function assertIsPendingDocumentInputArgs(
-  args: FieldResolverArgs
-): asserts args is { relativePath: string; section: string; params: object } {
-  if (!args.relativePath || typeof args.relativePath !== "string") {
-    throw new Error(`Expected relativePath for input document request`);
-  }
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected section for input document request`);
-  }
-  if (!args.template || typeof args.template !== "string") {
-    throw new Error(`Expected args for input document request`);
-  }
-}
-
-function assertIsSectionDocumentArgs(
-  value: unknown
-): asserts value is { _section: string } {
-  if (!value._section || typeof value._section !== "string") {
-    throw new Error(`Expected _section arg for section document request`);
-  }
-}
-
-function assertIsGetSectionArgs(
-  args: FieldResolverArgs
-): asserts args is { section: string } {
-  if (!args.section || typeof args.section !== "string") {
-    throw new Error(`Expected section arg for section request`);
-  }
+  return true;
 }
 
 export type ContextT = {
@@ -614,7 +625,15 @@ export type ContextT = {
 };
 type FieldResolverArgs = { [argName: string]: unknown };
 
-export type InitialSource =
+/**
+ * When the source doesn't contain the value, but instead
+ * containst information about how to go and get the value.
+ *
+ * This used for references, instead of over-fetching, we return
+ * these values which act as args for the next resolve function
+ * call to use
+ */
+export type ReferenceSource =
   | { _resolver_kind: null }
   | {
       _resolver: "_resource";
@@ -628,5 +647,5 @@ export type InitialSource =
     };
 
 type FieldResolverSource = {
-  [key: string]: InitialSource | unknown;
+  [key: string]: ReferenceSource | unknown;
 };

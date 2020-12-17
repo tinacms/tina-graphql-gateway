@@ -1,4 +1,5 @@
 import { snakeCase, toLower } from "lodash";
+import * as yup from "yup";
 
 export const slugify = (string: string) => {
   return toLower(snakeCase(string));
@@ -35,3 +36,15 @@ export const sequential = async <A, B>(
 
   return accum;
 };
+
+export function assertShape<T extends object>(
+  value: unknown,
+  yupSchema: (args: typeof yup) => yup.Schema<unknown, unknown>
+): asserts value is T {
+  try {
+    yupSchema(yup).validateSync(value);
+  } catch (e) {
+    console.log(value);
+    throw new Error(`Failed to assertShape - ${e.message}`);
+  }
+}
