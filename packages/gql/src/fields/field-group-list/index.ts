@@ -159,7 +159,7 @@ export const fieldGroupList = {
       assertIsDataArray(value);
 
       return sequential(value, async (v) => {
-        return await resolver.documentDataInputObject({
+        return await resolver.input({
           data: v,
           template: field,
           datasource,
