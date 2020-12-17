@@ -8,13 +8,7 @@ import {
 import { gql } from "../../gql";
 import { resolver } from "../../resolver";
 import { sequential } from "../../util";
-import {
-  assertIsArray,
-  assertIsBlockInitialValue,
-  assertIsBlockValue,
-  assertIsBlockValueArray,
-  assertIsObject,
-} from "../";
+import { assertIsArray, assertIsBlockValueArray } from "../";
 
 import type { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
 import type { BuildArgs, ResolveArgs } from "../";
@@ -105,7 +99,7 @@ export const blocks: Blocks = {
         __typename: friendlyName(field, "BlocksField"),
       };
     },
-    initialValue: async ({ datasource, field, value }) => {
+    initialValue: async ({ datasource, value }) => {
       assertIsBlockValueArray(value);
 
       return await sequential(value, async (item) => {
@@ -122,7 +116,7 @@ export const blocks: Blocks = {
         };
       });
     },
-    value: async ({ datasource, field, value }) => {
+    value: async ({ datasource, value }) => {
       assertIsBlockValueArray(value);
 
       return await sequential(value, async (item) => {
@@ -136,7 +130,7 @@ export const blocks: Blocks = {
         return { template: item.template, ...data };
       });
     },
-    input: async ({ datasource, field, value }) => {
+    input: async ({ datasource, value }) => {
       assertIsArray(value);
 
       return await sequential(value, async (item) => {
