@@ -3,20 +3,7 @@ import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../gql";
 import { sequential } from "../util";
 
-import { text } from "../fields/text";
-import { list } from "../fields/list";
-import { select } from "../fields/select";
-import { blocks } from "../fields/blocks";
-import { textarea } from "../fields/textarea";
-import { fieldGroup } from "../fields/field-group";
-import { fieldGroupList } from "../fields/field-group-list";
-import { boolean } from "../fields/boolean";
-import { datetime } from "../fields/datetime";
-import { file } from "../fields/file";
-import { imageGallery } from "../fields/image-gallery";
-import { number } from "../fields/number";
-import { tag_list } from "../fields/tag-list";
-import { builder } from "../fields/documents";
+import { builder } from "../fields/templates";
 
 import type {
   DocumentNode,
@@ -89,8 +76,15 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   );
 
   await sequential(templates, async (template) => {
-    await buildTemplateOrField(cache, template, accumulator, true);
-    await buildTemplateOrField(cache, template, accumulator, false);
+    const args = { cache, template, accumulator };
+    await buildTemplate({
+      ...args,
+      includeBody: true,
+    });
+    await buildTemplate({
+      ...args,
+      includeBody: false,
+    });
   });
 
   const schema: DocumentNode = {
@@ -105,24 +99,16 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
  * Initial build is for documents, meaning an implicit _body
  * field may be included
  */
-export const buildTemplateOrField = async (
-  cache: Cache,
-  template: TemplateData,
-  accumulator: Definitions[],
-  includeBody: boolean
-) => {
-  await builder.data(cache, template, accumulator, includeBody);
-  await builder.values(cache, template, accumulator, includeBody);
-  await builder.form(cache, template, accumulator, includeBody);
-  await builder.input(cache, template, accumulator, includeBody);
-};
-
-export const builders = {
-  ...builder,
-  buildTemplateOrFieldFormFields: builder.fields,
-  buildTemplateOrFieldData: builder.data,
-  buildTemplateOrFieldValues: builder.values,
-  buildTemplateOrFieldInput: builder.input,
+export const buildTemplate = async (args: {
+  cache: Cache;
+  template: TemplateData;
+  accumulator: Definitions[];
+  includeBody: boolean;
+}) => {
+  await builder.data(args);
+  await builder.values(args);
+  await builder.form(args);
+  await builder.input(args);
 };
 
 /**
