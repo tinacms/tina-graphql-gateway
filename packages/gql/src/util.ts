@@ -41,10 +41,10 @@ export function assertShape<T extends object>(
   value: unknown,
   yupSchema: (args: typeof yup) => yup.Schema<unknown, unknown>
 ): asserts value is T {
+  const shape = yupSchema(yup);
   try {
-    yupSchema(yup).validateSync(value);
+    shape.validateSync(value);
   } catch (e) {
-    console.log(value);
     throw new Error(`Failed to assertShape - ${e.message}`);
   }
 }

@@ -163,6 +163,7 @@ const schemaResolver = async (
    * document until we know you need it, so when we come across the author reference in the post's
    * frontmatter, we return instructions for how to retrieve that document
    */
+  // FIXME: this check runs event when we have a scalar value, it's probably easier to flip this if/else
   if (isReferenceField(value)) {
     switch (value._resolver_kind) {
       case "_nested_source":
@@ -506,7 +507,7 @@ const resolveDocuments = async (
     yup.object({ _section: yup.string().required() })
   );
   assertShape<{ section: string }>(args, (yup) =>
-    yup.object({ section: yup.string().required() })
+    yup.object({ section: yup.string() })
   );
 
   let sections = await context.datasource.getSectionsSettings();
@@ -613,11 +614,14 @@ const findField = (fields: Field[], fieldName: string) => {
 function isReferenceField(
   item: unknown | FieldResolverSource
 ): item is ReferenceSource {
-  assertShape<{ _resolver: string }>(item, (yup) =>
-    yup.object({ _resolver: yup.string().required() })
-  );
-
-  return true;
+  try {
+    assertShape<{ _resolver: string }>(item, (yup) =>
+      yup.object({ _resolver: yup.string().required() })
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 export type ContextT = {
