@@ -1,22 +1,21 @@
 import _ from "lodash";
 import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
-import { gql } from "../gql";
-import { sequential } from "../util";
+import { gql } from "../../gql";
+import { sequential } from "../../util";
 
-import { text } from "../fields/text";
-import { list } from "../fields/list";
-import { select } from "../fields/select";
-import { blocks } from "../fields/blocks";
-import { textarea } from "../fields/textarea";
-import { fieldGroup } from "../fields/field-group";
-import { fieldGroupList } from "../fields/field-group-list";
-import { boolean } from "../fields/boolean";
-import { datetime } from "../fields/datetime";
-import { file } from "../fields/file";
-import { imageGallery } from "../fields/image-gallery";
-import { number } from "../fields/number";
-import { tag_list } from "../fields/tag-list";
-import { builder } from "../fields/documents";
+import { text } from "../text";
+import { list } from "../list";
+import { select } from "../select";
+import { blocks } from "../blocks";
+import { textarea } from "../textarea";
+import { fieldGroup } from "../field-group";
+import { fieldGroupList } from "../field-group-list";
+import { boolean } from "../boolean";
+import { datetime } from "../datetime";
+import { file } from "../file";
+import { imageGallery } from "../image-gallery";
+import { number } from "../number";
+import { tag_list } from "../tag-list";
 
 import type {
   DocumentNode,
@@ -29,9 +28,9 @@ import type {
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from "graphql";
-import type { TemplateData, DirectorySection, Section } from "../types";
-import type { Cache } from "../cache";
-import type { Field } from "../fields";
+import type { TemplateData, DirectorySection, Section } from "../../types";
+import type { Cache } from "../../cache";
+import type { Field } from "../../fields";
 
 /**
  *
@@ -263,7 +262,7 @@ export const buildTemplateOrFieldForm = async (
 ) => {
   const name = templateTypeName(template, "Form", includeBody);
 
-  const fieldsUnionName = await builder.form(
+  const fieldsUnionName = await buildTemplateOrFieldFormFields(
     cache,
     template,
     accumulator,
@@ -432,11 +431,11 @@ const buildTemplateInputDataField = async (
   }
 };
 
-export const builders = {
-  buildTemplateOrFieldFormFields,
-  buildTemplateOrFieldData,
-  buildTemplateOrFieldValues,
-  buildTemplateOrFieldInput,
+export const builder = {
+  form: buildTemplateOrFieldFormFields,
+  data: buildTemplateOrFieldData,
+  values: buildTemplateOrFieldValues,
+  input: buildTemplateOrFieldInput,
 };
 
 /**
