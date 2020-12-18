@@ -38,7 +38,7 @@ export const select = {
 
           return gql.field({
             name: field.name,
-            type: friendlyName(name, "Document"),
+            type: friendlyName(name, { suffix: "Document" }),
           });
         case "simple":
           return gql.string(field.name);

@@ -58,7 +58,9 @@ const transformInputObject = (
   payloadType: GraphQLInputObjectType
 ) => {
   const fields = payloadType.getFields();
-  const templateNameString = friendlyName(values["_template"], "", true);
+  const templateNameString = friendlyName(values["_template"], {
+    lowerCase: true,
+  });
   const templateField = fields[templateNameString];
 
   // Field Groups don't have a _template field

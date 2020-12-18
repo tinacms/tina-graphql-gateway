@@ -14,7 +14,7 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const typename = friendlyName(field, "GroupField");
+      const typename = friendlyName(field, { suffix: "GroupField" });
       const fieldsUnionName = await template.build.fields({
         cache,
         template: field,
@@ -92,7 +92,7 @@ export const fieldGroup = {
         ...rest,
         ...t,
         component: "group",
-        __typename: friendlyName(field, "GroupField"),
+        __typename: friendlyName(field, { suffix: "GroupField" }),
       };
     },
     initialValue: async ({

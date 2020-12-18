@@ -89,7 +89,7 @@ export const list = {
           );
           return gql.fieldList({
             name: field.name,
-            type: friendlyName(section.slug, "Document"),
+            type: friendlyName(section.slug, { suffix: "Document" }),
           });
         case "simple":
           list = field as SimpleList;
