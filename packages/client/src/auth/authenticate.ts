@@ -25,8 +25,7 @@ export const authenticate = (
   clientId: string,
   oauthHost: string,
   redirectURI: string,
-  setToken: (_token: string) => void
-): Promise<void> => {
+): Promise<string> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
   const signInUrl = new URL(`${oauthHost}/login`);
@@ -59,11 +58,10 @@ export const authenticate = (
           .then((response) => response.json())
           .then((json) => {
             const token = json.access_token;
-            setToken(token)
             if (authTab) {
               authTab.close();
             }
-            resolve();
+            resolve(token);
           });
       }
     });
