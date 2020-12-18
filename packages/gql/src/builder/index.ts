@@ -96,7 +96,7 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   return { schema, sectionMap };
 };
 
-export const buildTemplate = async (args: {
+const buildTemplate = async (args: {
   cache: Cache;
   template: TemplateData;
   accumulator: Definitions[];
