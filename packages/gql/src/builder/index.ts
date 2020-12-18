@@ -50,7 +50,6 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   const mutationsArray: mutationsArray = [];
 
   const sections = await cache.datasource.getSectionsSettings();
-  const templates = await cache.datasource.getAllTemplates();
 
   sections.forEach((section) => {
     buildSectionMap(section, mutationsArray, sectionMap);
@@ -70,8 +69,12 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     async (section) => {
       buildSectionDefinitions(section, accumulator);
       await sequential(section.templates, async (templateSlug) => {
-        const t = await cache.datasource.getTemplate(templateSlug);
-        const args = { cache, template: t, accumulator, includeBody: true };
+        const args = {
+          cache,
+          template: await cache.datasource.getTemplate(templateSlug),
+          accumulator,
+          includeBody: true,
+        };
 
         await template.build.data(args);
         await template.build.values(args);

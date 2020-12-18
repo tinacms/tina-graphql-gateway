@@ -10,7 +10,7 @@ import bodyParser from "body-parser";
 import { schemaBuilder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
-import { buildASTSchema } from "graphql";
+import { print, buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
 export const startFixtureServer = async ({
@@ -58,6 +58,10 @@ export const startFixtureServer = async ({
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const { schema, sectionMap } = await schemaBuilder({ cache });
+    await fs.writeFileSync(
+      path.join(projectRoot, "ast-schema.graphql"),
+      print(schema)
+    );
 
     const result = await graphqlInit({
       schema: buildASTSchema(schema),
