@@ -2,7 +2,7 @@ import * as yup from "yup";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import { builders } from "../../builder";
+import { builder } from "../templates";
 import { resolver } from "../../resolver";
 import { sequential } from "../../util";
 
@@ -41,12 +41,12 @@ export const fieldGroupList = {
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
       const typename = friendlyName(field, "GroupListField");
-      const fieldsUnionName = await builders.buildTemplateOrFieldFormFields(
+      const fieldsUnionName = await builder.fields({
         cache,
-        field,
+        template: field,
         accumulator,
-        false
-      );
+        includeBody: false,
+      });
       accumulator.push(
         gql.formField(typename, [
           gql.fieldList({ name: "fields", type: fieldsUnionName }),
@@ -62,13 +62,13 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const initialValueName = await builders.buildTemplateOrFieldValues(
+      const initialValueName = await builder.values({
         cache,
-        field,
+        template: field,
         accumulator,
-        false,
-        false
-      );
+        includeBody: false,
+        includeTemplate: false,
+      });
 
       return gql.fieldList({ name: field.name, type: initialValueName });
     },
@@ -77,12 +77,12 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const name = await builders.buildTemplateOrFieldData(
+      const name = await builder.data({
         cache,
-        field,
+        template: field,
         accumulator,
-        false
-      );
+        includeBody: false,
+      });
       return gql.fieldList({
         name: field.name,
         type: name,
@@ -93,12 +93,12 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const name = await builders.buildTemplateOrFieldInput(
+      const name = await builder.input({
         cache,
-        field,
+        template: field,
         accumulator,
-        false
-      );
+        includeBody: false,
+      });
       return gql.inputValueList(field.name, name);
     },
   },
