@@ -6,7 +6,7 @@ import {
 } from "@forestryio/graphql-helpers";
 
 import { gql } from "../../gql";
-import { resolver } from "../../resolver";
+import { template } from "../templates";
 import { sequential, assertShape } from "../../util";
 import { assertIsArray, assertIsBlockValueArray } from "../";
 
@@ -85,10 +85,12 @@ export const blocks: Blocks = {
     field: async ({ datasource, field }): Promise<TinaBlocksField> => {
       const templates: { [key: string]: TinaTemplateData } = {};
       await sequential(field.template_types, async (templateSlug) => {
-        const template = await datasource.getTemplate(templateSlug);
-        templates[friendlyName(templateSlug, "", true)] = await resolver.form({
+        const t = await datasource.getTemplate(templateSlug);
+        templates[
+          friendlyName(templateSlug, "", true)
+        ] = await template.resolve.form({
           datasource,
-          template,
+          template: t,
         });
       });
 
@@ -104,7 +106,7 @@ export const blocks: Blocks = {
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const itemValue = await resolver.values({
+        const itemValue = await template.resolve.values({
           datasource,
           template: templateData,
           data: item,
@@ -121,7 +123,7 @@ export const blocks: Blocks = {
 
       return await sequential(value, async (item) => {
         const templateData = await datasource.getTemplate(item.template);
-        const data = await resolver.data({
+        const data = await template.resolve.data({
           datasource,
           template: templateData,
           data: item,
@@ -139,7 +141,7 @@ export const blocks: Blocks = {
         const key = Object.keys(item)[0];
         const data = Object.values(item)[0];
 
-        const resolvedData = await resolver.input({
+        const resolvedData = await template.resolve.input({
           data,
           template: await datasource.getTemplate(slugify(key)),
           datasource,
