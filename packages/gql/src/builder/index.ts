@@ -11,14 +11,11 @@ import type {
   ObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
   InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from "graphql";
 import type { TemplateData, DirectorySection, Section } from "../types";
 import type { Cache } from "../cache";
-import type { Field } from "../fields";
 
 /**
  *
@@ -81,6 +78,10 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
       ...args,
       includeBody: true,
     });
+    /**
+     * Builds types for blocks too, this saves us from having to do extra work in the blocks
+     * builder, but it means we're building block-level types when we may not have to
+     */
     await buildTemplate({
       ...args,
       includeBody: false,
@@ -95,10 +96,6 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   return { schema, sectionMap };
 };
 
-/**
- * Initial build is for documents, meaning an implicit _body
- * field may be included
- */
 export const buildTemplate = async (args: {
   cache: Cache;
   template: TemplateData;

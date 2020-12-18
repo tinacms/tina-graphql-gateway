@@ -37,6 +37,26 @@ export const sequential = async <A, B>(
   return accum;
 };
 
+/**
+ * Asserts the generic type provided matches the runtime value of the `value`. These assertions
+ * are built using the [Yup library](https://github.com/jquense/yup).
+ *
+ * ```ts
+ * // Usage - Given an item, which is of type `unknown`:
+ * const item = args.fromSomeEntryPoint // type "unknown"
+ *
+ * assertShape<{relativePath: string, section: string}>(item, (yup) => yup.object({
+ *   relativePath: yup.string().required()
+ *   section: yup.string().required()
+ * }))
+ *
+ * // yields no Typescript errors
+ * item.relativePath // type "string"
+ * ```
+ *
+ * NOTE: assertions are only as strong as the Yup schema you give it, if you omitted the `required()`
+ * portion, null values would be able to pass through as if they're valid
+ */
 export function assertShape<T extends object>(
   value: unknown,
   yupSchema: (args: typeof yup) => yup.Schema<unknown, unknown>

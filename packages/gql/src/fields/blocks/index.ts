@@ -7,7 +7,7 @@ import {
 
 import { gql } from "../../gql";
 import { resolver } from "../../resolver";
-import { sequential } from "../../util";
+import { sequential, assertShape } from "../../util";
 import { assertIsArray, assertIsBlockValueArray } from "../";
 
 import type { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
@@ -16,7 +16,7 @@ import type { TinaTemplateData } from "../../types";
 
 export const blocks: Blocks = {
   build: {
-    field: async ({ field, accumulator }) => {
+    field: async ({ cache, field, accumulator }) => {
       const typename = friendlyName(field, "BlocksField");
       const templateName = friendlyName(field, "BlocksFieldTemplates");
 
@@ -134,6 +134,8 @@ export const blocks: Blocks = {
       assertIsArray(value);
 
       return await sequential(value, async (item) => {
+        assertShape<object>(item, (yup) => yup.object({}));
+
         const key = Object.keys(item)[0];
         const data = Object.values(item)[0];
 
