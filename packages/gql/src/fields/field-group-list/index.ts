@@ -2,8 +2,7 @@ import * as yup from "yup";
 import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
-import { builder } from "../templates";
-import { resolver } from "../../resolver";
+import { template } from "../templates";
 import { sequential } from "../../util";
 
 import { BuildArgs, ResolveArgs } from "../";
@@ -41,7 +40,7 @@ export const fieldGroupList = {
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
       const typename = friendlyName(field, "GroupListField");
-      const fieldsUnionName = await builder.fields({
+      const fieldsUnionName = await template.build.fields({
         cache,
         template: field,
         accumulator,
@@ -62,7 +61,7 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const initialValueName = await builder.values({
+      const initialValueName = await template.build.values({
         cache,
         template: field,
         accumulator,
@@ -77,7 +76,7 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const name = await builder.data({
+      const name = await template.build.data({
         cache,
         template: field,
         accumulator,
@@ -93,7 +92,7 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const name = await builder.input({
+      const name = await template.build.input({
         cache,
         template: field,
         accumulator,
@@ -110,7 +109,7 @@ export const fieldGroupList = {
       TinaFieldGroupListField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.form({
+      const t = await template.resolve.form({
         datasource,
         template: field,
         includeBody: false,
@@ -118,7 +117,7 @@ export const fieldGroupList = {
 
       return {
         ...rest,
-        ...template,
+        ...t,
         component: "group-list",
         __typename: friendlyName(field, "GroupListField"),
       };
@@ -132,7 +131,11 @@ export const fieldGroupList = {
       return sequential(
         value,
         async (v: any) =>
-          await resolver.values({ datasource, template: field, data: v })
+          await template.resolve.values({
+            datasource,
+            template: field,
+            data: v,
+          })
       );
     },
     value: async ({
@@ -144,7 +147,7 @@ export const fieldGroupList = {
       return sequential(
         value,
         async (v: any) =>
-          await resolver.data({
+          await template.resolve.data({
             datasource,
             template: field,
             data: v,
@@ -159,7 +162,7 @@ export const fieldGroupList = {
       assertIsDataArray(value);
 
       return sequential(value, async (v) => {
-        return await resolver.input({
+        return await template.resolve.input({
           data: v,
           template: field,
           datasource,

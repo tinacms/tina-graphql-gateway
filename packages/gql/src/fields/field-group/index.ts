@@ -2,8 +2,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
 import { gql } from "../../gql";
 
-import { builder } from "../templates";
-import { resolver } from "../../resolver";
+import { template } from "../templates";
 
 import type { Field, TinaField } from "../index";
 import { BuildArgs, ResolveArgs } from "../";
@@ -16,7 +15,7 @@ export const fieldGroup = {
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
       const typename = friendlyName(field, "GroupField");
-      const fieldsUnionName = await builder.form({
+      const fieldsUnionName = await template.build.form({
         cache,
         template: field,
         accumulator,
@@ -39,7 +38,7 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const initialValueName = await builder.values({
+      const initialValueName = await template.build.values({
         cache,
         template: field,
         accumulator,
@@ -54,7 +53,7 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const name = await builder.data({
+      const name = await template.build.data({
         cache,
         template: field,
         accumulator,
@@ -67,7 +66,7 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const name = await builder.input({
+      const name = await template.build.input({
         cache,
         template: field,
         accumulator,
@@ -84,7 +83,7 @@ export const fieldGroup = {
       TinaFieldGroupField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.form({
+      const t = await template.resolve.form({
         datasource,
         template: field,
         includeBody: false,
@@ -92,7 +91,7 @@ export const fieldGroup = {
 
       return {
         ...rest,
-        ...template,
+        ...t,
         component: "group",
         __typename: friendlyName(field, "GroupField"),
       };
@@ -104,7 +103,7 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.values({
+      return await template.resolve.values({
         datasource,
         template: field,
         data: value,
@@ -117,7 +116,7 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.data({
+      return await template.resolve.data({
         datasource,
         template: field,
         data: value,
@@ -130,7 +129,7 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.input({
+      return await template.resolve.input({
         data: value,
         template: field,
         datasource,

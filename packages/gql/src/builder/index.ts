@@ -3,7 +3,7 @@ import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../gql";
 import { sequential } from "../util";
 
-import { builder } from "../fields/templates";
+import { template } from "../fields/templates";
 
 import type {
   DocumentNode,
@@ -102,10 +102,10 @@ const buildTemplate = async (args: {
   accumulator: Definitions[];
   includeBody: boolean;
 }) => {
-  await builder.data(args);
-  await builder.values(args);
-  await builder.form(args);
-  await builder.input(args);
+  await template.build.data(args);
+  await template.build.values(args);
+  await template.build.form(args);
+  await template.build.input(args);
 };
 
 /**
