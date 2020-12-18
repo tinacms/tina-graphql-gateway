@@ -5,14 +5,22 @@ import kebabcase from "lodash.kebabcase";
 type FriendlyType = { __namespace?: string; name: string } | string | string[];
 
 export const friendlyName = (
-  field: FriendlyType = "",
-  suffix = "",
-  lowerCase = false
+  field: FriendlyType,
+  options?: {
+    lowerCase?: boolean;
+    suffix?: string;
+  }
 ) => {
+  const lowerCase = (options && options.lowerCase) || false;
+  const suffix = (options && options.suffix) || "";
+
   let transform = (word: string) => upperFirst(camelCase(word));
   if (lowerCase) {
     transform = (word: string) => camelCase(word);
   }
+  // if (field === "authors") {
+  //   console.log("yes", field, options);
+  // }
 
   if (Array.isArray(field)) {
     return `${field.map((f) => transform(f)).join("_")}${
@@ -43,7 +51,7 @@ export const templateTypeName = (
   includeBody: boolean
 ) => {
   const suffixName = (includeBody ? "Doc_" : "") + suffix;
-  return friendlyName(template, suffixName);
+  return friendlyName(template, { suffix: suffixName });
 };
 
 export const slugify = (string: string) => {

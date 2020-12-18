@@ -225,7 +225,7 @@ const resolveDocument = async ({
   );
 
   return {
-    __typename: friendlyName(sectionData.slug, "Document"),
+    __typename: friendlyName(sectionData.slug, { suffix: "Document" }),
     id: path.join(sectionData.path, realArgs.relativePath),
     sys: {
       path: path.join(sectionData.path, realArgs.relativePath),

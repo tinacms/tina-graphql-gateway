@@ -1,8 +1,6 @@
 import _ from "lodash";
-import { graphql } from "graphql";
-import path from "path";
-import { assertShape, sequential } from "../../util";
-import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
+import { sequential } from "../../util";
+import { templateTypeName } from "@forestryio/graphql-helpers";
 
 import { text } from "../text";
 import { list } from "../list";

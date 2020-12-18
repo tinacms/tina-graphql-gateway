@@ -164,7 +164,7 @@ const buildSectionMap = (
   mutationsArray: mutationsArray,
   sectionMap: sectionMap
 ) => {
-  const returnType = friendlyName(section.slug, "Document");
+  const returnType = friendlyName(section.slug, { suffix: "Document" });
   mutationsArray.push({
     section,
     mutationName: `update${friendlyName(section.slug)}Document`,
@@ -216,7 +216,7 @@ const mutationDefinition = (mutationsArray: mutationsArray) => {
             gql.inputString("relativePath"),
             gql.inputValue(
               "params",
-              friendlyName(mutation.section.slug, "Input")
+              friendlyName(mutation.section.slug, { suffix: "Input" })
             ),
           ],
         });
@@ -269,7 +269,7 @@ const buildSectionDefinitions = (
   const name = friendlyName(section.slug);
   accumulator.push(
     gql.union({
-      name: friendlyName(name, "Data"),
+      name: friendlyName(name, { suffix: "Data" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Data", true)
       ),
@@ -277,10 +277,10 @@ const buildSectionDefinitions = (
   );
   accumulator.push(
     gql.input({
-      name: friendlyName(name, "Input"),
+      name: friendlyName(name, { suffix: "Input" }),
       fields: section.templates.map((template) =>
         gql.inputValue(
-          friendlyName(template, "", true),
+          friendlyName(template, { lowerCase: true }),
           templateTypeName(template, "Input", true)
         )
       ),
@@ -288,7 +288,7 @@ const buildSectionDefinitions = (
   );
   accumulator.push(
     gql.union({
-      name: friendlyName(name, "Values"),
+      name: friendlyName(name, { suffix: "Values" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Values", true)
       ),
@@ -296,7 +296,7 @@ const buildSectionDefinitions = (
   );
   accumulator.push(
     gql.union({
-      name: friendlyName(name, "Form"),
+      name: friendlyName(name, { suffix: "Form" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Form", true)
       ),
@@ -304,7 +304,7 @@ const buildSectionDefinitions = (
   );
   accumulator.push(
     gql.object({
-      name: friendlyName(name, "Document"),
+      name: friendlyName(name, { suffix: "Document" }),
       interfaces: [
         {
           kind: "NamedType",
@@ -326,15 +326,15 @@ const buildSectionDefinitions = (
         gql.field({ name: "sys", type: "SystemInfo" }),
         gql.field({
           name: "data",
-          type: friendlyName(name, "Data"),
+          type: friendlyName(name, { suffix: "Data" }),
         }),
         gql.field({
           name: "values",
-          type: friendlyName(name, "Values"),
+          type: friendlyName(name, { suffix: "Values" }),
         }),
         gql.field({
           name: "form",
-          type: friendlyName(name, "Form"),
+          type: friendlyName(name, { suffix: "Form" }),
         }),
       ],
     })

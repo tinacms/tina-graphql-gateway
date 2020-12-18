@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { templateTypeName, friendlyName } from "@forestryio/graphql-helpers";
+import { templateTypeName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 import { sequential } from "../../util";
 
