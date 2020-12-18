@@ -69,24 +69,17 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     sections.filter((section) => section.type === "directory"),
     async (section) => {
       buildSectionDefinitions(section, accumulator);
+      await sequential(section.templates, async (templateSlug) => {
+        const t = await cache.datasource.getTemplate(templateSlug);
+        const args = { cache, template: t, accumulator, includeBody: true };
+
+        await template.build.data(args);
+        await template.build.values(args);
+        await template.build.form(args);
+        await template.build.input(args);
+      });
     }
   );
-
-  await sequential(templates, async (template) => {
-    const args = { cache, template, accumulator };
-    await buildTemplate({
-      ...args,
-      includeBody: true,
-    });
-    /**
-     * Builds types for blocks too, this saves us from having to do extra work in the blocks
-     * builder, but it means we're building block-level types when we may not have to
-     */
-    await buildTemplate({
-      ...args,
-      includeBody: false,
-    });
-  });
 
   const schema: DocumentNode = {
     kind: "Document",
@@ -94,18 +87,6 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   };
 
   return { schema, sectionMap };
-};
-
-const buildTemplate = async (args: {
-  cache: Cache;
-  template: TemplateData;
-  accumulator: Definitions[];
-  includeBody: boolean;
-}) => {
-  await template.build.data(args);
-  await template.build.values(args);
-  await template.build.form(args);
-  await template.build.input(args);
 };
 
 /**
