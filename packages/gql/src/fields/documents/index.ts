@@ -432,7 +432,8 @@ const buildTemplateInputDataField = async (
 };
 
 export const builder = {
-  form: buildTemplateOrFieldFormFields,
+  form: buildTemplateOrFieldForm,
+  fields: buildTemplateOrFieldFormFields,
   data: buildTemplateOrFieldData,
   values: buildTemplateOrFieldValues,
   input: buildTemplateOrFieldInput,
