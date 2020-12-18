@@ -15,12 +15,11 @@ export const fieldGroup = {
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
       const typename = friendlyName(field, "GroupField");
-      const fieldsUnionName = await template.build.form({
+      const fieldsUnionName = await template.build.fields({
         cache,
         template: field,
         accumulator,
         includeBody: false,
-        nameOverride: typename,
       });
       accumulator.push(
         gql.formField(typename, [

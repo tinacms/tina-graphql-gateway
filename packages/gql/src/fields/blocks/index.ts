@@ -23,12 +23,22 @@ export const blocks: Blocks = {
       accumulator.push(
         gql.object({
           name: templateName,
-          fields: field.template_types.map((t) => {
-            return gql.field({
-              name: friendlyName(t, "", true),
-              type: friendlyName(t, "Form"),
-            });
-          }),
+          fields: await sequential(
+            field.template_types,
+            async (templateSlug) => {
+              const t = await cache.datasource.getTemplate(templateSlug);
+              await template.build.form({
+                cache,
+                template: t,
+                accumulator,
+                includeBody: false,
+              });
+              return gql.field({
+                name: friendlyName(t, "", true),
+                type: friendlyName(t, "Form"),
+              });
+            }
+          ),
         })
       );
 
@@ -43,8 +53,18 @@ export const blocks: Blocks = {
         type: typename,
       });
     },
-    initialValue: async ({ field, accumulator }) => {
+    initialValue: async ({ cache, field, accumulator }) => {
       const name = `${friendlyName(field)}Values`;
+
+      await sequential(field.template_types, async (templateSlug) => {
+        const t = await cache.datasource.getTemplate(templateSlug);
+        await template.build.values({
+          cache,
+          template: t,
+          accumulator,
+          includeBody: false,
+        });
+      });
 
       accumulator.push(
         gql.union({
@@ -55,8 +75,17 @@ export const blocks: Blocks = {
 
       return gql.fieldList({ name: field.name, type: name });
     },
-    value: async ({ field, accumulator }) => {
+    value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = friendlyName(field, "Data");
+      await sequential(field.template_types, async (templateSlug) => {
+        const t = await cache.datasource.getTemplate(templateSlug);
+        await template.build.data({
+          cache,
+          template: t,
+          accumulator,
+          includeBody: false,
+        });
+      });
       accumulator.push(
         gql.union({
           name: fieldUnionName,
@@ -66,13 +95,23 @@ export const blocks: Blocks = {
       return gql.fieldList({ name: field.name, type: fieldUnionName });
     },
     input: async ({ cache, field, accumulator }) => {
+      await sequential(field.template_types, async (templateSlug) => {
+        const t = await cache.datasource.getTemplate(templateSlug);
+        await template.build.input({
+          cache,
+          template: t,
+          accumulator,
+          includeBody: false,
+        });
+      });
+
       accumulator.push(
         gql.input({
           name: friendlyName(field.name, "Input"),
           fields: field.template_types.map((template) =>
             gql.inputValue(
               friendlyName(template, "", true),
-              templateTypeName(template, "Input", true)
+              templateTypeName(template, "Input", false)
             )
           ),
         })
