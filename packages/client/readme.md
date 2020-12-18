@@ -198,11 +198,11 @@ function MyApp({ Component, pageProps }) {
   const forestryClient = useCMS().api.forestry
 
   return (<TinacmsForestryProvider
-    onLogin={() => {
+    onLogin={(token: string) => {
       const headers = new Headers()
 
       //TODO - the token should could as a param from onLogin
-      headers.append('Authorization', 'Bearer ' + forestryClient.getToken())
+      headers.append('Authorization', 'Bearer ' + token)
       fetch('/api/preview', {
         method: 'POST',
         headers: headers,

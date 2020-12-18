@@ -242,7 +242,9 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    return authenticate(this.clientId, this.oauthHost,this.redirectURI,this.setToken);
+    const token = await authenticate(this.clientId, this.oauthHost,this.redirectURI);
+    this.setToken(token)
+    return token
   }
 
   async getUser() {
