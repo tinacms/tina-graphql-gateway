@@ -24,7 +24,8 @@ export const AUTH_TOKEN_KEY = "tinacms-auth";
 export const authenticate = (
   clientId: string,
   oauthHost: string,
-  redirectURI: string
+  redirectURI: string,
+  setToken: (_token: string) => void
 ): Promise<void> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
@@ -58,7 +59,7 @@ export const authenticate = (
           .then((response) => response.json())
           .then((json) => {
             const token = json.access_token;
-            localStorage.setItem(AUTH_TOKEN_KEY, token)
+            setToken(token)
             if (authTab) {
               authTab.close();
             }
