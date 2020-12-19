@@ -32,7 +32,11 @@ export const sequential = async <A, B>(
   };
 
   // @ts-ignore FIXME: this can be properly typed
-  accum.push(await items.reduce(reducePromises, Promise.resolve()));
+  const result = await items.reduce(reducePromises, Promise.resolve());
+  if (result) {
+    // @ts-ignore FIXME: this can be properly typed
+    accum.push(result);
+  }
 
   return accum;
 };

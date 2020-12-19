@@ -1,12 +1,12 @@
 ---
-name: Emily Lipari@
+name: sdsEmily Lipari@
 image: /uploads/bio-1.jpg
 gallery:
   - /uploads/3.jpg
   - /uploads/2.jpg
   - /uploads/1.jpg
-accolades: []
 ---
+
 ###### favorite thing about san diego?
 
 I love the consistency in the weather because it provides a great training environment all year. It’s also wonderful to be so close to a beach because that’s my favorite place to unwind and relax.
@@ -36,9 +36,9 @@ Life as a professional runner can be a little lonely, but one of the things that
 There are two moments this far that I am most proud of. My first is winning the US 1 mile road champs in 2018 because I made some big life changes during that year, but still found success. My second moment is running 4:05 in the summer of 2018 because I failed to make the US final that year, but came back to run a big PR after being really disappointed in myself.
 
 ###### Two truths and a lie
-
+d
 I hate cats
-
+lpldd
 I failed my driver's test...twice
 
-I'm 5 feet tall
+I'm 5 feet talldddd

@@ -78,6 +78,7 @@ const transformInputObject = (
       if (isScalarType(fieldType)) {
         fieldTypes[field.name] = valueForField;
       } else {
+        console.log(field.name, valueForField);
         if (field.type instanceof GraphQLList) {
           fieldTypes[field.name] = (valueForField || []).map((val) => {
             if (fieldType instanceof GraphQLInputObjectType) {
