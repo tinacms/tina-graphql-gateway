@@ -144,7 +144,7 @@ export const fieldGroupList = {
       value,
     }: ResolveArgs<FieldGroupListField>) => {
       assertIsDataArray(value);
-      return sequential(
+      return await sequential(
         value,
         async (v: any) =>
           await template.resolve.data({
@@ -164,15 +164,20 @@ export const fieldGroupList = {
       try {
         assertIsDataArray(value);
 
-        return {
-          [field.name]: sequential(value, async (v) => {
-            return await template.resolve.input({
-              data: v,
-              template: field,
-              datasource,
-            });
-          }),
-        };
+        const values = await sequential(value, async (v) => {
+          return await template.resolve.input({
+            data: v,
+            template: field,
+            datasource,
+          });
+        });
+
+        // Empty arrays are useless
+        if (values && values.length > 0) {
+          return {
+            [field.name]: values,
+          };
+        }
       } catch (e) {
         return false;
       }
