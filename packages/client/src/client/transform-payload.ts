@@ -58,11 +58,19 @@ const transformInputObject = (
   payloadType: GraphQLInputObjectType
 ) => {
   const fields = payloadType.getFields();
-  const templateNameString = friendlyName(values["_template"], {
+  const template = values["_template"];
+  // No template for field-group and field-group-list
+  // so just return the value as-is
+  if (!template) {
+    return values;
+  }
+
+  const templateNameString = friendlyName(template, {
     lowerCase: true,
   });
   const templateField = fields[templateNameString];
 
+  // FIXME: redundant? Looks like it's handled above
   // Field Groups don't have a _template field
   if (!templateField) {
     return values;
@@ -78,7 +86,6 @@ const transformInputObject = (
       if (isScalarType(fieldType)) {
         fieldTypes[field.name] = valueForField;
       } else {
-        console.log(field.name, valueForField);
         if (field.type instanceof GraphQLList) {
           fieldTypes[field.name] = (valueForField || []).map((val) => {
             if (fieldType instanceof GraphQLInputObjectType) {
