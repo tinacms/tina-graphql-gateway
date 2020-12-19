@@ -1,7 +1,7 @@
 import { gql } from "../../gql";
 import { friendlyName } from "@forestryio/graphql-helpers";
 
-import { BuildArgs, ResolveArgs } from "../";
+import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
 const typename = "SelectField";
 
@@ -101,15 +101,18 @@ export const select = {
       }
     },
     input: async ({ field, value }: ResolveArgs<SelectField>) => {
-      switch (field.config.source.type) {
-        case "documents":
-          throw new Error(`document select not implemented`);
-        case "pages":
-          // TODO: validate the document exists
-          return value;
-        // TODO: validate the item is in the options list
-        case "simple":
-          return value;
+      try {
+        assertIsString(value, { source: "select input" });
+        switch (field.config.source.type) {
+          case "documents":
+            throw new Error(`document select not implemented`);
+          case "pages":
+          // TODO: check if reference exists
+          case "simple":
+            return { [field.name]: value };
+        }
+      } catch (e) {
+        return false;
       }
     },
   },

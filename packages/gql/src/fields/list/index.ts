@@ -217,35 +217,42 @@ export const list = {
       value,
     }: ResolveArgs<ListField>): Promise<
       | {
-          _resolver: "_resource";
-          _resolver_kind: "_nested_sources";
-          _args: { paths: string[] };
+          [key: string]: {
+            _resolver: "_resource";
+            _resolver_kind: "_nested_sources";
+            _args: { paths: string[] };
+          };
         }
-      | string[]
+      | { [key: string]: string[] }
+      | false
     > => {
-      assertIsStringArray(value, { source: "list input" });
-      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
-      let list;
-      switch (listTypeIdentifier) {
-        case "documents":
-          list = field as DocumentList;
-          throw new Error(`document list not implemented`);
-        case "pages":
-          // TODO: validate the documents exists
-          return value;
-        case "simple":
-          // TODO: validate the item is in the options list if it's a select
-          list = field as SimpleList;
-          return value;
+      try {
+        assertIsStringArray(value, { source: "list input" });
+        let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+        const isSimple = field.config.use_select ? false : true;
+        if (!isSimple) {
+          listTypeIdentifier =
+            field.config?.source?.type === "documents"
+              ? "documents"
+              : field.config?.source?.type === "pages"
+              ? "pages"
+              : "simple";
+        }
+        let list;
+        switch (listTypeIdentifier) {
+          case "documents":
+            list = field as DocumentList;
+            throw new Error(`document list not implemented`);
+          case "pages":
+            // TODO: validate the documents exists
+            return { [field.name]: value };
+          case "simple":
+            // TODO: validate the item is in the options list if it's a select
+            list = field as SimpleList;
+            return { [field.name]: value };
+        }
+      } catch (e) {
+        return false;
       }
     },
   },

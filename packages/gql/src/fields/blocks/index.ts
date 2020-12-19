@@ -56,7 +56,7 @@ export const blocks: Blocks = {
       });
     },
     initialValue: async ({ cache, field, accumulator }) => {
-      const name = `${friendlyName(field)}Values`;
+      const name = friendlyName(field, { suffix: "Values" });
 
       await sequential(field.template_types, async (templateSlug) => {
         const t = await cache.datasource.getTemplate(templateSlug);
@@ -180,25 +180,31 @@ export const blocks: Blocks = {
         return { template: item.template, ...data };
       });
     },
-    input: async ({ datasource, value }) => {
+    input: async ({ field, datasource, value }) => {
       assertIsArray(value);
 
       return await sequential(value, async (item) => {
-        assertShape<object>(item, (yup) => yup.object({}));
+        try {
+          assertShape<object>(item, (yup) => yup.object({}));
 
-        const key = Object.keys(item)[0];
-        const data = Object.values(item)[0];
+          const key = Object.keys(item)[0];
+          const data = Object.values(item)[0];
 
-        const resolvedData = await template.resolve.input({
-          data,
-          template: await datasource.getTemplate(slugify(key)),
-          datasource,
-        });
+          const resolvedData = await template.resolve.input({
+            data,
+            template: await datasource.getTemplate(slugify(key)),
+            datasource,
+          });
 
-        return {
-          template: slugify(key),
-          ...resolvedData,
-        };
+          return {
+            [field.name]: {
+              template: slugify(key),
+              ...resolvedData,
+            },
+          };
+        } catch (e) {
+          return false;
+        }
       });
     },
   },

@@ -74,6 +74,17 @@ export function assertIsString(
   }
 }
 
+export function assertIsBoolean(
+  value: unknown,
+  options: { source: string }
+): asserts value is boolean {
+  if (typeof value !== "boolean") {
+    throw new Error(
+      `Unexpected value of type ${typeof value} for ${options.source}`
+    );
+  }
+}
+
 export function assertIsNumber(
   value: unknown,
   options: { source: string }

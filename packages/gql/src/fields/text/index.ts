@@ -46,9 +46,16 @@ export const text = {
       assertIsString(value, { source: "text value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
-      assertIsString(value, { source: "text input" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<TextField>): Promise<{ [key: string]: string } | false> => {
+      try {
+        assertIsString(value, { source: "text input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
