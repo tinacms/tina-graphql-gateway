@@ -208,13 +208,13 @@ type ActionPageReference_Values {
   _template: String
 }
 
-union Sidecar_ActionsValues = ActionVideo_Values | ActionNewsletter_Values | ActionPageReference_Values
+union Sidecar_Actions_Values = ActionVideo_Values | ActionNewsletter_Values | ActionPageReference_Values
 
 type Sidecar_Values {
   text: String
   image: String
   cta: Sidecar_Cta_Values
-  actions: [Sidecar_ActionsValues]
+  actions: [Sidecar_Actions_Values]
   style: Reference
   _template: String
 }
@@ -278,12 +278,12 @@ type SectionIndex_Values {
   _template: String
 }
 
-union BlockPage_BlocksValues = Sidecar_Values | ExcerptPost_Values | PostList_Values | PriceList_Values | AuthorList_Values | SponsorList_Values | PageReference_Values | SectionIndex_Values
+union BlockPage_Blocks_Values = Sidecar_Values | ExcerptPost_Values | PostList_Values | PriceList_Values | AuthorList_Values | SponsorList_Values | PageReference_Values | SectionIndex_Values
 
 type BlockPage_Doc_Values {
   title: String
   date: String
-  blocks: [BlockPage_BlocksValues]
+  blocks: [BlockPage_Blocks_Values]
   _body: String
   _template: String
 }

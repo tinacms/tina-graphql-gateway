@@ -18,7 +18,7 @@ import { tag_list } from "../tag-list";
 
 import type { DataSource } from "../../datasources/datasource";
 import type { Field } from "../../fields";
-import type { TemplateData } from "../../types";
+import type { TemplateData, DirectorySection } from "../../types";
 
 export const resolve = {
   data: async ({ datasource, template, data, content }: any) => {
@@ -93,8 +93,45 @@ export const resolve = {
     };
   },
   // FIXME
-  input: async (args: any) => {
-    return args;
+  input: async ({
+    datasource,
+    section,
+    data,
+    includeBody,
+  }: {
+    datasource: DataSource;
+    section: string;
+    data: unknown;
+    includeBody: true;
+  }) => {
+    const templates = await datasource.getTemplatesForSection(section);
+    const key = Object.keys(data)[0];
+    const values = Object.values(data)[0];
+    const template = templates.find((template) => template.name === key);
+    if (!template) {
+      throw new Error(`Unable to find template ${key} for section ${section}`);
+    }
+
+    if (includeBody) {
+      template.fields.push(textarea.contentField);
+    }
+
+    const fieldsToWrite = await sequential(template.fields, async (field) => {
+      return inputField({
+        datasource,
+        field,
+        value: values[field.name],
+      });
+    });
+
+    const accum: { [key: string]: unknown } = {};
+    fieldsToWrite.filter(Boolean).forEach((item) => {
+      const key = Object.keys(item)[0];
+      const value = Object.values(item)[0];
+      accum[key] = value;
+    });
+
+    return accum;
   },
 };
 
@@ -203,7 +240,7 @@ const dataField = async (datasource: DataSource, field: Field) => {
       return tag_list.resolve.field({ datasource, field });
   }
 };
-const documentInputDataField = async ({
+const inputField = async ({
   datasource,
   field,
   value,

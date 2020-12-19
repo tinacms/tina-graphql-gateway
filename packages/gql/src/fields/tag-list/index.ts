@@ -47,9 +47,18 @@ export const tag_list = {
       assertIsStringArray(value, { source: "tag value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<TagListField>): Promise<string[]> => {
-      assertIsStringArray(value, { source: "tag value" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<TagListField>): Promise<
+      { [key: string]: string[] } | false
+    > => {
+      try {
+        assertIsStringArray(value, { source: "tag value" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

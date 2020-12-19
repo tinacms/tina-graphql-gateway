@@ -11,6 +11,7 @@ import type { GraphQLSchema, GraphQLResolveInfo, Source } from "graphql";
 import type { DirectorySection } from "../types";
 import type { Field } from "../fields";
 import type { sectionMap } from "../builder";
+import { string } from "yup";
 
 export const graphqlInit = async (a: {
   schema: GraphQLSchema;
@@ -120,15 +121,40 @@ const schemaResolver = async (
         })
       );
     } else if (sectionItem.mutation) {
-      await resolve.input({
+      const params = await resolve.input({
+        section: sectionItem.section.slug,
+        data: args.params,
+        datasource: context.datasource,
+        includeBody: true,
+      });
+      const payload = {
+        relativePath: args.relativePath,
+        section: sectionItem.section.slug,
+        params,
+      };
+
+      assertShape<{
+        relativePath: string;
+        section: string;
+        params: { _body?: string } & object;
+      }>(payload, (yup) => {
+        return yup.object({
+          relativePath: yup.string().required(),
+          section: yup.string().required(),
+          params: yup.object({
+            _body: yup.string(),
+          }),
+        });
+      });
+
+      await context.datasource.updateDocument(payload);
+      return resolveDocument({
         args: {
-          ...args,
+          relativePath: args.relativePath,
           section: sectionItem.section.slug,
         },
-        params: args.params,
-        datasource: context.datasource,
+        context,
       });
-      return resolveDocument({ args, context });
     } else {
       return resolveDocument({
         args: {

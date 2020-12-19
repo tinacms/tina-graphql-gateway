@@ -158,16 +158,24 @@ export const fieldGroupList = {
       datasource,
       field,
       value,
-    }: ResolveArgs<FieldGroupListField>): Promise<unknown> => {
-      assertIsDataArray(value);
+    }: ResolveArgs<FieldGroupListField>): Promise<
+      { [key: string]: unknown } | false
+    > => {
+      try {
+        assertIsDataArray(value);
 
-      return sequential(value, async (v) => {
-        return await template.resolve.input({
-          data: v,
-          template: field,
-          datasource,
-        });
-      });
+        return {
+          [field.name]: sequential(value, async (v) => {
+            return await template.resolve.input({
+              data: v,
+              template: field,
+              datasource,
+            });
+          }),
+        };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

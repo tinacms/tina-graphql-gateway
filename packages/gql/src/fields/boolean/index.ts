@@ -1,6 +1,6 @@
 import { gql } from "../../gql";
 
-import { assertIsString, BuildArgs, ResolveArgs } from "../";
+import { assertIsBoolean, assertIsString, BuildArgs, ResolveArgs } from "../";
 
 const typename = "BooleanField";
 
@@ -48,9 +48,18 @@ export const boolean = {
       assertIsString(value, { source: "boolean value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      assertIsString(value, { source: "boolean input" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<BooleanField>): Promise<
+      { [key: string]: boolean } | false
+    > => {
+      try {
+        assertIsBoolean(value, { source: "boolean input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

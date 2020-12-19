@@ -90,9 +90,18 @@ export const textarea = {
         html: html,
       };
     },
-    input: async ({ value }: ResolveArgs<TextareaField>): Promise<string> => {
-      assertIsString(value, { source: "textarea initial value" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<TextareaField>): Promise<
+      { [key: string]: string } | false
+    > => {
+      try {
+        assertIsString(value, { source: "textarea initial value" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

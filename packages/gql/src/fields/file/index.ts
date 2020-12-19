@@ -47,9 +47,16 @@ export const file = {
       assertIsString(value, { source: "file value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
-      assertIsString(value, { source: "file input" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<FileField>): Promise<{ [key: string]: string } | false> => {
+      try {
+        assertIsString(value, { source: "file input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
