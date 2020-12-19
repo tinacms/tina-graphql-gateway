@@ -14,7 +14,7 @@ import type {
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from "graphql";
-import type { TemplateData, DirectorySection, Section } from "../types";
+import type { DirectorySection, Section } from "../types";
 import type { Cache } from "../cache";
 
 /**

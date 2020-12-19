@@ -147,7 +147,6 @@ const schemaResolver = async (
         });
       });
 
-      console.log("write it", payload);
       await context.datasource.updateDocument(payload);
       return resolveDocument({
         args: {
