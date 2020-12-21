@@ -17,6 +17,7 @@ export const createFormService = (
     node: DocumentNode;
     client: ForestryClient;
     cms: TinaCMS;
+    onSubmit: (args: any) => Promise<void>;
   },
   onChange
 ) => {
@@ -74,6 +75,7 @@ export const createFormService = (
       queries: null,
       error: null,
       formRef: null,
+      onSubmit: initialContext.onSubmit,
     },
   });
 
@@ -91,6 +93,7 @@ type NodeFormContext = {
   formRef: null | SpawnedActorRef<any, any>;
   queries: { [key: string]: { query: string; mutation: string } } | null;
   error: null | string;
+  onSubmit: (args: any) => Promise<void>;
 };
 
 type NodeFormEvent = {
@@ -243,7 +246,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
-      context.client.updateContent({
+      context.onSubmit({
         mutationString: context.queries[context.queryFieldName].mutation,
         relativePath: context.node.sys.relativePath,
         values: values,

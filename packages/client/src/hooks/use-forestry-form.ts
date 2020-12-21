@@ -9,10 +9,12 @@ export function useForestryForm({
   payload,
   queryString,
   onChange,
+  onSubmit,
 }: {
   payload: object;
   queryString: string;
   onChange?: (payload: object) => void;
+  onSubmit?: (args: { queryString: string; variables: object }) => void;
 }): { data: object } {
   const cms = useCMS();
   const [data, setData] = React.useState({});
@@ -47,29 +49,52 @@ export function useForestryForm({
       .validate(payload)
       .then(() => {
         Object.values(payload).map((maybeNode, index) => {
-          nodeSchema.validate(maybeNode).then(() => {
-            setData(payload);
+          nodeSchema
+            .validate(maybeNode)
+            .then(() => {
+              setData(payload);
 
-            createFormService(
-              {
-                queryFieldName: keys[index],
-                queryString: queryString,
-                node: maybeNode,
-                client: cms.api.forestry,
-                cms: cms,
-              },
-              (data) => {
-                set(payload, data.path, data.value);
-                setData(payload);
-                onChange(payload);
-              }
-            );
-          });
+              createFormService(
+                {
+                  queryFieldName: keys[index],
+                  queryString: queryString,
+                  node: maybeNode,
+                  client: cms.api.forestry,
+                  cms: cms,
+                  onSubmit: async ({
+                    mutationString,
+                    relativePath,
+                    values,
+                  }) => {
+                    if (onSubmit) {
+                      onSubmit({
+                        queryString: mutationString,
+                        variables: await cms.api.forestry.prepareVariables({
+                          mutationString,
+                          relativePath,
+                          values,
+                        }),
+                      });
+                    } else {
+                      cms.api.client.updateContent({
+                        mutationString,
+                        relativePath,
+                        values,
+                      });
+                    }
+                  },
+                },
+                (data) => {
+                  set(payload, data.path, data.value);
+                  setData(payload);
+                  onChange(payload);
+                }
+              );
+            })
+            .catch((e) => {});
         });
       })
-      .catch(function (err) {
-        // console.warn(err.errors);
-      });
+      .catch((e) => {});
   }, [payload]);
 
   return { data };

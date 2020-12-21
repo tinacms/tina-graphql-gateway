@@ -49,6 +49,7 @@ type GraphiQLEvent =
   | { type: "FETCH" }
   | { type: "QUERY_TO_MUTATION" }
   | { type: "MODIFY_RESULT"; value: object }
+  | { type: "MODIFY_QUERY"; value: object }
   | { type: "FORMIFY" }
   | { type: "EDIT_QUERY"; value: string }
   | { type: "EDIT_VARIABLES"; value: object }
@@ -148,6 +149,14 @@ export const graphiqlMachine = Machine<
       states: {
         idle: {
           on: {
+            MODIFY_QUERY: {
+              target: "idle",
+              actions: assign({
+                variables: (context, event) => {
+                  return event.value.variables;
+                },
+              }),
+            },
             CHANGE_RELATIVE_PATH: {
               target: "idle",
               actions: assign({
@@ -277,6 +286,14 @@ export const graphiqlMachine = Machine<
         },
         ready: {
           on: {
+            MODIFY_QUERY: {
+              target: "ready",
+              actions: assign({
+                queryString: (context, event) => {
+                  return event.value.queryString;
+                },
+              }),
+            },
             QUERY_TO_MUTATION: {
               target: "generatingMutation",
             },
@@ -342,7 +359,7 @@ export const Explorer = () => {
   }, [section]);
 
   const _graphiql = React.useRef();
-  // console.log(current.value.editor);
+  // console.log(current.value);
   React.useEffect(() => {
     const button = document.getElementsByClassName("execute-button").item(0);
     if (button) {
@@ -369,6 +386,9 @@ export const Explorer = () => {
       <TinaInfo
         queryString={current.context.queryString}
         result={current.context.result}
+        onSubmit={(args) => {
+          send({ type: "MODIFY_QUERY", value: args });
+        }}
         onDataChange={(value) => {
           service.onTransition(() => {
             if (service.state.matches("fetcher.updatingResult")) {
@@ -424,10 +444,12 @@ export const Explorer = () => {
 const TinaInfo = ({
   queryString,
   result,
+  onSubmit,
   onDataChange,
 }: {
   queryString: string;
   result: object | null;
+  onSubmit: (payload: object) => void;
   onDataChange: (payload: object) => void;
 }) => {
   useForestryForm({
@@ -435,6 +457,13 @@ const TinaInfo = ({
     payload: result || {},
     onChange: (data) => {
       onDataChange(data);
+    },
+    onSubmit: (args: {
+      mutationString: string;
+      relativePath: string;
+      values: object;
+    }) => {
+      onSubmit(args);
     },
   });
 
