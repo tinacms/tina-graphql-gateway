@@ -156,7 +156,7 @@ export class ForestryClient {
     };
   };
 
-  updateContent = async ({
+  prepareVariables = async ({
     mutationString,
     relativePath,
     values,
@@ -172,11 +172,27 @@ export class ForestryClient {
       schema,
     });
 
+    return {
+      relativePath,
+      params,
+    };
+  };
+
+  updateContent = async ({
+    mutationString,
+    relativePath,
+    values,
+  }: {
+    mutationString: string;
+    relativePath: string;
+    values: object;
+  }) => {
     await this.request<UpdateVariables>(mutationString, {
-      variables: {
+      variables: await this.prepareVariables({
+        mutationString,
         relativePath,
-        params,
-      },
+        values,
+      }),
     });
   };
 

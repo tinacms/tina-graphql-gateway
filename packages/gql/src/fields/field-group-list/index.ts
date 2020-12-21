@@ -177,6 +177,8 @@ export const fieldGroupList = {
           return {
             [field.name]: values,
           };
+        } else {
+          return false;
         }
       } catch (e) {
         return false;
