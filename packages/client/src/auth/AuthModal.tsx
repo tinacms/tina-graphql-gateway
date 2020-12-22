@@ -30,7 +30,7 @@ import React from "react";
 import styled from "styled-components";
 // import "./auth.css"; // TODO - can't import css with current rollup config
 export interface ForestryAuthenticationModalProps {
-  onAuthSuccess(): void;
+  onAuthSuccess(token: string): void;
   close(): void;
 }
 
@@ -52,8 +52,8 @@ export function ForestryAuthenticationModal({
         {
           name: "Continue to Forestry",
           action: async () => {
-            await cms.api.forestry.authenticate();
-            onAuthSuccess();
+            const token = await cms.api.forestry.authenticate();
+            onAuthSuccess(token);
           },
           primary: true,
         },
