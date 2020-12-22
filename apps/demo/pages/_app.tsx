@@ -39,13 +39,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 const editMode = !!Cookies.get("tina-editmode")
-const client = createClient(editMode)
+const client = createClient(false)
 
 const media = new ForestryMediaStore(client);
 export default withTina(MyApp, {
   apis: {
     forestry: client,
   },
-  sidebar: editMode,
-  enabled: editMode,
+  sidebar: true, //editMode,
+  enabled:  true, //editMode,
 });

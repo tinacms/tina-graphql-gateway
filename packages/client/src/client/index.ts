@@ -1,9 +1,8 @@
-import { friendlyFMTName, queryBuilder } from "@forestryio/graphql-helpers";
+import { queryBuilder } from "@forestryio/graphql-helpers";
 import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
-import { authenticate, AUTH_COOKIE_NAME } from "../auth/authenticate";
+import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
 import { transformPayload } from "./handle";
 import type { Field } from "tinacms";
-import Cookies from "js-cookie";
 
 interface AddProps {
   url: string;
@@ -23,8 +22,7 @@ interface AddVariables {
   params?: any;
 }
 
-const DEFAULT_TINA_OAUTH_HOST = 'https://hydra.tinajs.dev:4444';
-const DEFAULT_IDENTITY_HOST = "http://identity.tinajs.dev";
+const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX = "auth.ca-central-1.amazoncognito.com"
 
 interface ServerOptions {
   realm: string, 
@@ -33,25 +31,51 @@ interface ServerOptions {
   customAPI?: string;
   identityProxy?: string
   getTokenFn?: () => string,
+  tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM",
 }
 
 export class ForestryClient {
   serverURL: string;
   oauthHost: string;
-  identityHost: string;
   clientId: string;
   query: string;
   redirectURI: string
-  getToken: () => string
-  constructor(options: ServerOptions) {
+  setToken: (_token: string) => void;
+  private getToken: () => string;
+  private token: string // used with memory storage
+
+  constructor({ tokenStorage = "MEMORY", ...options}: ServerOptions) {
+    const _this = this
     this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
-    this.oauthHost = process.env.TINAIO_OAUTH_HOST || DEFAULT_TINA_OAUTH_HOST;
-    this.identityHost = options.identityProxy || DEFAULT_IDENTITY_HOST;
+    this.oauthHost = options.identityProxy || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`;
     this.redirectURI = options.redirectURI
     this.clientId = options.clientId;
 
-    this.getToken = options?.getTokenFn || function() {
-      return Cookies.get(AUTH_COOKIE_NAME)
+    switch(tokenStorage)
+    {
+      case 'LOCAL_STORAGE': 
+        this.getToken = function() {
+          return localStorage.getItem(AUTH_TOKEN_KEY) || null
+        }
+        this.setToken = function(token: string) {
+          localStorage.setItem(AUTH_TOKEN_KEY, token)
+        }
+        break;
+      case 'MEMORY':
+        this.getToken = function() {
+          return _this.token
+        }
+        this.setToken = function(token: string) {
+          _this.token = token
+        }
+        break;
+      case 'CUSTOM':
+        if(!options.getTokenFn)
+        {
+          throw new Error("When CUSTOM token storage is selected, a getTokenFn must be provided")
+        }
+        this.getToken = options.getTokenFn
+         break;
     }
   }
 
@@ -218,11 +242,13 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    return authenticate(this.clientId, this.oauthHost,this.redirectURI);
+    const token = await authenticate(this.clientId, this.oauthHost,this.redirectURI);
+    this.setToken(token)
+    return token
   }
 
   async getUser() {
-    const url = `${this.identityHost}/me`;
+    const url = `${this.oauthHost}/oauth2/userInfo`;
 
     try {
       const res = await fetch(url, {

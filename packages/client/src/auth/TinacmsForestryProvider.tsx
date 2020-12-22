@@ -23,7 +23,7 @@ import { ForestryClient } from "../client";
 
 interface ProviderProps {
   children: any;
-  onLogin: () => void;
+  onLogin: (token: string) => string; // returns token
   onLogout: () => void;
   error?: any;
 }
@@ -47,16 +47,12 @@ export const TinacmsForestryProvider = ({
   };
 
   const beginAuth = async () => {
-    if (await forestry.isAuthenticated()) {
-      onAuthSuccess();
-    } else {
-      setActiveModal("authenticate");
-    }
+    setActiveModal("authenticate");
   };
 
-  const onAuthSuccess = async () => {
+  const onAuthSuccess = async (token: string) => {
     if (await forestry.isAuthorized()) {
-      onLogin();
+      onLogin(token);
       setActiveModal(null);
     } else {
       throw new Error("No access to repo"); // TODO - display modal here
