@@ -105,11 +105,11 @@ use_front_matter_path: false
 file_template: ":filename:"
 ```
 
-These files will store a reference to the GraphQL endpoint we'll end up using, and will also let us know where we can find our content schemas.
+These files will create a map our content to content models. In the above file, we declare any markdown files in our project should be a "post" type (we'll define this post type next).
 
 ### Define Content Schema
 
-Now we define the shape of our content. This allows us to build a GraphQL API that will match the content, automatically generate the Tina forms that can interact with it, and optionally let us create TypeScript types.
+Templates define the shape of different content models.
 
 **.forestry/front_matter/templates/post.yml**
 
@@ -130,7 +130,7 @@ pages:
 
 ### Sourcing your content
 
-Now that we have defined our content model, we can connect our site to the Tina.io content API
+Now that we have defined our content model, we can connect our site to the Tina.io Content API
 
 _Make sure your .tina directory is pushed to git_
 
