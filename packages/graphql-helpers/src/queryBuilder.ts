@@ -110,6 +110,24 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
             ) {
               assertIsObjectType(namedType);
 
+              const valuesNode = namedType.getFields().values;
+              const namedValuesNode = getNamedType(
+                valuesNode.type
+              ) as GraphQLNamedType;
+              const pathForValues = [...path];
+              pathForValues.push("selectionSet");
+              pathForValues.push("selections");
+              const valuesAst = buildValuesForType(namedValuesNode);
+              // High number to make sure this index isn't taken
+              // might be more performant for it to be a low number though
+              // use setWith instead
+              pathForValues.push(100);
+              set(
+                ancestors[0],
+                pathForValues.map((p) => p.toString()),
+                valuesAst
+              );
+
               const formNode = namedType.getFields().form;
               const namedFormNode = getNamedType(
                 formNode.type
@@ -123,29 +141,11 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
               // might be more performant for it to be a low number though
               // use setWith instead
               const formAst = buildFormForType(namedFormNode);
-              pathForForm.push(100);
+              pathForForm.push(101);
               set(
                 ancestors[0],
                 pathForForm.map((p) => p.toString()),
                 formAst
-              );
-
-              const valuesNode = namedType.getFields().values;
-              const namedValuesNode = getNamedType(
-                valuesNode.type
-              ) as GraphQLNamedType;
-              const pathForValues = [...path];
-              pathForValues.push("selectionSet");
-              pathForValues.push("selections");
-              const valuesAst = buildValuesForType(namedValuesNode);
-              // High number to make sure this index isn't taken
-              // might be more performant for it to be a low number though
-              // use setWith instead
-              pathForValues.push(101);
-              set(
-                ancestors[0],
-                pathForValues.map((p) => p.toString()),
-                valuesAst
               );
 
               const sysNode = namedType.getFields().sys;

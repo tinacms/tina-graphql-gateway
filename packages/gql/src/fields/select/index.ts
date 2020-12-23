@@ -9,12 +9,7 @@ export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
-      accumulator.push(
-        gql.formField(typename, [
-          gql.stringList("options"),
-          gql.string("refetchPolicy"),
-        ])
-      );
+      accumulator.push(gql.formField(typename, [gql.stringList("options")]));
       return gql.field({
         name: field.name,
         type: typename,
@@ -67,7 +62,6 @@ export const select = {
           select = field as SectionSelect;
           return {
             ...f,
-            refetchPolicy: "onChange",
             options: [
               "",
               ...(await datasource.getDocumentsForSection(
@@ -161,6 +155,4 @@ export type TinaSelectField = {
   name: string;
   component: "select";
   options: string[];
-  /** When the value changes, should we hit the server? */
-  refetchPolicy?: "none" | "onChange";
 };

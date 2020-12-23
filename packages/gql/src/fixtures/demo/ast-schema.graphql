@@ -342,7 +342,6 @@ type SelectField implements FormField {
   label: String
   component: String
   options: [String]
-  refetchPolicy: String
 }
 
 union ActionPageReference_ButtonSettings_FormFieldsUnion = TextField

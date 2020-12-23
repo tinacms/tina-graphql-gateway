@@ -64,7 +64,9 @@ export const createFormService = (
           },
         },
       },
-      failure: {},
+      failure: {
+        entry: (c, e) => console.log("failed", e),
+      },
     },
     context: {
       queryFieldName: initialContext.queryFieldName,
@@ -80,6 +82,9 @@ export const createFormService = (
   });
 
   const service = interpret(formMachine).start();
+  // service.onEvent((e) => {
+  //   console.log(service.state.context.node.form);
+  // });
 
   return service;
 };
@@ -253,6 +258,20 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
       });
     },
   });
+
+  form.subscribe(
+    (values) => {
+      // Sync form value changes to value key
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "values"],
+          value: values.values,
+        },
+      });
+    },
+    { values: true }
+  );
 
   context.cms.plugins.add(form);
 
