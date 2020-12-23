@@ -296,7 +296,7 @@ import {
 // These are your generated types from CLI
 import { DocumentUnion, Query } from "../../.tina/types";
 
-export async function getStaticProps({ params }) {
+export async function getServerProps({ params }) {
   const path = `_posts/welcome.md`;
 
   const cookies = new Cookies(props.req, props.res)
