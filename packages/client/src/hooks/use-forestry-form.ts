@@ -3,6 +3,7 @@ import { useCMS, usePlugin } from "tinacms";
 import { createFormService } from "./form-service";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
+import get from "lodash.get";
 import * as yup from "yup";
 
 export function useForestryForm({

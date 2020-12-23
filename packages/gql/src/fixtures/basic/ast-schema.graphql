@@ -13,13 +13,13 @@ interface FormField {
   component: String
 }
 
-"""References another document, used as a foreign key"""
+"References another document, used as a foreign key"
 scalar Reference
 
-""""""
+""
 scalar JSON
 
-""""""
+""
 scalar JSONObject
 
 type SystemInfo {
@@ -79,6 +79,169 @@ type Posts_Document implements Node & Document {
   form: Posts_Form
 }
 
+type LongTextValue {
+  raw: String
+  markdownAst: JSONObject
+  html: String
+}
+
+type Section_Cta_Data {
+  header: LongTextValue
+}
+
+type Section_Data {
+  description: LongTextValue
+  cta: Section_Cta_Data
+  authors: [Authors_Document]
+}
+
+union Post_Sections_Data = Section_Data
+
+type Post_Doc_Data {
+  title: LongTextValue
+  author: Authors_Document
+  sections: [Post_Sections_Data]
+  _body: LongTextValue
+}
+
+type Section_Cta_Values {
+  header: String
+}
+
+type Section_Values {
+  description: String
+  cta: Section_Cta_Values
+  authors: [String]
+  _template: String
+}
+
+union Post_Sections_Values = Section_Values
+
+type Post_Doc_Values {
+  title: String
+  author: Reference
+  sections: [Post_Sections_Values]
+  _body: String
+  _template: String
+}
+
+type TextareaField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+type SelectField implements FormField {
+  name: String
+  label: String
+  component: String
+  options: [String]
+  refetchPolicy: String
+}
+
+union Section_Cta_FormFieldsUnion = TextareaField
+
+type Section_Cta_GroupField implements FormField {
+  name: String
+  label: String
+  component: String
+  fields: [Section_Cta_FormFieldsUnion]
+}
+
+type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union List_FormFieldsUnion = TextField | SelectField
+
+type ListField implements FormField {
+  name: String
+  label: String
+  component: String
+  defaultItem: String
+  field: List_FormFieldsUnion
+}
+
+union Section_FormFieldsUnion = TextareaField | Section_Cta_GroupField | ListField
+
+type Section_Form {
+  label: String
+  name: String
+  fields: [Section_FormFieldsUnion]
+}
+
+type Post_Sections_BlocksFieldTemplates {
+  section: Section_Form
+}
+
+type Post_Sections_BlocksField implements FormField {
+  name: String
+  label: String
+  component: String
+  templates: Post_Sections_BlocksFieldTemplates
+}
+
+union Post_Doc_FormFieldsUnion = TextareaField | SelectField | Post_Sections_BlocksField
+
+type Post_Doc_Form {
+  label: String
+  name: String
+  fields: [Post_Doc_FormFieldsUnion]
+}
+
+input Section_Cta_Input {
+  header: String
+}
+
+input Section_Input {
+  description: String
+  cta: Section_Cta_Input
+  authors: [String]
+}
+
+input Sections_Input {
+  section: Section_Input
+}
+
+input Post_Doc_Input {
+  title: String
+  author: String
+  sections: [Sections_Input]
+  _body: String
+}
+
+type Section_Doc_Data {
+  description: LongTextValue
+  cta: Section_Cta_Data
+  authors: [Authors_Document]
+  _body: LongTextValue
+}
+
+type Section_Doc_Values {
+  description: String
+  cta: Section_Cta_Values
+  authors: [String]
+  _body: String
+  _template: String
+}
+
+union Section_Doc_FormFieldsUnion = TextareaField | Section_Cta_GroupField | ListField
+
+type Section_Doc_Form {
+  label: String
+  name: String
+  fields: [Section_Doc_FormFieldsUnion]
+}
+
+input Section_Doc_Input {
+  description: String
+  cta: Section_Cta_Input
+  authors: [String]
+  _body: String
+}
+
 union Authors_Data = Author_Doc_Data
 
 input Authors_Input {
@@ -95,12 +258,6 @@ type Authors_Document implements Node & Document {
   data: Authors_Data
   values: Authors_Values
   form: Authors_Form
-}
-
-type LongTextValue {
-  raw: String
-  markdownAst: JSONObject
-  html: String
 }
 
 type Author_Accolades_Data {
@@ -134,36 +291,6 @@ type Author_Doc_Values {
   _template: String
 }
 
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-type SelectField implements FormField {
-  name: String
-  label: String
-  component: String
-  options: [String]
-  refetchPolicy: String
-}
-
-type TextField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-union List_FormFieldsUnion = TextField | SelectField
-
-type ListField implements FormField {
-  name: String
-  label: String
-  component: String
-  defaultItem: String
-  field: List_FormFieldsUnion
-}
-
 union Author_Accolades_FormFieldsUnion = TextareaField
 
 type Author_Accolades_GroupListField implements FormField {
@@ -194,194 +321,4 @@ input Author_Doc_Input {
   all_time_post: String
   accolades: [Author_Accolades_Input]
   _body: String
-}
-
-type Author_Data {
-  name: LongTextValue
-  role: String
-  anecdotes: [String]
-  favorite_posts: [Authors_Document]
-  all_time_post: Posts_Document
-  accolades: [Author_Accolades_Data]
-}
-
-type Author_Values {
-  name: String
-  role: Reference
-  anecdotes: [String]
-  favorite_posts: [String]
-  all_time_post: Reference
-  accolades: [Author_Accolades_Values]
-  _template: String
-}
-
-union Author_FormFieldsUnion = TextareaField | SelectField | ListField | Author_Accolades_GroupListField
-
-type Author_Form {
-  label: String
-  name: String
-  fields: [Author_FormFieldsUnion]
-}
-
-input Author_Input {
-  name: String
-  role: String
-  anecdotes: [String]
-  favorite_posts: [String]
-  all_time_post: String
-  accolades: [Author_Accolades_Input]
-}
-
-union Post_Sections_Data = Section_Data
-
-type Post_Doc_Data {
-  title: LongTextValue
-  author: Authors_Document
-  sections: [Post_Sections_Data]
-  _body: LongTextValue
-}
-
-union Post_SectionsValues = Section_Values
-
-type Post_Doc_Values {
-  title: String
-  author: Reference
-  sections: [Post_SectionsValues]
-  _body: String
-  _template: String
-}
-
-type Post_Sections_BlocksFieldTemplates {
-  section: Section_Form
-}
-
-type Post_Sections_BlocksField implements FormField {
-  name: String
-  label: String
-  component: String
-  templates: Post_Sections_BlocksFieldTemplates
-}
-
-union Post_Doc_FormFieldsUnion = TextareaField | SelectField | Post_Sections_BlocksField
-
-type Post_Doc_Form {
-  label: String
-  name: String
-  fields: [Post_Doc_FormFieldsUnion]
-}
-
-input Sections_Input {
-  section: Section_Doc_Input
-}
-
-input Post_Doc_Input {
-  title: String
-  author: String
-  sections: [Sections_Input]
-  _body: String
-}
-
-type Post_Data {
-  title: LongTextValue
-  author: Authors_Document
-  sections: [Post_Sections_Data]
-}
-
-type Post_Values {
-  title: String
-  author: Reference
-  sections: [Post_SectionsValues]
-  _template: String
-}
-
-union Post_FormFieldsUnion = TextareaField | SelectField | Post_Sections_BlocksField
-
-type Post_Form {
-  label: String
-  name: String
-  fields: [Post_FormFieldsUnion]
-}
-
-input Post_Input {
-  title: String
-  author: String
-  sections: [Sections_Input]
-}
-
-type Section_Cta_Data {
-  header: LongTextValue
-}
-
-type Section_Doc_Data {
-  description: LongTextValue
-  cta: Section_Cta_Data
-  authors: [Authors_Document]
-  _body: LongTextValue
-}
-
-type Section_Cta_Values {
-  header: String
-}
-
-type Section_Doc_Values {
-  description: String
-  cta: Section_Cta_Values
-  authors: [String]
-  _body: String
-  _template: String
-}
-
-union Section_Cta_FormFieldsUnion = TextareaField
-
-type Section_Cta_GroupField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [Section_Cta_FormFieldsUnion]
-}
-
-union Section_Doc_FormFieldsUnion = TextareaField | Section_Cta_GroupField | ListField
-
-type Section_Doc_Form {
-  label: String
-  name: String
-  fields: [Section_Doc_FormFieldsUnion]
-}
-
-input Section_Cta_Input {
-  header: String
-}
-
-input Section_Doc_Input {
-  description: String
-  cta: Section_Cta_Input
-  authors: [String]
-  _body: String
-}
-
-type Section_Data {
-  description: LongTextValue
-  cta: Section_Cta_Data
-  authors: [Authors_Document]
-}
-
-type Section_Values {
-  description: String
-  cta: Section_Cta_Values
-  authors: [String]
-  _template: String
-}
-
-union Section_FormFieldsUnion = TextareaField | Section_Cta_GroupField | ListField
-
-type Section_Form {
-  label: String
-  name: String
-  fields: [Section_FormFieldsUnion]
-}
-
-input Section_Input {
-  description: String
-  cta: Section_Cta_Input
-  authors: [String]
 }

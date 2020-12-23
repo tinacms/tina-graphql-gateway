@@ -1,7 +1,7 @@
 import React from "react";
 import GraphiQL from "graphiql";
 import { formBuilder } from "@forestryio/graphql-helpers";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useMachine } from "@xstate/react";
 import { Machine, assign } from "xstate";
 import { useForestryForm } from "@forestryio/client";
@@ -16,23 +16,11 @@ import {
 
 interface GraphiQLStateSchema {
   states: {
-    fetcher: {
+    project: {
       states: {
-        idle: {};
-        fetching: {};
-      };
-    };
-    variables: {
-      states: {
-        idle: {};
-      };
-    };
-    editor: {
-      states: {
+        initializing: {};
         fetchingSchema: {};
-        isMutation: {};
         generatingQuery: {};
-        generatingMutation: {};
         ready: {};
         formifyingQuery: {};
       };
@@ -40,43 +28,25 @@ interface GraphiQLStateSchema {
   };
 }
 
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
-
 // The events that the machine handles
 type GraphiQLEvent =
   | { type: "FETCH" }
-  | { type: "QUERY_TO_MUTATION" }
-  | { type: "MODIFY_RESULT"; value: object }
-  | { type: "MODIFY_QUERY"; value: object }
   | { type: "FORMIFY" }
+  | { type: "RESET" }
   | { type: "EDIT_QUERY"; value: string }
+  | { type: "EDIT_RESULT"; value: object }
   | { type: "EDIT_VARIABLES"; value: object }
+  | { type: "SETUP_MUTATION"; value: object }
   | {
       type: "CHANGE_SECTION";
       value: string;
-    }
-  | {
-      type: "CHANGE_VARIABLES";
-      value: object;
-    }
-  | {
-      type: "CHANGE_RELATIVE_PATH";
-      value: string;
-    }
-  | {
-      type: "SET_MUTATION";
-      value: object;
     };
 
 interface GraphiQLContext {
   cms: TinaCMS;
   variables: object;
   schema: null | GraphQLSchema;
-  fetcherType: "tina" | "default";
   result: null | object;
-  isMutation: boolean;
   queryString: string;
   section: string;
   relativePath: string;
@@ -89,98 +59,12 @@ export const graphiqlMachine = Machine<
   GraphiQLEvent
 >({
   id: "graphiql",
-  parallel: true,
+  initial: "project",
   states: {
-    fetcher: {
-      initial: "idle",
+    project: {
+      initial: "initializing",
       states: {
-        idle: {
-          on: {
-            FETCH: "fetching",
-            MODIFY_RESULT: {
-              target: "updatingResult",
-              actions: assign({
-                fetcherType: () => "tina",
-                result: (context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-          },
-        },
-        updatingResult: {
-          on: {
-            RESULT_UPDATED: {
-              target: "idle",
-            },
-          },
-        },
-        fetching: {
-          invoke: {
-            id: "fetch",
-            src: async (context, event) => {
-              if (event.type === "FETCH") {
-                return context.cms.api.forestry.request(context.queryString, {
-                  variables: context.variables,
-                });
-              } else {
-                throw new Error(
-                  `Unexpected payload for fetch service with event type ${event.type}`
-                );
-              }
-            },
-            onError: {
-              target: "idle",
-            },
-            onDone: {
-              target: "idle",
-              actions: assign({
-                result: (_context, event) => {
-                  return event.data;
-                },
-              }),
-            },
-          },
-        },
-      },
-    },
-    variables: {
-      initial: "idle",
-      states: {
-        idle: {
-          on: {
-            MODIFY_QUERY: {
-              target: "idle",
-              actions: assign({
-                variables: (context, event) => {
-                  return event.value.variables;
-                },
-              }),
-            },
-            CHANGE_RELATIVE_PATH: {
-              target: "idle",
-              actions: assign({
-                variables: (context, event) => {
-                  return { relativePath: event.value };
-                },
-              }),
-            },
-            EDIT_VARIABLES: {
-              target: "idle",
-              actions: assign({
-                variables: (context, event) => {
-                  return event.value;
-                },
-              }),
-            },
-          },
-        },
-      },
-    },
-    editor: {
-      initial: "fetchingSchema",
-      states: {
-        fetchingSchema: {
+        initializing: {
           invoke: {
             id: "fetchSchema",
             src: async (context) => {
@@ -190,22 +74,12 @@ export const graphiqlMachine = Machine<
               );
             },
             onDone: {
-              target: "isMutation",
+              target: "generatingQuery",
               actions: assign({
                 schema: (_context, event) => buildClientSchema(event.data),
+                result: () => {},
               }),
             },
-          },
-        },
-        isMutation: {
-          invoke: {
-            src: async (context) => {
-              if (context.isMutation) {
-                throw "Mutation";
-              }
-            },
-            onDone: "generatingQuery",
-            onError: "generatingMutation",
           },
         },
         generatingQuery: {
@@ -213,15 +87,10 @@ export const graphiqlMachine = Machine<
             id: "generateQuery",
             src: async (context, event) => {
               return context.cms.api.forestry.generateQuery({
+                // @ts-ignore
                 relativePath: context.variables.relativePath,
                 section: context.section,
               });
-            },
-            onError: {
-              target: "ready",
-              actions: (_context, event) => {
-                console.log(event);
-              },
             },
             onDone: {
               target: "ready",
@@ -229,32 +98,6 @@ export const graphiqlMachine = Machine<
                 queryString: (_context, event) => {
                   return event.data.queryString;
                 },
-              }),
-            },
-          },
-        },
-        generatingMutation: {
-          invoke: {
-            id: "generateMutation",
-            src: async (context, event) => {
-              return await context.cms.api.forestry.generateMutation({
-                relativePath: context.variables.relativePath,
-                section: context.section,
-              });
-            },
-            onError: {
-              target: "ready",
-              actions: (_context, event) => {
-                console.log(event);
-              },
-            },
-            onDone: {
-              target: "ready",
-              actions: assign((_context, event) => {
-                return {
-                  queryString: event.data.queryString,
-                  // fetcherType: "default",
-                };
               }),
             },
           },
@@ -270,12 +113,6 @@ export const graphiqlMachine = Machine<
               const documentNode = parse(context.queryString);
               return print(formBuilder(documentNode, context.schema));
             },
-            onError: {
-              target: "ready",
-              actions: (_context, event) => {
-                console.log(event);
-              },
-            },
             onDone: {
               target: "ready",
               actions: assign({
@@ -284,27 +121,29 @@ export const graphiqlMachine = Machine<
             },
           },
         },
-        ready: {
-          on: {
-            MODIFY_QUERY: {
+        fetching: {
+          invoke: {
+            id: "fetch",
+            src: async (context, event) => {
+              return context.cms.api.forestry.request(context.queryString, {
+                variables: context.variables,
+              });
+            },
+            onDone: {
               target: "ready",
               actions: assign({
-                queryString: (context, event) => {
-                  return event.value.queryString;
-                },
+                result: (_context, event) => event.data,
               }),
             },
-            QUERY_TO_MUTATION: {
-              target: "generatingMutation",
-            },
+          },
+        },
+        ready: {
+          on: {
+            FETCH: "fetching",
             FORMIFY: "formifyingQuery",
-            CHANGE_SECTION: {
-              target: "generatingQuery",
-              actions: assign({
-                section: (context, event) => {
-                  return event.value;
-                },
-              }),
+            RESET: "initializing",
+            SETUP_MUTATION: {
+              actions: assign((context, event) => event.value),
             },
             EDIT_QUERY: {
               target: "ready",
@@ -312,6 +151,27 @@ export const graphiqlMachine = Machine<
                 queryString: (context, event) => {
                   return event.value;
                 },
+              }),
+            },
+            EDIT_RESULT: {
+              target: "ready",
+              actions: assign({
+                result: (context, event) => {
+                  return event.value;
+                },
+              }),
+            },
+            CHANGE_RELATIVE_PATH: {
+              target: "initializing",
+              actions: assign({
+                variables: (context, event) => event.value.variables,
+                section: (context, event) => event.value.section,
+              }),
+            },
+            EDIT_VARIABLES: {
+              target: "ready",
+              actions: assign({
+                variables: (context, event) => event.value,
               }),
             },
           },
@@ -323,9 +183,6 @@ export const graphiqlMachine = Machine<
 
 export const Explorer = () => {
   let { project, section, ...path } = useParams();
-  const q = useQuery();
-  const isMutation = !!q.get("mutate");
-  let submitButtonRef: unknown = null;
 
   const cms = useCMS();
 
@@ -333,39 +190,24 @@ export const Explorer = () => {
     context: {
       cms,
       queryString: "",
-      fetcherType: "default",
       result: {},
       variables: {
         relativePath: path[0],
       },
-      isMutation,
       section,
       schema: null,
     },
   });
 
   React.useEffect(() => {
-    send({ type: "CHANGE_RELATIVE_PATH", value: path[0] });
+    const relativePath = path[0];
+    send({
+      type: "CHANGE_RELATIVE_PATH",
+      value: { variables: { relativePath }, section },
+    });
   }, [path[0]]);
 
-  React.useEffect(() => {
-    if (isMutation) {
-      send({ type: "QUERY_TO_MUTATION" });
-    }
-  }, [isMutation]);
-
-  React.useEffect(() => {
-    send({ type: "CHANGE_SECTION", value: section });
-  }, [section]);
-
   const _graphiql = React.useRef();
-  // console.log(current.value);
-  React.useEffect(() => {
-    const button = document.getElementsByClassName("execute-button").item(0);
-    if (button) {
-      submitButtonRef = button;
-    }
-  });
 
   if (!current.context.schema) {
     return <div>Finding schema...</div>;
@@ -387,17 +229,10 @@ export const Explorer = () => {
         queryString={current.context.queryString}
         result={current.context.result}
         onSubmit={(args) => {
-          send({ type: "MODIFY_QUERY", value: args });
+          send({ type: "SETUP_MUTATION", value: args });
         }}
         onDataChange={(value) => {
-          service.onTransition(() => {
-            if (service.state.matches("fetcher.updatingResult")) {
-              send("RESULT_UPDATED");
-              submitButtonRef.click();
-            }
-          });
-
-          send({ type: "MODIFY_RESULT", value });
+          send({ type: "EDIT_RESULT", value });
         }}
       />
       <React.Fragment>
@@ -405,11 +240,9 @@ export const Explorer = () => {
         <GraphiQL
           ref={_graphiql}
           fetcher={async (args) => {
-            if (current.context.fetcherType === "default") {
-              return fetcher(args);
-            }
-            return current.context.result;
+            return fetcher(args);
           }}
+          response={JSON.stringify(current.context.result, null, 2)}
           schema={current.context.schema}
           onEditQuery={(query: string) => {
             send({ type: "EDIT_QUERY", value: query });
@@ -452,20 +285,14 @@ const TinaInfo = ({
   onSubmit: (payload: object) => void;
   onDataChange: (payload: object) => void;
 }) => {
-  useForestryForm({
+  const res = useForestryForm({
     queryString,
     payload: result || {},
-    onChange: (data) => {
-      onDataChange(data);
-    },
-    onSubmit: (args: {
-      mutationString: string;
-      relativePath: string;
-      values: object;
-    }) => {
+    onSubmit: (args: { queryString: string; variables: object }) => {
       onSubmit(args);
     },
   });
+  console.log("tinainfo", res);
 
   return null;
 };
