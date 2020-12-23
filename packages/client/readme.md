@@ -367,9 +367,9 @@ From your site's server (This example uses NextJS's API functions)
 
 This is our recommended token storage mechanism if possible. Storing tokens in memory means that the user session will not be persisted between refreshes or across browser tabs. This approach does not require a server to handle auth, and is the least vulernable to attacks.
 
-**(Optional) Generate TypeScript types**
+## Typescript
 
-We can automatically generate TypeScript types based on your schema by running the following command:
+We can automatically generate TypeScript types based on your schema by running the following command with the Tina Cloud CLI:
 
 ```bash
 yarn tina-gql schema:types
