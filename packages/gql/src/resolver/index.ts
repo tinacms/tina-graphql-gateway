@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { graphql } from "graphql";
+import { print, graphql } from "graphql";
 import path from "path";
 import { assertShape, sequential } from "../util";
 import { friendlyName } from "@forestryio/graphql-helpers";
@@ -11,7 +11,6 @@ import type { GraphQLSchema, GraphQLResolveInfo, Source } from "graphql";
 import type { DirectorySection } from "../types";
 import type { Field } from "../fields";
 import type { sectionMap } from "../builder";
-import { string } from "yup";
 
 export const graphqlInit = async (a: {
   schema: GraphQLSchema;
@@ -91,6 +90,8 @@ const schemaResolver = async (
   const value = source[info.fieldName];
 
   switch (info.fieldName) {
+    case "_queryString":
+      return print(info.operation);
     case "node":
       return resolveNode(args, context);
     case "documents":
@@ -104,6 +105,46 @@ const schemaResolver = async (
     case "addPendingDocument":
       await addPendingDocument(args, context);
       return resolveDocument({ args, context });
+    case "updateDocument":
+      const section = await context.datasource.getSectionByPath(args.id);
+      const params = args.params[section.slug];
+
+      const realParams = await resolve.input({
+        section: section.slug,
+        data: params,
+        datasource: context.datasource,
+        includeBody: true,
+      });
+      const relativePath = args.id.replace(section.path, "");
+
+      const payload = {
+        relativePath,
+        section: section.slug,
+        params: realParams,
+      };
+
+      assertShape<{
+        relativePath: string;
+        section: string;
+        params: { _body?: string } & object;
+      }>(payload, (yup) => {
+        return yup.object({
+          relativePath: yup.string().required(),
+          section: yup.string().required(),
+          params: yup.object({
+            _body: yup.string(),
+          }),
+        });
+      });
+
+      await context.datasource.updateDocument(payload);
+      return resolveDocument({
+        args: {
+          relativePath: relativePath,
+          section: section.slug,
+        },
+        context,
+      });
     default:
       break;
   }

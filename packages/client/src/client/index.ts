@@ -3,6 +3,7 @@ import {
   mutationGenerator,
   queryGenerator,
 } from "@forestryio/graphql-helpers";
+import gql from "graphql-tag";
 import {
   getIntrospectionQuery,
   buildClientSchema,
@@ -196,21 +197,18 @@ export class ForestryClient {
     });
   };
 
-  async requestWithForm<VariableType>({
-    query,
-    variables,
-  }: {
-    query: DocumentNode;
-    variables: VariableType;
-  }) {
+  async requestWithForm<VariableType>(
+    query: (gqlTag: typeof gql) => DocumentNode,
+    { variables }: { variables: VariableType }
+  ) {
     const schema = await this.getSchema();
-    const formifiedQuery = formBuilder(query, schema);
+    const formifiedQuery = formBuilder(query(gql), schema);
 
     return this.request(print(formifiedQuery), { variables });
   }
 
   async request<VariableType>(
-    query: string,
+    query: ((gqlTag: typeof gql) => DocumentNode) | string,
     { variables }: { variables: VariableType }
   ) {
     const res = await fetch(this.serverURL, {
@@ -220,7 +218,7 @@ export class ForestryClient {
         Authorization: "Bearer " + this.getToken(),
       },
       body: JSON.stringify({
-        query,
+        query: typeof query === "function" ? print(query(gql)) : query,
         variables,
       }),
     });
