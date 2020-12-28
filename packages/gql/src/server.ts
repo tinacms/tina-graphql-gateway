@@ -54,7 +54,10 @@ export const startFixtureServer = async ({
     const { query, variables } = req.body;
 
     const fixturePath = path.join(__dirname, "..", "src", "fixtures");
-    const projectRoot = root ? root : path.join(fixturePath, req.path);
+    let projectRoot = root ? root : path.join(fixturePath, req.path);
+    if (req.path === "/remix") {
+      projectRoot = "/Users/jeffsee/code/my-remix-app/apps/gctc";
+    }
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const { schema, sectionMap } = await schemaBuilder({ cache });

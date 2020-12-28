@@ -95,21 +95,35 @@ export const resolve = {
   // FIXME
   input: async ({
     datasource,
-    section,
     data,
     includeBody,
-  }: {
-    datasource: DataSource;
-    section: string;
-    data: unknown;
-    includeBody: true;
-  }) => {
-    const templates = await datasource.getTemplatesForSection(section);
+    ...rest
+  }:
+    | {
+        datasource: DataSource;
+        section: string;
+        data: unknown;
+        includeBody: true;
+      }
+    | {
+        datasource: DataSource;
+        template: string;
+        data: unknown;
+        includeBody: true;
+      }) => {
+    let template;
     const key = Object.keys(data)[0];
     const values = Object.values(data)[0];
-    const template = templates.find((template) => template.name === key);
+    if (rest.section) {
+      const templates = await datasource.getTemplatesForSection(rest.section);
+      template = templates.find((template) => template.name === key);
+    } else {
+      template = rest.template;
+    }
     if (!template) {
-      throw new Error(`Unable to find template ${key} for section ${section}`);
+      throw new Error(
+        `Unable to find template ${key} for section ${rest.section}, or one wasn't provided`
+      );
     }
 
     if (includeBody) {
@@ -117,11 +131,12 @@ export const resolve = {
     }
 
     const fieldsToWrite = await sequential(template.fields, async (field) => {
-      return inputField({
+      const meh = await inputField({
         datasource,
         field,
         value: values[field.name],
       });
+      return meh;
     });
 
     const accum: { [key: string]: unknown } = {};

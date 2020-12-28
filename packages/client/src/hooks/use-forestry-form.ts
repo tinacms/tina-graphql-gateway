@@ -1,18 +1,11 @@
 import React from "react";
-import { useCMS, usePlugin, TinaCMS } from "tinacms";
+import { useCMS, TinaCMS } from "tinacms";
 import { createFormMachine } from "./form-service";
-import {
-  createMachine,
-  spawn,
-  StateSchema,
-  assign,
-  Machine,
-  sendParent,
-} from "xstate";
+import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
-import get from "lodash.get";
+import has from "lodash.has";
 import * as yup from "yup";
 
 interface FormsMachineSchemaType extends StateSchema {
@@ -50,6 +43,7 @@ interface FormsContext {
   formRefs: object;
   cms: TinaCMS;
   queryString: string;
+  onSubmit?: (args: { mutationString: string; variables: object }) => void;
 }
 
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
@@ -122,7 +116,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
                     cms: context.cms,
                     // @ts-ignore
                     node: item,
-                    onSubmit: async () => {},
+                    onSubmit: context.onSubmit,
                     queryFieldName: keys[index],
                     queryString: context.queryString,
                   }),
@@ -137,14 +131,18 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
       },
     },
     active: {
-      entry: (context) => console.log("ctx", context.formRefs),
+      // entry: (context) => console.log("ctx", context.formRefs),
       on: {
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
               // FIXME: this is pretty heavy-handed, ideally we have a better way of only updating parts of the payload that changed
               const temp = { ...context.payload };
-              set(temp, event.pathAndValue.path, event.pathAndValue.value);
+              const hasQueriedKey = has(temp, event.pathAndValue.path);
+              // If we didn't query for it, don't populate it
+              if (hasQueriedKey) {
+                set(temp, event.pathAndValue.path, event.pathAndValue.value);
+              }
               return temp;
             },
           }),
@@ -156,29 +154,34 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
 
 export function useForestryForm({
   payload,
-  queryString,
-  onChange,
   onSubmit,
 }: {
   payload: object;
-  queryString: string;
-  onChange?: (payload: object) => void;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
 }): object {
+  const queryString = payload._queryString;
   const cms = useCMS();
-  const [current, send, service] = useMachine(formsMachine, {
-    context: { payload, formRefs: {}, cms, queryString },
-  });
-
-  service.onEvent((e) => {
-    console.log("event", e.type);
+  const [current, send] = useMachine(formsMachine, {
+    context: {
+      payload,
+      formRefs: {},
+      cms,
+      queryString,
+      onSubmit: (values) => {
+        cms.api.forestry.prepareVariables(values).then((variables) => {
+          onSubmit &&
+            onSubmit({
+              queryString: values.mutationString,
+              variables,
+            });
+        });
+      },
+    },
   });
 
   React.useEffect(() => {
     send({ type: "RETRY", value: { payload, queryString } });
   }, [JSON.stringify(payload), queryString]);
-
-  // console.log("current", current.value);
 
   return current.context.payload;
 }

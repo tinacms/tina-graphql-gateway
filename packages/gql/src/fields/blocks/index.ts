@@ -181,31 +181,42 @@ export const blocks: Blocks = {
       });
     },
     input: async ({ field, datasource, value }) => {
-      assertIsArray(value);
+      try {
+        assertIsArray(value);
+      } catch (e) {
+        return false;
+      }
 
-      return await sequential(value, async (item) => {
-        try {
-          assertShape<object>(item, (yup) => yup.object({}));
+      const meh = (
+        await sequential(value, async (item) => {
+          try {
+            assertShape<object>(item, (yup) => yup.object({}));
 
-          const key = Object.keys(item)[0];
-          const data = Object.values(item)[0];
+            const key = Object.keys(item)[0];
+            const data = Object.values(item)[0];
 
-          const resolvedData = await template.resolve.input({
-            data,
-            template: await datasource.getTemplate(slugify(key)),
-            datasource,
-          });
+            const resolvedData = await template.resolve.input({
+              // data,
+              data: { [key]: data },
+              template: await datasource.getTemplate(slugify(key)),
+              datasource,
+            });
 
-          return {
-            [field.name]: {
+            return {
               template: slugify(key),
               ...resolvedData,
-            },
-          };
-        } catch (e) {
-          return false;
-        }
-      });
+            };
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        })
+      ).filter(Boolean);
+      if (meh.length > 0) {
+        return { [field.name]: meh };
+      } else {
+        return false;
+      }
     },
   },
 };

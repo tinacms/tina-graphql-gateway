@@ -3,7 +3,6 @@ import { chain } from "../middleware";
 import { genTypes, attachSchema } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
 import { startServer } from "./start-server";
-import { playgroundServer } from "./start-server/playground";
 
 export const CMD_GEN_TYPES = "schema:types";
 export const CMD_AUDIT = "schema:audit";
@@ -73,11 +72,5 @@ export const baseCmds: Command[] = [
     description: "Start Filesystem Graphql Server",
     options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
-  },
-  {
-    command: CMD_START_PLAYGROUND,
-    description: "Start Graphql Playground Server",
-    options: [startServerPortOption, subCommand, pathOption],
-    action: (options) => chain([playgroundServer], options),
   },
 ];

@@ -53,6 +53,7 @@ type Mutation {
 }
 
 type Query {
+  _queryString: String
   node(id: ID!): Node
   getSections: [Section]
   getSection(section: String): Section

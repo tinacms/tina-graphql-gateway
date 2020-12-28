@@ -13,17 +13,14 @@ import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import type { DocumentNode } from "./use-forestry-form";
 
-export const createFormMachine = (
-  initialContext: {
-    queryFieldName: string;
-    queryString: string;
-    node: DocumentNode;
-    client: ForestryClient;
-    cms: TinaCMS;
-    onSubmit: (args: any) => Promise<void>;
-  }
-  // onChange
-) => {
+export const createFormMachine = (initialContext: {
+  queryFieldName: string;
+  queryString: string;
+  node: DocumentNode;
+  client: ForestryClient;
+  cms: TinaCMS;
+  onSubmit: (args: any) => void;
+}) => {
   const id = initialContext.queryFieldName + "_FormService";
   return createMachine<NodeFormContext, NodeFormEvent, NodeFormState>({
     id,
@@ -91,7 +88,7 @@ type NodeFormContext = {
   formRef: null | SpawnedActorRef<any, any>;
   queries: { [key: string]: { query: string; mutation: string } } | null;
   error: null | string;
-  onSubmit: (args: any) => Promise<void>;
+  onSubmit: (args: any) => void;
 };
 
 type NodeFormEvent = {

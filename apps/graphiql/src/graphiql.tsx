@@ -51,7 +51,7 @@ interface GraphiQLContext {
   cms: TinaCMS;
   variables: object;
   schema: null | GraphQLSchema;
-  result: null | object;
+  result: object;
   queryString: string;
   section: string;
   relativePath: string;
@@ -213,24 +213,17 @@ export const Explorer = () => {
     }
   );
 
+  const res = useForestryForm({
+    queryString: current.context.queryString,
+    payload: current.context.result,
+    onSubmit: (args: { queryString: string; variables: object }) => {
+      send({ type: "SETUP_MUTATION", value: args });
+    },
+  });
+
   React.useEffect(() => {
-    const form = new Form({
-      id: "home-content",
-      label: "Content",
-      initialValues: { title: "ok" },
-      onSubmit: async () => {
-        alert("Saving...");
-      },
-      fields: [
-        {
-          name: "title",
-          label: "Title",
-          component: "text",
-        },
-      ],
-    });
-    cms.plugins.add(form);
-  }, []);
+    send({ type: "EDIT_RESULT", value: res });
+  }, [JSON.stringify(res)]);
 
   React.useEffect(() => {
     const relativePath = path[0];
@@ -258,16 +251,6 @@ export const Explorer = () => {
 
   return (
     <div id="root" className="graphiql-container">
-      <TinaInfo
-        queryString={current.context.queryString}
-        result={current.context.result}
-        onSubmit={(args) => {
-          send({ type: "SETUP_MUTATION", value: args });
-        }}
-        onDataChange={(value) => {
-          send({ type: "EDIT_RESULT", value });
-        }}
-      />
       <React.Fragment>
         {/* @ts-ignore */}
         <GraphiQL
@@ -305,29 +288,4 @@ export const Explorer = () => {
       </React.Fragment>
     </div>
   );
-};
-
-const TinaInfo = ({
-  queryString,
-  result,
-  onSubmit,
-  onDataChange,
-}: {
-  queryString: string;
-  result: object | null;
-  onSubmit: (payload: object) => void;
-  onDataChange: (payload: object) => void;
-}) => {
-  const res = useForestryForm({
-    queryString,
-    payload: result || {},
-    onSubmit: (args: { queryString: string; variables: object }) => {
-      onSubmit(args);
-    },
-  });
-  React.useEffect(() => {
-    onDataChange(res);
-  }, [JSON.stringify(res)]);
-
-  return null;
 };

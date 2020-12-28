@@ -25,11 +25,6 @@ import { friendlyName } from "./util";
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
-// FIXME: this is the way we're determining if the node is top-level
-// much better ways to do it but this seems to be working well enough
-// for now
-const MAGIC_DEPTH = 5;
-
 /**
  *
  * Given a valid GraphQL query,the `formBuilder` will populate the query
@@ -92,11 +87,38 @@ const MAGIC_DEPTH = 5;
 export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   const typeInfo = new TypeInfo(schema);
 
+  const pathsToPopulate: {
+    path: string;
+    paths: {
+      path: string[];
+      ast: object;
+    }[];
+  }[] = [];
+
   const visitor: VisitorType = {
     leave(node, key, parent, path, ancestors) {
       const type = typeInfo.getType();
       if (type) {
         const namedType = getNamedType(type);
+        if (namedType.toString() === "Query") {
+          if (node.kind === "SelectionSet") {
+            if (
+              !node.selections.find(
+                // @ts-ignore
+                (item) => item.name.value === "_queryString"
+              )
+            ) {
+              // @ts-ignore FIXME: should be readonly
+              node.selections.push({
+                kind: "Field",
+                name: {
+                  kind: "Name",
+                  value: "_queryString",
+                },
+              });
+            }
+          }
+        }
 
         if (namedType instanceof GraphQLObjectType) {
           const hasNodeInterface = !!namedType
@@ -104,10 +126,7 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
             .find((i) => i.name === "Node");
           if (hasNodeInterface) {
             // Instead of this, there's probably a more fine-grained visitor key to use
-            if (
-              typeof path[path.length - 1] === "number" &&
-              path.length === MAGIC_DEPTH
-            ) {
+            if (typeof path[path.length - 1] === "number") {
               assertIsObjectType(namedType);
 
               const valuesNode = namedType.getFields().values;
@@ -122,11 +141,6 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
               // might be more performant for it to be a low number though
               // use setWith instead
               pathForValues.push(100);
-              set(
-                ancestors[0],
-                pathForValues.map((p) => p.toString()),
-                valuesAst
-              );
 
               const formNode = namedType.getFields().form;
               const namedFormNode = getNamedType(
@@ -142,11 +156,6 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
               // use setWith instead
               const formAst = buildFormForType(namedFormNode);
               pathForForm.push(101);
-              set(
-                ancestors[0],
-                pathForForm.map((p) => p.toString()),
-                formAst
-              );
 
               const sysNode = namedType.getFields().sys;
               const namedSysNode = getNamedType(
@@ -157,11 +166,24 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
               pathForSys.push("selections");
               const sysAst = buildSysForType(namedSysNode);
               pathForSys.push(102);
-              set(
-                ancestors[0],
-                pathForSys.map((p) => p.toString()),
-                sysAst
-              );
+
+              pathsToPopulate.push({
+                path: path.map((p) => p.toString()).join("-"),
+                paths: [
+                  {
+                    path: pathForValues.map((p) => p.toString()),
+                    ast: valuesAst,
+                  },
+                  {
+                    path: pathForForm.map((p) => p.toString()),
+                    ast: formAst,
+                  },
+                  {
+                    path: pathForSys.map((p) => p.toString()),
+                    ast: sysAst,
+                  },
+                ],
+              });
             }
           }
         }
@@ -170,6 +192,29 @@ export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
   };
 
   visit(query, visitWithTypeInfo(typeInfo, visitor));
+
+  // We don't want to build form/value fields for nested nodes (for now)
+  // so filter out paths which aren't "top-level" ones
+  const topLevelPaths = pathsToPopulate.filter((p, i) => {
+    const otherPaths = pathsToPopulate.filter((_, index) => index !== i);
+    const isChildOfOtherPaths = otherPaths.some((op) => {
+      if (p.path.startsWith(op.path)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (isChildOfOtherPaths) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+  topLevelPaths.map((p) => {
+    p.paths.map((pathNode) => {
+      set(query, pathNode.path, pathNode.ast);
+    });
+  });
 
   return query;
 };
@@ -214,16 +259,7 @@ const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: [
-        {
-          kind: "Field" as const,
-          name: {
-            kind: "Name" as const,
-            value: "__typename",
-          },
-        },
-        ...buildTypes(type.getTypes()),
-      ],
+      selections: buildTypes(type.getTypes()),
     },
   };
 };
@@ -239,16 +275,7 @@ const buildFormForType = (type: GraphQLNamedType): FieldNode => {
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: [
-        {
-          kind: "Field" as const,
-          name: {
-            kind: "Name" as const,
-            value: "__typename",
-          },
-        },
-        ...buildTypes(type.getTypes()),
-      ],
+      selections: buildTypes(type.getTypes()),
     },
   };
 };

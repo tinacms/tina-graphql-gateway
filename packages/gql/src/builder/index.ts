@@ -60,7 +60,7 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     ...scalarDefinitions,
     systemInfoDefinition,
     sectionDefinition,
-    mutationDefinition(mutationsArray),
+    ...mutationDefinitions(mutationsArray),
     queryDefinition(sectionMap),
   ];
 
@@ -195,40 +195,60 @@ const buildSectionMap = (
  * Given a list of mutation types, this will generate all possible
  * mutation definitions and argument definitions for a given schema. Ex. `Posts_Input`
  */
-const mutationDefinition = (mutationsArray: mutationsArray) => {
-  return gql.object({
-    name: "Mutation",
-    fields: [
-      gql.field({
-        name: "addPendingDocument",
-        type: "Node",
-        args: [
-          gql.inputString("relativePath"),
-          gql.inputString("section"),
-          gql.inputString("template"),
-        ],
+const mutationDefinitions = (mutationsArray: mutationsArray) => {
+  return [
+    gql.input({
+      name: "SectionParams",
+      fields: mutationsArray.map((ma) => {
+        return gql.inputValue(
+          ma.section.slug,
+          friendlyName(ma.section.slug, { suffix: "Input" })
+        );
       }),
-      ...mutationsArray.map((mutation) => {
-        return gql.field({
-          name: mutation.mutationName,
-          type: mutation.returnType,
+    }),
+    gql.object({
+      name: "Mutation",
+      fields: [
+        gql.field({
+          name: "addPendingDocument",
+          type: "Node",
           args: [
             gql.inputString("relativePath"),
-            gql.inputValue(
-              "params",
-              friendlyName(mutation.section.slug, { suffix: "Input" })
-            ),
+            gql.inputString("section"),
+            gql.inputString("template"),
           ],
-        });
-      }),
-    ],
-  });
+        }),
+        gql.field({
+          name: "updateDocument",
+          type: "Node",
+          args: [gql.inputID("id"), gql.inputValue("params", "SectionParams")],
+        }),
+        ...mutationsArray.map((mutation) => {
+          return gql.field({
+            name: mutation.mutationName,
+            type: mutation.returnType,
+            args: [
+              gql.inputString("relativePath"),
+              gql.inputValue(
+                "params",
+                friendlyName(mutation.section.slug, { suffix: "Input" })
+              ),
+            ],
+          });
+        }),
+      ],
+    }),
+  ];
 };
 
 const queryDefinition = (sectionMap: sectionMap) => {
   return gql.object({
     name: "Query",
     fields: [
+      gql.field({
+        name: "_queryString",
+        type: "String",
+      }),
       gql.field({
         name: "node",
         type: "Node",
