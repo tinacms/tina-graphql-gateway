@@ -3,18 +3,19 @@ import GraphiQL from "graphiql";
 import { formBuilder } from "@forestryio/graphql-helpers";
 import { useParams } from "react-router-dom";
 import { useMachine } from "@xstate/react";
-import { Machine, assign } from "xstate";
+import { Machine, assign, createMachine, StateSchema } from "xstate";
 import { useForestryForm } from "@forestryio/client";
-import { useCMS, TinaCMS } from "tinacms";
+import { Form, useCMS, TinaCMS } from "tinacms";
 import {
   parse,
   getIntrospectionQuery,
   GraphQLSchema,
   buildClientSchema,
   print,
+  IntrospectionQuery,
 } from "graphql";
 
-interface GraphiQLStateSchema {
+interface GraphiQLStateSchema extends StateSchema {
   states: {
     project: {
       states: {
@@ -35,6 +36,10 @@ type GraphiQLEvent =
   | { type: "RESET" }
   | { type: "EDIT_QUERY"; value: string }
   | { type: "EDIT_RESULT"; value: object }
+  | {
+      type: "CHANGE_RELATIVE_PATH";
+      value: { variables: { relativePath: string }; section: string };
+    }
   | { type: "EDIT_VARIABLES"; value: object }
   | { type: "SETUP_MUTATION"; value: object }
   | {
@@ -51,12 +56,13 @@ interface GraphiQLContext {
   section: string;
   relativePath: string;
 }
+type GraphiQLState = { value: "project"; context: GraphiQLContext };
 
 // This machine is completely decoupled from React
-export const graphiqlMachine = Machine<
+export const graphiqlMachine = createMachine<
   GraphiQLContext,
-  GraphiQLStateSchema,
-  GraphiQLEvent
+  GraphiQLEvent,
+  GraphiQLState
 >({
   id: "graphiql",
   initial: "project",
@@ -68,17 +74,24 @@ export const graphiqlMachine = Machine<
           invoke: {
             id: "fetchSchema",
             src: async (context) => {
-              return await context.cms.api.forestry.request(
+              const data = await context.cms.api.forestry.request(
                 getIntrospectionQuery(),
-                { variables: {} }
+                {
+                  variables: {},
+                }
               );
+
+              return data;
             },
             onDone: {
               target: "generatingQuery",
-              actions: assign({
-                schema: (_context, event) => buildClientSchema(event.data),
-                result: () => {},
-              }),
+              actions: [
+                assign({
+                  schema: (_context, event) => {
+                    return buildClientSchema(event.data);
+                  },
+                }),
+              ],
             },
           },
         },
@@ -124,16 +137,14 @@ export const graphiqlMachine = Machine<
         fetching: {
           invoke: {
             id: "fetch",
-            src: async (context, event) => {
+            src: async (context: GraphiQLContext, event: GraphiQLEvent) => {
               return context.cms.api.forestry.request(context.queryString, {
                 variables: context.variables,
               });
             },
             onDone: {
               target: "ready",
-              actions: assign({
-                result: (_context, event) => event.data,
-              }),
+              actions: assign({ result: (context, event) => event.data }),
             },
           },
         },
@@ -186,18 +197,40 @@ export const Explorer = () => {
 
   const cms = useCMS();
 
-  const [current, send, service] = useMachine(graphiqlMachine, {
-    context: {
-      cms,
-      queryString: "",
-      result: {},
-      variables: {
-        relativePath: path[0],
+  const [current, send, service] = useMachine<GraphiQLContext, GraphiQLEvent>(
+    graphiqlMachine,
+    {
+      context: {
+        cms,
+        queryString: "",
+        result: {},
+        variables: {
+          relativePath: path[0],
+        },
+        section,
+        schema: null,
       },
-      section,
-      schema: null,
-    },
-  });
+    }
+  );
+
+  React.useEffect(() => {
+    const form = new Form({
+      id: "home-content",
+      label: "Content",
+      initialValues: { title: "ok" },
+      onSubmit: async () => {
+        alert("Saving...");
+      },
+      fields: [
+        {
+          name: "title",
+          label: "Title",
+          component: "text",
+        },
+      ],
+    });
+    cms.plugins.add(form);
+  }, []);
 
   React.useEffect(() => {
     const relativePath = path[0];
@@ -239,8 +272,8 @@ export const Explorer = () => {
         {/* @ts-ignore */}
         <GraphiQL
           ref={_graphiql}
-          fetcher={async (args) => {
-            return fetcher(args);
+          fetcher={async () => {
+            return fetcher();
           }}
           response={JSON.stringify(current.context.result, null, 2)}
           schema={current.context.schema}
@@ -292,7 +325,9 @@ const TinaInfo = ({
       onSubmit(args);
     },
   });
-  console.log("tinainfo", res);
+  React.useEffect(() => {
+    onDataChange(res);
+  }, [JSON.stringify(res)]);
 
   return null;
 };

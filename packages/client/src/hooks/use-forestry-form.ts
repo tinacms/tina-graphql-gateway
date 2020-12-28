@@ -1,10 +1,158 @@
 import React from "react";
-import { useCMS, usePlugin } from "tinacms";
-import { createFormService } from "./form-service";
+import { useCMS, usePlugin, TinaCMS } from "tinacms";
+import { createFormMachine } from "./form-service";
+import {
+  createMachine,
+  spawn,
+  StateSchema,
+  assign,
+  Machine,
+  sendParent,
+} from "xstate";
+import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin } from "./create-page-plugin";
 import set from "lodash.set";
 import get from "lodash.get";
 import * as yup from "yup";
+
+interface FormsMachineSchemaType extends StateSchema {
+  states: {
+    initializing;
+    inactive;
+    active;
+  };
+}
+
+export type toggleMachineStateValue = keyof FormsMachineSchemaType["states"];
+
+type FormsState =
+  | {
+      value: "inactive";
+      context: FormsContext;
+    }
+  | {
+      value: "active";
+      context: FormsContext;
+    };
+
+type FormsEvent =
+  | {
+      type: "RETRY";
+      value: { payload: object; queryString: string };
+    }
+  | {
+      type: "FORM_VALUE_CHANGE";
+      pathAndValue: any;
+    };
+
+interface FormsContext {
+  payload: object;
+  formRefs: object;
+  cms: TinaCMS;
+  queryString: string;
+}
+
+const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
+  id: "forms",
+  initial: "initializing",
+  states: {
+    inactive: {
+      on: {
+        RETRY: {
+          target: "initializing",
+          actions: assign({
+            payload: (context, event) => {
+              return event.value.payload;
+            },
+            queryString: (context, event) => {
+              return event.value.queryString;
+            },
+          }),
+        },
+      },
+    },
+    initializing: {
+      invoke: {
+        src: async (context, event) => {
+          const payloadSchema = yup.object().required();
+
+          const accum = {};
+
+          const pl = await payloadSchema.validate(context.payload);
+
+          const keys = Object.keys(pl);
+          await Promise.all(
+            Object.values(pl).map(async (payloadItem, index) => {
+              // validate payload
+              let dataSchema = yup.object().shape({
+                // @ts-ignore
+                form: yup.object().required().shape({
+                  // @ts-ignore
+                  label: yup.string().required(),
+                  // @ts-ignore
+                  name: yup.string().required(),
+                }),
+              });
+
+              try {
+                const item = await dataSchema.validate(payloadItem);
+                accum[keys[index]] = item;
+              } catch (e) {}
+
+              return true;
+            })
+          );
+
+          if (Object.keys(accum).length === 0) {
+            throw new Error("No queries could be used as a Tina form");
+          }
+
+          return accum;
+        },
+        onDone: {
+          target: "active",
+          actions: assign({
+            formRefs: (context, event) => {
+              const accum = {};
+              const keys = Object.keys(event.data);
+              Object.values(event.data).forEach((item, index) => {
+                accum[keys[index]] = spawn(
+                  createFormMachine({
+                    client: context.cms.api.forestry,
+                    cms: context.cms,
+                    // @ts-ignore
+                    node: item,
+                    onSubmit: async () => {},
+                    queryFieldName: keys[index],
+                    queryString: context.queryString,
+                  }),
+                  `form-${keys[index]}`
+                );
+              });
+              return accum;
+            },
+          }),
+        },
+        onError: "inactive",
+      },
+    },
+    active: {
+      entry: (context) => console.log("ctx", context.formRefs),
+      on: {
+        FORM_VALUE_CHANGE: {
+          actions: assign({
+            payload: (context, event) => {
+              // FIXME: this is pretty heavy-handed, ideally we have a better way of only updating parts of the payload that changed
+              const temp = { ...context.payload };
+              set(temp, event.pathAndValue.path, event.pathAndValue.value);
+              return temp;
+            },
+          }),
+        },
+      },
+    },
+  },
+});
 
 export function useForestryForm({
   payload,
@@ -16,156 +164,24 @@ export function useForestryForm({
   queryString: string;
   onChange?: (payload: object) => void;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
-}): { data: object } {
+}): object {
   const cms = useCMS();
-  const [data, setData] = React.useState({});
+  const [current, send, service] = useMachine(formsMachine, {
+    context: { payload, formRefs: {}, cms, queryString },
+  });
 
-  useCreateDocumentPlugin("posts");
+  service.onEvent((e) => {
+    console.log("event", e.type);
+  });
 
-  const payloadSchema = yup.object().required();
-  const nodeSchema = yup
-    .object()
-    .shape({
-      sys: yup.object().required().shape({
-        // @ts-ignore
-        filename: yup.string().required(),
-        // @ts-ignore
-        basename: yup.string().required(),
-      }),
-      form: yup.object().required().shape({
-        // @ts-ignore
-        __typename: yup.string().required(),
-        // @ts-ignore
-        name: yup.string().required(),
-        // @ts-ignore
-        label: yup.string().required(),
-      }),
-      values: yup.object().required(),
-    })
-    .required();
-
-  const keys = Object.keys(payload);
   React.useEffect(() => {
-    payloadSchema
-      .validate(payload)
-      .then(() => {
-        Object.values(payload).map((maybeNode, index) => {
-          nodeSchema
-            .validate(maybeNode)
-            .then(() => {
-              setData(payload);
+    send({ type: "RETRY", value: { payload, queryString } });
+  }, [JSON.stringify(payload), queryString]);
 
-              createFormService(
-                {
-                  queryFieldName: keys[index],
-                  queryString: queryString,
-                  node: maybeNode,
-                  client: cms.api.forestry,
-                  cms: cms,
-                  onSubmit: async ({
-                    mutationString,
-                    relativePath,
-                    values,
-                  }) => {
-                    if (onSubmit) {
-                      onSubmit({
-                        queryString: mutationString,
-                        variables: await cms.api.forestry.prepareVariables({
-                          mutationString,
-                          relativePath,
-                          values,
-                        }),
-                      });
-                    } else {
-                      cms.api.client.updateContent({
-                        mutationString,
-                        relativePath,
-                        values,
-                      });
-                    }
-                  },
-                },
-                (data) => {
-                  set(payload, data.path, data.value);
-                  setData(payload);
-                  onChange(payload);
-                }
-              );
-            })
-            .catch((e) => {});
-        });
-      })
-      .catch((e) => {});
-  }, [payload]);
+  // console.log("current", current.value);
 
-  return { data };
+  return current.context.payload;
 }
-
-const useCreateDocumentPlugin = (section: string) => {
-  const cms = useCMS();
-  const [createPagePlugin, setCreatePagePlugin] = React.useState(
-    new ContentCreatorPlugin({
-      label: `Add ${section}`,
-      fields: [
-        {
-          name: "filename",
-          label: "filename",
-          component: "text",
-          description: "This can be a pathname relative to your section config",
-          required: true,
-        },
-      ],
-      section,
-    })
-  );
-  React.useEffect(() => {
-    const getSectionData = async () => {
-      const sectionData = await cms.api.forestry.request(
-        `
-        query SectionQuery($section: String!) {
-          getSection(section: $section) {
-            type
-            path
-            templates
-            create
-          }
-        }
-      `,
-        {
-          variables: { section },
-        }
-      );
-      const s = sectionData.getSection;
-      const createPagePlugin = new ContentCreatorPlugin({
-        label: `Add ${section}`,
-        fields: [
-          {
-            name: "filename",
-            label: "Filename",
-            component: "text",
-            description: `The value after your section directory - ${s.path}`,
-            required: true,
-          },
-          {
-            name: "template",
-            label: "Template",
-            component: "select",
-            // FIXME: this shouldn't require selection but it
-            // does because we aren't able to add initial values
-            options: ["", ...s.templates],
-            required: true,
-          },
-        ],
-        section,
-      });
-      setCreatePagePlugin(createPagePlugin);
-    };
-
-    getSectionData();
-  }, [section]);
-
-  usePlugin(createPagePlugin);
-};
 
 type Field = {
   __typename: string;
