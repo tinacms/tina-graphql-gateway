@@ -4,13 +4,16 @@ import {
   interpret,
   spawn,
   SpawnedActorRef,
+  Machine,
+  sendParent,
+  send,
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { ForestryClient } from "../client";
 import type { DocumentNode } from "./use-forestry-form";
 
-export const createFormService = (
+export const createFormMachine = (
   initialContext: {
     queryFieldName: string;
     queryString: string;
@@ -18,15 +21,11 @@ export const createFormService = (
     client: ForestryClient;
     cms: TinaCMS;
     onSubmit: (args: any) => Promise<void>;
-  },
-  onChange
+  }
+  // onChange
 ) => {
   const id = initialContext.queryFieldName + "_FormService";
-  const formMachine = createMachine<
-    NodeFormContext,
-    NodeFormEvent,
-    NodeFormState
-  >({
+  return createMachine<NodeFormContext, NodeFormEvent, NodeFormState>({
     id,
     initial: "loading",
     states: {
@@ -58,9 +57,10 @@ export const createFormService = (
         }),
         on: {
           ON_FIELD_CHANGE: {
-            actions: (context, event) => {
-              onChange(event.values);
-            },
+            actions: sendParent((context, event) => ({
+              type: "FORM_VALUE_CHANGE",
+              pathAndValue: event.values,
+            })),
           },
         },
       },
@@ -80,13 +80,6 @@ export const createFormService = (
       onSubmit: initialContext.onSubmit,
     },
   });
-
-  const service = interpret(formMachine).start();
-  // service.onEvent((e) => {
-  //   console.log(service.state.context.node.form);
-  // });
-
-  return service;
 };
 
 type NodeFormContext = {

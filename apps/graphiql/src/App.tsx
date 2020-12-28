@@ -84,15 +84,9 @@ const TinaWrap = ({
   );
 };
 
-const TinaFixtureProject = ({
-  projects,
-}: {
-  projects: {
-    label: string;
-    value: string;
-  }[];
-}) => {
+const TinaFixtureProject = () => {
   let { project } = useParams();
+
   const client = new ForestryClient("", {
     gqlServer: `http://localhost:4002/${project}`,
   });
@@ -116,7 +110,6 @@ const TinaFixtureProject = ({
         onLogout={() => alert("exit edit mode")}
       >
         <div className="h-screen flex overflow-hidden bg-gray-100">
-          <Sidebar projects={projects} />
           <div className="flex flex-col w-0 flex-1 overflow-hidden">
             <Explorer />
           </div>
@@ -131,35 +124,30 @@ const App = () => {
     { label: string; value: string }[]
   >([]);
 
-  React.useEffect(() => {
-    const listProjects = async () => {
-      const result = await fetch(`http://localhost:4002/list-projects`);
-      const json = await result.json();
-      setProjects(json);
-      if (window.location.pathname === "/") {
-        window.location = json[0].value;
-      }
-    };
-    listProjects();
-  }, []);
+  // React.useEffect(() => {
+  //   const listProjects = async () => {
+  //     const result = await fetch(`http://localhost:4002/list-projects`);
+  //     const json = await result.json();
+  //     setProjects(json);
+  //     // if (window.location.pathname === "/") {
+  //     //   window.location = json[0].value;
+  //     // }
+  //   };
+  //   listProjects();
+  // }, []);
 
   return (
     <Router>
-      <Switch>
-        <Route path="/external">
+      <div className="h-screen flex overflow-hidden bg-gray-100">
+        {/* <Sidebar projects={projects} /> */}
+        <div className="flex flex-col w-0 flex-1 overflow-hidden">
           <Switch>
-            <Route path="/:ignore/:externalURL/:clientID">
-              <Doit />
+            <Route path="/:project/:section/*">
+              <TinaFixtureProject />
             </Route>
           </Switch>
-        </Route>
-        <Route path="/:project/:section/*">
-          <TinaFixtureProject projects={projects} />
-        </Route>
-        <Route path="/:project/">
-          <TinaFixtureProject projects={projects} />
-        </Route>
-      </Switch>
+        </div>
+      </div>
     </Router>
   );
 };
