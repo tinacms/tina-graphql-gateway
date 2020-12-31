@@ -1,17 +1,41 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { getSlugs } from "../utils/getStatics";
+import { createClient } from "../utils/createClient";
 
-const template = "pages";
+const client = createClient(false);
 
 export const getStaticProps: GetStaticProps = async () => {
-  const slugs = await getSlugs({ template });
+  const result = await client.request(
+    (gql) => gql`
+      query SectionsQuery {
+        getSections {
+          slug
+          path
+          documents {
+            sys {
+              breadcrumbs(excludeExtension: true)
+            }
+          }
+        }
+      }
+    `,
+    { variables: {} }
+  );
 
   return {
     props: {
-      paths: slugs.map((slug) => {
-        return { params: { slug: slug } };
-      }),
+      sections: result.getSections
+        .map((section) => {
+          return {
+            section: section.slug,
+            paths: section.documents
+              .map((d) =>
+                [...section.path.split("/"), ...d.sys.breadcrumbs].join("/")
+              )
+              .filter(Boolean),
+          };
+        })
+        .filter(Boolean),
     },
   };
 };
@@ -19,16 +43,17 @@ export const getStaticProps: GetStaticProps = async () => {
 const Main = (props) => {
   return (
     <div>
-      <h1>{template}</h1>
-      {props.paths.map((path) => {
-        return (
-          <div key={path.params.slug}>
-            <Link href={`/${template}/${path.params.slug}`}>
-              <a>{path.params.slug}</a>
-            </Link>
-          </div>
-        );
-      })}
+      {props.sections.map((section) =>
+        section.paths.map((path) => {
+          return (
+            <div key={path}>
+              <Link href={`/${path}`}>
+                <a>{path}</a>
+              </Link>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };

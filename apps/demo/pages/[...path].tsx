@@ -2,59 +2,8 @@ import { GetStaticPaths, GetStaticPropsResult } from "next";
 import { useForestryForm } from "@forestryio/client";
 import { createClient } from "../utils/createClient";
 import type * as Tina from "../.tina/types";
+
 const client = createClient(false);
-
-const Home = (props: Props) => {
-  const { node } = useForestryForm({ payload: props });
-  const { form, sys, ...rest } = node;
-
-  return (
-    <>
-      <pre>
-        <code>{JSON.stringify(rest, null, 2)}</code>
-      </pre>
-    </>
-  );
-};
-
-export default Home;
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const result = await client.request(
-    (gql) => gql`
-      query SectionsQuery {
-        getSections {
-          slug
-          path
-          documents {
-            sys {
-              breadcrumbs(excludeExtension: true)
-            }
-          }
-        }
-      }
-    `,
-    { variables: {} }
-  );
-
-  const paths = [];
-  result.getSections.forEach((section) =>
-    section.documents.forEach((document) => {
-      paths.push({
-        params: {
-          path: [...section.path.split("/"), ...document.sys.breadcrumbs],
-        },
-      });
-    })
-  );
-
-  return {
-    paths,
-    fallback: true,
-  };
-};
-
-type Props = { node: Tina.Node };
 
 export const getStaticProps = async ({
   params,
@@ -107,3 +56,56 @@ export const getStaticProps = async ({
   );
   return { props: content };
 };
+
+const Home = (props: Props) => {
+  // @ts-ignore FIXME: not doing anything with TypeScript just yet
+  const { node } = useForestryForm({ payload: props });
+  const { form, sys, ...rest } = node;
+
+  return (
+    <>
+      <pre>
+        <code>{JSON.stringify(rest, null, 2)}</code>
+      </pre>
+    </>
+  );
+};
+
+export default Home;
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const result = await client.request(
+    (gql) => gql`
+      query SectionsQuery {
+        getSections {
+          slug
+          path
+          documents {
+            sys {
+              breadcrumbs(excludeExtension: true)
+            }
+          }
+        }
+      }
+    `,
+    { variables: {} }
+  );
+
+  const paths = [];
+  result.getSections.forEach((section) =>
+    section.documents.forEach((document) => {
+      paths.push({
+        params: {
+          path: [...section.path.split("/"), ...document.sys.breadcrumbs],
+        },
+      });
+    })
+  );
+
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
+type Props = { node: Tina.Node };

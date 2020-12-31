@@ -159,6 +159,7 @@ export function useForestryForm({
   payload: object;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
 }): object {
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
   const cms = useCMS();
   const [current, send] = useMachine(formsMachine, {
