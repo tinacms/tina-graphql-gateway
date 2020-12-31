@@ -103,15 +103,15 @@ export const resolve = {
         datasource: DataSource;
         section: string;
         data: unknown;
-        includeBody: true;
+        includeBody?: true;
       }
     | {
         datasource: DataSource;
-        template: string;
+        template: TemplateData;
         data: unknown;
-        includeBody: true;
+        includeBody?: true;
       }) => {
-    let template;
+    let template: TemplateData;
     const key = Object.keys(data)[0];
     const values = Object.values(data)[0];
     if (rest.section) {
