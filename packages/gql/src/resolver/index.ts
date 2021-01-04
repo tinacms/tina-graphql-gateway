@@ -95,13 +95,20 @@ const schemaResolver = async (
     case "node":
       return resolveNode(args, context);
     case "documents":
-      return resolveDocuments(value, args, context);
+      try {
+        const meh = await resolveDocuments(value, args, context);
+        return meh;
+      } catch (e) {
+        console.log(value, args);
+        console.log("ohhohoh", e);
+      }
     case "breadcrumbs":
       return resolveBreadcrumbs(value, args, context);
     case "getSection":
       return resolveSection(args, context);
     case "getSections":
       return resolveSections(context);
+
     case "addPendingDocument":
       await addPendingDocument(args, context);
       return resolveDocument({ args, context });

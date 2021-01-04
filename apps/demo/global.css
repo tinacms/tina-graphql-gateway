@@ -1,0 +1,59 @@
+div.graphiql-explorer-root > div:last-child {
+  display: none;
+}
+
+.graphiql-container {
+  height: 100vh !important;
+}
+
+.graphiql-container .execute-button-wrap {
+  margin: 0px !important;
+  height: auto !important;
+}
+
+.graphiql-container .topBar {
+  background: none !important;
+  @apply bg-gray-200 h-16 !important;
+}
+
+.graphiql-container .docExplorerShow::before {
+  border-left: 2px solid #090909 !important;
+  border-top: 2px solid #090909 !important;
+}
+
+.doc-explorer-title-bar {
+  @apply h-16 tracking-wider text-sm font-normal flex items-center !important;
+}
+
+.graphiql-container .doc-explorer-contents {
+  top: 63px !important;
+}
+
+.graphiql-container .docExplorerShow {
+  background: none !important;
+  @apply bg-gray-200 h-16
+    px-3.5 py-5 text-sm leading-5 border-l-0
+    font-medium text-gray-700 transition ease-in-out
+    duration-150 bg-gray-200 tracking-wider
+    flex items-center justify-center !important;
+}
+
+.graphiql-container .execute-button {
+  background: none !important;
+  fill: white !important;
+  @apply w-full
+    rounded-md px-3.5 py-5 text-sm leading-5
+    font-medium border-none transition ease-in-out
+    duration-150 bg-blue-400 text-white tracking-wider
+    rounded-md flex items-center justify-center !important;
+}
+.graphiql-container .execute-button:hover {
+  @apply w-full
+     bg-blue-500 text-white
+     !important;
+}
+
+.graphiql-container .execute-button::after {
+  content: "Run Query";
+  margin: 0px 2rem 0px 0.5rem;
+}

@@ -1,11 +1,15 @@
 import React from "react";
 import { AppProps } from "next/app";
 import Link from "next/link";
+import Head from "next/head";
 import { withTina } from "tinacms";
 import { TinacmsForestryProvider, ForestryClient } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 import { createClient } from "../utils/createClient";
+import "../global.css";
+import "graphiql/graphiql.css";
+import "codemirror/lib/codemirror.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -16,6 +20,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       }}
       onLogout={() => Cookies.remove("tina-editmode")}
     >
+      <Head>
+        <link
+          href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+          rel="stylesheet"
+        />
+      </Head>
       <div>
         {/* <div>
           <Link href="/pages">

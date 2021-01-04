@@ -5321,16 +5321,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xstate/react@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@xstate/react@npm:0.8.1"
-  peerDependencies:
-    react: ^16.8.0
-    xstate: ^4.6.0
-  checksum: 0626d73b43a237ac648faafe9e0fe3b99b2b967fbb9a12ce3e617f84dbd62ff5bf4bf4a5ffdd4b1cd920d3ef8b975185f85158938f67419bcb004e4eec9abef4
-  languageName: node
-  linkType: hard
-
 "@xstate/react@npm:^1.0.1":
   version: 1.0.1
   resolution: "@xstate/react@npm:1.0.1"
@@ -6266,52 +6256,6 @@ __metadata:
   checksum: e9c5d3580f6cae9c5c25c5c9c8660d344dd8bed25e77df7515c046864fe1aa4bb245e743ad46f55b85443ff53c95e378b3203c3e83f2168a2557e94d0552d458
   languageName: node
   linkType: hard
-
-"author-problem@workspace:apps/author-problem":
-  version: 0.0.0-use.local
-  resolution: "author-problem@workspace:apps/author-problem"
-  dependencies:
-    "@forestryio/cli": "workspace:packages/cli"
-    "@forestryio/client": "workspace:packages/client"
-    "@tailwindcss/ui": ^0.3.0
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.3
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.32.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
-    "@types/js-cookie": ^2.2.6
-    "@types/node": ^13.13.1
-    "@types/react": ^16.9.43
-    "@types/styled-components": ^5.1.3
-    "@urql/core": ^1.11.7
-    "@xstate/react": ^0.8.1
-    autoprefixer: ^9.7.6
-    dotenv: 8.2.0
-    fast-glob: ^3.2.4
-    final-form: ^4.18.2
-    formik: ^2.1.4
-    graphql: ^15.0.0
-    graphql-tag: ^2.11.0
-    js-cookie: ^2.2.1
-    next: 9.5.1
-    postcss-import: ^12.0.1
-    prop-types: ^15.7.2
-    react: ^16.13.1
-    react-dom: ^16.13.1
-    react-is: ^16.13.1
-    react-markdown: ^4.3.1
-    styled-components: ^5.1.3
-    styled-jsx: ^3.2.5
-    tailwindcss: ^1.4.6
-    tinacms: 0.31.0
-    typescript: ^3.8.3
-    urql: ^1.9.7
-    xstate: ^4.9.1
-    yup: ^0.28.4
-  languageName: unknown
-  linkType: soft
 
 "auto-bind@npm:~4.0.0":
   version: 4.0.0
@@ -8132,6 +8076,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"codemirror-graphql@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "codemirror-graphql@npm:0.14.0"
+  dependencies:
+    graphql-language-service-interface: ^2.7.0
+    graphql-language-service-parser: ^1.8.0
+  peerDependencies:
+    codemirror: ^5.54.0
+    graphql: ^14.0.0 || ^15.0.0
+  checksum: ef2f95523e6ed14c687b83478ac2520da0cde4f16bc93f056ca0df71bbfcc37d9629873d6e1c68b99d7743130afa18e24368b725d09035ab47cf77f370a0e255
+  languageName: node
+  linkType: hard
+
 "codemirror@npm:^5.54.0, codemirror@npm:^5.55.0":
   version: 5.56.0
   resolution: "codemirror@npm:5.56.0"
@@ -8143,6 +8100,13 @@ __metadata:
   version: 5.57.0
   resolution: "codemirror@npm:5.57.0"
   checksum: 5e1c9da21da9c24b388325e67d8d9a1c75446a9d1230a7e475c5d2ae3ee38b5b2b200a7a1ee2e7204f76ffc3566b7dbb9500a384653312a12c707bcc6f58690d
+  languageName: node
+  linkType: hard
+
+"codemirror@npm:^5.59.1":
+  version: 5.59.1
+  resolution: "codemirror@npm:5.59.1"
+  checksum: 42392aeac246d3315ba973dadb7c22f39cfa47d95ff115332153a03531d6fdf745f63d68a3eff0294711db817f83e04f79ebb4ede9128bf3c8be043390b74d4b
   languageName: node
   linkType: hard
 
@@ -9534,6 +9498,7 @@ __metadata:
   dependencies:
     "@forestryio/cli": "workspace:packages/cli"
     "@forestryio/client": "workspace:packages/client"
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@tailwindcss/ui": ^0.3.0
     "@tinacms/core": ^0.31.0
     "@tinacms/forms": ^0.3
@@ -9547,12 +9512,14 @@ __metadata:
     "@types/react": ^16.9.43
     "@types/styled-components": ^5.1.3
     "@urql/core": ^1.11.7
-    "@xstate/react": ^0.8.1
+    "@xstate/react": ^1.0.1
     autoprefixer: ^9.7.6
+    codemirror: ^5.59.1
     dotenv: 8.2.0
     fast-glob: ^3.2.4
     final-form: ^4.18.2
     formik: ^2.1.4
+    graphiql: ^1.2.2
     graphql: ^15.0.0
     graphql-tag: ^2.11.0
     js-cookie: ^2.2.1
@@ -9569,7 +9536,7 @@ __metadata:
     tinacms: 0.31.0
     typescript: ^3.8.3
     urql: ^1.9.7
-    xstate: ^4.9.1
+    xstate: ^4.13.0
     yup: ^0.28.4
   languageName: unknown
   linkType: soft
@@ -12355,6 +12322,24 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"graphiql@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "graphiql@npm:1.2.2"
+  dependencies:
+    codemirror: ^5.54.0
+    codemirror-graphql: ^0.14.0
+    copy-to-clipboard: ^3.2.0
+    entities: ^2.0.0
+    markdown-it: ^10.0.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0
+    prop-types: ">=15.5.0"
+    react: ^16.8.0
+    react-dom: ^16.8.0
+  checksum: 6c9c02461670cb88c6a30d760f68a2484dda94d415c5a221a9b19775c44df2b1cde48d0adcf72a9d092a712ff50afce89642148e46b4de61c3b413133720c4f8
+  languageName: node
+  linkType: hard
+
 "graphql-language-service-interface@npm:^2.4.2-alpha.2":
   version: 2.4.2-alpha.2
   resolution: "graphql-language-service-interface@npm:2.4.2-alpha.2"
@@ -12366,6 +12351,20 @@ fsevents@^1.2.7:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
   checksum: 0f6c0da072f9fa0e2b709e23995af6b20646349aa53ba62026057a997aa9688674c204f9c63a05ba0c0e67120e8235dc2686072a5ab4300c8da92ec1de9abc89
+  languageName: node
+  linkType: hard
+
+"graphql-language-service-interface@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "graphql-language-service-interface@npm:2.7.0"
+  dependencies:
+    graphql-language-service-parser: ^1.8.0
+    graphql-language-service-types: ^1.7.0
+    graphql-language-service-utils: ^2.4.4
+    vscode-languageserver-types: ^3.15.1
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0
+  checksum: d03a48d6338d5c7fe464cfdec966a9d79790af530975e0c672c6312785d3fd5bfb37cdcd57f903581f6edee579139824b5d99cf2dde0a72b005edf77b8f45205
   languageName: node
   linkType: hard
 
@@ -12381,12 +12380,32 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"graphql-language-service-parser@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "graphql-language-service-parser@npm:1.8.0"
+  dependencies:
+    graphql-language-service-types: ^1.7.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0
+  checksum: 3059a07c112434f73f8a32866a4d696bbf4f6a06739a6475d706892994a8b9465d7b7c0923b0dece946bc7597b7b77c1409803519515dd4bee5af92c4debcd45
+  languageName: node
+  linkType: hard
+
 "graphql-language-service-types@npm:^1.6.2":
   version: 1.6.2
   resolution: "graphql-language-service-types@npm:1.6.2"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
   checksum: d86a2a11aa8de457c5c181fa399b9d8fab683cbc667ab7f935755c1e56efd1323b0bbd50b48185bfab1ea7804abe142f7b4950d5427a720af8b2fbfa295ae3d9
+  languageName: node
+  linkType: hard
+
+"graphql-language-service-types@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "graphql-language-service-types@npm:1.7.0"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0
+  checksum: ee93d5b428152d3094778292c17750450ac09fbd4b02e2d1b06fa425b741edfe7fcf7da6bd547b3930997ca735cb43e61bb56dceb6b87608b99bfbe9209f4d4b
   languageName: node
   linkType: hard
 
@@ -12398,6 +12417,17 @@ fsevents@^1.2.7:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
   checksum: 94b1ef3861fe465488c7a8da6c1f61fcf51aef8331b74530e9f959eb7a05a39e6b43abba8df90292cb007c10f25c00bb846222f9ac27d02751da4bf62899f408
+  languageName: node
+  linkType: hard
+
+"graphql-language-service-utils@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "graphql-language-service-utils@npm:2.4.4"
+  dependencies:
+    graphql-language-service-types: ^1.7.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0
+  checksum: 9cf51ccbbab7de4a490190b1985d982a8d5ac827529088b410337bf09735b618338b391e7fb4970ab13a370e49a249329dfdf61c91b025be71238811a6a281d6
   languageName: node
   linkType: hard
 
@@ -26745,13 +26775,6 @@ typescript@~3.7.2:
   version: 4.15.1
   resolution: "xstate@npm:4.15.1"
   checksum: 24def9ddb01616cefc4a6e69bac01a92f3d19ae7b04dcfc331a21f573e517eed958a3d18e2ff6927206263c1a82cd064d14a550f2dc662658bfbae1dd1e879d6
-  languageName: node
-  linkType: hard
-
-"xstate@npm:^4.9.1":
-  version: 4.11.0
-  resolution: "xstate@npm:4.11.0"
-  checksum: 76801a4e711101ae97d7b502a4fe271eaf16d2afd060cd3f4a01309d2f2ae6417068f3af854188d44c8e6468f35eb56c51a6be7a85bd7b6431bd809fbcd73224
   languageName: node
   linkType: hard
 
