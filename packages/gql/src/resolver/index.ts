@@ -106,12 +106,34 @@ const schemaResolver = async (
       await addPendingDocument(args, context);
       return resolveDocument({ args, context });
     case "updateDocument":
+      assertShape<{ id: string; params: { [key: string]: object } }>(
+        args,
+        (yup) =>
+          yup.object({
+            id: yup.string().required(),
+            params: yup.object().required(),
+          })
+      );
+
       const section = await context.datasource.getSectionByPath(args.id);
       const params = args.params[section.slug];
 
+      const key = Object.keys(params)[0];
+      const values = Object.values(params)[0];
+
+      const templates = await context.datasource.getTemplatesForSection(
+        section.slug
+      );
+      const template = templates.find((template) => template.name === key);
+      if (!template) {
+        throw new Error(
+          `Unabled to find template ${key} for section ${section.slug}`
+        );
+      }
+
       const realParams = await resolve.input({
-        section: section.slug,
-        data: params,
+        data: values,
+        template,
         datasource: context.datasource,
         includeBody: true,
       });
@@ -162,12 +184,35 @@ const schemaResolver = async (
         })
       );
     } else if (sectionItem.mutation) {
+      assertShape<{ relativePath: string; params: { [key: string]: object } }>(
+        args,
+        (yup) =>
+          yup.object({
+            relativePath: yup.string().required(),
+            params: yup.object().required(),
+          })
+      );
+
+      const key = Object.keys(args.params)[0];
+      const values = Object.values(args.params)[0];
+
+      const templates = await context.datasource.getTemplatesForSection(
+        sectionItem.section.slug
+      );
+      const template = templates.find((template) => template.name === key);
+      if (!template) {
+        throw new Error(
+          `Unabled to find template ${key} for section ${sectionItem.section.slug}`
+        );
+      }
+
       const params = await resolve.input({
-        section: sectionItem.section.slug,
-        data: args.params,
+        template,
+        data: values,
         datasource: context.datasource,
         includeBody: true,
       });
+
       const payload = {
         relativePath: args.relativePath,
         section: sectionItem.section.slug,

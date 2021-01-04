@@ -58,6 +58,9 @@ export const startFixtureServer = async ({
     if (req.path === "/remix") {
       projectRoot = "/Users/jeffsee/code/my-remix-app/apps/gctc";
     }
+    if (req.path === "/gctc-next") {
+      projectRoot = "/Users/jeffsee/code/my-remix-app/apps/gctc-next";
+    }
     const datasource = new FileSystemManager(projectRoot);
     const cache = cacheInit(datasource);
     const { schema, sectionMap } = await schemaBuilder({ cache });
