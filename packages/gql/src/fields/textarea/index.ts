@@ -2,6 +2,8 @@ import { gql } from "../../gql";
 import { toAst, toHTML } from "../../remark";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
+import { friendlyName } from "@forestryio/graphql-helpers";
+import { assertShape } from "../../util";
 
 const typename = "TextareaField";
 
@@ -25,8 +27,26 @@ export const textarea = {
         type: typename,
       });
     },
-    initialValue: ({ field }: BuildArgs<TextareaField>) => {
-      return gql.string(field.name);
+    initialValue: ({ field, accumulator }: BuildArgs<TextareaField>) => {
+      const name = "LongTextInitialValue";
+      accumulator.push(
+        gql.object({
+          name,
+          fields: [
+            gql.field({ name: "raw", type: "String" }),
+            // TODO: Not sure how to support custom scalars, might be better to
+            // force this into a recursive GraphQLObject which matches the
+            // remark AST shape
+            // gql.field({ name: "markdownAst", type: "JSONObject" }),
+            // gql.field({ name: "html", type: "String" }),
+          ],
+        })
+      );
+
+      return gql.field({
+        name: field.name,
+        type: name,
+      });
     },
     value: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextValue";
@@ -46,8 +66,16 @@ export const textarea = {
         type: name,
       });
     },
-    input: ({ field }: BuildArgs<TextareaField>) => {
-      return gql.inputString(field.name);
+    input: async ({ field, cache, accumulator }: BuildArgs<TextareaField>) => {
+      const name = friendlyName(field, { suffix: "LongTextInput" });
+      accumulator.push(
+        gql.input({
+          name,
+          fields: [gql.inputString("raw")],
+        })
+      );
+
+      return gql.inputValue(field.name, name);
     },
   },
   resolve: {
@@ -57,6 +85,7 @@ export const textarea = {
       const { type, ...rest } = field;
       return {
         ...rest,
+        name: `${field.name}.raw`,
         component: "textarea",
         config: rest.config || {
           required: false,
@@ -66,9 +95,13 @@ export const textarea = {
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<TextareaField>): Promise<string> => {
+    }: ResolveArgs<TextareaField>): Promise<{
+      raw: string;
+    }> => {
       assertIsString(value, { source: "textarea initial value" });
-      return value;
+      return {
+        raw: value,
+      };
     },
     value: async ({
       value,
@@ -97,8 +130,10 @@ export const textarea = {
       { [key: string]: string } | false
     > => {
       try {
-        assertIsString(value, { source: "textarea initial value" });
-        return { [field.name]: value };
+        assertShape<{ raw: string }>(value, (yup) =>
+          yup.object({ raw: yup.string().required() })
+        );
+        return { [field.name]: value.raw };
       } catch (e) {
         return false;
       }

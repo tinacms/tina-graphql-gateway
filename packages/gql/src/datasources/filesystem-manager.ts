@@ -183,7 +183,7 @@ export class FileSystemManager implements DataSource {
     }
 
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
-    return await readFile<TinaDocument>(fullPath, this.loader);
+    return readFile<TinaDocument>(fullPath, this.loader);
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
     const sectionData = await this.getSettingsForSection(args.section);

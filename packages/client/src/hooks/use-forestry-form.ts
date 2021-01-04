@@ -152,13 +152,13 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForestryForm({
+export function useForestryForm<T>({
   payload,
   onSubmit,
 }: {
   payload: object;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
-}): object {
+}): T {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
   const cms = useCMS();
@@ -170,11 +170,16 @@ export function useForestryForm({
       queryString,
       onSubmit: (values) => {
         cms.api.forestry.prepareVariables(values).then((variables) => {
-          onSubmit &&
-            onSubmit({
-              queryString: values.mutationString,
-              variables,
-            });
+          onSubmit
+            ? onSubmit({
+                queryString: values.mutationString,
+                variables,
+              })
+            : cms.api.forestry
+                .request(values.mutationString, { variables })
+                .then((res) => {
+                  console.log("res", res);
+                });
         });
       },
     },
@@ -184,6 +189,7 @@ export function useForestryForm({
     send({ type: "RETRY", value: { payload, queryString } });
   }, [JSON.stringify(payload), queryString]);
 
+  // @ts-ignore
   return current.context.payload;
 }
 

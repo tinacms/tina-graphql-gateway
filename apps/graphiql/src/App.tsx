@@ -88,7 +88,8 @@ const TinaFixtureProject = () => {
   let { project } = useParams();
 
   const client = new ForestryClient("", {
-    gqlServer: `http://localhost:4002/${project}`,
+    // gqlServer: `http://localhost:4002/${project}`,
+    gqlServer: `http://localhost:4001/graphql`,
   });
   const media = new ForestryMediaStore(client);
 

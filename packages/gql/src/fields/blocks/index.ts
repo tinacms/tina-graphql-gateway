@@ -187,7 +187,7 @@ export const blocks: Blocks = {
         return false;
       }
 
-      const meh = (
+      const accum = (
         await sequential(value, async (item) => {
           try {
             assertShape<object>(item, (yup) => yup.object({}));
@@ -196,8 +196,7 @@ export const blocks: Blocks = {
             const data = Object.values(item)[0];
 
             const resolvedData = await template.resolve.input({
-              // data,
-              data: { [key]: data },
+              data,
               template: await datasource.getTemplate(slugify(key)),
               datasource,
             });
@@ -212,8 +211,8 @@ export const blocks: Blocks = {
           }
         })
       ).filter(Boolean);
-      if (meh.length > 0) {
-        return { [field.name]: meh };
+      if (accum.length > 0) {
+        return { [field.name]: accum };
       } else {
         return false;
       }

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { sequential } from "../../util";
+import { sequential, assertShape } from "../../util";
 import { templateTypeName } from "@forestryio/graphql-helpers";
 
 import { text } from "../text";
@@ -24,9 +24,12 @@ export const resolve = {
   data: async ({ datasource, template, data, content }: any) => {
     const accum: { [key: string]: unknown } = {};
     const { template: _templateName, ...rest } = data;
-    await sequential(Object.keys(rest), async (key) => {
+
+    const values = content ? { ...rest, _body: content } : rest;
+
+    await sequential(Object.keys(values), async (key) => {
       const field = findField([...template.fields, textarea.contentField], key);
-      return (accum[key] = await dataValue(datasource, field, rest[key]));
+      return (accum[key] = await dataValue(datasource, field, values[key]));
     });
 
     return {
@@ -35,24 +38,23 @@ export const resolve = {
         "Data",
         typeof content !== "undefined" // FIXME: be more explicit
       ),
-      _body: content,
       ...accum,
     };
   },
   values: async ({ datasource, template, data, content }: any) => {
     const accum: { [key: string]: unknown } = {};
-
     const { template: _templateName, ...rest } = data;
 
-    await sequential(Object.keys(rest), async (key) => {
+    const values = content ? { ...rest, _body: content } : rest;
+
+    await sequential(Object.keys(values), async (key) => {
       const field = findField([...template.fields, textarea.contentField], key);
       return (accum[key] = await dataInitialValuesField(
         datasource,
         field,
-        data[key]
+        values[key]
       ));
     });
-    accum["_body"] = content;
 
     return {
       __typename: templateTypeName(
@@ -97,50 +99,31 @@ export const resolve = {
     datasource,
     data,
     includeBody,
-    ...rest
-  }:
-    | {
-        datasource: DataSource;
-        section: string;
-        data: unknown;
-        includeBody?: true;
-      }
-    | {
-        datasource: DataSource;
-        template: TemplateData;
-        data: unknown;
-        includeBody?: true;
-      }) => {
-    let template: TemplateData;
-    const key = Object.keys(data)[0];
-    const values = Object.values(data)[0];
-    if (rest.section) {
-      const templates = await datasource.getTemplatesForSection(rest.section);
-      template = templates.find((template) => template.name === key);
-    } else {
-      template = rest.template;
-    }
-    if (!template) {
-      throw new Error(
-        `Unable to find template ${key} for section ${rest.section}, or one wasn't provided`
-      );
-    }
-
+    template,
+  }: {
+    datasource: DataSource;
+    template: TemplateData;
+    data: unknown;
+    includeBody?: true;
+  }) => {
     if (includeBody) {
       template.fields.push(textarea.contentField);
     }
 
+    assertShape<{ [key: string]: unknown }>(data, (yup) => yup.object());
+
     const fieldsToWrite = await sequential(template.fields, async (field) => {
-      const meh = await inputField({
+      return inputField({
         datasource,
         field,
-        value: values[field.name],
+        value: data[field.name],
       });
-      return meh;
     });
 
     const accum: { [key: string]: unknown } = {};
     fieldsToWrite.filter(Boolean).forEach((item) => {
+      assertShape<object>(item, (yup) => yup.object());
+
       const key = Object.keys(item)[0];
       const value = Object.values(item)[0];
       accum[key] = value;
