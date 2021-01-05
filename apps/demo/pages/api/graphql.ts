@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   console.log("path", await fs.readdirSync(path.join(process.cwd(), ".tina")));
 
   const json = await gql({
-    projectRoot: ".",
+    projectRoot: process.cwd(),
     query,
     variables,
   });
