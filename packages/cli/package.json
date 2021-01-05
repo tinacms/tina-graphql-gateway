@@ -24,8 +24,8 @@
     "typescript": "^3.6.3"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tsup src/index.ts --format cjs",
+    "watch": "yarn tsup src/index.ts --watch --format cjs",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
     "generate:schema": "yarn node scripts/generateSchema.js"

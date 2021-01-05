@@ -10,8 +10,8 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tsup src/index.ts --format cjs",
+    "watch": "yarn tsup src/index.ts --watch --format cjs",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",
