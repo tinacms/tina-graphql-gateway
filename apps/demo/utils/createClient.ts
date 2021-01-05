@@ -6,7 +6,7 @@ import {
 export const createClient = (editMode: boolean) => {
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   const customAPI = process.env.DEPLOYED_URL
-    ? `${protocol}://${process.env.DEPLOYED_URL}`
+    ? `https://${process.env.DEPLOYED_URL}`
     : "http://localhost:2999/api/graphql";
 
   console.log("capi", customAPI);
