@@ -21,6 +21,7 @@ export const gql = async ({
   query: string;
   variables: object;
 }) => {
+  console.log("using fs manager", projectRoot);
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
 
