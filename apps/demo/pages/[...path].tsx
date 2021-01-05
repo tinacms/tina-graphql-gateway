@@ -1,22 +1,26 @@
-import { GetStaticPaths, GetStaticPropsResult } from "next";
 import { useForestryForm } from "@forestryio/client";
 import { createClient } from "../utils/createClient";
 import type * as Tina from "../.tina/types";
+import { Sidebar } from "../components/sidebar";
 
 const client = createClient(false);
 
-export const getStaticProps = async ({
-  params,
-}): Promise<GetStaticPropsResult<Props>> => {
+export const getServerSideProps = async ({ params }): Promise<any> => {
   if (typeof params.path === "string") {
     throw new Error("Expected an array of strings for path slugs");
   }
-  const fullPath = `${params.path.join("/")}.md`;
 
   const content = await client.requestWithForm(
     (gql) => gql`
-      query ContentQuery($fullPath: ID!) {
-        node(id: $fullPath) {
+      query ContentQuery($section: String!, $relativePath: String!) {
+        getDocument(section: $section, relativePath: $relativePath) {
+          ... on Menus_Document {
+            data {
+              ... on Menu_Doc_Data {
+                logo
+              }
+            }
+          }
           ... on Posts_Document {
             data {
               ... on Post_Doc_Data {
@@ -50,62 +54,32 @@ export const getStaticProps = async ({
     `,
     {
       variables: {
-        fullPath,
+        section: params.path[0],
+        relativePath: params.path.slice(1).join("/"),
       },
     }
   );
   return { props: content };
 };
 
-const Home = (props: Props) => {
-  // @ts-ignore FIXME: not doing anything with TypeScript just yet
-  const { node } = useForestryForm({ payload: props });
-  const { form, sys, ...rest } = node;
+const Home = (props: any) => {
+  const { getDocument } = useForestryForm<{
+    getDocument:
+      | Tina.Menus_Document
+      | Tina.Pages_Document
+      | Tina.Posts_Document
+      | Tina.Authors_Document;
+  }>({ payload: props });
+  const { form, sys, ...rest } = getDocument;
 
   return (
-    <>
+    <div className="h-screen flex overflow-hidden bg-gray-100">
+      <Sidebar relativePath="" />
       <pre>
         <code>{JSON.stringify(rest, null, 2)}</code>
       </pre>
-    </>
+    </div>
   );
 };
 
 export default Home;
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const result = await client.request(
-    (gql) => gql`
-      query SectionsQuery {
-        getSections {
-          slug
-          path
-          documents {
-            sys {
-              breadcrumbs(excludeExtension: true)
-            }
-          }
-        }
-      }
-    `,
-    { variables: {} }
-  );
-
-  const paths = [];
-  result.getSections.forEach((section) =>
-    section.documents.forEach((document) => {
-      paths.push({
-        params: {
-          path: [...section.path.split("/"), ...document.sys.breadcrumbs],
-        },
-      });
-    })
-  );
-
-  return {
-    paths,
-    fallback: true,
-  };
-};
-
-type Props = { node: Tina.Node };

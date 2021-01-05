@@ -252,7 +252,7 @@ export const Explorer = ({
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
-      <Sidebar relativePath={relativePath} />
+      <Sidebar linkPrefix="/graphiql" relativePath={relativePath} />
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         <div id="root" className="graphiql-container">
           <React.Fragment>

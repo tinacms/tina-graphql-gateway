@@ -254,6 +254,11 @@ const queryDefinition = (sectionMap: sectionMap) => {
         type: "Node",
         args: [gql.inputID("id")],
       }),
+      gql.field({
+        name: "getDocument",
+        type: "Node",
+        args: [gql.inputString("section"), gql.inputString("relativePath")],
+      }),
       gql.fieldList({
         name: "getSections",
         type: "Section",

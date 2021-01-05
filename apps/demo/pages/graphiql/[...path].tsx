@@ -1,4 +1,3 @@
-import { GetStaticPropsResult } from "next";
 import { useRouter } from "next/router";
 import { createClient } from "../../utils/createClient";
 import { Explorer } from "../../components/graphiql";
