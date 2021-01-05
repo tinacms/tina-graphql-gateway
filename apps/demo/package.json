@@ -6,7 +6,8 @@
     "watch": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "next-dev": "next dev --port 2999",
     "build": "next build",
-    "start": "next start"
+    "next-start": "next start",
+    "start": "yarn tina-gql server:start -c \"yarn next-start\""
   },
   "devDependencies": {
     "@forestryio/cli": "workspace:packages/cli",

@@ -13,6 +13,7 @@ import "codemirror/lib/codemirror.css";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <TinacmsForestryProvider
+      // @ts-ignore
       onLogin={() => {
         Cookies.set("tina-editmode", "true");
         window.location.reload();
