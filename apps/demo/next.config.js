@@ -5,6 +5,9 @@ require("dotenv").config();
 module.exports = {
   env: {
     SITE_CLIENT_ID: process.env.SITE_CLIENT_ID,
+    DEPLOYED_URL: process.env.DEPLOYED_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
+    NODE_ENV: process.env.NODE_ENV,
   },
   typescript: {
     // !! WARN !!
