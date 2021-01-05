@@ -1,5 +1,5 @@
 import React from "react";
-import App, { AppProps } from "next/app";
+import { AppProps } from "next/app";
 import Head from "next/head";
 import { TinaProvider, TinaCMS } from "tinacms";
 import { TinacmsForestryProvider } from "@forestryio/client";
@@ -9,23 +9,10 @@ import { createClient } from "../utils/createClient";
 import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 
-export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
-  if (typeof params.path === "string") {
-    throw new Error("Expected an array of strings for path slugs");
-  }
+const client = createClient(false);
 
-  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-  const url = new URL("api/graphql", `${protocol}://${rest.req.headers.host}`);
-  return { props: { clientURL: url.toString() } };
-};
-
-function MyApp({
-  Component,
-  pageProps,
-  customAPI,
-}: AppProps & { customAPI: string }) {
+function MyApp({ Component, pageProps }: AppProps) {
   const editMode = !!Cookies.get("tina-editmode");
-  const client = createClient(customAPI, false);
 
   return (
     <TinaProvider
@@ -61,16 +48,5 @@ function MyApp({
     </TinaProvider>
   );
 }
-
-MyApp.getInitialProps = async (appContext) => {
-  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-  const url = new URL(
-    "api/graphql",
-    `${protocol}://${appContext.ctx.req.headers.host}`
-  );
-  const appProps = await App.getInitialProps(appContext);
-
-  return { ...appProps, customAPI: url.toString() };
-};
 
 export default MyApp;
