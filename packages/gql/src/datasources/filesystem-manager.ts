@@ -3,7 +3,7 @@ import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
-import { slugify } from "../util";
+import { slugify, assertShape } from "../util";
 import DataLoader from "dataloader";
 
 import { byTypeWorks, Section } from "../types";
@@ -124,7 +124,10 @@ export class FileSystemManager implements DataSource {
     });
 
     const main = sections.reduce(
-      (previous: { length: number; item: Section | null }, section) => {
+      (
+        previous: { length: number; item: DirectorySection | null },
+        section
+      ) => {
         const length = path.replace(section.path, "").length;
         if (length < previous.length) {
           return { length, item: section };

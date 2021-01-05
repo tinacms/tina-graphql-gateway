@@ -199,6 +199,15 @@ export class GithubManager implements DataSource {
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
+  getAllTemplates = async () => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await this.readDir(fullPath, this.dirLoader);
+    return await sequential(
+      templates,
+      async (templateSlug) =>
+        await this.getTemplate(templateSlug.replace(".yml", ""))
+    );
+  };
   getTemplates = async (templateSlugs: string[]) =>
     await sequential(
       templateSlugs,
@@ -224,6 +233,34 @@ export class GithubManager implements DataSource {
     }
 
     return result;
+  };
+  getSectionByPath = async (path: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections.map((section) => {
+      return {
+        ...section,
+        slug: slugify(section.label),
+      };
+    });
+
+    const main = sections.reduce(
+      (
+        previous: { length: number; item: DirectorySection | null },
+        section
+      ) => {
+        const length = path.replace(section.path, "").length;
+        if (length < previous.length) {
+          return { length, item: section };
+        }
+        return previous;
+      },
+      { length: 1000, item: null }
+    );
+    if (!main.item) {
+      throw new Error(`Unable to find section for path ${path}`);
+    }
+    return main.item;
   };
   getSectionsSettings = async () => {
     const data = await this.getSettingsData();
@@ -381,7 +418,8 @@ export class GithubManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
-    const string = matter.stringify("", params.data);
+    const { _body, ...data } = params;
+    const string = matter.stringify(`\n${_body || ""}`, data);
     await this.writeFile(fullPath, string);
   };
 
