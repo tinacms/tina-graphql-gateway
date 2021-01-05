@@ -3,12 +3,14 @@ import { createClient } from "../utils/createClient";
 import type * as Tina from "../.tina/types";
 import { Sidebar } from "../components/sidebar";
 
-const client = createClient(false);
-
 export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   if (typeof params.path === "string") {
     throw new Error("Expected an array of strings for path slugs");
   }
+
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const url = new URL("api/graphql", `${protocol}://${rest.req.headers.host}`);
+  const client = createClient(url.toString(), false);
 
   const content = await client.requestWithForm(
     (gql) => gql`

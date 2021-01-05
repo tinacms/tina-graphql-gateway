@@ -2,9 +2,11 @@ import { useRouter } from "next/router";
 import { createClient } from "../../utils/createClient";
 import { Explorer } from "../../components/graphiql";
 
-const client = createClient(false);
+export const getServerSideProps = async (props) => {
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const url = new URL("api/graphql", `${protocol}://${props.req.headers.host}`);
+  const client = createClient(url.toString(), false);
 
-export const getServerSideProps = async () => {
   const result = await client.request(
     (gql) => gql`
       query SectionsQuery {
