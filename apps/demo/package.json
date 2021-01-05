@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@forestryio/client": "workspace:packages/client",
+    "@forestryio/gql": "workspace:packages/gql",
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@tailwindcss/ui": "^0.3.0",
     "@tinacms/core": "^0.31.0",
