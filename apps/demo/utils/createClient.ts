@@ -9,7 +9,7 @@ export const createClient = (editMode: boolean) => {
   console.log("a", process.env.DEPLOYED_URL);
   console.log("b", process.env.VERCEL_URL);
   const customAPI = process.env.DEPLOYED_URL
-    ? `http://${process.env.DEPLOYED_URL}`
+    ? `${protocol}://${process.env.DEPLOYED_URL}/api/graphql`
     : "http://localhost:2999/api/graphql";
 
   console.log("capi", customAPI);
