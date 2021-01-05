@@ -278,8 +278,6 @@ or
 yarn tina-gql server:start
 ```
 
-You can now go to [http://localhost:4001/graphql](http://localhost:4001/graphql) and use [GraphiQL](https://github.com/graphql/graphiql/blob/main/packages/graphiql/README.md) to explore your new GraphQL API.
-
 **pages/posts/welcome.tsx**
 
 ```tsx
