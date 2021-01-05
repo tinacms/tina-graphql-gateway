@@ -7,7 +7,6 @@ import { TinacmsForestryProvider, ForestryClient } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 import { createClient } from "../utils/createClient";
-import "../global.css";
 import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 
@@ -27,19 +26,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <div>
-        {/* <div>
-          <Link href="/pages">
-            <a>Pages</a>
-          </Link>
-          <div style={{ width: "30px" }} />
-          <Link href="/authors">
-            <a>Authors</a>
-          </Link>
-          <div style={{ width: "30px" }} />
-          <Link href="/posts">
-            <a>Posts</a>
-          </Link>
-        </div> */}
         <Component {...pageProps} />
         <EditLink />
       </div>

@@ -45,8 +45,16 @@ type Section {
   documents: [Document]
 }
 
+input SectionParams {
+  pages: Pages_Input
+  posts: Posts_Input
+  authors: Authors_Input
+  menus: Menus_Input
+}
+
 type Mutation {
   addPendingDocument(relativePath: String, section: String, template: String): Node
+  updateDocument(id: ID!, params: SectionParams): Node
   updatePagesDocument(relativePath: String, params: Pages_Input): Pages_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
   updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
@@ -54,7 +62,9 @@ type Mutation {
 }
 
 type Query {
+  _queryString: String
   node(id: ID!): Node
+  getDocument(section: String, relativePath: String): Node
   getSections: [Section]
   getSection(section: String): Section
   getPagesDocument(relativePath: String): Pages_Document
@@ -184,6 +194,10 @@ type BlockPage_Doc_Data {
   _body: LongTextValue
 }
 
+type LongTextInitialValue {
+  raw: String
+}
+
 type Sidecar_Cta_Values {
   header: String
 }
@@ -194,8 +208,8 @@ type ActionVideo_Values {
 }
 
 type ActionNewsletter_Values {
-  body: String
-  footer: String
+  body: LongTextInitialValue
+  footer: LongTextInitialValue
   _template: String
 }
 
@@ -212,7 +226,7 @@ type ActionPageReference_Values {
 union Sidecar_Actions_Values = ActionVideo_Values | ActionNewsletter_Values | ActionPageReference_Values
 
 type Sidecar_Values {
-  text: String
+  text: LongTextInitialValue
   image: String
   cta: Sidecar_Cta_Values
   actions: [Sidecar_Actions_Values]
@@ -222,7 +236,7 @@ type Sidecar_Values {
 
 type ExcerptPost_Values {
   post: Reference
-  description: String
+  description: LongTextInitialValue
   style: Reference
   _template: String
 }
@@ -238,13 +252,13 @@ type PostList_Values {
 
 type PriceList_Prices_Values {
   title: String
-  description: String
+  description: LongTextInitialValue
   bullet_points: [String]
   category: Reference
 }
 
 type PriceList_Values {
-  heading: String
+  heading: LongTextInitialValue
   prices: [PriceList_Prices_Values]
   _template: String
 }
@@ -261,19 +275,19 @@ type SponsorList_Sponsor_Values {
 }
 
 type SponsorList_Values {
-  description: String
+  description: LongTextInitialValue
   sponsor: [SponsorList_Sponsor_Values]
   _template: String
 }
 
 type PageReference_Values {
-  description: String
+  description: LongTextInitialValue
   page: Reference
   _template: String
 }
 
 type SectionIndex_Values {
-  body: String
+  body: LongTextInitialValue
   limit: Int
   section: Reference
   _template: String
@@ -285,7 +299,7 @@ type BlockPage_Doc_Values {
   title: String
   date: String
   blocks: [BlockPage_Blocks_Values]
-  _body: String
+  _body: LongTextInitialValue
   _template: String
 }
 
@@ -508,6 +522,10 @@ type BlockPage_Doc_Form {
   fields: [BlockPage_Doc_FormFieldsUnion]
 }
 
+input Sidecar_Text_LongTextInput {
+  raw: String
+}
+
 input Sidecar_Cta_Input {
   header: String
 }
@@ -516,9 +534,17 @@ input ActionVideo_Input {
   url: String
 }
 
+input ActionNewsletter_Body_LongTextInput {
+  raw: String
+}
+
+input ActionNewsletter_Footer_LongTextInput {
+  raw: String
+}
+
 input ActionNewsletter_Input {
-  body: String
-  footer: String
+  body: ActionNewsletter_Body_LongTextInput
+  footer: ActionNewsletter_Footer_LongTextInput
 }
 
 input ActionPageReference_ButtonSettings_Input {
@@ -537,16 +563,20 @@ input Actions_Input {
 }
 
 input Sidecar_Input {
-  text: String
+  text: Sidecar_Text_LongTextInput
   image: String
   cta: Sidecar_Cta_Input
   actions: [Actions_Input]
   style: String
 }
 
+input ExcerptPost_Description_LongTextInput {
+  raw: String
+}
+
 input ExcerptPost_Input {
   post: String
-  description: String
+  description: ExcerptPost_Description_LongTextInput
   style: String
 }
 
@@ -558,20 +588,32 @@ input PostList_Input {
   posts: [PostList_Posts_Input]
 }
 
+input PriceList_Heading_LongTextInput {
+  raw: String
+}
+
+input Description_LongTextInput {
+  raw: String
+}
+
 input PriceList_Prices_Input {
   title: String
-  description: String
+  description: Description_LongTextInput
   bullet_points: [String]
   category: String
 }
 
 input PriceList_Input {
-  heading: String
+  heading: PriceList_Heading_LongTextInput
   prices: [PriceList_Prices_Input]
 }
 
 input AuthorList_Input {
   authors: [String]
+}
+
+input SponsorList_Description_LongTextInput {
+  raw: String
 }
 
 input SponsorList_Sponsor_Input {
@@ -581,17 +623,25 @@ input SponsorList_Sponsor_Input {
 }
 
 input SponsorList_Input {
-  description: String
+  description: SponsorList_Description_LongTextInput
   sponsor: [SponsorList_Sponsor_Input]
 }
 
+input PageReference_Description_LongTextInput {
+  raw: String
+}
+
 input PageReference_Input {
-  description: String
+  description: PageReference_Description_LongTextInput
   page: String
 }
 
+input SectionIndex_Body_LongTextInput {
+  raw: String
+}
+
 input SectionIndex_Input {
-  body: String
+  body: SectionIndex_Body_LongTextInput
   limit: Int
   section: String
 }
@@ -607,11 +657,15 @@ input Blocks_Input {
   sectionIndex: SectionIndex_Input
 }
 
+input Body_LongTextInput {
+  raw: String
+}
+
 input BlockPage_Doc_Input {
   title: String
   date: String
   blocks: [Blocks_Input]
-  _body: String
+  _body: Body_LongTextInput
 }
 
 union Posts_Data = Post_Doc_Data
@@ -647,7 +701,7 @@ type Post_Doc_Values {
   image: String
   excerpt: String
   hashtags: [String]
-  _body: String
+  _body: LongTextInitialValue
   _template: String
 }
 
@@ -671,7 +725,7 @@ input Post_Doc_Input {
   image: String
   excerpt: String
   hashtags: [String]
-  _body: String
+  _body: Body_LongTextInput
 }
 
 union Authors_Data = Author_Doc_Data
@@ -717,7 +771,7 @@ type Author_Doc_Values {
   gallery: [String]
   anecdotes: [String]
   accolades: [Author_Accolades_Values]
-  _body: String
+  _body: LongTextInitialValue
   _template: String
 }
 
@@ -749,7 +803,7 @@ input Author_Doc_Input {
   gallery: [String]
   anecdotes: [String]
   accolades: [Author_Accolades_Input]
-  _body: String
+  _body: Body_LongTextInput
 }
 
 union Menus_Data = Menu_Doc_Data
@@ -789,7 +843,7 @@ type Menu_MenuItem_Values {
 type Menu_Doc_Values {
   logo: String
   menu_item: [Menu_MenuItem_Values]
-  _body: String
+  _body: LongTextInitialValue
   _template: String
 }
 
@@ -818,7 +872,7 @@ input Menu_MenuItem_Input {
 input Menu_Doc_Input {
   logo: String
   menu_item: [Menu_MenuItem_Input]
-  _body: String
+  _body: Body_LongTextInput
 }
 
   

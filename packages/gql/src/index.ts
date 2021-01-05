@@ -1,11 +1,10 @@
 import { schemaBuilder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
-import { print, buildASTSchema } from "graphql";
+import { buildASTSchema } from "graphql";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 import { GithubManager, clearCache } from "./datasources/github-manager";
 import path from "path";
-import fs from "fs";
 import cors from "cors";
 import http from "http";
 import WebSocket from "ws";

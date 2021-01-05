@@ -61,9 +61,17 @@ export type Section = {
   documents?: Maybe<Array<Maybe<Document>>>;
 };
 
+export type SectionParams = {
+  pages?: Maybe<Pages_Input>;
+  posts?: Maybe<Posts_Input>;
+  authors?: Maybe<Authors_Input>;
+  menus?: Maybe<Menus_Input>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument?: Maybe<Node>;
+  updateDocument?: Maybe<Node>;
   updatePagesDocument?: Maybe<Pages_Document>;
   updatePostsDocument?: Maybe<Posts_Document>;
   updateAuthorsDocument?: Maybe<Authors_Document>;
@@ -75,6 +83,12 @@ export type MutationAddPendingDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
   section?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationUpdateDocumentArgs = {
+  id: Scalars['ID'];
+  params?: Maybe<SectionParams>;
 };
 
 
@@ -103,7 +117,9 @@ export type MutationUpdateMenusDocumentArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  _queryString?: Maybe<Scalars['String']>;
   node?: Maybe<Node>;
+  getDocument?: Maybe<Node>;
   getSections?: Maybe<Array<Maybe<Section>>>;
   getSection?: Maybe<Section>;
   getPagesDocument?: Maybe<Pages_Document>;
@@ -119,6 +135,12 @@ export type Query = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryGetDocumentArgs = {
+  section?: Maybe<Scalars['String']>;
+  relativePath?: Maybe<Scalars['String']>;
 };
 
 
@@ -282,6 +304,11 @@ export type BlockPage_Doc_Data = {
   _body?: Maybe<LongTextValue>;
 };
 
+export type LongTextInitialValue = {
+  __typename?: 'LongTextInitialValue';
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type Sidecar_Cta_Values = {
   __typename?: 'Sidecar_Cta_Values';
   header?: Maybe<Scalars['String']>;
@@ -295,8 +322,8 @@ export type ActionVideo_Values = {
 
 export type ActionNewsletter_Values = {
   __typename?: 'ActionNewsletter_Values';
-  body?: Maybe<Scalars['String']>;
-  footer?: Maybe<Scalars['String']>;
+  body?: Maybe<LongTextInitialValue>;
+  footer?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -316,7 +343,7 @@ export type Sidecar_Actions_Values = ActionVideo_Values | ActionNewsletter_Value
 
 export type Sidecar_Values = {
   __typename?: 'Sidecar_Values';
-  text?: Maybe<Scalars['String']>;
+  text?: Maybe<LongTextInitialValue>;
   image?: Maybe<Scalars['String']>;
   cta?: Maybe<Sidecar_Cta_Values>;
   actions?: Maybe<Array<Maybe<Sidecar_Actions_Values>>>;
@@ -327,7 +354,7 @@ export type Sidecar_Values = {
 export type ExcerptPost_Values = {
   __typename?: 'ExcerptPost_Values';
   post?: Maybe<Scalars['Reference']>;
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<LongTextInitialValue>;
   style?: Maybe<Scalars['Reference']>;
   _template?: Maybe<Scalars['String']>;
 };
@@ -346,14 +373,14 @@ export type PostList_Values = {
 export type PriceList_Prices_Values = {
   __typename?: 'PriceList_Prices_Values';
   title?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<LongTextInitialValue>;
   bullet_points?: Maybe<Array<Maybe<Scalars['String']>>>;
   category?: Maybe<Scalars['Reference']>;
 };
 
 export type PriceList_Values = {
   __typename?: 'PriceList_Values';
-  heading?: Maybe<Scalars['String']>;
+  heading?: Maybe<LongTextInitialValue>;
   prices?: Maybe<Array<Maybe<PriceList_Prices_Values>>>;
   _template?: Maybe<Scalars['String']>;
 };
@@ -373,21 +400,21 @@ export type SponsorList_Sponsor_Values = {
 
 export type SponsorList_Values = {
   __typename?: 'SponsorList_Values';
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<LongTextInitialValue>;
   sponsor?: Maybe<Array<Maybe<SponsorList_Sponsor_Values>>>;
   _template?: Maybe<Scalars['String']>;
 };
 
 export type PageReference_Values = {
   __typename?: 'PageReference_Values';
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<LongTextInitialValue>;
   page?: Maybe<Scalars['Reference']>;
   _template?: Maybe<Scalars['String']>;
 };
 
 export type SectionIndex_Values = {
   __typename?: 'SectionIndex_Values';
-  body?: Maybe<Scalars['String']>;
+  body?: Maybe<LongTextInitialValue>;
   limit?: Maybe<Scalars['Int']>;
   section?: Maybe<Scalars['Reference']>;
   _template?: Maybe<Scalars['String']>;
@@ -400,7 +427,7 @@ export type BlockPage_Doc_Values = {
   title?: Maybe<Scalars['String']>;
   date?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<BlockPage_Blocks_Values>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -651,6 +678,10 @@ export type BlockPage_Doc_Form = {
   fields?: Maybe<Array<Maybe<BlockPage_Doc_FormFieldsUnion>>>;
 };
 
+export type Sidecar_Text_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type Sidecar_Cta_Input = {
   header?: Maybe<Scalars['String']>;
 };
@@ -659,9 +690,17 @@ export type ActionVideo_Input = {
   url?: Maybe<Scalars['String']>;
 };
 
+export type ActionNewsletter_Body_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
+export type ActionNewsletter_Footer_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type ActionNewsletter_Input = {
-  body?: Maybe<Scalars['String']>;
-  footer?: Maybe<Scalars['String']>;
+  body?: Maybe<ActionNewsletter_Body_LongTextInput>;
+  footer?: Maybe<ActionNewsletter_Footer_LongTextInput>;
 };
 
 export type ActionPageReference_ButtonSettings_Input = {
@@ -680,16 +719,20 @@ export type Actions_Input = {
 };
 
 export type Sidecar_Input = {
-  text?: Maybe<Scalars['String']>;
+  text?: Maybe<Sidecar_Text_LongTextInput>;
   image?: Maybe<Scalars['String']>;
   cta?: Maybe<Sidecar_Cta_Input>;
   actions?: Maybe<Array<Maybe<Actions_Input>>>;
   style?: Maybe<Scalars['String']>;
 };
 
+export type ExcerptPost_Description_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type ExcerptPost_Input = {
   post?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<ExcerptPost_Description_LongTextInput>;
   style?: Maybe<Scalars['String']>;
 };
 
@@ -701,20 +744,32 @@ export type PostList_Input = {
   posts?: Maybe<Array<Maybe<PostList_Posts_Input>>>;
 };
 
+export type PriceList_Heading_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
+export type Description_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type PriceList_Prices_Input = {
   title?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<Description_LongTextInput>;
   bullet_points?: Maybe<Array<Maybe<Scalars['String']>>>;
   category?: Maybe<Scalars['String']>;
 };
 
 export type PriceList_Input = {
-  heading?: Maybe<Scalars['String']>;
+  heading?: Maybe<PriceList_Heading_LongTextInput>;
   prices?: Maybe<Array<Maybe<PriceList_Prices_Input>>>;
 };
 
 export type AuthorList_Input = {
   authors?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type SponsorList_Description_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
 };
 
 export type SponsorList_Sponsor_Input = {
@@ -724,17 +779,25 @@ export type SponsorList_Sponsor_Input = {
 };
 
 export type SponsorList_Input = {
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<SponsorList_Description_LongTextInput>;
   sponsor?: Maybe<Array<Maybe<SponsorList_Sponsor_Input>>>;
 };
 
+export type PageReference_Description_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type PageReference_Input = {
-  description?: Maybe<Scalars['String']>;
+  description?: Maybe<PageReference_Description_LongTextInput>;
   page?: Maybe<Scalars['String']>;
 };
 
+export type SectionIndex_Body_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type SectionIndex_Input = {
-  body?: Maybe<Scalars['String']>;
+  body?: Maybe<SectionIndex_Body_LongTextInput>;
   limit?: Maybe<Scalars['Int']>;
   section?: Maybe<Scalars['String']>;
 };
@@ -750,11 +813,15 @@ export type Blocks_Input = {
   sectionIndex?: Maybe<SectionIndex_Input>;
 };
 
+export type Body_LongTextInput = {
+  raw?: Maybe<Scalars['String']>;
+};
+
 export type BlockPage_Doc_Input = {
   title?: Maybe<Scalars['String']>;
   date?: Maybe<Scalars['String']>;
   blocks?: Maybe<Array<Maybe<Blocks_Input>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Body_LongTextInput>;
 };
 
 export type Posts_Data = Post_Doc_Data;
@@ -793,7 +860,7 @@ export type Post_Doc_Values = {
   image?: Maybe<Scalars['String']>;
   excerpt?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -819,7 +886,7 @@ export type Post_Doc_Input = {
   image?: Maybe<Scalars['String']>;
   excerpt?: Maybe<Scalars['String']>;
   hashtags?: Maybe<Array<Maybe<Scalars['String']>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Body_LongTextInput>;
 };
 
 export type Authors_Data = Author_Doc_Data;
@@ -870,7 +937,7 @@ export type Author_Doc_Values = {
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Values>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -904,7 +971,7 @@ export type Author_Doc_Input = {
   gallery?: Maybe<Array<Maybe<Scalars['String']>>>;
   anecdotes?: Maybe<Array<Maybe<Scalars['String']>>>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Input>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Body_LongTextInput>;
 };
 
 export type Menus_Data = Menu_Doc_Data;
@@ -949,7 +1016,7 @@ export type Menu_Doc_Values = {
   __typename?: 'Menu_Doc_Values';
   logo?: Maybe<Scalars['String']>;
   menu_item?: Maybe<Array<Maybe<Menu_MenuItem_Values>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -980,7 +1047,7 @@ export type Menu_MenuItem_Input = {
 export type Menu_Doc_Input = {
   logo?: Maybe<Scalars['String']>;
   menu_item?: Maybe<Array<Maybe<Menu_MenuItem_Input>>>;
-  _body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Body_LongTextInput>;
 };
 
 

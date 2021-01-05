@@ -2,7 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { useCMS } from "tinacms";
 
-export const Sidebar = ({ relativePath }: { relativePath: string }) => {
+export const Sidebar = ({
+  linkPrefix = "",
+  relativePath,
+}: {
+  linkPrefix?: string;
+  relativePath: string;
+}) => {
   const [sections, setSections] = React.useState<
     {
       slug: string;
@@ -65,7 +71,7 @@ export const Sidebar = ({ relativePath }: { relativePath: string }) => {
                     sectionData.slug
                   );
                   return (
-                    <>
+                    <React.Fragment key={sectionData.slug}>
                       <button
                         onClick={() => {
                           isActiveSection
@@ -108,7 +114,8 @@ export const Sidebar = ({ relativePath }: { relativePath: string }) => {
                               : "";
                           return (
                             <Link
-                              href={`/graphiql/${sectionData.slug}/${document.sys.relativePath}`}
+                              key={`${linkPrefix}/${sectionData.slug}/${document.sys.relativePath}`}
+                              href={`${linkPrefix}/${sectionData.slug}/${document.sys.relativePath}`}
                             >
                               <a
                                 className={`mb-1 group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
@@ -119,7 +126,7 @@ export const Sidebar = ({ relativePath }: { relativePath: string }) => {
                           );
                         })}
                       </div>
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </div>
