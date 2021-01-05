@@ -271,10 +271,6 @@ export class ForestryClient {
       return null;
     }
   }
-
-  private getCookie(cookieName: string): string | undefined {
-    return Cookies.get(cookieName);
-  }
 }
 
 export { ForestryMediaStore } from "./media-store";
