@@ -3,13 +3,18 @@ import {
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
 } from "@forestryio/client";
 
-export const createClient = (customAPI: string, editMode: boolean) => {
+export const createClient = (editMode: boolean) => {
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const customAPI = process.env.DEPLOYED_URL
+    ? `${protocol}://${process.env.DEPLOYED_URL}`
+    : "http://localhost:2999/api/graphql";
+
+  console.log("capi", customAPI);
   return new ForestryClient({
     realm: "",
     clientId: process.env.SITE_CLIENT_ID,
     redirectURI: "",
     // customAPI: !editMode ? DEFAULT_LOCAL_TINA_GQL_SERVER_URL : undefined
-    // customAPI: "http://localhost:2999/api/graphql",
-    customAPI: customAPI,
+    customAPI,
   });
 };

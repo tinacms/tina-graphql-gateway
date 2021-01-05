@@ -2,11 +2,9 @@ import { useRouter } from "next/router";
 import { createClient } from "../../utils/createClient";
 import { Explorer } from "../../components/graphiql";
 
-export const getServerSideProps = async (props) => {
-  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-  const url = new URL("api/graphql", `${protocol}://${props.req.headers.host}`);
-  const client = createClient(url.toString(), false);
+const client = createClient(false);
 
+export const getServerSideProps = async (props) => {
   const result = await client.request(
     (gql) => gql`
       query SectionsQuery {
@@ -26,7 +24,7 @@ export const getServerSideProps = async (props) => {
   return { props: result };
 };
 
-const Home = (props: any) => {
+const Home = () => {
   const router = useRouter();
   const { path } = router.query;
 
