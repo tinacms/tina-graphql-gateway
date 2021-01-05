@@ -3,6 +3,10 @@ import {
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
 } from "@forestryio/client";
 
+console.log("deployedURL", process.env.DEPLOYED_URL);
+
+console.log("vercel URL", process.env.VERCEL_URL);
+
 export const createClient = (editMode: boolean) => {
   console.log(process.env);
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
