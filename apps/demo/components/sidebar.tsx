@@ -50,6 +50,13 @@ export const Sidebar = ({
           {}
         );
         setSections(result.getSections);
+        setActiveSections(
+          result.getSections.find((sectionData) =>
+            sectionData.documents.find((doc) => {
+              return doc.sys.relativePath === relativePath;
+            })
+          ).slug
+        );
       } catch (e) {
         console.log("unable to list documents...");
         console.log(e);
@@ -87,7 +94,6 @@ export const Sidebar = ({
                         }}
                         className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150`}
                       >
-                        {/* Expanded: "text-gray-200 rotate-90", Collapsed: "text-gray-300" */}
                         <svg
                           className={`mr-2 h-5 w-5 transform group-hover:text-gray-200 group-focus:text-gray-200 transition-colors ease-in-out duration-150 ${
                             isActiveSection ? "rotate-90" : ""
