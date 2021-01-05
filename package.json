@@ -6,8 +6,8 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --exclude demo --exclude forestry-schema -t -i --verbose run build",
-    "build-demo": "yarn workspace demo  run build",
+    "build": "yarn workspaces foreach --exclude demo --exclude forestry-schema -i --verbose run build",
+    "build-demo": "yarn workspace demo run build",
     "watch": "yarn workspaces foreach --exclude demo --exclude forestry-schema --exclude @forestryio/cli --exclude @forestryio/client --exclude @forestryio/graphql-helpers -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
