@@ -5,7 +5,7 @@ import { Sidebar } from "../components/sidebar";
 
 const client = createClient(false);
 
-export const getServerSideProps = async ({ params }): Promise<any> => {
+export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   if (typeof params.path === "string") {
     throw new Error("Expected an array of strings for path slugs");
   }

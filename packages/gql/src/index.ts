@@ -63,7 +63,7 @@ export const githubRoute = async ({
   variables: object;
 }) => {
   const datasource = new GithubManager({
-    rootPath: "", // FIXME: no need for this
+    rootPath: "apps/demo",
     accessToken,
     owner,
     repo,
@@ -116,6 +116,18 @@ export const startServer = async ({
   const { schema, sectionMap } = await schemaBuilder({ cache });
 
   app.post("/graphql", async (req, res) => {
+    const { query, variables } = req.body;
+    const result = await githubRoute({
+      accessToken: "652a1dfef83723720aba1d836400a5782de2626c",
+      owner: "forestryio",
+      repo: "graphql-demo",
+      query,
+      variables,
+    });
+    return res.json(result);
+  });
+
+  app.post("/graphql2", async (req, res) => {
     const { query, variables } = req.body;
 
     const result = await graphqlInit({

@@ -9737,6 +9737,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["demo", "workspace:apps/demo"],
             ["@forestryio/cli", "workspace:packages/cli"],
             ["@forestryio/client", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
+            ["@forestryio/gql", "workspace:packages/gql"],
             ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@tailwindcss/ui", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.3.1"],
             ["@tinacms/core", "npm:0.31.0"],
