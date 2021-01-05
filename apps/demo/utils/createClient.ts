@@ -5,6 +5,8 @@ import {
 
 export const createClient = (editMode: boolean) => {
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  console.log("a", process.env.DEPLOYED_URL);
+  console.log("b", process.env.VERCEL_URL);
   const customAPI = process.env.DEPLOYED_URL
     ? `https://${process.env.DEPLOYED_URL}`
     : "http://localhost:2999/api/graphql";
