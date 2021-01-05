@@ -1,46 +1,76 @@
 import React from "react";
-import { AppProps } from "next/app";
-import Link from "next/link";
+import App, { AppProps } from "next/app";
 import Head from "next/head";
-import { withTina } from "tinacms";
-import { TinacmsForestryProvider, ForestryClient } from "@forestryio/client";
+import { TinaProvider, TinaCMS } from "tinacms";
+import { TinacmsForestryProvider } from "@forestryio/client";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 import { createClient } from "../utils/createClient";
 import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
+export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
+  if (typeof params.path === "string") {
+    throw new Error("Expected an array of strings for path slugs");
+  }
+
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const url = new URL("api/graphql", `${protocol}://${rest.req.headers.host}`);
+  return { props: { clientURL: url.toString() } };
+};
+
+function MyApp({
+  Component,
+  pageProps,
+  customAPI,
+}: AppProps & { customAPI: string }) {
+  const editMode = !!Cookies.get("tina-editmode");
+  const client = createClient(customAPI, false);
+
   return (
-    <TinacmsForestryProvider
-      // @ts-ignore
-      onLogin={() => {
-        Cookies.set("tina-editmode", "true");
-        window.location.reload();
-      }}
-      onLogout={() => Cookies.remove("tina-editmode")}
+    <TinaProvider
+      cms={
+        new TinaCMS({
+          apis: {
+            forestry: client,
+          },
+          sidebar: true, //editMode,
+          enabled: true, //editMode,
+        })
+      }
     >
-      <Head>
-        <link
-          href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
-          rel="stylesheet"
-        />
-      </Head>
-      <div>
-        <Component {...pageProps} />
-        <EditLink />
-      </div>
-    </TinacmsForestryProvider>
+      <TinacmsForestryProvider
+        // @ts-ignore
+        onLogin={() => {
+          Cookies.set("tina-editmode", "true");
+          window.location.reload();
+        }}
+        onLogout={() => Cookies.remove("tina-editmode")}
+      >
+        <Head>
+          <link
+            href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+            rel="stylesheet"
+          />
+        </Head>
+        <div>
+          <Component {...pageProps} />
+          <EditLink />
+        </div>
+      </TinacmsForestryProvider>
+    </TinaProvider>
   );
 }
 
-const editMode = !!Cookies.get("tina-editmode");
-const client = createClient(false);
+MyApp.getInitialProps = async (appContext) => {
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const url = new URL(
+    "api/graphql",
+    `${protocol}://${appContext.ctx.req.headers.host}`
+  );
+  const appProps = await App.getInitialProps(appContext);
 
-export default withTina(MyApp, {
-  apis: {
-    forestry: client,
-  },
-  sidebar: true, //editMode,
-  enabled: true, //editMode,
-});
+  return { ...appProps, customAPI: url.toString() };
+};
+
+export default MyApp;
