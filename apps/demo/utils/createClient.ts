@@ -4,6 +4,7 @@ import {
 } from "@forestryio/client";
 
 export const createClient = (editMode: boolean) => {
+  console.log(process.env);
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   console.log("a", process.env.DEPLOYED_URL);
   console.log("b", process.env.VERCEL_URL);
