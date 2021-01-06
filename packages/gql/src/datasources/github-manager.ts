@@ -101,14 +101,6 @@ export class GithubManager implements DataSource {
 
     const appOctoKit = new Octokit({
       auth: accessToken,
-      // authStrategy: createAppAuth,
-      // auth: {
-      //   id: 83861,
-      //   privateKey: pk,
-      //   installationId: “12264194”,
-      //   clientId: GH_CLIENT,
-      //   clientSecret: GH_SECRET,
-      // },
     });
     this.appOctoKit = appOctoKit;
 
