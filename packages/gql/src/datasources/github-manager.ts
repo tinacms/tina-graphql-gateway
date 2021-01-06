@@ -55,7 +55,7 @@ export const clearCache = ({
 const getAndSetFromCache = async (
   { owner, repo }: { owner: string; repo: string },
   key: string,
-  setter: () => string | string[]
+  setter: () => Promise<string | string[]>
 ) => {
   const keyName = `${owner}:${repo}__${key}`;
   const value = cache.get(keyName);
@@ -124,7 +124,6 @@ export class GithubManager implements DataSource {
           switch (extension) {
             case ".md":
             case ".yml":
-              // @ts-ignore
               results[path] = await getAndSetFromCache(repoConfig, path, () => {
                 return appOctoKit.repos
                   .getContent({
@@ -153,21 +152,21 @@ export class GithubManager implements DataSource {
       const results: { [key: string]: unknown } = {};
       await Promise.all(
         keys.map(async (path) => {
-          // @ts-ignore
           results[path] = await getAndSetFromCache(repoConfig, path, () => {
-            return (
-              appOctoKit.repos
-                .getContent({
-                  ...repoConfig,
-                  path,
-                })
-                // @ts-ignore
-                .then((dirContents) => {
-                  if (Array.isArray(dirContents.data)) {
-                    return dirContents.data.map((t) => t.name);
-                  }
-                })
-            );
+            return appOctoKit.repos
+              .getContent({
+                ...repoConfig,
+                path,
+              })
+              .then((dirContents) => {
+                if (Array.isArray(dirContents.data)) {
+                  return dirContents.data.map((t) => t.name);
+                } else {
+                  throw new Error(
+                    "Expected directory request to return an array of strings"
+                  );
+                }
+              });
           });
 
           // TODO: An error I suppose
