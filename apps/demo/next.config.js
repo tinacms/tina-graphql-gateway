@@ -17,6 +17,7 @@ module.exports = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  productionBrowserSourceMaps: true,
   webpack: (config) => {
     /**
      * Enable these when you want to work with Tina locally
