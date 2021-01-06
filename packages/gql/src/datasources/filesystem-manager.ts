@@ -3,7 +3,7 @@ import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
-import { slugify, assertShape } from "../util";
+import { slugify } from "../util";
 import DataLoader from "dataloader";
 
 import { byTypeWorks, Section } from "../types";

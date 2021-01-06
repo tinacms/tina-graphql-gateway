@@ -6,7 +6,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --exclude forestry-schema -t -i --verbose run build",
+    "build": "yarn workspaces foreach --exclude forestry-schema -pt -i --verbose run build",
     "watch": "yarn workspaces foreach --exclude forestry-schema  -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
