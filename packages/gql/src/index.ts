@@ -23,10 +23,6 @@ export const gql = async ({
   query: string;
   variables: object;
 }) => {
-  console.log("using fs manager", projectRoot);
-  console.log("root dir", await fs.readdirSync(p.join(projectRoot, "")));
-  console.log("content", await fs.readdirSync(p.join(projectRoot, "content")));
-
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
 
@@ -127,18 +123,6 @@ export const startServer = async ({
   const { schema, sectionMap } = await schemaBuilder({ cache });
 
   app.post("/graphql", async (req, res) => {
-    const { query, variables } = req.body;
-    const result = await githubRoute({
-      accessToken: "652a1dfef83723720aba1d836400a5782de2626c",
-      owner: "forestryio",
-      repo: "graphql-demo",
-      query,
-      variables,
-    });
-    return res.json(result);
-  });
-
-  app.post("/graphql2", async (req, res) => {
     const { query, variables } = req.body;
 
     const result = await graphqlInit({
