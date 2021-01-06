@@ -8,7 +8,7 @@ describe("friendlyName", () => {
   });
   test("it should add suffix", () => {
     const input = "action-newsletter.yml";
-    const output = "ActionNewsletter_suffix";
+    const output = "ActionNewsletterYml_suffix";
     expect(utils.friendlyName(input, { suffix: "suffix" })).toEqual(output);
   });
 });
