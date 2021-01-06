@@ -24,7 +24,7 @@ module.exports = {
     // config.resolve.alias["@tinacms"] = path.resolve(
     //   "../../../tinacms/packages/@tinacms"
     // );
-    config.resolve.alias["tinacms"] = path.resolve("tinacms");
+    config.resolve.alias["tinacms"] = require.resolve("tinacms");
     config.resolve.alias["react-dom"] = require.resolve("react-dom");
     config.resolve.alias["react"] = require.resolve("react");
 
