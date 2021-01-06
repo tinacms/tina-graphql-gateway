@@ -18,9 +18,6 @@ export const friendlyName = (
   if (lowerCase) {
     transform = (word: string) => camelCase(word);
   }
-  // if (field === "authors") {
-  //   console.log("yes", field, options);
-  // }
 
   if (Array.isArray(field)) {
     return `${field.map((f) => transform(f)).join("_")}${

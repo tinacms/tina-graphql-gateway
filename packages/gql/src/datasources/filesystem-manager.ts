@@ -338,13 +338,14 @@ const internalReadDir = async (path: string) => {
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {
-  let res;
-  res = matter(data, { excerpt_separator: "<!-- excerpt -->" });
+  const res = matter(data, {
+    excerpt_separator: "<!-- excerpt -->",
+  }) as unknown & { content: string };
   // Remove line break at top of _body
   res.content = res.content.replace(/^\n|\n$/g, "");
 
   // @ts-ignore
-  return res;
+  return res as T;
 };
 
 function isWithFields(t: object): t is WithFields {
