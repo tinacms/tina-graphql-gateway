@@ -28,7 +28,7 @@ module.exports = {
     config.resolve.alias["tinacms"] = require.resolve("tinacms");
     config.resolve.alias["react-dom"] = require.resolve("react-dom");
     config.resolve.alias["react"] = require.resolve("react");
-    config.optimization.minify = false;
+    config.optimization.minimize = false;
 
     return config;
   },
