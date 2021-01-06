@@ -76,6 +76,14 @@ export class FileSystemManager implements DataSource {
     );
   getSettingsData = async () => {
     console.log(
+      "content",
+      await fs.readdirSync(p.join(this.rootPath, "content"))
+    );
+    console.log(
+      "settings",
+      await fs.readdirSync(p.join(this.rootPath, ".tina"))
+    );
+    console.log(
       "get setttings data",
       p.join(this.rootPath, ".tina/settings.yml")
     );
@@ -83,6 +91,7 @@ export class FileSystemManager implements DataSource {
       p.join(this.rootPath, ".tina/settings.yml"),
       this.loader
     );
+    console.log("got it", data);
 
     return data;
   };
