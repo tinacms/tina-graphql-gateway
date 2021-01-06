@@ -24,7 +24,7 @@ export const gql = async ({
   variables: object;
 }) => {
   console.log("using fs manager", projectRoot);
-  console.log(".tina", await fs.readdirSync(p.join(projectRoot, ".tina")));
+  console.log("root dir", await fs.readdirSync(p.join(projectRoot, "")));
   console.log("content", await fs.readdirSync(p.join(projectRoot, "content")));
 
   const datasource = new FileSystemManager(projectRoot);
