@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     accessToken: process.env.GITHUB_ACCESS_TOKEN,
     owner: process.env.GIT_REPO_OWNER,
     repo: process.env.GIT_REPO_SLUG,
-    branch: "custom-queries-rebase",
+    branch: process.env.GIT_COMMIT_REF,
     query,
     variables,
   });
