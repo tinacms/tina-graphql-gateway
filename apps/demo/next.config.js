@@ -6,7 +6,8 @@ module.exports = {
   env: {
     SITE_CLIENT_ID: process.env.SITE_CLIENT_ID,
     DEPLOYED_URL: process.env.DEPLOYED_URL,
-    VERCEL_URL: process.env.VERCEL_URL,
+    GIT_REPO_SLUG: process.env.VERCEL_GIT_REPO_SLUG,
+    GIT_REPO_OWNER: process.env.VERCEL_GIT_REPO_OWNER,
   },
   typescript: {
     // !! WARN !!

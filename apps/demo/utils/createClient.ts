@@ -9,7 +9,6 @@ export const createClient = (editMode: boolean) => {
     ? `${protocol}://${process.env.DEPLOYED_URL}/api/graphql`
     : "http://localhost:2999/api/graphql";
 
-  console.log("capi", customAPI);
   return new ForestryClient({
     realm: "",
     clientId: process.env.SITE_CLIENT_ID,

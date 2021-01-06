@@ -61,15 +61,17 @@ export const githubRoute = async ({
   repo,
   query,
   variables,
+  rootPath,
 }: {
   accessToken: string;
   owner: string;
   repo: string;
   query: string;
   variables: object;
+  rootPath?: string;
 }) => {
   const datasource = new GithubManager({
-    rootPath: "apps/demo",
+    rootPath: rootPath || "",
     accessToken,
     owner,
     repo,
