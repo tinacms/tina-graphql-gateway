@@ -85,17 +85,20 @@ export class GithubManager implements DataSource {
     accessToken,
     owner,
     repo,
+    branch,
   }: {
     rootPath: string;
     accessToken: string;
     owner: string;
     repo: string;
+    branch?: string;
   }) {
     // constructor(rootPath: string) {
     this.rootPath = rootPath;
     const repoConfig = {
       owner,
       repo,
+      ref: branch || "master",
     };
     this.repoConfig = repoConfig;
 
