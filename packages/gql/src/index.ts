@@ -62,6 +62,7 @@ export const githubRoute = async ({
   query,
   variables,
   rootPath,
+  branch,
 }: {
   accessToken: string;
   owner: string;
@@ -69,12 +70,14 @@ export const githubRoute = async ({
   query: string;
   variables: object;
   rootPath?: string;
+  branch?: string;
 }) => {
   const datasource = new GithubManager({
     rootPath: rootPath || "",
     accessToken,
     owner,
     repo,
+    branch,
   });
   const cache = cacheInit(datasource);
   const { schema, sectionMap } = await schemaBuilder({ cache });
