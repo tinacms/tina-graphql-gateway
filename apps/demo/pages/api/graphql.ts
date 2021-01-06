@@ -1,6 +1,4 @@
 import { gql } from "@forestryio/gql";
-import fs from "fs";
-import path from "path";
 
 export default async function handler(req, res) {
   const { query, variables } = req.body;
