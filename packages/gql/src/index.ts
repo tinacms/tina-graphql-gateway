@@ -11,6 +11,8 @@ import WebSocket from "ws";
 import express from "express";
 // @ts-ignore
 import bodyParser from "body-parser";
+import fs from "fs";
+import p from "path";
 
 export const gql = async ({
   projectRoot,
@@ -22,6 +24,9 @@ export const gql = async ({
   variables: object;
 }) => {
   console.log("using fs manager", projectRoot);
+  console.log(".tina", await fs.readdirSync(p.join(projectRoot, ".tina")));
+  console.log("content", await fs.readdirSync(p.join(projectRoot, "content")));
+
   const datasource = new FileSystemManager(projectRoot);
   const cache = cacheInit(datasource);
 
