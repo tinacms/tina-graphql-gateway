@@ -234,6 +234,8 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     form: context.node.form,
     callback,
   });
+  console.log("gonna create a form", context.queryFieldName);
+  console.log("cms", context.cms);
 
   const form = new Form({
     id: context.queryFieldName,
