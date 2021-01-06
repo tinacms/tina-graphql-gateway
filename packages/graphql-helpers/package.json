@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/graphql-helpers",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -10,8 +10,8 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js",
     "test": "jest --passWithNoTests",

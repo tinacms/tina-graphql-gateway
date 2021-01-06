@@ -1,14 +1,14 @@
 {
   "name": "@forestryio/client",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "main": "dist/index.js",
   "files": [
     "dist/*"
   ],
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },

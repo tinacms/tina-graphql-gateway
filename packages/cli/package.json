@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.24",
+  "version": "0.2.25",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -24,8 +24,8 @@
     "typescript": "^3.6.3"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs",
-    "watch": "yarn tsup src/index.ts --watch --format cjs",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
     "generate:schema": "yarn node scripts/generateSchema.js"

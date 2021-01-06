@@ -1,6 +1,5 @@
 import _ from "lodash";
 import {
-  GraphQLType,
   ObjectTypeDefinitionNode,
   UnionTypeDefinitionNode,
   FieldDefinitionNode,

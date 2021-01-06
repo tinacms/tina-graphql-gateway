@@ -3,7 +3,6 @@ import path from "path";
 import { cacheInit } from "../cache";
 import { schemaBuilder } from ".";
 import { FileSystemManager } from "../datasources/filesystem-manager";
-import { gql, assertSchema } from "../fields/test-util";
 import { parse, printSchema, buildASTSchema } from "graphql";
 
 describe("Schema builder", () => {

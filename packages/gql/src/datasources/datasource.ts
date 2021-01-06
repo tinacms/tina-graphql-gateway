@@ -1,8 +1,6 @@
 import type { Field } from "../fields";
 import type {
   TemplateData,
-  Settings,
-  Section,
   DirectorySection,
   TemplateDataWithNoName,
 } from "../types";
