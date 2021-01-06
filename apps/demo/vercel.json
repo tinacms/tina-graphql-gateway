@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/graphql.ts": {
+    "api/graphql.js": {
       "includeFiles": "{.tina,content}/**"
     }
   }
