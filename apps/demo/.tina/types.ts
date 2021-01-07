@@ -61,6 +61,8 @@ export type Section = {
   documents?: Maybe<Array<Maybe<Document>>>;
 };
 
+export type SectionDocumentUnion = Pages_Document | Posts_Document | Authors_Document | Menus_Document;
+
 export type SectionParams = {
   pages?: Maybe<Pages_Input>;
   posts?: Maybe<Posts_Input>;
@@ -119,7 +121,7 @@ export type Query = {
   __typename?: 'Query';
   _queryString?: Maybe<Scalars['String']>;
   node?: Maybe<Node>;
-  getDocument?: Maybe<Node>;
+  getDocument?: Maybe<SectionDocumentUnion>;
   getSections?: Maybe<Array<Maybe<Section>>>;
   getSection?: Maybe<Section>;
   getPagesDocument?: Maybe<Pages_Document>;

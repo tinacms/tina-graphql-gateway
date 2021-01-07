@@ -134,6 +134,7 @@ export class ForestryClient {
       // @ts-ignore FIXME: this needs an assertion
       values: result.values,
       schema,
+      sys: res.sys,
     });
 
     return {
@@ -161,15 +162,23 @@ export class ForestryClient {
     mutationString,
     relativePath,
     values,
+    sys,
   }: {
     mutationString: string;
     relativePath: string;
     values: object;
+    sys: {
+      template: string;
+      section: {
+        slug: string;
+      };
+    };
   }) => {
     const schema = await this.getSchema();
     const params = transformPayload({
       mutation: mutationString,
       values: values,
+      sys,
       schema,
     });
 
@@ -177,24 +186,6 @@ export class ForestryClient {
       relativePath,
       params,
     };
-  };
-
-  updateContent = async ({
-    mutationString,
-    relativePath,
-    values,
-  }: {
-    mutationString: string;
-    relativePath: string;
-    values: object;
-  }) => {
-    await this.request<UpdateVariables>(mutationString, {
-      variables: await this.prepareVariables({
-        mutationString,
-        relativePath,
-        values,
-      }),
-    });
   };
 
   async requestWithForm<VariableType>(

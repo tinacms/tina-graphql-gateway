@@ -68,9 +68,7 @@ export function assertIsString(
   options: { source: string }
 ): asserts value is string {
   if (typeof value !== "string") {
-    throw new Error(
-      `Unexpected value of type ${typeof value} for ${options.source}`
-    );
+    throw new Error(`Unexpected value of type string for ${options.source}`);
   }
 }
 

@@ -60,6 +60,12 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     ...scalarDefinitions,
     systemInfoDefinition,
     sectionDefinition,
+    gql.union({
+      name: "SectionDocumentUnion",
+      types: sections.map((section) =>
+        friendlyName(section.slug, { suffix: "Document" })
+      ),
+    }),
     ...mutationDefinitions(mutationsArray),
     queryDefinition(sectionMap),
   ];
@@ -140,6 +146,7 @@ const systemInfoDefinition = gql.object({
     gql.field({ name: "path", type: "String" }),
     gql.field({ name: "relativePath", type: "String" }),
     gql.field({ name: "extension", type: "String" }),
+    gql.field({ name: "template", type: "String" }),
     gql.field({ name: "section", type: "Section" }),
   ],
 });
@@ -220,8 +227,11 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
         }),
         gql.field({
           name: "updateDocument",
-          type: "Node",
-          args: [gql.inputID("id"), gql.inputValue("params", "SectionParams")],
+          type: "SectionDocumentUnion",
+          args: [
+            gql.inputString("relativePath"),
+            gql.inputValue("params", "SectionParams"),
+          ],
         }),
         ...mutationsArray.map((mutation) => {
           return gql.field({
@@ -256,7 +266,7 @@ const queryDefinition = (sectionMap: sectionMap) => {
       }),
       gql.field({
         name: "getDocument",
-        type: "Node",
+        type: "SectionDocumentUnion",
         args: [gql.inputString("section"), gql.inputString("relativePath")],
       }),
       gql.fieldList({

@@ -13,18 +13,26 @@ export const transformPayload = ({
   mutation,
   values,
   schema,
+  sys,
 }: {
   mutation: string;
   values: object;
   schema: GraphQLSchema;
+  sys: {
+    template: string;
+    section: {
+      slug: string;
+    };
+  };
 }) => {
   try {
     const accum = {};
     // FIXME: this is assuming we're passing in a valid mutation with the top-level
     // selection being the mutation
-    // @ts-ignore
-    const mutationName = parse(mutation).definitions[0].selectionSet
-      .selections[0].name.value;
+    const parsedMutation = parse(mutation);
+    const mutationName =
+      // @ts-ignore
+      parsedMutation.definitions[0].selectionSet.selections[0].name.value;
     const mutationType = schema.getMutationType();
 
     if (!mutationType) {
@@ -37,11 +45,33 @@ export const transformPayload = ({
       throw new Error(`Expected to find mutation type ${mutationNameType}`);
     }
 
-    const inputType = mutationNameType.args.find((arg) => arg.name === "params")
-      .type;
+    const paramsArg = mutationNameType.args.find(
+      (arg) => arg.name === "params"
+    );
+    const inputType = paramsArg.type;
 
     if (inputType instanceof GraphQLInputObjectType) {
-      return transformInputObject(values, accum, inputType);
+      const transformedInput = transformInputObject(values, accum, inputType);
+      // SectionParams is special because we need to include the seciton
+      // and template as the 2 highest keys in the payload
+      if (inputType.name === "SectionParams") {
+        const section = Object.values(inputType.getFields()).find((field) => {
+          return field.name === sys.section.slug;
+        });
+        if (section.type instanceof GraphQLInputObjectType) {
+          const template = Object.values(section.type.getFields()).find(
+            (field) => field.name === sys.template
+          );
+          const payload = {
+            [section.name]: {
+              [template.name]: transformedInput,
+            },
+          };
+
+          return payload;
+        }
+      }
+      return transformedInput;
     } else {
       throw new Error(
         `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
@@ -73,7 +103,11 @@ const transformInputObject = (
   // FIXME: redundant? Looks like it's handled above
   // Field Groups don't have a _template field
   if (!templateField) {
-    return values;
+    // FIXME: sometimes we're sending _template when it's not needed
+    // matched by the fields we're supposed to have
+    // @ts-ignore
+    const { _template, ...rest } = values;
+    return rest;
   }
 
   const templateType = getNamedType(templateField.type);

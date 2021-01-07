@@ -49,9 +49,18 @@ export const datetime = {
       assertIsString(value, { source: "datetime" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
-      assertIsString(value, { source: "datetime" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<DatetimeField>): Promise<
+      { [key: string]: string } | false
+    > => {
+      try {
+        assertIsString(value, { source: "datetime" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
