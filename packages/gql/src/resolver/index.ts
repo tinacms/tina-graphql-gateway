@@ -124,7 +124,7 @@ const schemaResolver = async (
 
       const section = await context.datasource.getSection(sectionSlug);
 
-      const key = Object.keys(params)[0];
+      const key = slugify(Object.keys(params)[0]);
       const values = Object.values(params)[0];
 
       const templates = await context.datasource.getTemplatesForSection(
