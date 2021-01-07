@@ -112,34 +112,44 @@ export class FileSystemManager implements DataSource {
 
     return sections as DirectorySection[];
   };
-  // FIXME: clean this up
+  getSection = async (slug: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
+
+    const section = sections.find((section) => section.slug === slug);
+
+    if (!section) {
+      throw new Error(`Unable to find section with slug ${slug}`);
+    }
+    return section;
+  };
   getSectionByPath = async (path: string) => {
     const data = await this.getSettingsData();
 
-    const sections = data.sections.map((section) => {
-      return {
-        ...section,
-        slug: slugify(section.label),
-      };
-    });
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
 
-    const main = sections.reduce(
-      (
-        previous: { length: number; item: DirectorySection | null },
-        section
-      ) => {
-        const length = path.replace(section.path, "").length;
-        if (length < previous.length) {
-          return { length, item: section };
-        }
-        return previous;
-      },
-      { length: 1000, item: null }
-    );
-    if (!main.item) {
+    const section = sections.find((section) => {
+      return path.startsWith(section.path);
+    });
+    if (!section) {
       throw new Error(`Unable to find section for path ${path}`);
     }
-    return main.item;
+    return section;
   };
   getTemplatesForSection = async (section?: string) => {
     const data = await this.getSettingsData();

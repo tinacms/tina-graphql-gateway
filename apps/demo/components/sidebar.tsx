@@ -58,8 +58,8 @@ export const Sidebar = ({
           ).slug
         );
       } catch (e) {
-        console.log("unable to list documents...");
-        console.log(e);
+        // console.log("unable to list documents...");
+        // console.log(e);
       }
     };
     listSections();

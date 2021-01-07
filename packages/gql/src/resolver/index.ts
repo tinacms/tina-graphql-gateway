@@ -2,7 +2,7 @@ import _ from "lodash";
 import { print, graphql } from "graphql";
 import path from "path";
 import { assertShape, sequential } from "../util";
-import { friendlyName } from "@forestryio/graphql-helpers";
+import { friendlyName, slugify } from "@forestryio/graphql-helpers";
 
 import { resolve } from "../fields/templates/resolver";
 
@@ -109,17 +109,20 @@ const schemaResolver = async (
       await addPendingDocument(args, context);
       return resolveDocument({ args, context });
     case "updateDocument":
-      assertShape<{ id: string; params: { [key: string]: object } }>(
-        args,
-        (yup) =>
-          yup.object({
-            id: yup.string().required(),
-            params: yup.object().required(),
-          })
+      assertShape<{
+        relativePath: string;
+        params: { [key: string]: object };
+      }>(args, (yup) =>
+        yup.object({
+          relativePath: yup.string().required(),
+          params: yup.object().required(),
+        })
       );
 
-      const section = await context.datasource.getSectionByPath(args.id);
-      const params = args.params[section.slug];
+      const sectionSlug = Object.keys(args.params)[0];
+      const params = Object.values(args.params)[0];
+
+      const section = await context.datasource.getSection(sectionSlug);
 
       const key = Object.keys(params)[0];
       const values = Object.values(params)[0];
@@ -140,7 +143,7 @@ const schemaResolver = async (
         datasource: context.datasource,
         includeBody: true,
       });
-      const relativePath = args.id.replace(section.path, "");
+      const relativePath = args.relativePath;
 
       const payload = {
         relativePath,
@@ -196,7 +199,7 @@ const schemaResolver = async (
           })
       );
 
-      const key = Object.keys(args.params)[0];
+      const key = slugify(Object.keys(args.params)[0]);
       const values = Object.values(args.params)[0];
 
       const templates = await context.datasource.getTemplatesForSection(
@@ -346,6 +349,7 @@ const resolveDocument = async ({
       path: path.join(sectionData.path, realArgs.relativePath),
       relativePath,
       section: sectionData,
+      template: template.name,
       breadcrumbs: relativePath.split("/").filter(Boolean),
       basename,
       filename,

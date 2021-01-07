@@ -45,6 +45,8 @@ type Section {
   documents: [Document]
 }
 
+union SectionDocumentUnion = Pages_Document | Posts_Document | Authors_Document | Menus_Document
+
 input SectionParams {
   pages: Pages_Input
   posts: Posts_Input
@@ -64,7 +66,7 @@ type Mutation {
 type Query {
   _queryString: String
   node(id: ID!): Node
-  getDocument(section: String, relativePath: String): Node
+  getDocument(section: String, relativePath: String): SectionDocumentUnion
   getSections: [Section]
   getSection(section: String): Section
   getPagesDocument(relativePath: String): Pages_Document

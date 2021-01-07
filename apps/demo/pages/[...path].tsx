@@ -64,11 +64,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 
 const Home = (props: any) => {
   const { getDocument } = useForestryForm<{
-    getDocument:
-      | Tina.Menus_Document
-      | Tina.Pages_Document
-      | Tina.Posts_Document
-      | Tina.Authors_Document;
+    getDocument: Tina.SectionDocumentUnion;
   }>({ payload: props });
   const { form, sys, ...rest } = getDocument;
 

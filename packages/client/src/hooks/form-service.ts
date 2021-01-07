@@ -1,12 +1,9 @@
 import {
   createMachine,
   assign,
-  interpret,
   spawn,
   SpawnedActorRef,
-  Machine,
   sendParent,
-  send,
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
@@ -31,7 +28,6 @@ export const createFormMachine = (initialContext: {
           id: id + "breakdownData",
           src: async (context, event) => {
             return splitDataNode({
-              queryFieldName: context.queryFieldName,
               queryString: context.queryString,
               node: context.node,
               schema: await context.client.getSchema(),
@@ -234,8 +230,6 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     form: context.node.form,
     callback,
   });
-  console.log("gonna create a form", context.queryFieldName);
-  console.log("cms", context.cms);
 
   const form = new Form({
     id: context.queryFieldName,
@@ -243,11 +237,16 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
-      context.onSubmit({
-        mutationString: context.queries[context.queryFieldName].mutation,
-        relativePath: context.node.sys.relativePath,
-        values: values,
-      });
+      try {
+        await context.onSubmit({
+          mutationString: context.queries[context.queryFieldName].mutation,
+          relativePath: context.node.sys.relativePath,
+          values: values,
+          sys: context.node.sys,
+        });
+      } catch (e) {
+        context.cms.alerts.info(e.message);
+      }
     },
   });
 
