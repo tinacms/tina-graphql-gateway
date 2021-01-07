@@ -1,6 +1,12 @@
 // @ts-ignore
-import { startServer as gqlStartServer } from "@forestryio/gql";
+import { gql } from "@forestryio/gql";
 import childProcess from "child_process";
+import path from "path";
+import cors from "cors";
+import http from "http";
+import express from "express";
+// @ts-ignore
+import bodyParser from "body-parser";
 
 interface Options {
   port?: number;
@@ -22,5 +28,25 @@ export async function startServer(
       process.exit(code);
     });
   }
-  await gqlStartServer({ port });
+  await gqlServer({ port });
 }
+
+export const gqlServer = async ({ port }: { port: number }) => {
+  const app = express();
+  const server = http.createServer(app);
+  app.use(cors());
+  app.use(bodyParser.json());
+
+  let projectRoot = path.join(process.cwd());
+
+  app.post("/graphql", async (req, res) => {
+    const { query, variables } = req.body;
+    const result = await gql({ projectRoot, query, variables });
+    return res.json(result);
+  });
+
+  server.listen(port, () => {
+    console.info(`Listening on http://localhost:${port}`);
+  });
+  return server;
+};
