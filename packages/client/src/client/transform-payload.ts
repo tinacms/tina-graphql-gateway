@@ -51,7 +51,6 @@ export const transformPayload = ({
     const inputType = paramsArg.type;
 
     if (inputType instanceof GraphQLInputObjectType) {
-      const transformedInput = transformInputObject(values, accum, inputType);
       // SectionParams is special because we need to include the seciton
       // and template as the 2 highest keys in the payload
       if (inputType.name === "SectionParams") {
@@ -60,18 +59,33 @@ export const transformPayload = ({
         });
         if (section.type instanceof GraphQLInputObjectType) {
           const template = Object.values(section.type.getFields()).find(
-            (field) => field.name === sys.template
+            (field) => {
+              const templateNameString = friendlyName(sys.template, {
+                lowerCase: true,
+              });
+              return field.name === templateNameString;
+            }
           );
-          const payload = {
-            [section.name]: {
-              [template.name]: transformedInput,
-            },
-          };
-
-          return payload;
+          if (template) {
+            const transformedInput = transformInputObject(
+              values,
+              accum,
+              section.type
+            );
+            const payload = {
+              [section.name]: transformedInput,
+            };
+            console.log(payload);
+            return payload;
+          } else {
+            throw new Error(
+              `Unable to find matching template for ${sys.template} in section ${sys.section.slug}`
+            );
+          }
         }
+        return transformInputObject(values, accum, inputType);
       }
-      return transformedInput;
+      // return transformedInput;
     } else {
       throw new Error(
         `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
@@ -105,9 +119,7 @@ const transformInputObject = (
   if (!templateField) {
     // FIXME: sometimes we're sending _template when it's not needed
     // matched by the fields we're supposed to have
-    // @ts-ignore
-    const { _template, ...rest } = values;
-    return rest;
+    return values;
   }
 
   const templateType = getNamedType(templateField.type);
