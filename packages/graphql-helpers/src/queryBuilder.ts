@@ -476,6 +476,7 @@ export const splitDataNode = (args: {
           const namedType = getNamedType(type);
           if (namedType instanceof GraphQLUnionType) {
             if (namedType.name === "SectionDocumentUnion") {
+              // @ts-ignore
               const f = Object.values(queryType?.getFields()).find((field) => {
                 const queryNamedType = getNamedType(field.type);
                 return queryNamedType.name === namedType.name;

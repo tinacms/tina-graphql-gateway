@@ -83,9 +83,8 @@ export const transformPayload = ({
             );
           }
         }
-        return transformInputObject(values, accum, inputType);
       }
-      // return transformedInput;
+      return transformInputObject(values, accum, inputType);
     } else {
       throw new Error(
         `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
