@@ -40,6 +40,7 @@ export type SystemInfo = {
   path?: Maybe<Scalars['String']>;
   relativePath?: Maybe<Scalars['String']>;
   extension?: Maybe<Scalars['String']>;
+  template?: Maybe<Scalars['String']>;
   section?: Maybe<Section>;
 };
 
@@ -73,7 +74,7 @@ export type SectionParams = {
 export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument?: Maybe<Node>;
-  updateDocument?: Maybe<Node>;
+  updateDocument?: Maybe<SectionDocumentUnion>;
   updatePagesDocument?: Maybe<Pages_Document>;
   updatePostsDocument?: Maybe<Posts_Document>;
   updateAuthorsDocument?: Maybe<Authors_Document>;
@@ -89,7 +90,7 @@ export type MutationAddPendingDocumentArgs = {
 
 
 export type MutationUpdateDocumentArgs = {
-  id: Scalars['ID'];
+  relativePath?: Maybe<Scalars['String']>;
   params?: Maybe<SectionParams>;
 };
 
