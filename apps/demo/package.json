@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "watch": "bash -c \"yarn watch:gql & yarn next-dev\"",
-    "watch:demo-only": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "watch:gql": "yarn nodemon --delay 1 --watch \"../../packages/gql/dist/index.js\" --exec \"yarn tina-gql server:start\"",
+    "watch:demo-only": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "next-dev": "next dev --port 2999",
     "build": "next build",
     "next-start": "next start",
