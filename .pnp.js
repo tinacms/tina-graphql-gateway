@@ -2439,6 +2439,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash.get", "npm:4.4.6"],
             ["ajv", "npm:6.12.3"],
             ["axios", "npm:0.19.0"],
+            ["body-parser", "npm:1.19.0"],
             ["chalk", "npm:2.4.2"],
             ["clear", "npm:0.1.0"],
             ["commander", "npm:5.1.0"],
@@ -9764,6 +9765,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql-tag", "virtual:9680361f3aa50190b6de3024fd0701a64a04dcab511f1195194be2012517bfb75b0ef37186065aaef744e6391005e752e58b4eccb77c1007b4796e03dd8f1c82#npm:2.11.0"],
             ["js-cookie", "npm:2.2.1"],
             ["next", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:9.5.1"],
+            ["nodemon", "npm:2.0.7"],
             ["postcss-import", "npm:12.0.1"],
             ["prop-types", "npm:15.7.2"],
             ["react", "npm:16.13.1"],
@@ -11768,7 +11770,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["fsevents", "patch:fsevents@npm%3A1.2.13#builtin<compat/fsevents>::version=1.2.13&hash=495457"],
             ["bindings", "npm:1.5.0"],
-            ["nan", "npm:2.14.0"]
+            ["nan", "npm:2.14.2"]
           ],
           "linkType": "HARD",
         }],
@@ -16785,10 +16787,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["nan", [
-        ["npm:2.14.0", {
-          "packageLocation": "./.yarn/unplugged/nan-npm-2.14.0-b880e7ae7d/node_modules/nan/",
+        ["npm:2.14.2", {
+          "packageLocation": "./.yarn/unplugged/nan-npm-2.14.2-e3ede8ce5d/node_modules/nan/",
           "packageDependencies": [
-            ["nan", "npm:2.14.0"],
+            ["nan", "npm:2.14.2"],
             ["node-gyp", "npm:7.0.0"]
           ],
           "linkType": "HARD",
@@ -17217,6 +17219,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["touch", "npm:3.1.0"],
             ["undefsafe", "npm:2.0.3"],
             ["update-notifier", "npm:4.1.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:2.0.7", {
+          "packageLocation": "./.yarn/unplugged/nodemon-npm-2.0.7-7b95e46511/node_modules/nodemon/",
+          "packageDependencies": [
+            ["nodemon", "npm:2.0.7"],
+            ["chokidar", "npm:3.4.1"],
+            ["debug", "virtual:6cfc557b1b3ed98544cad13ffd74462797496fe01d0dd9649602e1c1359d7df7fba294f2ac2939dc40ca1a1f18a3b7641601422c7b242c5785fec1a2e013a42b#npm:3.2.6"],
+            ["ignore-by-default", "npm:1.0.1"],
+            ["minimatch", "npm:3.0.4"],
+            ["pstree.remy", "npm:1.1.8"],
+            ["semver", "npm:5.7.1"],
+            ["supports-color", "npm:5.5.0"],
+            ["touch", "npm:3.1.0"],
+            ["undefsafe", "npm:2.0.3"],
+            ["update-notifier", "npm:4.1.3"]
           ],
           "linkType": "HARD",
         }]
@@ -23958,6 +23977,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/update-notifier-npm-4.1.0-b35ff2fd87-2d35bb8785.zip/node_modules/update-notifier/",
           "packageDependencies": [
             ["update-notifier", "npm:4.1.0"],
+            ["boxen", "npm:4.2.0"],
+            ["chalk", "npm:3.0.0"],
+            ["configstore", "npm:5.0.1"],
+            ["has-yarn", "npm:2.1.0"],
+            ["import-lazy", "npm:2.1.0"],
+            ["is-ci", "npm:2.0.0"],
+            ["is-installed-globally", "npm:0.3.2"],
+            ["is-npm", "npm:4.0.0"],
+            ["is-yarn-global", "npm:0.3.0"],
+            ["latest-version", "npm:5.1.0"],
+            ["pupa", "npm:2.0.1"],
+            ["semver-diff", "npm:3.1.1"],
+            ["xdg-basedir", "npm:4.0.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:4.1.3", {
+          "packageLocation": "./.yarn/cache/update-notifier-npm-4.1.3-837e724aca-90362dcdf3.zip/node_modules/update-notifier/",
+          "packageDependencies": [
+            ["update-notifier", "npm:4.1.3"],
             ["boxen", "npm:4.2.0"],
             ["chalk", "npm:3.0.0"],
             ["configstore", "npm:5.0.1"],
