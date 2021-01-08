@@ -2,8 +2,7 @@ import { friendlyName } from "@forestryio/graphql-helpers";
 import * as yup from "yup";
 import { gql } from "../../gql";
 
-import { builder } from "../../builder";
-import { resolver } from "../../resolver/field-resolver";
+import { template } from "../templates";
 
 import type { Field, TinaField } from "../index";
 import { BuildArgs, ResolveArgs } from "../";
@@ -15,38 +14,36 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const name = friendlyName(field, "GroupField");
-      const fieldsUnionName = await builder.documentFormFieldsUnion(
+      const typename = friendlyName(field, { suffix: "GroupField" });
+      const fieldsUnionName = await template.build.fields({
         cache,
-        field,
-        accumulator
-      );
-
+        template: field,
+        accumulator,
+        includeBody: false,
+      });
       accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.fieldList({ name: "fields", type: fieldsUnionName }),
-          ],
-        })
+        gql.formField(typename, [
+          gql.fieldList({ name: "fields", type: fieldsUnionName }),
+        ])
       );
 
-      return name;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({
       cache,
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const initialValueName = await builder.documentInitialValuesObject(
+      const initialValueName = await template.build.values({
         cache,
-        field,
-        false,
-        accumulator
-      );
+        template: field,
+        accumulator,
+        includeBody: false,
+        includeTemplate: false,
+      });
 
       return gql.field({ name: field.name, type: initialValueName });
     },
@@ -55,23 +52,26 @@ export const fieldGroup = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      const valueName = await builder.documentDataObject({
+      const name = await template.build.data({
         cache,
         template: field,
-        returnTemplate: false,
         accumulator,
+        includeBody: false,
       });
-      return gql.field({ name: field.name, type: valueName });
+      return gql.field({ name: field.name, type: name });
     },
     input: async ({
       cache,
       field,
       accumulator,
     }: BuildArgs<FieldGroupField>) => {
-      return gql.inputValue(
-        field.name,
-        await builder.documentDataInputObject(cache, field, false, accumulator)
-      );
+      const name = await template.build.input({
+        cache,
+        template: field,
+        accumulator,
+        includeBody: false,
+      });
+      return gql.inputValue(field.name, name);
     },
   },
   resolve: {
@@ -82,13 +82,17 @@ export const fieldGroup = {
       TinaFieldGroupField
     > => {
       const { type, ...rest } = field;
-      const template = await resolver.documentFormObject(datasource, field);
+      const t = await template.resolve.form({
+        datasource,
+        template: field,
+        includeBody: false,
+      });
 
       return {
         ...rest,
-        ...template,
+        ...t,
         component: "group",
-        __typename: friendlyName(field, "GroupField"),
+        __typename: friendlyName(field, { suffix: "GroupField" }),
       };
     },
     initialValue: async ({
@@ -98,11 +102,11 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.documentInitialValuesObject(
+      return await template.resolve.values({
         datasource,
-        field,
-        value
-      );
+        template: field,
+        data: value,
+      });
     },
     value: async ({
       datasource,
@@ -111,9 +115,9 @@ export const fieldGroup = {
     }: ResolveArgs<FieldGroupField>) => {
       assertIsData(value);
 
-      return await resolver.documentDataObject({
+      return await template.resolve.data({
         datasource,
-        resolvedTemplate: field,
+        template: field,
         data: value,
       });
     },
@@ -122,13 +126,18 @@ export const fieldGroup = {
       field,
       value,
     }: ResolveArgs<FieldGroupField>) => {
-      assertIsData(value);
-
-      return await resolver.documentDataInputObject({
-        data: value,
-        template: field,
-        datasource,
-      });
+      try {
+        assertIsData(value);
+        return {
+          [field.name]: await template.resolve.input({
+            data: value,
+            template: field,
+            datasource,
+          }),
+        };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

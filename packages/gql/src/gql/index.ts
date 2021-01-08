@@ -1,11 +1,58 @@
 import {
-  GraphQLString,
   FieldDefinitionNode,
+  ScalarTypeDefinitionNode,
   InputValueDefinitionNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  UnionTypeDefinitionNode,
 } from "graphql";
-import { argsToArgsConfig } from "graphql/type/definition";
 
 export const gql = {
+  formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
+    return gql.object({
+      name: name,
+      interfaces: [gql.namedType({ name: "FormField" })],
+      fields: [
+        gql.string("name"),
+        gql.string("label"),
+        gql.string("component"),
+        ...(additionalFields || []),
+      ],
+    });
+  },
+  scalar: (name: string, description?: string): ScalarTypeDefinitionNode => {
+    return {
+      kind: "ScalarTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      description: {
+        kind: "StringValue",
+        value: description || "",
+      },
+      directives: [],
+    };
+  },
+  reference: (name: string) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      arguments: [],
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "Reference" as const,
+        },
+      },
+      directives: [],
+    };
+  },
   string: (name: string) => {
     return {
       kind: "FieldDefinition" as const,
@@ -19,6 +66,24 @@ export const gql = {
         name: {
           kind: "Name" as const,
           value: "String" as const,
+        },
+      },
+      directives: [],
+    };
+  },
+  number: (name: string) => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      arguments: [],
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "Int",
         },
       },
       directives: [],
@@ -42,6 +107,23 @@ export const gql = {
       },
     },
   }),
+  inputID: (name: string): InputValueDefinitionNode => ({
+    kind: "InputValueDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NonNullType",
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "ID",
+        },
+      },
+    },
+  }),
   inputString: (name: string) => ({
     kind: "InputValueDefinition" as const,
     name: {
@@ -53,6 +135,20 @@ export const gql = {
       name: {
         kind: "Name" as const,
         value: "String",
+      },
+    },
+  }),
+  inputNumber: (name: string) => ({
+    kind: "InputValueDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: "Int",
       },
     },
   }),
@@ -119,6 +215,23 @@ export const gql = {
       },
     };
   },
+  fieldID: ({ name }: { name: string }) => ({
+    kind: "FieldDefinition" as const,
+    name: {
+      kind: "Name" as const,
+      value: name,
+    },
+    type: {
+      kind: "NonNullType" as const,
+      type: {
+        kind: "NamedType" as const,
+        name: {
+          kind: "Name" as const,
+          value: "ID",
+        },
+      },
+    },
+  }),
   field: ({
     name,
     type,
@@ -142,6 +255,52 @@ export const gql = {
         },
       },
       arguments: args,
+    };
+  },
+  fieldRequired: ({
+    name,
+    type,
+    args = [],
+  }: {
+    name: string;
+    type: string;
+    args?: InputValueDefinitionNode[];
+  }): FieldDefinitionNode => {
+    return {
+      kind: "FieldDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+      type: {
+        kind: "NonNullType",
+        type: {
+          kind: "NamedType" as const,
+          name: {
+            kind: "Name" as const,
+            value: type,
+          },
+        },
+      },
+      arguments: args,
+    };
+  },
+  interface: ({
+    name,
+    fields,
+  }: {
+    name: string;
+    fields: FieldDefinitionNode[];
+  }): InterfaceTypeDefinitionNode => {
+    return {
+      kind: "InterfaceTypeDefinition",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+      interfaces: [],
+      directives: [],
+      fields: fields,
     };
   },
   fieldList: ({
@@ -186,7 +345,13 @@ export const gql = {
     },
     fields,
   }),
-  union: ({ name, types }: { name: string; types: string[] }) => ({
+  union: ({
+    name,
+    types,
+  }: {
+    name: string;
+    types: string[];
+  }): UnionTypeDefinitionNode => ({
     kind: "UnionTypeDefinition" as const,
     name: {
       kind: "Name" as const,
@@ -201,17 +366,28 @@ export const gql = {
       },
     })),
   }),
+  namedType: ({ name }: { name: string }): NamedTypeNode => {
+    return {
+      kind: "NamedType",
+      name: {
+        kind: "Name",
+        value: name,
+      },
+    };
+  },
   object: ({
     name,
     fields,
+    interfaces = [],
     args = [],
   }: {
     name: string;
     fields: FieldDefinitionNode[];
-    args?: InputValueDefinitionNode[];
-  }) => ({
+    interfaces?: NamedTypeNode[];
+    args?: NamedTypeNode[];
+  }): ObjectTypeDefinitionNode => ({
     kind: "ObjectTypeDefinition" as const,
-    arguments: args,
+    interfaces,
     name: {
       kind: "Name" as const,
       value: name,

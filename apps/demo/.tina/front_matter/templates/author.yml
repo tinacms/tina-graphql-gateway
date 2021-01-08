@@ -9,9 +9,7 @@ fields:
       required: true
     label: Name
   - name: image
-    type: file
-    config:
-      maxSize: 64
+    type: text
     label: Image
   - name: gallery
     type: image_gallery

@@ -6,7 +6,7 @@ import * as jsyaml from "js-yaml";
 import { slugify } from "../util";
 import DataLoader from "dataloader";
 
-import { byTypeWorks } from "../types";
+import { byTypeWorks, Section } from "../types";
 import { FieldGroupField } from "../fields/field-group";
 import { FieldGroupListField } from "../fields/field-group-list";
 import { sequential } from "../util";
@@ -60,6 +60,15 @@ export class FileSystemManager implements DataSource {
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
+  getAllTemplates = async () => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await readDir(fullPath, this.dirLoader);
+    return await sequential(
+      templates,
+      async (templateSlug) =>
+        await this.getTemplate(templateSlug.replace(".yml", ""))
+    );
+  };
   getTemplates = async (templateSlugs: string[]) =>
     await sequential(
       templateSlugs,
@@ -102,6 +111,45 @@ export class FileSystemManager implements DataSource {
       });
 
     return sections as DirectorySection[];
+  };
+  getSection = async (slug: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
+
+    const section = sections.find((section) => section.slug === slug);
+
+    if (!section) {
+      throw new Error(`Unable to find section with slug ${slug}`);
+    }
+    return section;
+  };
+  getSectionByPath = async (path: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
+
+    const section = sections.find((section) => {
+      return path.startsWith(section.path);
+    });
+    if (!section) {
+      throw new Error(`Unable to find section for path ${path}`);
+    }
+    return section;
   };
   getTemplatesForSection = async (section?: string) => {
     const data = await this.getSettingsData();
@@ -148,7 +196,7 @@ export class FileSystemManager implements DataSource {
     }
 
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
-    return await readFile<TinaDocument>(fullPath, this.loader);
+    return readFile<TinaDocument>(fullPath, this.loader);
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
     const sectionData = await this.getSettingsForSection(args.section);
@@ -195,16 +243,33 @@ export class FileSystemManager implements DataSource {
       this.loader
     );
 
-    if (options.namespace) {
-      return namespaceFields({ name: slug, ...data });
-    } else {
-      return data;
+    return namespaceFields({ name: slug, ...data });
+  };
+  getTemplateWithoutName = async (
+    slug: string,
+    options: { namespace: boolean } = { namespace: true }
+  ) => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await readDir(fullPath, this.dirLoader);
+    const template = templates.find((templateBasename) => {
+      return templateBasename === `${slug}.yml`;
+    });
+    if (!template) {
+      throw new Error(`No template found for slug ${slug}`);
     }
+    const { data } = await readFile<RawTemplate>(
+      p.join(fullPath, template),
+      this.loader
+    );
+
+    return data;
   };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplate(template, { namespace: false });
+    const templateData = await this.getTemplateWithoutName(template, {
+      namespace: false,
+    });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
@@ -226,7 +291,9 @@ export class FileSystemManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
-    const string = matter.stringify("", params.data);
+    const { _body, ...data } = params;
+    const string = matter.stringify(`\n${_body || ""}`, data);
+
     await fs.outputFile(fullPath, string);
   };
 }
@@ -250,13 +317,9 @@ const readFile = async <T>(
   path: string,
   loader: DataLoader<unknown, unknown, unknown>
 ): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // return await internalReadFile(path);
-  return await loader.load(path);
+  return (await loader.load(path)) as T;
 };
 const internalReadFile = async <T>(path: string): Promise<T> => {
-  // Uncomment to bypass dataloader for debugging
-  // console.log("internalRequest", path);
   const extension = p.extname(path);
 
   switch (extension) {
@@ -277,7 +340,7 @@ const readDir = async (
   path: string,
   loader: DataLoader<unknown, unknown, unknown>
 ): Promise<string[]> => {
-  return loader.load(path);
+  return (await loader.load(path)) as string[];
 };
 const internalReadDir = async (path: string) => {
   return await fs.readdirSync(path);
@@ -285,11 +348,14 @@ const internalReadDir = async (path: string) => {
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {
-  let res;
-  res = matter(data, { excerpt_separator: "<!-- excerpt -->" });
+  const res = matter(data, {
+    excerpt_separator: "<!-- excerpt -->",
+  }) as unknown & { content: string };
+  // Remove line break at top of _body
+  res.content = res.content.replace(/^\n|\n$/g, "");
 
   // @ts-ignore
-  return res;
+  return res as T;
 };
 
 function isWithFields(t: object): t is WithFields {

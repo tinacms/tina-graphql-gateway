@@ -1,8 +1,6 @@
 import type { Field } from "../fields";
 import type {
   TemplateData,
-  Settings,
-  Section,
   DirectorySection,
   TemplateDataWithNoName,
 } from "../types";
@@ -18,7 +16,7 @@ export type TinaDocument = {
 export type UpdateArgs = {
   relativePath: string;
   section: string;
-  params: { content?: string; data: object };
+  params: { _body?: string } & object;
 };
 export type DocumentArgs = {
   relativePath: string;
@@ -53,11 +51,15 @@ export interface DataSource {
     extension: string;
     filename: string;
   }>;
-  getTemplateForDocument: (
-    args: DocumentArgs
-  ) => Promise<TemplateDataWithNoName>;
-  getTemplates: (slugs: string[]) => Promise<TemplateDataWithNoName[]>;
-  getTemplate: (slug: string) => Promise<TemplateDataWithNoName>;
+  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
+  getAllTemplates: () => Promise<TemplateData[]>;
+  getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
+  getTemplate: (slug: string) => Promise<TemplateData>;
+  /**
+   * `getTemplateWithoutName` the name is a synthetic value, so
+   * sometimes you don't want it (ex. when writing back to the data source)
+   */
+  getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>;
   /**
    * `getTemplatesForSection`
    *
@@ -83,12 +85,12 @@ export interface DataSource {
    * ]
    * ```
    */
-  getTemplatesForSection: (
-    section?: string
-  ) => Promise<TemplateDataWithNoName[]>;
+  getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
   getDocumentsForSection: (section?: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   getSectionsSettings: () => Promise<DirectorySection[]>;
+  getSection: (section: string) => Promise<DirectorySection>;
+  getSectionByPath: (path: string) => Promise<DirectorySection>;
   addDocument: (args: AddArgs) => Promise<void>;
   updateDocument: (param: UpdateArgs) => Promise<void>;
 }

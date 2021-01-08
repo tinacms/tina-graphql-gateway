@@ -1,28 +1,17 @@
 import { gql } from "../../gql";
 
-import {
-  BuildArgs,
-  ResolveArgs,
-  assertIsStringArray,
-  assertIsString,
-} from "../";
+import { BuildArgs, ResolveArgs, assertIsStringArray } from "../";
+
+const typename = "TagListField";
 
 export const tag_list = {
   build: {
-    field: async ({ accumulator }: BuildArgs<TagListField>) => {
-      const name = "TagListField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<TagListField>) => {
+      accumulator.push(gql.formField(typename));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
       return gql.stringList(field.name);
@@ -45,7 +34,7 @@ export const tag_list = {
         config: rest.config || {
           required: false,
         },
-        __typename: "TagListField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -58,9 +47,18 @@ export const tag_list = {
       assertIsStringArray(value, { source: "tag value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<TagListField>): Promise<string[]> => {
-      assertIsStringArray(value, { source: "tag value" });
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<TagListField>): Promise<
+      { [key: string]: string[] } | false
+    > => {
+      try {
+        assertIsStringArray(value, { source: "tag value" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
@@ -84,5 +82,5 @@ export type TinaTagListField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TagListField";
+  __typename: typeof typename;
 };

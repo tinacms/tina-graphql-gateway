@@ -1,23 +1,16 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from "../";
 
+const typename = "TextField";
 export const text = {
   build: {
-    field: async ({ accumulator }: BuildArgs<TextField>) => {
-      const name = "TextField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<TextField>) => {
+      accumulator.push(gql.formField(typename));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
       return gql.string(field.name);
@@ -46,28 +39,23 @@ export const text = {
     initialValue: async ({
       value,
     }: ResolveArgs<TextField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "text initial value" });
       return value;
     },
     value: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "text value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved text value`
-        );
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<TextField>): Promise<{ [key: string]: string } | false> => {
+      try {
+        assertIsString(value, { source: "text input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
       }
-      return value;
     },
   },
 };
@@ -91,5 +79,5 @@ export type TinaTextField = {
   config?: {
     required?: boolean;
   };
-  __typename: "TextField";
+  __typename: typeof typename;
 };

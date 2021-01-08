@@ -1,24 +1,17 @@
 import { gql } from "../../gql";
 
-import { BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from "../";
+
+const typename = "FileField";
 
 export const file = {
   build: {
-    field: async ({ accumulator }: BuildArgs<FileField>) => {
-      const name = "FileField";
-
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<FileField>) => {
+      accumulator.push(gql.formField(typename));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<FileField>) => {
       return gql.string(field.name);
@@ -38,7 +31,7 @@ export const file = {
       return {
         ...rest,
         component: "image",
-        __typename: "FileField",
+        __typename: typename,
         config: rest.config || {
           required: false,
         },
@@ -47,28 +40,23 @@ export const file = {
     initialValue: async ({
       value,
     }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved file value`
-        );
-      }
+      assertIsString(value, { source: "file initial value" });
       return value;
     },
     value: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved file value`
-        );
-      }
+      assertIsString(value, { source: "file value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<FileField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved file value`
-        );
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<FileField>): Promise<{ [key: string]: string } | false> => {
+      try {
+        assertIsString(value, { source: "file input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
       }
-      return value;
     },
   },
 };
@@ -92,5 +80,5 @@ export type TinaFileField = {
   config?: {
     required?: boolean;
   };
-  __typename: "FileField";
+  __typename: typeof typename;
 };

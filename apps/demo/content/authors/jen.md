@@ -2,38 +2,36 @@
 name: Jen Rhines
 image: "/uploads/jen-headshot.jpg"
 gallery:
-- "/uploads/jen-stretch.jpg"
-- "/uploads/jen.jpg"
-- "/uploads/jen-bio.jpg"
+  - "/uploads/jen-stretch.jpg"
+  - "/uploads/jen.jpg"
+  - "/uploads/jen-bio.jpg"
 anecdotes:
-- Wellness coach & founder
-- Adidas Endurance Coach and Brand Ambassador
+  - Wellness coach & founder
+  - Adidas Endurance Coach and Brand Ambassador
 accolades:
-- figure: 5x
-  description: NCAA Champion
-- figure: 6x
-  description: Team USA member
-- figure: 3x
-  description: Olympian
-
+  - figure: 5x
+    description: NCAA Champion
+  - figure: 6x
+    description: Team USA member
+  - figure: 3x
+    description: Olympian
 ---
-Jen Rhines has 20 years of experience as a professional athlete. As a certified health coach, Jen has a particular interest in the overall health and wellness of an athlete. In addition to assisting Terrence with the GCTC pro team, Jen has experience coaching runners of all levels. 
 
-<!-- excerpt -->
+Jen Rhines has 20 years of experience as a professional athlete. As a certified health coach, Jen has a particular interest in the overall health and wellness of an athlete. In addition to assisting Terrence with the GCTC pro team, Jen has experience coaching runners of all levels.
 
 From helping beginners with no running experience complete their first marathons, to coaching athletes to US Olympic Marathon Trials qualifying times.
 
 ###### ATHLETIC ACHIEVEMENTS
 
-***
+---
 
 **Five-time NCAA Individual Champion**
 
 **Three-time US Olympian**
 
-* 2000 Sydney Olympics 10,000m
-* 2004 Athens Olympics Marathon
-* 2008 Beijing Olympic 5000m
+- 2000 Sydney Olympics 10,000m
+- 2004 Athens Olympics Marathon
+- 2008 Beijing Olympic 5000m
 
 **Six-time Team USA member at IAAF World Championships**
 

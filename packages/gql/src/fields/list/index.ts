@@ -1,13 +1,15 @@
 import * as yup from "yup";
+import { friendlyName } from "@forestryio/graphql-helpers";
 import { gql } from "../../gql";
 
 import { select } from "../select";
 import { text } from "../text";
-import { builder } from "../../builder";
 
-import type { BuildArgs, ResolveArgs } from "../";
+import { assertIsStringArray, BuildArgs, ResolveArgs } from "../";
 import type { TinaField } from "../index";
 import type { ImageGalleryField } from "../image-gallery";
+
+const typename = "ListField";
 
 export const list = {
   /**
@@ -23,7 +25,7 @@ export const list = {
   }),
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
+    field: async ({ field, cache, accumulator }: BuildArgs<ListField>) => {
       // FIXME: shouldn't have to do this, but if a text or select field
       // is otherwise not present in the schema we need to ensure it's built
       text.build.field({
@@ -52,36 +54,28 @@ export const list = {
         gql.union({ name: unionName, types: ["TextField", "SelectField"] })
       );
 
-      const name = "ListField";
       accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.string("defaultItem"),
-            gql.field({ name: "field", type: unionName }),
-          ],
-        })
+        gql.formField(typename, [
+          gql.string("defaultItem"),
+          gql.field({ name: "field", type: unionName }),
+        ])
       );
-
-      return name;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({ field }: BuildArgs<ListField>) => {
       return gql.stringList(field.name);
     },
     value: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
 
       let list;
       switch (listTypeIdentifier) {
@@ -90,17 +84,13 @@ export const list = {
           throw new Error(`document select not implemented`);
         case "pages":
           list = field as SectionList;
-          const section = list.config.source.section;
-
-          const fieldUnionName = await builder.documentUnion({
-            cache,
-            section,
-            accumulator,
-            build: false,
+          const section = await cache.datasource.getSettingsForSection(
+            list.config.source.section
+          );
+          return gql.fieldList({
+            name: field.name,
+            type: friendlyName(section.slug, { suffix: "Document" }),
           });
-
-          // TODO: refactor this to use the select
-          return gql.fieldList({ name: field.name, type: fieldUnionName });
         case "simple":
           list = field as SimpleList;
           return gql.stringList(field.name);
@@ -118,15 +108,12 @@ export const list = {
       const { ...rest } = field;
 
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
       let defaultItem = "";
 
       // FIXME this should be a subset type of TinaField,
@@ -169,7 +156,7 @@ export const list = {
         component: "list",
         field: fieldComponent,
         defaultItem,
-        __typename: "ListField",
+        __typename: typename,
       };
     },
     initialValue: async ({
@@ -182,7 +169,7 @@ export const list = {
         }
       | string[]
     > => {
-      assertIsStringArray(value);
+      assertIsStringArray(value, { source: "list initial values" });
       return value;
     },
     value: async ({
@@ -196,23 +183,21 @@ export const list = {
         }
       | string[]
     > => {
-      assertIsStringArray(value);
+      assertIsStringArray(value, { source: "list values" });
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
+      listTypeIdentifier =
+        field.config?.source?.type === "documents"
+          ? "documents"
+          : field.config?.source?.type === "pages"
+          ? "pages"
+          : "simple";
       let list;
       switch (listTypeIdentifier) {
         case "documents":
           list = field as DocumentList;
           throw new Error(`document list not implemented`);
         case "pages":
+          // FIXME - get it
           list = field as SectionList;
           return {
             _resolver: "_resource",
@@ -232,44 +217,46 @@ export const list = {
       value,
     }: ResolveArgs<ListField>): Promise<
       | {
-          _resolver: "_resource";
-          _resolver_kind: "_nested_sources";
-          _args: { paths: string[] };
+          [key: string]: {
+            _resolver: "_resource";
+            _resolver_kind: "_nested_sources";
+            _args: { paths: string[] };
+          };
         }
-      | string[]
+      | { [key: string]: string[] }
+      | false
     > => {
-      assertIsStringArray(value);
-      let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
-      const isSimple = field.config.use_select ? false : true;
-      if (!isSimple) {
-        listTypeIdentifier =
-          field.config?.source?.type === "documents"
-            ? "documents"
-            : field.config?.source?.type === "pages"
-            ? "pages"
-            : "simple";
-      }
-      let list;
-      switch (listTypeIdentifier) {
-        case "documents":
-          list = field as DocumentList;
-          throw new Error(`document list not implemented`);
-        case "pages":
-          // TODO: validate the documents exists
-          return value;
-        case "simple":
-          // TODO: validate the item is in the options list if it's a select
-          list = field as SimpleList;
-          return value;
+      try {
+        assertIsStringArray(value, { source: "list input" });
+        let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
+        const isSimple = field.config.use_select ? false : true;
+        if (!isSimple) {
+          listTypeIdentifier =
+            field.config?.source?.type === "documents"
+              ? "documents"
+              : field.config?.source?.type === "pages"
+              ? "pages"
+              : "simple";
+        }
+        let list;
+        switch (listTypeIdentifier) {
+          case "documents":
+            list = field as DocumentList;
+            throw new Error(`document list not implemented`);
+          case "pages":
+            // TODO: validate the documents exists
+            return { [field.name]: value };
+          case "simple":
+            // TODO: validate the item is in the options list if it's a select
+            list = field as SimpleList;
+            return { [field.name]: value };
+        }
+      } catch (e) {
+        return false;
       }
     },
   },
 };
-
-function assertIsStringArray(value: unknown): asserts value is string[] {
-  const schema = yup.array().of(yup.string());
-  schema.validateSync(value);
-}
 
 export type BaseListField = {
   label: string;
@@ -315,5 +302,5 @@ export type TinaListField = {
   component: "list";
   field: TinaField;
   defaultItem: string;
-  __typename: "ListField";
+  __typename: typeof typename;
 };

@@ -1,30 +1,22 @@
 import { gql } from "../../gql";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
-import { builder } from "../../builder";
+import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
-import { BuildArgs, ResolveArgs } from "../";
+const typename = "SelectField";
 
 export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
-    field: async ({ accumulator }: BuildArgs<SelectField>) => {
-      const name = "SelectField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-            gql.stringList("options"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
+      accumulator.push(gql.formField(typename, [gql.stringList("options")]));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.string(field.name);
+      return gql.reference(field.name);
     },
     value: async ({ cache, field, accumulator }: BuildArgs<SelectField>) => {
       let select;
@@ -34,14 +26,15 @@ export const select = {
         case "pages":
           select = field as SectionSelect;
 
-          const fieldUnionName = await builder.documentUnion({
-            cache,
-            section: select.config.source.section,
-            accumulator,
-            build: false,
-          });
+          const section = await cache.datasource.getSettingsForSection(
+            select.config.source.section
+          );
+          const name = friendlyName(section.slug);
 
-          return gql.field({ name: field.name, type: fieldUnionName });
+          return gql.field({
+            name: field.name,
+            type: friendlyName(name, { suffix: "Document" }),
+          });
         case "simple":
           return gql.string(field.name);
       }
@@ -60,7 +53,7 @@ export const select = {
       const f = {
         ...rest,
         component: "select" as const,
-        __typename: "SelectField",
+        __typename: typename,
       };
       switch (field.config.source.type) {
         case "documents":
@@ -102,15 +95,18 @@ export const select = {
       }
     },
     input: async ({ field, value }: ResolveArgs<SelectField>) => {
-      switch (field.config.source.type) {
-        case "documents":
-          throw new Error(`document select not implemented`);
-        case "pages":
-          // TODO: validate the document exists
-          return value;
-        // TODO: validate the item is in the options list
-        case "simple":
-          return value;
+      try {
+        assertIsString(value, { source: "select input" });
+        switch (field.config.source.type) {
+          case "documents":
+            throw new Error(`document select not implemented`);
+          case "pages":
+          // TODO: check if reference exists
+          case "simple":
+            return { [field.name]: value };
+        }
+      } catch (e) {
+        return false;
       }
     },
   },
