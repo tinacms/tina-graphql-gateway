@@ -51,11 +51,18 @@ export const imageGallery = {
       return value;
     },
     input: async ({
+      field,
       value,
-    }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
-      assertIsStringArray(value, { source: "image gallery input" });
+    }: ResolveArgs<ImageGalleryField>): Promise<
+      { [key: string]: string[] } | false
+    > => {
+      try {
+        assertIsStringArray(value, { source: "image gallery input" });
 
-      return value;
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };

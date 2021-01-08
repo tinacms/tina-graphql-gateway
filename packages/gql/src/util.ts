@@ -1,52 +1,8 @@
-import { upperFirst, snakeCase, camelCase, toLower, kebabCase } from "lodash";
+import { snakeCase, toLower } from "lodash";
+import * as yup from "yup";
 
 export const slugify = (string: string) => {
   return toLower(snakeCase(string));
-};
-
-export const FMT_BASE = ".forestry/front_matter/templates";
-export const shortFMTName = (path: string) => {
-  return path.replace(`${FMT_BASE}/`, "").replace(".yml", "");
-};
-const friendlyName2 = (name: string, options = { suffix: "" }) => {
-  const delimiter = "_";
-
-  return upperFirst(
-    camelCase(
-      shortFMTName(name) + (options.suffix && delimiter + options.suffix)
-    )
-  );
-};
-
-export const friendlyName = (field = "", suffix = "") => {
-  if (Array.isArray(field)) {
-    const meh = `${field.map((f) => upperFirst(f)).join("_")}${
-      suffix && "_" + suffix
-    }`;
-    return meh;
-  } else {
-    if (typeof field === "string") {
-      if (field) {
-        return `${upperFirst(field)}${suffix ? "_" + suffix : ""}`;
-      } else {
-        return suffix;
-      }
-    } else {
-      const meh = `${
-        field.__namespace ? upperFirst(field.__namespace) + "_" : ""
-      }${upperFirst(field.name)}${suffix && "_" + suffix}`;
-      return meh;
-    }
-  }
-};
-
-export const sequential2 = async (promises: Promise<unknown>[]) => {
-  const reducePromises = async (previous: Promise<unknown>, endpoint) => {
-    await previous;
-    return endpoint;
-  };
-
-  return promises.reduce(reducePromises, Promise.resolve());
 };
 
 /**
@@ -76,7 +32,43 @@ export const sequential = async <A, B>(
   };
 
   // @ts-ignore FIXME: this can be properly typed
-  accum.push(await items.reduce(reducePromises, Promise.resolve()));
+  const result = await items.reduce(reducePromises, Promise.resolve());
+  if (result) {
+    // @ts-ignore FIXME: this can be properly typed
+    accum.push(result);
+  }
 
   return accum;
 };
+
+/**
+ * Asserts the generic type provided matches the runtime value of the `value`. These assertions
+ * are built using the [Yup library](https://github.com/jquense/yup).
+ *
+ * ```ts
+ * // Usage - Given an item, which is of type `unknown`:
+ * const item = args.fromSomeEntryPoint // type "unknown"
+ *
+ * assertShape<{relativePath: string, section: string}>(item, (yup) => yup.object({
+ *   relativePath: yup.string().required()
+ *   section: yup.string().required()
+ * }))
+ *
+ * // yields no Typescript errors
+ * item.relativePath // type "string"
+ * ```
+ *
+ * NOTE: assertions are only as strong as the Yup schema you give it, if you omitted the `required()`
+ * portion, null values would be able to pass through as if they're valid
+ */
+export function assertShape<T extends object>(
+  value: unknown,
+  yupSchema: (args: typeof yup) => yup.Schema<unknown, unknown>
+): asserts value is T {
+  const shape = yupSchema(yup);
+  try {
+    shape.validateSync(value);
+  } catch (e) {
+    throw new Error(`Failed to assertShape - ${e.message}`);
+  }
+}

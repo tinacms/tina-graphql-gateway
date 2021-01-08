@@ -2,31 +2,25 @@ import { gql } from "../../gql";
 
 import { BuildArgs, ResolveArgs, assertIsNumber } from "../";
 
+const typename = "NumberField";
+
 export const number = {
   build: {
-    field: async ({ accumulator }: BuildArgs<NumberField>) => {
-      const name = "NumberField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<NumberField>) => {
+      accumulator.push(gql.formField(typename));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<NumberField>) => {
-      return gql.string(field.name);
+      return gql.number(field.name);
     },
     value: ({ field }: BuildArgs<NumberField>) => {
-      return gql.string(field.name);
+      return gql.number(field.name);
     },
     input: ({ field }: BuildArgs<NumberField>) => {
-      return gql.inputString(field.name);
+      return gql.inputNumber(field.name);
     },
   },
   resolve: {
@@ -40,25 +34,31 @@ export const number = {
         config: rest.config || {
           required: false,
         },
-        __typename: "NumberField",
+        __typename: typename,
       };
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<NumberField>): Promise<string> => {
+    }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field initial value" });
-
       return value;
     },
-    value: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
+    value: async ({ value }: ResolveArgs<NumberField>): Promise<number> => {
       assertIsNumber(value, { source: "number field value" });
-
       return value;
     },
-    input: async ({ value }: ResolveArgs<NumberField>): Promise<string> => {
-      assertIsNumber(value, { source: "number field input" });
-
-      return value;
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<NumberField>): Promise<
+      { [key: string]: number } | false
+    > => {
+      try {
+        assertIsNumber(value, { source: "number field input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
@@ -82,5 +82,5 @@ export type TinaNumberField = {
   config?: {
     required?: boolean;
   };
-  __typename: "NumberField";
+  __typename: typeof typename;
 };

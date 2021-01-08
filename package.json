@@ -6,8 +6,8 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach -pt --exclude demo --exclude @forestryio/graphiql run build",
-    "watch": "yarn workspaces foreach --exclude forestry-schema --exclude demo --exclude @forestryio/graphiql --exclude=build -p -i --verbose run watch",
+    "build": "yarn workspaces foreach --exclude forestry-schema -pt -i --verbose run build",
+    "watch": "yarn workspaces foreach --exclude forestry-schema  -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",
@@ -29,5 +29,13 @@
     "prettier": "^2.0.4",
     "typescript": "^3.8.3",
     "workspace": "^0.0.1-preview.1"
+  },
+  "dependenciesMeta": {
+    "remark-mdx": {
+      "unplugged": true
+    },
+    "rmark-mdx": {
+      "unplugged": true
+    }
   }
 }

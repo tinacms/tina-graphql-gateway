@@ -36,7 +36,7 @@ blocks:
       - content/authors/chris.md
       - content/authors/terrence.md
   - template: sponsor-list
-    description: '### Sponsors'
+    description: "### Sponsors"
     sponsor:
       - name: Normatec
         url: normatec.org
@@ -54,7 +54,8 @@ blocks:
         url: adidas.com
         image: /uploads/adidas.png
   - template: page-reference
-    description: '## Meet our pros'
+    description: "## Meet our pros"
     page: content/pages/our-pros.md
 ---
 
+And we got some content too

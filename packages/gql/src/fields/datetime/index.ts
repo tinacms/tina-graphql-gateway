@@ -2,22 +2,17 @@ import { gql } from "../../gql";
 
 import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
+const typename = "DatetimeField";
+
 export const datetime = {
   build: {
-    field: async ({ accumulator }: BuildArgs<DatetimeField>) => {
-      const name = "DatetimeField";
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
+    field: async ({ field, accumulator }: BuildArgs<DatetimeField>) => {
+      accumulator.push(gql.formField(typename));
 
-      return name;
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<DatetimeField>) => {
       return gql.string(field.name);
@@ -37,8 +32,8 @@ export const datetime = {
 
       return {
         ...rest,
-        component: "datetime",
-        __typename: "DatetimeField",
+        component: "date",
+        __typename: typename,
         config: rest.config || {
           required: false,
         },
@@ -48,18 +43,24 @@ export const datetime = {
       value,
     }: ResolveArgs<DatetimeField>): Promise<string> => {
       assertIsString(value, { source: "datetime" });
-
       return value;
     },
     value: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
       assertIsString(value, { source: "datetime" });
-
-      return "";
-    },
-    input: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
-      assertIsString(value, { source: "datetime" });
-
       return value;
+    },
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<DatetimeField>): Promise<
+      { [key: string]: string } | false
+    > => {
+      try {
+        assertIsString(value, { source: "datetime" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
@@ -78,10 +79,10 @@ export type DatetimeField = {
 export type TinaDatetimeField = {
   label: string;
   name: string;
-  component: "datetime";
+  component: "date";
   default?: string;
   config?: {
     required?: boolean;
   };
-  __typename: "DatetimeField";
+  __typename: typeof typename;
 };

@@ -1,24 +1,17 @@
 import { gql } from "../../gql";
 
-import type { BuildArgs, ResolveArgs } from "../";
+import { assertIsBoolean, assertIsString, BuildArgs, ResolveArgs } from "../";
+
+const typename = "BooleanField";
 
 export const boolean = {
   build: {
-    field: async ({ accumulator }: BuildArgs<BooleanField>) => {
-      const name = "BooleanField";
-
-      accumulator.push(
-        gql.object({
-          name,
-          fields: [
-            gql.string("name"),
-            gql.string("label"),
-            gql.string("component"),
-          ],
-        })
-      );
-
-      return name;
+    field: async ({ field, accumulator }: BuildArgs<BooleanField>) => {
+      accumulator.push(gql.formField(typename));
+      return gql.field({
+        name: field.name,
+        type: typename,
+      });
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
       return gql.string(field.name);
@@ -48,28 +41,25 @@ export const boolean = {
     initialValue: async ({
       value,
     }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected initial value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "boolean initial value" });
       return value;
     },
     value: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected value of type ${typeof value} for resolved text value`
-        );
-      }
+      assertIsString(value, { source: "boolean value" });
       return value;
     },
-    input: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      if (typeof value !== "string") {
-        throw new Error(
-          `Unexpected input value of type ${typeof value} for resolved text value`
-        );
+    input: async ({
+      field,
+      value,
+    }: ResolveArgs<BooleanField>): Promise<
+      { [key: string]: boolean } | false
+    > => {
+      try {
+        assertIsBoolean(value, { source: "boolean input" });
+        return { [field.name]: value };
+      } catch (e) {
+        return false;
       }
-      return value;
     },
   },
 };
@@ -93,5 +83,5 @@ export type TinaBooleanField = {
   config?: {
     required?: boolean;
   };
-  __typename: "BooleanField";
+  __typename: typeof typename;
 };

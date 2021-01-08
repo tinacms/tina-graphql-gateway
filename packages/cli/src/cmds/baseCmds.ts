@@ -3,7 +3,6 @@ import { chain } from "../middleware";
 import { genTypes, attachSchema } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
 import { startServer } from "./start-server";
-import { playgroundServer } from "./start-server/playground";
 
 export const CMD_GEN_TYPES = "schema:types";
 export const CMD_AUDIT = "schema:audit";
@@ -20,6 +19,10 @@ const auditFixOption = {
   name: "--fix",
   description: "Fix errors in the .tina folder configuration",
 };
+const genOption = {
+  name: "--schema -s",
+  description: "Dump the graphql SDL",
+};
 const schemaDumpOption = {
   name: "--folder <folder>",
   description: "Dump the schema into the given path",
@@ -32,12 +35,18 @@ const subCommand = {
   name: "-c, --command <command>",
   description: "The sub-command to run",
 };
+const pathOption = {
+  name: "--root",
+  description:
+    "Specify to use the .tina folder in the root of your repository for the schema",
+};
 
 export const baseCmds: Command[] = [
   {
     command: CMD_GEN_TYPES,
     description:
       "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
+    options: [genOption],
     action: (options) => chain([attachSchema, genTypes], options),
   },
   {
@@ -63,11 +72,5 @@ export const baseCmds: Command[] = [
     description: "Start Filesystem Graphql Server",
     options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
-  },
-  {
-    command: CMD_START_PLAYGROUND,
-    description: "Start Graphql Playground Server",
-    options: [startServerPortOption, subCommand],
-    action: (options) => chain([playgroundServer], options),
   },
 ];

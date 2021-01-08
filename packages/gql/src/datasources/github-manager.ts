@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
 import { slugify } from "../util";
 import DataLoader from "dataloader";
+import LRU from "lru-cache";
 
 import { byTypeWorks } from "../types";
 import { FieldGroupField } from "../fields/field-group";
@@ -27,6 +28,49 @@ import type {
 } from "../types";
 import { Octokit } from "@octokit/rest";
 
+const cache = new LRU<string, string | string[]>({
+  max: 50,
+  length: function (v: string, key) {
+    return v.length;
+  },
+});
+
+export const clearCache = ({
+  owner,
+  repo,
+}: {
+  owner: string;
+  repo: string;
+}) => {
+  const repoPrefix = `${owner}:${repo}__`;
+  console.log("clearing cache for ", repoPrefix);
+  cache.forEach((value, key, cache) => {
+    if (key.startsWith(repoPrefix)) {
+      console.log("clearing key", key);
+      cache.del(key);
+    }
+  });
+};
+
+const getAndSetFromCache = async (
+  { owner, repo }: { owner: string; repo: string },
+  key: string,
+  setter: () => Promise<string | string[]>
+) => {
+  const keyName = `${owner}:${repo}__${key}`;
+  const value = cache.get(keyName);
+
+  if (value) {
+    console.log("getting from cache", keyName);
+    return value;
+  } else {
+    console.log("item not in cache", keyName);
+    const valueToCache = await setter();
+    cache.set(keyName, valueToCache);
+    return valueToCache;
+  }
+};
+
 export class GithubManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
@@ -41,30 +85,25 @@ export class GithubManager implements DataSource {
     accessToken,
     owner,
     repo,
+    branch,
   }: {
     rootPath: string;
     accessToken: string;
     owner: string;
     repo: string;
+    branch?: string;
   }) {
     // constructor(rootPath: string) {
     this.rootPath = rootPath;
     const repoConfig = {
       owner,
       repo,
+      ref: branch || "master",
     };
     this.repoConfig = repoConfig;
 
     const appOctoKit = new Octokit({
       auth: accessToken,
-      // authStrategy: createAppAuth,
-      // auth: {
-      //   id: 83861,
-      //   privateKey: pk,
-      //   installationId: “12264194”,
-      //   clientId: GH_CLIENT,
-      //   clientSecret: GH_SECRET,
-      // },
     });
     this.appOctoKit = appOctoKit;
 
@@ -82,26 +121,21 @@ export class GithubManager implements DataSource {
       await Promise.all(
         keys.map(async (path) => {
           const extension = p.extname(path);
-
           switch (extension) {
-            case ".yml":
-              const ymlContent = await appOctoKit.repos.getContent({
-                ...repoConfig,
-                path,
-              });
-
-              results[path] = parseMatter(
-                Buffer.from(ymlContent.data.content, "base64")
-              );
-              break;
             case ".md":
-              const markdownContent = await appOctoKit.repos.getContent({
-                ...repoConfig,
-                path,
+            case ".yml":
+              results[path] = await getAndSetFromCache(repoConfig, path, () => {
+                return appOctoKit.repos
+                  .getContent({
+                    ...repoConfig,
+                    path,
+                  })
+                  .then((response) => {
+                    return parseMatter<string>(
+                      Buffer.from(response.data.content, "base64")
+                    );
+                  });
               });
-              results[path] = parseMatter(
-                Buffer.from(markdownContent.data.content, "base64")
-              );
               break;
             default:
               throw new Error(
@@ -118,13 +152,22 @@ export class GithubManager implements DataSource {
       const results: { [key: string]: unknown } = {};
       await Promise.all(
         keys.map(async (path) => {
-          const dirContents = await appOctoKit.repos.getContent({
-            ...repoConfig,
-            path,
+          results[path] = await getAndSetFromCache(repoConfig, path, () => {
+            return appOctoKit.repos
+              .getContent({
+                ...repoConfig,
+                path,
+              })
+              .then((dirContents) => {
+                if (Array.isArray(dirContents.data)) {
+                  return dirContents.data.map((t) => t.name);
+                } else {
+                  throw new Error(
+                    "Expected directory request to return an array of strings"
+                  );
+                }
+              });
           });
-          if (Array.isArray(dirContents.data)) {
-            results[path] = dirContents.data.map((t) => t.name);
-          }
 
           // TODO: An error I suppose
           return [];
@@ -149,6 +192,15 @@ export class GithubManager implements DataSource {
     const templates = await this.getTemplatesForSection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
+  };
+  getAllTemplates = async () => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await this.readDir(fullPath, this.dirLoader);
+    return await sequential(
+      templates,
+      async (templateSlug) =>
+        await this.getTemplate(templateSlug.replace(".yml", ""))
+    );
   };
   getTemplates = async (templateSlugs: string[]) =>
     await sequential(
@@ -175,6 +227,45 @@ export class GithubManager implements DataSource {
     }
 
     return result;
+  };
+  getSection = async (slug: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
+
+    const section = sections.find((section) => section.slug === slug);
+
+    if (!section) {
+      throw new Error(`Unable to find section with slug ${slug}`);
+    }
+    return section;
+  };
+  getSectionByPath = async (path: string) => {
+    const data = await this.getSettingsData();
+
+    const sections = data.sections
+      .filter((section) => section.type === "directory")
+      .map((section) => {
+        return {
+          ...section,
+          slug: slugify(section.label),
+        } as DirectorySection;
+      });
+
+    const section = sections.find((section) => {
+      return path.startsWith(section.path);
+    });
+    if (!section) {
+      throw new Error(`Unable to find section for path ${path}`);
+    }
+    return section;
   };
   getSectionsSettings = async () => {
     const data = await this.getSettingsData();
@@ -285,16 +376,32 @@ export class GithubManager implements DataSource {
       this.loader
     );
 
-    if (options.namespace) {
-      return namespaceFields({ name: slug, ...data });
-    } else {
-      return data;
+    return namespaceFields({ name: slug, ...data });
+  };
+  getTemplateWithoutName = async (
+    slug: string,
+    options: { namespace: boolean } = { namespace: true }
+  ) => {
+    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const templates = await this.readDir(fullPath, this.dirLoader);
+    const template = templates.find((templateBasename) => {
+      return templateBasename === `${slug}.yml`;
+    });
+    if (!template) {
+      throw new Error(`No template found for slug ${slug}`);
     }
+    const { data } = await this.readFile<RawTemplate>(
+      p.join(fullPath, template),
+      this.loader
+    );
+    return data;
   };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplate(template, { namespace: false });
+    const templateData = await this.getTemplateWithoutName(template, {
+      namespace: false,
+    });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
@@ -316,7 +423,8 @@ export class GithubManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
-    const string = matter.stringify("", params.data);
+    const { _body, ...data } = params;
+    const string = matter.stringify(`\n${_body || ""}`, data);
     await this.writeFile(fullPath, string);
   };
 
@@ -326,6 +434,7 @@ export class GithubManager implements DataSource {
   ): Promise<T> {
     // Uncomment to bypass dataloader for debugging
     // return await internalReadFile(path);
+    // @ts-ignore
     return await loader.load(path);
   }
 
@@ -358,6 +467,7 @@ export class GithubManager implements DataSource {
     path: string,
     loader: DataLoader<unknown, unknown, unknown>
   ): Promise<string[]> {
+    // @ts-ignore
     return loader.load(path);
   }
   async internalReadDir(path: string) {
@@ -376,11 +486,14 @@ export class GithubManager implements DataSource {
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {
-  let res;
-  res = matter(data, { excerpt_separator: "<!-- excerpt -->" });
+  const res = matter(data, {
+    excerpt_separator: "<!-- excerpt -->",
+  }) as unknown & { content: string };
+  // Remove line break at top of _body
+  res.content = res.content.replace(/^\n|\n$/g, "");
 
   // @ts-ignore
-  return res;
+  return res as T;
 };
 
 function isWithFields(t: object): t is WithFields {

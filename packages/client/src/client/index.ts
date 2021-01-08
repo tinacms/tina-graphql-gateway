@@ -1,19 +1,22 @@
-import { queryBuilder } from "@forestryio/graphql-helpers";
-import { getIntrospectionQuery, buildClientSchema, print } from "graphql";
+import {
+  formBuilder,
+  mutationGenerator,
+  queryGenerator,
+} from "@forestryio/graphql-helpers";
+import gql from "graphql-tag";
+import {
+  getIntrospectionQuery,
+  buildClientSchema,
+  print,
+  DocumentNode,
+  GraphQLSchema,
+} from "graphql";
 import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
-import { transformPayload } from "./handle";
-import type { Field } from "tinacms";
-
-interface AddProps {
-  url: string;
-  path: string;
-  template: string;
-  payload: any;
-}
+import { transformPayload } from "./transform-payload";
 
 interface UpdateVariables {
-  path: string;
-  params?: any;
+  relativePath: string;
+  params: unknown;
 }
 
 interface AddVariables {
@@ -22,81 +25,69 @@ interface AddVariables {
   params?: any;
 }
 
-const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX = "auth.ca-central-1.amazoncognito.com"
+const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX =
+  "auth.ca-central-1.amazoncognito.com";
 
 interface ServerOptions {
-  realm: string, 
-  clientId: string, 
-  redirectURI: string,
+  realm: string;
+  clientId: string;
+  redirectURI: string;
   customAPI?: string;
-  identityProxy?: string
-  getTokenFn?: () => string,
-  tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM",
+  identityProxy?: string;
+  getTokenFn?: () => string;
+  tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
 export class ForestryClient {
   serverURL: string;
   oauthHost: string;
+  identityHost: string;
+  schema: GraphQLSchema;
   clientId: string;
   query: string;
-  redirectURI: string
+  redirectURI: string;
   setToken: (_token: string) => void;
   private getToken: () => string;
-  private token: string // used with memory storage
+  private token: string; // used with memory storage
 
-  constructor({ tokenStorage = "MEMORY", ...options}: ServerOptions) {
-    const _this = this
-    this.serverURL = options.customAPI || `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`,
-    this.oauthHost = options.identityProxy || `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`;
-    this.redirectURI = options.redirectURI
+  constructor({ tokenStorage = "MEMORY", ...options }: ServerOptions) {
+    const _this = this;
+    (this.serverURL =
+      options.customAPI ||
+      `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`),
+      (this.oauthHost =
+        options.identityProxy ||
+        `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);
+    this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
 
-    switch(tokenStorage)
-    {
-      case 'LOCAL_STORAGE': 
-        this.getToken = function() {
-          return localStorage.getItem(AUTH_TOKEN_KEY) || null
-        }
-        this.setToken = function(token: string) {
-          localStorage.setItem(AUTH_TOKEN_KEY, token)
-        }
+    switch (tokenStorage) {
+      case "LOCAL_STORAGE":
+        this.getToken = function () {
+          return localStorage.getItem(AUTH_TOKEN_KEY) || null;
+        };
+        this.setToken = function (token: string) {
+          localStorage.setItem(AUTH_TOKEN_KEY, token);
+        };
         break;
-      case 'MEMORY':
-        this.getToken = function() {
-          return _this.token
-        }
-        this.setToken = function(token: string) {
-          _this.token = token
-        }
+      case "MEMORY":
+        this.getToken = function () {
+          return _this.token;
+        };
+        this.setToken = function (token: string) {
+          _this.token = token;
+        };
         break;
-      case 'CUSTOM':
-        if(!options.getTokenFn)
-        {
-          throw new Error("When CUSTOM token storage is selected, a getTokenFn must be provided")
+      case "CUSTOM":
+        if (!options.getTokenFn) {
+          throw new Error(
+            "When CUSTOM token storage is selected, a getTokenFn must be provided"
+          );
         }
-        this.getToken = options.getTokenFn
-         break;
+        this.getToken = options.getTokenFn;
+        break;
     }
   }
-
-  addContent = async ({ path, template, payload }: AddProps) => {
-    const mutation = `mutation addDocumentMutation($path: String!, $template: String!, $params: DocumentInput) {
-      addDocument(path: $path, template: $template, params: $params) {
-        __typename
-      }
-    }`;
-
-    // @ts-ignore
-    const values = this.transformPayload(payload, form);
-
-    await this.request<AddVariables>(mutation, {
-      variables: {
-        path: path,
-        template: template + ".yml",
-        params: values,
-      },
-    });
-  };
 
   addPendingContent = async (props) => {
     const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $section: String!) {
@@ -115,123 +106,121 @@ export class ForestryClient {
     return result;
   };
 
-  getQuery = async () => {
-    if (!this.query) {
+  getSchema = async () => {
+    if (!this.schema) {
       const data = await this.request(getIntrospectionQuery(), {
         variables: {},
       });
 
-      this.query = print(queryBuilder(buildClientSchema(data)));
+      this.schema = buildClientSchema(data);
     }
 
-    return this.query;
-  };
-  getSectionQuery = async () => {
-    if (!this.query) {
-      const data = await this.request(getIntrospectionQuery(), {
-        variables: {},
-      });
-
-      this.query = print(queryBuilder(buildClientSchema(data)));
-    }
-
-    return this.query;
+    return this.schema;
   };
 
-  listDocumentsBySection = async ({ section }: { section: string }) => {
-    const query = `
-    query DocumentQuery($section: String!) {
-      documents(section: $section) {
-        relativePath
-        breadcrumbs(excludeExtension: true)
-      }
-    }
-    `;
-    const result = await this.request(query, { variables: { section } });
-
-    return result.documents;
-  };
-
-  listSections = async () => {
-    const query = `
-    {
-      getSections {
-        slug
-        documents {
-          relativePath
-          breadcrumbs
-        }
-      }
-    }
-    `;
-    const result = await this.request(query, { variables: {} });
-
-    return result.getSections;
-  };
-
-  getContent = async <T>({
-    path,
-  }: {
-    path?: string;
-  }): Promise<{
-    data: T;
-  }> => {
-    const query = await this.getQuery();
-    const data = await this.request(query, {
-      variables: { path },
-    });
-
-    return data;
-  };
-  getContentForSection = async <T>({
-    relativePath,
-    section,
-  }: {
-    relativePath?: string;
-    section?: string;
-  }): Promise<T> => {
-    const query = await this.getSectionQuery();
-    const data = await this.request(query, {
-      variables: { relativePath, section },
-    });
-
-    return data;
-  };
-
-  transformPayload = async ({
-    payload,
-    form,
-  }: {
-    payload: any;
-    form: { fields: Field[] };
-  }) => {
-    return transformPayload(payload, form);
-  };
-
-  updateContent = async ({
-    relativePath,
-    section,
-    payload,
-    form,
-  }: {
+  generateMutation = async (variables: {
     relativePath: string;
     section: string;
-    payload: any;
-    form: { fields: Field[] };
   }) => {
-    const mutation = `mutation updateDocumentMutation($relativePath: String!, $section: String!, $params: DocumentInput) {
-      updateDocument(relativePath: $relativePath, section: $section, params: $params) {
-        __typename
-      }
-    }`;
-    const values = transformPayload(payload, form);
-    const variables = { relativePath, section, params: values };
+    const schema = await this.getSchema();
+    const query = queryGenerator(variables, schema);
+    const formifiedQuery = formBuilder(query, schema);
+    const res = await this.request(print(formifiedQuery), { variables });
+    const result = Object.values(res)[0];
+    const mutation = mutationGenerator(variables, schema);
 
-    await this.request<UpdateVariables>(mutation, {
-      // @ts-ignore
-      variables,
+    const params = await transformPayload({
+      mutation: print(mutation),
+      // @ts-ignore FIXME: this needs an assertion
+      values: result.values,
+      schema,
+      sys: res.sys,
     });
+
+    return {
+      queryString: print(mutation),
+      variables: {
+        relativePath: variables.relativePath,
+        params,
+      },
+    };
   };
+
+  generateQuery = async (variables: {
+    relativePath: string;
+    section: string;
+  }) => {
+    const schema = await this.getSchema();
+    const query = queryGenerator(variables, schema);
+    return {
+      queryString: print(query),
+      variables: { relativePath: variables.relativePath },
+    };
+  };
+
+  prepareVariables = async ({
+    mutationString,
+    relativePath,
+    values,
+    sys,
+  }: {
+    mutationString: string;
+    relativePath: string;
+    values: object;
+    sys: {
+      template: string;
+      section: {
+        slug: string;
+      };
+    };
+  }) => {
+    const schema = await this.getSchema();
+    const params = transformPayload({
+      mutation: mutationString,
+      values: values,
+      sys,
+      schema,
+    });
+
+    return {
+      relativePath,
+      params,
+    };
+  };
+
+  async requestWithForm<VariableType>(
+    query: (gqlTag: typeof gql) => DocumentNode,
+    { variables }: { variables: VariableType }
+  ) {
+    const schema = await this.getSchema();
+    const formifiedQuery = formBuilder(query(gql), schema);
+
+    return this.request(print(formifiedQuery), { variables });
+  }
+
+  async request<VariableType>(
+    query: ((gqlTag: typeof gql) => DocumentNode) | string,
+    { variables }: { variables: VariableType }
+  ) {
+    const res = await fetch(this.serverURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.getToken(),
+      },
+      body: JSON.stringify({
+        query: typeof query === "function" ? print(query(gql)) : query,
+        variables,
+      }),
+    });
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error(json.errors);
+      // throw new Error("Failed to fetch API");
+    }
+    return json.data;
+  }
 
   async isAuthorized(): Promise<boolean> {
     return this.isAuthenticated(); // TODO - check access
@@ -242,9 +231,13 @@ export class ForestryClient {
   }
 
   async authenticate() {
-    const token = await authenticate(this.clientId, this.oauthHost,this.redirectURI);
-    this.setToken(token)
-    return token
+    const token = await authenticate(
+      this.clientId,
+      this.oauthHost,
+      this.redirectURI
+    );
+    this.setToken(token);
+    return token;
   }
 
   async getUser() {
@@ -269,34 +262,9 @@ export class ForestryClient {
       return null;
     }
   }
-
-  private async request<VariableType>(
-    query: string,
-    { variables }: { variables: VariableType }
-  ) {
-    const res = await fetch(this.serverURL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.getToken(),
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
-
-    const json = await res.json();
-    if (json.errors) {
-      console.error(json.errors);
-      throw new Error("Failed to fetch API");
-    }
-    return json.data;
-  }
 }
-
-export { useForestryForm } from "./useForestryForm";
 
 export { ForestryMediaStore } from "./media-store";
 
-export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL = "http://localhost:4001/graphql";
+export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL =
+  "http://localhost:4001/graphql";
