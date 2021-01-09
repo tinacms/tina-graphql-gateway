@@ -178,7 +178,7 @@ export function useForestryForm<T>({
             : cms.api.forestry
                 .request(values.mutationString, { variables })
                 .then((res) => {
-                  console.log("res", res);
+                  // console.log("res", res);
                 });
         });
       },

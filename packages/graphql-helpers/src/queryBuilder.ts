@@ -467,9 +467,13 @@ export const splitDataNode = (args: {
       mutation: string;
     };
   } = {};
+  const fragments: string[] = [];
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
+      FragmentDefinition(node, key) {
+        fragments.push(print(node));
+      },
       Field(node, key, parent, path, ancestors) {
         const type = typeInfo.getType();
         if (type) {
@@ -927,7 +931,11 @@ export const splitDataNode = (args: {
                     case "InlineFragment":
                       break;
                     case "Field":
-                      dataPath.push(item.name?.value);
+                      const value = item.alias
+                        ? item.alias.value
+                        : item.name.value;
+
+                      dataPath.push(value);
                       break;
                   }
                 }
@@ -943,10 +951,8 @@ export const splitDataNode = (args: {
     },
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
-  console.log("split", queries);
-  // Object.values(queries).map((q) => console.log(q.query));
 
-  return queries;
+  return { queries, fragments };
 };
 
 /**
