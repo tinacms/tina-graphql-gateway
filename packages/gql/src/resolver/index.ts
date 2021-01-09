@@ -91,7 +91,12 @@ const schemaResolver = async (
 
   switch (info.fieldName) {
     case "_queryString":
-      return print(info.operation);
+      return `
+${Object.values(info.fragments).map((fragment) => {
+  return print(fragment);
+})}
+${print(info.operation)}
+`;
     case "node":
       return resolveNode(args, context);
     case "documents":
