@@ -29,7 +29,7 @@ export class ContentCreatorPlugin<
       // @ts-ignore
       template: form.template,
     };
-    const res = await cms.api.forestry.addPendingContent(payload);
+    const res = await cms.api.tina.addPendingContent(payload);
 
     const redirectURL = `/${
       this.section

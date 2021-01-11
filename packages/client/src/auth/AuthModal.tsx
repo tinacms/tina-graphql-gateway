@@ -52,7 +52,7 @@ export function ForestryAuthenticationModal({
         {
           name: "Continue to Forestry",
           action: async () => {
-            const token = await cms.api.forestry.authenticate();
+            const token = await cms.api.tina.authenticate();
             onAuthSuccess(token);
           },
           primary: true,
