@@ -189,7 +189,7 @@ export default withTina(MyApp, {
 });
 ```
 
-We'll also want to wrap our main layout in the `TinacmsForestryProvider` to support authentication
+We'll also want to wrap our main layout in the `TinaCloudProvider` to support authentication
 
 ```tsx
 
@@ -199,7 +199,7 @@ function MyApp({ Component, pageProps }) {
 
   const client = useCMS().api.forestry
 
-  return (<TinacmsForestryProvider
+  return (<TinaCloudProvider
     onLogin={(token: string) => {
       const headers = new Headers()
 
