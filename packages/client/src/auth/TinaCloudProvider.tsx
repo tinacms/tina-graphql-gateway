@@ -18,7 +18,7 @@ limitations under the License.
 
 import React, { useState, useEffect } from "react";
 import { useCMS } from "tinacms";
-import { ForestryAuthenticationModal } from "./AuthModal";
+import { TinaCloudAuthenticationModal } from "./AuthModal";
 import { Client } from "../client";
 
 interface ProviderProps {
@@ -65,7 +65,7 @@ export const TinaCloudProvider = ({
   return (
     <div>
       {activeModal === "authenticate" && (
-        <ForestryAuthenticationModal
+        <TinaCloudAuthenticationModal
           close={onClose}
           onAuthSuccess={onAuthSuccess}
         />
