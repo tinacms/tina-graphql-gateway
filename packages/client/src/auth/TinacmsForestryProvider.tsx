@@ -30,7 +30,7 @@ interface ProviderProps {
 
 type ModalNames = null | "authenticate";
 
-export const TinacmsForestryProvider = ({
+export const TinaCloudProvider = ({
   children,
   onLogin,
   onLogout,
