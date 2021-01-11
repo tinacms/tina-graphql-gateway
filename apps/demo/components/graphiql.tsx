@@ -3,7 +3,7 @@ import GraphiQL from "graphiql";
 import { formBuilder } from "@forestryio/graphql-helpers";
 import { useMachine } from "@xstate/react";
 import { Machine, assign, createMachine, StateSchema } from "xstate";
-import { useForestryForm } from "tina-graphql-gateway";
+import { useForm } from "tina-graphql-gateway";
 import { Form, useCMS, TinaCMS } from "tinacms";
 import { Sidebar } from "./sidebar";
 import {
@@ -216,7 +216,7 @@ export const Explorer = ({
     }
   );
 
-  const res = useForestryForm<object>({
+  const res = useForm<object>({
     payload: current.context.result,
     onSubmit: (args: { queryString: string; variables: object }) => {
       send({ type: "SETUP_MUTATION", value: args });
