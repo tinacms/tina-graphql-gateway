@@ -1,4 +1,4 @@
-import { useForestryForm } from "@forestryio/client";
+import { useForestryForm } from "tina-graphql-gateway";
 import { createClient } from "../utils/createClient";
 import type * as Tina from "../.tina/types";
 import { Sidebar } from "../components/sidebar";

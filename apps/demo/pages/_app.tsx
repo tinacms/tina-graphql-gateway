@@ -2,7 +2,7 @@ import React from "react";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { withTina } from "tinacms";
-import { TinacmsForestryProvider } from "@forestryio/client";
+import { TinacmsForestryProvider } from "tina-graphql-gateway";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 import { createClient } from "../utils/createClient";
