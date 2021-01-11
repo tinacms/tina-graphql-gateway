@@ -27,7 +27,7 @@ yarn create next-app --example blog-starter-typescript blog-starter-typescript-a
 This package provides you with:
 
 - A `ForestryClient` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
-- A `useForestryForm` hook, that you can use to hook into the Tina forms that let you edit your content.
+- A `useForm` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
 npm install --save tina-graphql-gateway
@@ -286,7 +286,7 @@ import query from "../../.forestry/query";
 import Cookies from 'cookies'
 import { usePlugin } from "tinacms";
 import {
-  useForestryForm,
+  useForm,
   ForestryClient,
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
 } from "tina-graphql-gateway";
@@ -317,7 +317,7 @@ export async function getServerProps({ params }) {
 }
 
 export default function Home(props) {
-  const [formData, form] = useForestryForm<Query, DocumentUnion>(props).data;
+  const [formData, form] = useForm<Query, DocumentUnion>(props).data;
   usePlugin(form);
 
   return (

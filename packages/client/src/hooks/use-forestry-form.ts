@@ -152,7 +152,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForestryForm<T>({
+export function useForm<T>({
   payload,
   onSubmit,
 }: {
