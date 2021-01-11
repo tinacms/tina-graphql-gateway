@@ -1,7 +1,7 @@
 import {
   ForestryClient,
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
-} from "@forestryio/client";
+} from "tina-graphql-gateway";
 
 export const createClient = (editMode: boolean) => {
   return new ForestryClient({

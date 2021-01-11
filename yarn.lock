@@ -1747,65 +1747,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@forestryio/client@workspace:packages/client":
-  version: 0.0.0-use.local
-  resolution: "@forestryio/client@workspace:packages/client"
-  dependencies:
-    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
-    "@graphql-codegen/core": ^1.15.4
-    "@graphql-codegen/typescript": ^1.15.4
-    "@graphql-codegen/typescript-operations": ^1.15.4
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.3
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.31.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
-    "@types/crypto-js": ^3.1.47
-    "@types/node": ^14.0.13
-    "@types/react": ^16.9.38
-    "@types/styled-components": ^5.1.3
-    "@types/yup": ^0.29.10
-    "@xstate/react": ^1.1.0
-    codemirror: ^5.55.0
-    cors: ^2.8.5
-    crypto-js: ^4.0.0
-    final-form: 4.20.1
-    graphql: ^15.1.0
-    graphql-tag: ^2.11.0
-    isomorphic-unfetch: ^3.0.0
-    lodash.get: ^4.4.2
-    lodash.has: ^4.5.2
-    lodash.merge: ^4.6.2
-    lodash.set: ^4.3.2
-    next: 9.4.2
-    node-fetch: ^2.6.0
-    prop-types: 15.7.2
-    react: 16.13.1
-    react-dom: 16.13.1
-    styled-components: ^5.2.0
-    tinacms: ^0.31.0
-    tsup: ^3.7.0
-    typescript: ^3.9.5
-    xstate: ^4.15.1
-    yup: ^0.32.0
-  peerDependencies:
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.3
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.31.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    react-is: ^16.13.1
-    styled-components: "*"
-    tinacms: ^0.31.0
-  languageName: unknown
-  linkType: soft
-
 "@forestryio/gql@workspace:packages/gql":
   version: 0.0.0-use.local
   resolution: "@forestryio/gql@workspace:packages/gql"
@@ -7741,7 +7682,6 @@ __metadata:
   resolution: "demo@workspace:apps/demo"
   dependencies:
     "@forestryio/cli": "workspace:packages/cli"
-    "@forestryio/client": "workspace:packages/client"
     "@forestryio/gql": "workspace:packages/gql"
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@tailwindcss/ui": ^0.3.0
@@ -7779,6 +7719,7 @@ __metadata:
     styled-components: ^5.1.3
     styled-jsx: ^3.2.5
     tailwindcss: ^1.4.6
+    tina-graphql-gateway: "workspace:packages/client"
     tinacms: 0.31.0
     typescript: ^3.8.3
     urql: ^1.9.7
@@ -19581,6 +19522,65 @@ fsevents@^1.2.7:
   checksum: d8300c3ecf1a3751413de82b04ad283b461ab6fb1041820c825d13b4ae74526e2101ab5fb84c57a0c6e1f4d7f67173b5d8754ed8bb7447c6a9ce1db8562eb82c
   languageName: node
   linkType: hard
+
+"tina-graphql-gateway@workspace:packages/client":
+  version: 0.0.0-use.local
+  resolution: "tina-graphql-gateway@workspace:packages/client"
+  dependencies:
+    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
+    "@graphql-codegen/core": ^1.15.4
+    "@graphql-codegen/typescript": ^1.15.4
+    "@graphql-codegen/typescript-operations": ^1.15.4
+    "@tinacms/core": ^0.31.0
+    "@tinacms/forms": ^0.3
+    "@tinacms/icons": ^0.7
+    "@tinacms/react-core": ^0.2
+    "@tinacms/react-forms": ^0.31.0
+    "@tinacms/react-modals": ^0.1
+    "@tinacms/styles": ^0.29.0
+    "@types/crypto-js": ^3.1.47
+    "@types/node": ^14.0.13
+    "@types/react": ^16.9.38
+    "@types/styled-components": ^5.1.3
+    "@types/yup": ^0.29.10
+    "@xstate/react": ^1.1.0
+    codemirror: ^5.55.0
+    cors: ^2.8.5
+    crypto-js: ^4.0.0
+    final-form: 4.20.1
+    graphql: ^15.1.0
+    graphql-tag: ^2.11.0
+    isomorphic-unfetch: ^3.0.0
+    lodash.get: ^4.4.2
+    lodash.has: ^4.5.2
+    lodash.merge: ^4.6.2
+    lodash.set: ^4.3.2
+    next: 9.4.2
+    node-fetch: ^2.6.0
+    prop-types: 15.7.2
+    react: 16.13.1
+    react-dom: 16.13.1
+    styled-components: ^5.2.0
+    tinacms: ^0.31.0
+    tsup: ^3.7.0
+    typescript: ^3.9.5
+    xstate: ^4.15.1
+    yup: ^0.32.0
+  peerDependencies:
+    "@tinacms/core": ^0.31.0
+    "@tinacms/forms": ^0.3
+    "@tinacms/icons": ^0.7
+    "@tinacms/react-core": ^0.2
+    "@tinacms/react-forms": ^0.31.0
+    "@tinacms/react-modals": ^0.1
+    "@tinacms/styles": ^0.29.0
+    react: ">=16.8"
+    react-dom: ">=16.8"
+    react-is: ^16.13.1
+    styled-components: "*"
+    tinacms: ^0.31.0
+  languageName: unknown
+  linkType: soft
 
 "tinacms@npm:0.31.0, tinacms@npm:^0.31.0":
   version: 0.31.0

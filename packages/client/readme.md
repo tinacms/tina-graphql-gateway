@@ -30,13 +30,13 @@ This package provides you with:
 - A `useForestryForm` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
-npm install --save @forestryio/client
+npm install --save tina-graphql-gateway
 ```
 
 or
 
 ```bash
-yarn add @forestryio/client
+yarn add tina-graphql-gateway
 ```
 
 ### CLI package
@@ -165,7 +165,7 @@ In your site root, add TinaCMS & register the `ForestryClient` like so:
 ```tsx
 import React from "react";
 import { withTina } from "tinacms";
-import { ForestryClient } from "@forestryio/client";
+import { ForestryClient } from "tina-graphql-gateway";
 import config from "../.forestry/config";
 
 function MyApp({ Component, pageProps }) {
@@ -289,7 +289,7 @@ import {
   useForestryForm,
   ForestryClient,
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
-} from "@forestryio/client";
+} from "tina-graphql-gateway";
 
 // These are your generated types from CLI
 import { DocumentUnion, Query } from "../../.tina/types";
