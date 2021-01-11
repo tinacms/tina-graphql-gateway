@@ -37,7 +37,7 @@ const client = createClient(false);
 
 export default withTina(MyApp, {
   apis: {
-    forestry: client,
+    tina: client,
   },
   sidebar: true, //editMode,
   enabled: true, //editMode,

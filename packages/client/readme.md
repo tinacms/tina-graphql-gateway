@@ -197,7 +197,7 @@ We'll also want to wrap our main layout in the `TinaCloudProvider` to support au
 
 function MyApp({ Component, pageProps }) {
 
-  const client = useCMS().api.forestry
+  const client = useCMS().api.tina
 
   return (<TinaCloudProvider
     onLogin={(token: string) => {

@@ -36,12 +36,12 @@ export const TinaCloudProvider = ({
   onLogout,
 }: ProviderProps) => {
   const cms = useCMS();
-  const forestry: Client = cms.api.forestry;
+  const client: Client = cms.api.tina;
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
 
   const onClose = async () => {
     setActiveModal(null);
-    if (!(await forestry.isAuthorized())) {
+    if (!(await client.isAuthorized())) {
       cms.disable();
     }
   };
@@ -51,7 +51,7 @@ export const TinaCloudProvider = ({
   };
 
   const onAuthSuccess = async (token: string) => {
-    if (await forestry.isAuthorized()) {
+    if (await client.isAuthorized()) {
       onLogin(token);
       setActiveModal(null);
     } else {
