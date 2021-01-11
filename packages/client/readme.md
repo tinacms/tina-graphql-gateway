@@ -26,7 +26,7 @@ yarn create next-app --example blog-starter-typescript blog-starter-typescript-a
 
 This package provides you with:
 
-- A `ForestryClient` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
+- A `Client` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
 - A `useForm` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
@@ -158,14 +158,14 @@ or
 yarn add tinacms styled-components
 ```
 
-In your site root, add TinaCMS & register the `ForestryClient` like so:
+In your site root, add TinaCMS & register the `Client` like so:
 
 **\_app.tsx**
 
 ```tsx
 import React from "react";
 import { withTina } from "tinacms";
-import { ForestryClient } from "tina-graphql-gateway";
+import { Client } from "tina-graphql-gateway";
 import config from "../.forestry/config";
 
 function MyApp({ Component, pageProps }) {
@@ -174,7 +174,7 @@ function MyApp({ Component, pageProps }) {
 
 export default withTina(MyApp, {
   apis: {
-    forestry: new ForestryClient({
+    forestry: new Client({
       realm: "your-realm-name", // this was set by you in the previous step
       clientId: "your-client-id", // this is visible in your Tina.io dashboard
       redirectURI: "your webpage url", //e.g http://localhost:3000
@@ -197,7 +197,7 @@ We'll also want to wrap our main layout in the `TinacmsForestryProvider` to supp
 
 function MyApp({ Component, pageProps }) {
 
-  const forestryClient = useCMS().api.forestry
+  const client = useCMS().api.forestry
 
   return (<TinacmsForestryProvider
     onLogin={(token: string) => {
@@ -287,7 +287,7 @@ import Cookies from 'cookies'
 import { usePlugin } from "tinacms";
 import {
   useForm,
-  ForestryClient,
+  Client,
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
 } from "tina-graphql-gateway";
 
@@ -300,7 +300,7 @@ export async function getServerProps({ params }) {
   const cookies = new Cookies(props.req, props.res)
   const authToken = cookies.get('tinaio_token')
 
-  const client = new ForestryClient({
+  const client = new Client({
     realm: "your-realm-name", // this was set by you in the previous step
     clientId: "your-client-id", // this is visible in your Tina.io dashboard
     redirectURI: "your webpage url", //e.g http://localhost:3000
@@ -347,7 +347,7 @@ To add extra security, a CSRF token can be implemented by using a proxy.
 Within your client instantiation:
 
 ```ts
-new ForestryClient({
+new Client({
   // ...
   identityProxy: "/api/auth/token",
 });

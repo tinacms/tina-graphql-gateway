@@ -19,7 +19,7 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useCMS } from "tinacms";
 import { ForestryAuthenticationModal } from "./AuthModal";
-import { ForestryClient } from "../client";
+import { Client } from "../client";
 
 interface ProviderProps {
   children: any;
@@ -36,7 +36,7 @@ export const TinacmsForestryProvider = ({
   onLogout,
 }: ProviderProps) => {
   const cms = useCMS();
-  const forestry: ForestryClient = cms.api.forestry;
+  const forestry: Client = cms.api.forestry;
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
 
   const onClose = async () => {
