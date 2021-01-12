@@ -174,7 +174,7 @@ function MyApp({ Component, pageProps }) {
 
 export default withTina(MyApp, {
   apis: {
-    forestry: new Client({
+    tina: new Client({
       realm: "your-realm-name", // this was set by you in the previous step
       clientId: "your-client-id", // this is visible in your Tina.io dashboard
       redirectURI: "your webpage url", //e.g http://localhost:3000
