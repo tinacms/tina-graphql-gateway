@@ -79,9 +79,9 @@ title: This is my post
 
 ### Configuration
 
-Before we can define the schema of our content, we need set up some configuration. Create a `.forestry` directory and then create the following files.
+Before we can define the schema of our content, we need set up some configuration. Create a `.tina` directory and then create the following files.
 
-**.forestry/settings.yml**
+**.tina/settings.yml**
 
 ```yml
 ---
@@ -111,7 +111,7 @@ These files will create a map our content to content models. In the above file, 
 
 Templates define the shape of different content models.
 
-**.forestry/front_matter/templates/post.yml**
+**.tina/front_matter/templates/post.yml**
 
 ```yml
 ---
@@ -281,8 +281,8 @@ yarn tina-gql server:start
 **pages/posts/welcome.tsx**
 
 ```tsx
-import config from "../../.forestry/config";
-import query from "../../.forestry/query";
+import config from "../../.tina/config";
+import query from "../../.tina/query";
 import Cookies from 'cookies'
 import { usePlugin } from "tinacms";
 import {
@@ -379,4 +379,4 @@ or
 yarn tina-gql schema:gen-query --typescript
 ```
 
-This will create a file at `.forestry/types.ts`.
+This will create a file at `.tina/types.ts`.
