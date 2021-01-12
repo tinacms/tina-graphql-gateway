@@ -8,7 +8,7 @@ Environment: `node`
 
 Provides `buildSchema` function which takes a `DataSource` instance and provides a schema based on the data it finds. It also provides the `FileSystemManager` datasource as well as the `DataSource` interface.
 
-### @forestry/client
+### tina-graphql-gateway
 
 Environment: `browser`
 
@@ -48,8 +48,8 @@ Set an environment variable called TINA_GQL_SERVER that points to the Express pr
 
 This demo uses a couple of extra things from the `.forestry` folder:
 
-- **types.ts** - This is auto-generated from the `@forestry/client` package, you can see it being used in the `[page].tsx` file.
-- **query.gql** - This is also auto-generated from the `@forestry/client` package. It's a reference and isn't needed.
+- **types.ts** - This is auto-generated from the `tina-graphql-gateway` package, you can see it being used in the `[page].tsx` file.
+- **query.gql** - This is also auto-generated from the `tina-graphql-gateway` package. It's a reference and isn't needed.
 
 ---
 
