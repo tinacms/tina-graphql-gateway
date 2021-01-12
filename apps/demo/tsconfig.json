@@ -19,7 +19,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".forestry/types.ts",
-    ".forestry/config.ts"
+    ".tina/types.ts",
+    ".tina/config.ts"
   ]
 }
