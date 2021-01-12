@@ -8,7 +8,7 @@ import {
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { Client } from "../client";
-import type { DocumentNode } from "./use-forestry-form";
+import type { DocumentNode } from "./use-form";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
