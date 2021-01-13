@@ -2,7 +2,6 @@ import * as commander from "commander";
 //@ts-ignore
 import { version } from "../package.json";
 import { Command } from "./command";
-export const CMD_ROOT = "forestry";
 import { baseCmds as baseCommands } from "./cmds/baseCmds";
 import { logText } from "./utils/theme";
 
