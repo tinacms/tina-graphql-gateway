@@ -1,10 +1,10 @@
 import {
-  ForestryClient,
+  Client,
   DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
-} from "@forestryio/client";
+} from "tina-graphql-gateway";
 
 export const createClient = (editMode: boolean) => {
-  return new ForestryClient({
+  return new Client({
     realm: "",
     clientId: process.env.SITE_CLIENT_ID,
     redirectURI: "",

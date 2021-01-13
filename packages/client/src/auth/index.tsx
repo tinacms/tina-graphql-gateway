@@ -1,2 +1,2 @@
-export * from "./TinacmsForestryProvider";
+export * from "./TinaCloudProvider";
 export * from "./useTinaAuthRedirect";
