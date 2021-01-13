@@ -12,6 +12,7 @@
     "next-start": "next start",
     "start": "yarn tina-gql server:start -c \"yarn next-start\""
   },
+  "license": "Apache-2.0",
   "devDependencies": {
     "@forestryio/cli": "workspace:packages/cli",
     "@types/js-cookie": "^2.2.6",

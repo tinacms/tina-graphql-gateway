@@ -1,12 +1,13 @@
 {
   "name": "@forestryio/gql",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist/*",
     "src/fixtures/**/*"
   ],
+  "license": "Apache-2.0",
   "scripts": {
     "build": "yarn tsup src/index.ts src/server.ts --format cjs --dts",
     "watch": "yarn tsup src/index.ts src/server.ts --watch --format cjs --dts",
