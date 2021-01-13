@@ -1,4 +1,4 @@
-import { useForestryForm } from "@forestryio/client";
+import { useForm } from "tina-graphql-gateway";
 import { createClient } from "../utils/createClient";
 import type * as Tina from "../.tina/types";
 import { Sidebar } from "../components/sidebar";
@@ -63,7 +63,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 };
 
 const Home = (props: any) => {
-  const { getDocument } = useForestryForm<{
+  const { getDocument } = useForm<{
     getDocument: Tina.SectionDocumentUnion;
   }>({ payload: props });
   const { form, sys, ...rest } = getDocument;

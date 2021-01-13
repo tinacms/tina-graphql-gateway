@@ -1,5 +1,5 @@
 {
-  "name": "@forestryio/client",
+  "name": "tina-graphql-gateway",
   "version": "0.1.35",
   "main": "dist/index.js",
   "files": [

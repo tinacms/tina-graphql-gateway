@@ -6,12 +6,12 @@ import {
   MediaList,
 } from "@tinacms/core";
 
-import type { ForestryClient } from "./index";
+import type { Client } from "./index";
 
 export class ForestryMediaStore implements MediaStore {
   accept = "*";
 
-  constructor(private client: ForestryClient) {
+  constructor(private client: Client) {
     this.client = client;
   }
 
