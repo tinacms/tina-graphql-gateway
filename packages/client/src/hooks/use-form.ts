@@ -127,7 +127,9 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             },
           }),
         },
-        onError: "inactive",
+        onError: {
+          target: "inactive",
+        },
       },
     },
     active: {
@@ -178,7 +180,7 @@ export function useForm<T>({
             : cms.api.tina
                 .request(values.mutationString, { variables })
                 .then((res) => {
-                  console.log("res", res);
+                  // console.log("res", res);
                 });
         });
       },

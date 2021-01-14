@@ -30,9 +30,11 @@ export const transformPayload = ({
     // FIXME: this is assuming we're passing in a valid mutation with the top-level
     // selection being the mutation
     const parsedMutation = parse(mutation);
-    const mutationName =
+    const mutationName = parsedMutation.definitions.find(
+      (def) =>
+        def.kind === "OperationDefinition" && def.operation === "mutation"
       // @ts-ignore
-      parsedMutation.definitions[0].selectionSet.selections[0].name.value;
+    ).selectionSet.selections[0].name.value;
     const mutationType = schema.getMutationType();
 
     if (!mutationType) {
