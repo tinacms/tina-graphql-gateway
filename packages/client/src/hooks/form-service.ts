@@ -7,14 +7,14 @@ import {
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
-import type { ForestryClient } from "../client";
-import type { DocumentNode } from "./use-forestry-form";
+import type { Client } from "../client";
+import type { DocumentNode } from "./use-form";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
   queryString: string;
   node: DocumentNode;
-  client: ForestryClient;
+  client: Client;
   cms: TinaCMS;
   onSubmit: (args: any) => void;
 }) => {
@@ -84,7 +84,7 @@ type NodeFormContext = {
   queryString: string;
   node: DocumentNode;
   cms: TinaCMS;
-  client: ForestryClient;
+  client: Client;
   formRef: null | SpawnedActorRef<any, any>;
   queries: { [key: string]: { query: string; mutation: string } } | null;
   fragments: string[];

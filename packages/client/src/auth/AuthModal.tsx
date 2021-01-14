@@ -29,15 +29,15 @@ import { AsyncButton } from "./AsyncButton";
 import React from "react";
 import styled from "styled-components";
 // import "./auth.css"; // TODO - can't import css with current rollup config
-export interface ForestryAuthenticationModalProps {
+export interface TinaCloudAuthenticationModalProps {
   onAuthSuccess(token: string): void;
   close(): void;
 }
 
-export function ForestryAuthenticationModal({
+export function TinaCloudAuthenticationModal({
   onAuthSuccess,
   close,
-}: ForestryAuthenticationModalProps) {
+}: TinaCloudAuthenticationModalProps) {
   const cms = useCMS();
   return (
     <ModalBuilder
@@ -52,7 +52,7 @@ export function ForestryAuthenticationModal({
         {
           name: "Continue to Forestry",
           action: async () => {
-            const token = await cms.api.forestry.authenticate();
+            const token = await cms.api.tina.authenticate();
             onAuthSuccess(token);
           },
           primary: true,

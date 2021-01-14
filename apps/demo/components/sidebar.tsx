@@ -24,7 +24,7 @@ export const Sidebar = ({
   React.useEffect(() => {
     const listSections = async () => {
       try {
-        const result = await cms.api.forestry.request(
+        const result = await cms.api.tina.request(
           (gql) => gql`
             query {
               getSections {

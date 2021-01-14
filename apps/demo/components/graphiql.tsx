@@ -3,7 +3,7 @@ import GraphiQL from "graphiql";
 import { formBuilder } from "@forestryio/graphql-helpers";
 import { useMachine } from "@xstate/react";
 import { Machine, assign, createMachine, StateSchema } from "xstate";
-import { useForestryForm } from "@forestryio/client";
+import { useForm } from "tina-graphql-gateway";
 import { Form, useCMS, TinaCMS } from "tinacms";
 import { Sidebar } from "./sidebar";
 import {
@@ -73,7 +73,7 @@ export const graphiqlMachine = createMachine<
           invoke: {
             id: "fetchSchema",
             src: async (context) => {
-              const data = await context.cms.api.forestry.request(
+              const data = await context.cms.api.tina.request(
                 getIntrospectionQuery(),
                 {
                   variables: {},
@@ -98,7 +98,7 @@ export const graphiqlMachine = createMachine<
           invoke: {
             id: "generateQuery",
             src: async (context, event) => {
-              return context.cms.api.forestry.generateQuery({
+              return context.cms.api.tina.generateQuery({
                 // @ts-ignore
                 relativePath: context.variables.relativePath,
                 section: context.section,
@@ -137,7 +137,7 @@ export const graphiqlMachine = createMachine<
           invoke: {
             id: "fetch",
             src: async (context: GraphiQLContext, event: GraphiQLEvent) => {
-              return context.cms.api.forestry.request(context.queryString, {
+              return context.cms.api.tina.request(context.queryString, {
                 variables: context.variables,
               });
             },
@@ -216,7 +216,7 @@ export const Explorer = ({
     }
   );
 
-  const res = useForestryForm<object>({
+  const res = useForm<object>({
     payload: current.context.result,
     onSubmit: (args: { queryString: string; variables: object }) => {
       send({ type: "SETUP_MUTATION", value: args });
