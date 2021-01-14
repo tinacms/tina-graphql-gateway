@@ -37,7 +37,10 @@ export const createFormMachine = (initialContext: {
             target: "ready",
             actions: assign({
               queries: (context, event) => {
-                return event.data;
+                return event.data.queries;
+              },
+              fragments: (context, event) => {
+                return event.data.fragments;
               },
             }),
           },
@@ -68,6 +71,7 @@ export const createFormMachine = (initialContext: {
       cms: initialContext.cms,
       client: initialContext.client,
       queries: null,
+      fragments: null,
       error: null,
       formRef: null,
       onSubmit: initialContext.onSubmit,
@@ -83,6 +87,7 @@ type NodeFormContext = {
   client: Client;
   formRef: null | SpawnedActorRef<any, any>;
   queries: { [key: string]: { query: string; mutation: string } } | null;
+  fragments: string[];
   error: null | string;
   onSubmit: (args: any) => void;
 };
@@ -239,7 +244,9 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     onSubmit: async (values) => {
       try {
         await context.onSubmit({
-          mutationString: context.queries[context.queryFieldName].mutation,
+          mutationString: `${context.fragments.join("\n")}
+${context.queries[context.queryFieldName].mutation}
+`,
           relativePath: context.node.sys.relativePath,
           values: values,
           sys: context.node.sys,

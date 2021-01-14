@@ -16,11 +16,16 @@ import { useGenerator } from "./useGenerator";
 
 const TINA_AUTH_CONFIG = "tina_auth_config";
 export const AUTH_TOKEN_KEY = "tinacms-auth";
+export type TokenObject = {
+  id_token: string;
+  access_token: string;
+  refresh_token: string;
+};
 export const authenticate = (
   clientId: string,
   oauthHost: string,
   redirectURI: string
-): Promise<string> => {
+): Promise<TokenObject> => {
   const { state, codeChallenge, codeVerifier } = useGenerator();
 
   const signInUrl = new URL(`${oauthHost}/login`);
@@ -52,7 +57,7 @@ export const authenticate = (
         })
           .then((response) => response.json())
           .then((json) => {
-            const token = json.access_token;
+            const token = json;
             if (authTab) {
               authTab.close();
             }
