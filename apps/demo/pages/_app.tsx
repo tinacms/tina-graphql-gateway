@@ -2,7 +2,7 @@ import React from "react";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { withTina } from "tinacms";
-import { TinacmsForestryProvider } from "@forestryio/client";
+import { TinaCloudProvider } from "tina-graphql-gateway";
 import { EditLink } from "../components/EditLink";
 import Cookies from "js-cookie";
 import { createClient } from "../utils/createClient";
@@ -11,7 +11,7 @@ import "codemirror/lib/codemirror.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <TinacmsForestryProvider
+    <TinaCloudProvider
       // @ts-ignore
       onLogin={() => {
         Cookies.set("tina-editmode", "true");
@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
         <EditLink />
       </div>
-    </TinacmsForestryProvider>
+    </TinaCloudProvider>
   );
 }
 
@@ -37,7 +37,7 @@ const client = createClient(false);
 
 export default withTina(MyApp, {
   apis: {
-    forestry: client,
+    tina: client,
   },
   sidebar: true, //editMode,
   enabled: true, //editMode,

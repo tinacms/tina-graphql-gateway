@@ -18,10 +18,10 @@ limitations under the License.
 
 import React, { useState, useEffect } from "react";
 import { useCMS, TinaProvider, TinaCMS } from "tinacms";
-import { ForestryAuthenticationModal, ModalBuilder } from "./AuthModal";
 import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
-import { ForestryClient } from "../client";
 import type { TokenObject } from "./authenticate";
+import { TinaCloudAuthenticationModal, ModalBuilder } from "./AuthModal";
+import { Client } from "../client";
 
 interface ProviderProps {
   children: any;
@@ -32,18 +32,18 @@ interface ProviderProps {
 
 type ModalNames = null | "authenticate";
 
-export const TinacmsForestryProvider = ({
+export const TinaCloudProvider = ({
   children,
   onLogin,
   onLogout,
 }: ProviderProps) => {
   const cms = useCMS();
-  const forestry: ForestryClient = cms.api.forestry;
+  const client: Client = cms.api.tina;
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
 
   const onClose = async () => {
     setActiveModal(null);
-    if (!(await forestry.isAuthorized())) {
+    if (!(await client.isAuthorized())) {
       cms.disable();
     }
   };
@@ -53,7 +53,7 @@ export const TinacmsForestryProvider = ({
   };
 
   const onAuthSuccess = async (token: string) => {
-    if (await forestry.isAuthorized()) {
+    if (await client.isAuthorized()) {
       onLogin(token);
       setActiveModal(null);
     } else {
@@ -67,7 +67,7 @@ export const TinacmsForestryProvider = ({
   return (
     <div>
       {activeModal === "authenticate" && (
-        <ForestryAuthenticationModal
+        <TinaCloudAuthenticationModal
           close={onClose}
           onAuthSuccess={onAuthSuccess}
         />
@@ -97,7 +97,7 @@ export const AuthWallInner = ({
   children: React.ReactNode;
   loginScreen?: React.ReactNode;
 }) => {
-  const client: ForestryClient = cms.api.forestry;
+  const client: Client = cms.api.forestry;
 
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
   const [showChildren, setShowChildren] = useState<boolean>(false);

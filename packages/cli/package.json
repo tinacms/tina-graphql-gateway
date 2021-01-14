@@ -1,12 +1,13 @@
 {
   "name": "@forestryio/cli",
-  "version": "0.2.25",
+  "version": "0.2.27",
   "main": "dist/index.js",
   "files": [
     "dist/*",
     "bin/*",
     ".env"
   ],
+  "license": "Apache-2.0",
   "bin": {
     "tina-gql": "bin/tina-gql"
   },

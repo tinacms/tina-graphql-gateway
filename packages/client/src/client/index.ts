@@ -37,7 +37,7 @@ interface ServerOptions {
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
-export class ForestryClient {
+export class Client {
   serverURL: string;
   oauthHost: string;
   identityHost: string;

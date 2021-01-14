@@ -1,5 +1,5 @@
 import { Modal, ModalPopup, ModalBody } from "tinacms";
-import { useTinaAuthRedirect } from "@forestryio/client";
+import { useTinaAuthRedirect } from "tina-graphql-gateway";
 
 export default function Authenticating() {
   useTinaAuthRedirect();

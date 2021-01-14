@@ -112,7 +112,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
               Object.values(event.data).forEach((item, index) => {
                 accum[keys[index]] = spawn(
                   createFormMachine({
-                    client: context.cms.api.forestry,
+                    client: context.cms.api.tina,
                     cms: context.cms,
                     // @ts-ignore
                     node: item,
@@ -154,7 +154,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForestryForm<T>({
+export function useForm<T>({
   payload,
   onSubmit,
 }: {
@@ -171,13 +171,13 @@ export function useForestryForm<T>({
       cms,
       queryString,
       onSubmit: (values) => {
-        cms.api.forestry.prepareVariables(values).then((variables) => {
+        cms.api.tina.prepareVariables(values).then((variables) => {
           onSubmit
             ? onSubmit({
                 queryString: values.mutationString,
                 variables,
               })
-            : cms.api.forestry
+            : cms.api.tina
                 .request(values.mutationString, { variables })
                 .then((res) => {
                   // console.log("res", res);
