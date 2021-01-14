@@ -11,13 +11,12 @@ import {
   DocumentNode,
   GraphQLSchema,
 } from "graphql";
-import { authenticate, AUTH_TOKEN_KEY } from "../auth/authenticate";
+import {
+  authenticate,
+  TokenObject,
+  AUTH_TOKEN_KEY,
+} from "../auth/authenticate";
 import { transformPayload } from "./transform-payload";
-
-interface UpdateVariables {
-  relativePath: string;
-  params: unknown;
-}
 
 interface AddVariables {
   path: string;
@@ -34,7 +33,7 @@ interface ServerOptions {
   redirectURI: string;
   customAPI?: string;
   identityProxy?: string;
-  getTokenFn?: () => string;
+  getTokenFn?: () => TokenObject;
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
@@ -46,8 +45,8 @@ export class ForestryClient {
   clientId: string;
   query: string;
   redirectURI: string;
-  setToken: (_token: string) => void;
-  private getToken: () => string;
+  setToken: (_token: TokenObject) => void;
+  private getToken: () => TokenObject;
   private token: string; // used with memory storage
 
   constructor({ tokenStorage = "MEMORY", ...options }: ServerOptions) {
@@ -64,18 +63,35 @@ export class ForestryClient {
     switch (tokenStorage) {
       case "LOCAL_STORAGE":
         this.getToken = function () {
-          return localStorage.getItem(AUTH_TOKEN_KEY) || null;
+          const tokens = localStorage.getItem(AUTH_TOKEN_KEY) || null;
+          if (tokens) {
+            return JSON.parse(tokens);
+          } else {
+            return {
+              access_token: null,
+              id_token: null,
+              refresh_token: null,
+            };
+          }
         };
-        this.setToken = function (token: string) {
-          localStorage.setItem(AUTH_TOKEN_KEY, token);
+        this.setToken = function (token) {
+          localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify(token, null, 2));
         };
         break;
       case "MEMORY":
         this.getToken = function () {
-          return _this.token;
+          if (_this.token) {
+            return JSON.parse(_this.token);
+          } else {
+            return {
+              access_token: null,
+              id_token: null,
+              refresh_token: null,
+            };
+          }
         };
-        this.setToken = function (token: string) {
-          _this.token = token;
+        this.setToken = function (token) {
+          _this.token = JSON.stringify(token, null, 2);
         };
         break;
       case "CUSTOM":
@@ -206,7 +222,7 @@ export class ForestryClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + this.getToken(),
+        Authorization: "Bearer " + this.getToken().id_token,
       },
       body: JSON.stringify({
         query: typeof query === "function" ? print(query(gql)) : query,
@@ -247,7 +263,7 @@ export class ForestryClient {
       const res = await fetch(url, {
         method: "GET",
         headers: new Headers({
-          Authorization: "Bearer " + this.getToken(),
+          Authorization: "Bearer " + this.getToken().access_token,
           "Content-Type": "application/json",
         }),
       });

@@ -127,7 +127,9 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             },
           }),
         },
-        onError: "inactive",
+        onError: {
+          target: "inactive",
+        },
       },
     },
     active: {
