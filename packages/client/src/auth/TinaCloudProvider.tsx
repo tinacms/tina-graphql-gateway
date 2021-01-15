@@ -97,7 +97,7 @@ export const AuthWallInner = ({
   children: React.ReactNode;
   loginScreen?: React.ReactNode;
 }) => {
-  const client: Client = cms.api.forestry;
+  const client: Client = cms.api.tina;
 
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
   const [showChildren, setShowChildren] = useState<boolean>(false);
