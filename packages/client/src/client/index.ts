@@ -30,6 +30,7 @@ const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX =
 interface ServerOptions {
   realm: string;
   clientId: string;
+  branch: string;
   redirectURI: string;
   customAPI?: string;
   identityProxy?: string;
@@ -53,7 +54,7 @@ export class Client {
     const _this = this;
     (this.serverURL =
       options.customAPI ||
-      `https://content.tinajs.dev/github/${options.realm}/${options.clientId}`),
+      `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
       (this.oauthHost =
         options.identityProxy ||
         `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);

@@ -35,21 +35,33 @@ const cache = new LRU<string, string | string[]>({
   },
 });
 
+/**
+ * TODO: this should be cleared from a Github webhook so we can keep a reasonable cache in-memory.
+ * For now, it's only used when we perform an update from GraphQL, so beware that content changes from Github
+ * won't show up until the cache clears that key or the app restarts.
+ */
 export const clearCache = ({
   owner,
   repo,
+  path,
 }: {
   owner: string;
   repo: string;
+  path?: string;
 }) => {
   const repoPrefix = `${owner}:${repo}__`;
-  console.log("clearing cache for ", repoPrefix);
-  cache.forEach((value, key, cache) => {
-    if (key.startsWith(repoPrefix)) {
-      console.log("clearing key", key);
-      cache.del(key);
-    }
-  });
+  if (path) {
+    const key = `${repoPrefix}${path}`;
+    console.log("[LRU cache]: clearing key ", key);
+    cache.del(key);
+  } else {
+    console.log("[LRU cache]: clearing all keys for repo ", repoPrefix);
+    cache.forEach((value, key, cache) => {
+      if (key.startsWith(repoPrefix)) {
+        cache.del(key);
+      }
+    });
+  }
 };
 
 const getAndSetFromCache = async (
@@ -91,14 +103,14 @@ export class GithubManager implements DataSource {
     accessToken: string;
     owner: string;
     repo: string;
-    branch?: string;
+    branch: string;
   }) {
     // constructor(rootPath: string) {
     this.rootPath = rootPath;
     const repoConfig = {
       owner,
       repo,
-      ref: branch || "master",
+      ref: branch,
     };
     this.repoConfig = repoConfig;
 
@@ -423,6 +435,11 @@ export class GithubManager implements DataSource {
     // FIXME: provide a test-case for this, might not be necessary
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
+    clearCache({
+      owner: this.repoConfig.owner,
+      repo: this.repoConfig.repo,
+      path: fullPath,
+    });
     const { _body, ...data } = params;
     const string = matter.stringify(`\n${_body || ""}`, data);
     await this.writeFile(fullPath, string);

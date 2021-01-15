@@ -57,7 +57,7 @@ export const githubRoute = async ({
   query: string;
   variables: object;
   rootPath?: string;
-  branch?: string;
+  branch: string;
 }) => {
   const datasource = new GithubManager({
     rootPath: rootPath || "",
