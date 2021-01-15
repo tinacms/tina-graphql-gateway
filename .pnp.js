@@ -2500,8 +2500,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/ws", "npm:7.2.6"],
             ["@types/yup", "npm:0.29.7"],
             ["body-parser", "npm:1.19.0"],
-            ["chokidar", "npm:3.4.2"],
-            ["chokidar-cli", "npm:2.1.0"],
             ["cors", "npm:2.8.5"],
             ["dataloader", "npm:2.0.0"],
             ["express", "npm:4.17.1"],
@@ -7883,19 +7881,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-glob", "npm:4.0.1"],
             ["normalize-path", "npm:3.0.0"],
             ["readdirp", "npm:3.4.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["chokidar-cli", [
-        ["npm:2.1.0", {
-          "packageLocation": "./.yarn/cache/chokidar-cli-npm-2.1.0-3bc4fdea14-6d174178b4.zip/node_modules/chokidar-cli/",
-          "packageDependencies": [
-            ["chokidar-cli", "npm:2.1.0"],
-            ["chokidar", "npm:3.4.2"],
-            ["lodash.debounce", "npm:4.0.8"],
-            ["lodash.throttle", "npm:4.1.1"],
-            ["yargs", "npm:13.3.2"]
           ],
           "linkType": "HARD",
         }]
@@ -15568,15 +15553,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/lodash.sortby-npm-4.7.0-fda8ab950d-43cde11276.zip/node_modules/lodash.sortby/",
           "packageDependencies": [
             ["lodash.sortby", "npm:4.7.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["lodash.throttle", [
-        ["npm:4.1.1", {
-          "packageLocation": "./.yarn/cache/lodash.throttle-npm-4.1.1-856641af92-d9107c7903.zip/node_modules/lodash.throttle/",
-          "packageDependencies": [
-            ["lodash.throttle", "npm:4.1.1"]
           ],
           "linkType": "HARD",
         }]

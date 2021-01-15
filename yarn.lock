@@ -1768,8 +1768,6 @@ __metadata:
     "@types/ws": ^7.2.6
     "@types/yup": ^0.29.7
     body-parser: ^1.19.0
-    chokidar: ^3.4.2
-    chokidar-cli: ^2.1.0
     cors: ^2.8.5
     dataloader: ^2.0.0
     express: ^4.17.1
@@ -6110,20 +6108,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar-cli@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "chokidar-cli@npm:2.1.0"
-  dependencies:
-    chokidar: ^3.2.3
-    lodash.debounce: ^4.0.8
-    lodash.throttle: ^4.1.1
-    yargs: ^13.3.0
-  bin:
-    chokidar: ./index.js
-  checksum: 6d174178b4063c8a42e849f3a0801ab6ea164550956bc630767b314c72f0a3ea6e014b5d0b46c841b58da6879517d5915eb1f3f95ac11e3be08c457f15b51f0e
-  languageName: node
-  linkType: hard
-
 "chokidar@npm:2.1.8, chokidar@npm:^2.1.8":
   version: 2.1.8
   resolution: "chokidar@npm:2.1.8"
@@ -6185,7 +6169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^3.2.3, chokidar@npm:^3.4.2":
+"chokidar@npm:^3.4.2":
   version: 3.4.2
   resolution: "chokidar@npm:3.4.2"
   dependencies:
@@ -13079,13 +13063,6 @@ fsevents@^1.2.7:
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: 43cde11276c66da7b3eda5e9f00dc6edc276d2bcf0a5969ffc62b612cd1c4baf2eff5e84cee11383005722c460a9ca0f521fad4fa1cd2dc1ef013ee4da2dfe63
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: d9107c79033f609f23552f48f5ba93b8a98a07a2b38914745a48d33f18704a4c6a125610ad2bab2a0139974d1da7c5d6a24271243e21571f01e21bf3b2f6b21d
   languageName: node
   linkType: hard
 
