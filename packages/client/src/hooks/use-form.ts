@@ -135,18 +135,18 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     active: {
       // entry: (context) => console.log("ctx", context.formRefs),
       on: {
-        RETRY: {
-          target: "initializing",
-          actions: assign({
-            payload: (context, event) => {
-              return event.value.payload;
-            },
-            queryString: (context, event) => {
-              return event.value.queryString;
-            },
-            formRefs: (context, event) => ({}),
-          }),
-        },
+        // RETRY: {
+        //   target: "initializing",
+        //   actions: assign({
+        //     payload: (context, event) => {
+        //       return event.value.payload;
+        //     },
+        //     queryString: (context, event) => {
+        //       return event.value.queryString;
+        //     },
+        //     formRefs: (context, event) => ({}),
+        //   }),
+        // },
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
@@ -183,7 +183,7 @@ export function useForm<T>({
     const run = async () => {
       const res = await cms.api.tina.request(
         (gql) => gql`
-          query {
+          {
             getSections {
               slug
               templates
