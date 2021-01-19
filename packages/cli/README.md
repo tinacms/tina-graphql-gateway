@@ -7,13 +7,13 @@ The CLI can be used to setup your local site with Forestry.io configuration.
 Npm:
 
 ```bash
-npm install --save-dev @forestryio/cli
+npm install --save-dev tina-graphql-gateway-cli
 ```
 
 Yarn:
 
 ```bash
-yarn add --dev @forestryio/cli
+yarn add --dev tina-graphql-gateway-cli
 ```
 
 ## Usage
