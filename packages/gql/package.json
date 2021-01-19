@@ -52,7 +52,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "repository": {
-    "url": "https://github.com/forestryio/tina-graphql-gateway.git",
+    "url": "https://github.com/tinacms/tina-graphql-gateway.git",
     "directory": "packages/gql"
   },
   "devDependencies": {
