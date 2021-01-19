@@ -218,7 +218,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
       fields: [
         gql.field({
           name: "addPendingDocument",
-          type: "Node",
+          type: "Document",
           args: [
             gql.inputString("relativePath"),
             gql.inputString("section"),
