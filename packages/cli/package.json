@@ -78,7 +78,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "repository": {
-    "url": "https://github.com/forestryio/graphql-demo.git",
+    "url": "https://github.com/forestryio/tina-graphql-gateway.git",
     "directory": "packages/cli"
   }
 }
