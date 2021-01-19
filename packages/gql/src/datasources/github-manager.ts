@@ -422,9 +422,17 @@ export class GithubManager implements DataSource {
       ...templateData,
       pages: [...(templateData.pages ? templateData.pages : []), path],
     };
-    await this.writeFile(p.join(this.rootPath, path), "---");
-    const string = "---\n" + jsyaml.dump(updatedTemplateData);
-    await this.writeFile(p.join(fullPath, `${template}.yml`), string);
+
+    const fullFilePath = p.join(this.rootPath, path);
+    const fullTemplatePath = p.join(fullPath, `${template}.yml`);
+
+    this.loader.clear(fullFilePath);
+    this.loader.clear(fullTemplatePath);
+
+    await this.writeFile(fullFilePath, "---");
+
+    const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
+    await this.writeFile(fullTemplatePath, templateString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
