@@ -45,7 +45,6 @@
     "dump:schema": "yarn forestry schema:audit --dump forestrySchema"
   },
   "devDependencies": {
-    "@forestryio/cli": "workspace:packages/cli",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.11.0",
@@ -56,6 +55,7 @@
     "glob": "^7.1.6",
     "minimist": "^1.2.5",
     "mocha": "^7.1.2",
+    "tina-graphql-gateway-cli": "workspace:packages/cli",
     "typescript": "^3.8.3",
     "vsce": "^1.77.0",
     "vscode-test": "^1.3.0"

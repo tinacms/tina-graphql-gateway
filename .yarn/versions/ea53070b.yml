@@ -1,5 +1,5 @@
 releases:
-  "@forestryio/cli": patch
+  "tina-graphql-gateway-cli": patch
   forestry-schema: patch
 
 declined:
