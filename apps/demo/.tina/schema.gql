@@ -56,7 +56,7 @@ input SectionParams {
 }
 
 type Mutation {
-  addPendingDocument(relativePath: String, section: String, template: String): Node
+  addPendingDocument(relativePath: String, section: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
   updatePagesDocument(relativePath: String, params: Pages_Input): Pages_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
