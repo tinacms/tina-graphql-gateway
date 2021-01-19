@@ -278,9 +278,17 @@ export class FileSystemManager implements DataSource {
       ...templateData,
       pages: [...(templateData.pages ? templateData.pages : []), path],
     };
-    await writeFile(p.join(this.rootPath, path), "---");
-    const string = "---\n" + jsyaml.dump(updatedTemplateData);
-    await writeFile(p.join(fullPath, `${template}.yml`), string);
+
+    const fullFilePath = p.join(this.rootPath, path);
+    const fullTemplatePath = p.join(fullPath, `${template}.yml`);
+
+    this.loader.clear(fullFilePath);
+    this.loader.clear(fullTemplatePath);
+
+    await writeFile(fullFilePath, "---");
+
+    const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
+    await writeFile(fullTemplatePath, templateString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
