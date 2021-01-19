@@ -428,6 +428,16 @@ export class GithubManager implements DataSource {
 
     this.loader.clear(fullFilePath);
     this.loader.clear(fullTemplatePath);
+    clearCache({
+      owner: this.repoConfig.owner,
+      repo: this.repoConfig.repo,
+      path: fullFilePath,
+    });
+    clearCache({
+      owner: this.repoConfig.owner,
+      repo: this.repoConfig.repo,
+      path: fullTemplatePath,
+    });
 
     await this.writeFile(fullFilePath, "---");
 
