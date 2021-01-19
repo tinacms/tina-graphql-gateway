@@ -44,13 +44,13 @@ yarn add tina-graphql-gateway
 You'll also likely want to install our CLI to help with development:
 
 ```bash
-npm install --save-dev @forestryio/cli
+npm install --save-dev tina-graphql-gateway-cli
 ```
 
 or
 
 ```bash
-yarn add --dev @forestryio/cli
+yarn add --dev tina-graphql-gateway-cli
 ```
 
 This CLI performs a few functions:
