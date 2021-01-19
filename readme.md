@@ -2,7 +2,7 @@
 
 There is an `apps/demo` folder which is a nextjs app and then everything else is in `packages`:
 
-### @forestry/cli
+### tina-graphql-gateway-cli
 
 Environment: `node`
 
