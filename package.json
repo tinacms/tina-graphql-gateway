@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com:forestryio/graphql-demo.git"
+    "url": "ssh://git@github.com:tinacms/tina-graphql-gateway.git"
   },
   "dependencies": {
     "@yarnpkg/pnpify": "^2.0.0-rc.20",
