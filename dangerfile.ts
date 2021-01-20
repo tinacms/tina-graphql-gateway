@@ -91,6 +91,8 @@ function fileNeedsLicense(filepath: string) {
  */
 function checkFileForLicenseHeader(filepath: string) {
   try {
+    console.log(filepath);
+    
     const content = fs.readFileSync(path.resolve(`./${filepath}`), {
       encoding: 'utf8',
     })
