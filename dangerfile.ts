@@ -29,7 +29,6 @@ const LICENSE_HEADER: string[] = [
 ]
 
 const licenseIgnoreList = [
-  '.pnp.js'
 ]
 
 runChecksOnPullRequest()
@@ -95,8 +94,6 @@ function fileNeedsLicense(filepath: string) {
  */
 function checkFileForLicenseHeader(filepath: string) {
   try {
-    console.log('checking path:', filepath);
-
     if (licenseIgnoreList.includes(filepath)) return
     
     const content = fs.readFileSync(path.resolve(`./${filepath}`), {
