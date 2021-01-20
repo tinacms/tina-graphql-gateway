@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: yarn install
       - name: Danger
         uses: danger/danger-js@10.5.4
         env:
