@@ -29,6 +29,7 @@ const LICENSE_HEADER: string[] = [
 ]
 
 const licenseIgnoreList = [
+  '.pnp.js'
 ]
 
 runChecksOnPullRequest()
