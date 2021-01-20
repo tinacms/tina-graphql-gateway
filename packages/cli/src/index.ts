@@ -5,6 +5,8 @@ import { Command } from "./command";
 import { baseCmds as baseCommands } from "./cmds/baseCmds";
 import { logText } from "./utils/theme";
 
+// random test comment
+
 const program = new commander.Command();
 const registerCommands = (commands: Command[], noHelp: boolean = false) => {
   commands.forEach((command, i) => {
