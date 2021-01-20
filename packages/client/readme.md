@@ -295,36 +295,38 @@ import {
 import { DocumentUnion, Query } from "../../.tina/types";
 
 export async function getServerProps({ params }) {
-  const path = `_posts/welcome.md`;
+  const client = new Client({...});
 
-  const cookies = new Cookies(props.req, props.res)
-  const authToken = cookies.get('tinaio_token')
-
-  const client = new Client({
-    realm: "your-realm-name", // this was set by you in the previous step
-    clientId: "your-client-id", // this is visible in your Tina.io dashboard
-    redirectURI: "your webpage url", //e.g http://localhost:3000
-    customAPI: preview ? undefined : DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
-    tokenStorage: "CUSTOM"
-    getTokenFn: () => authToken //supply our own function to just return the token
-  });
-  const content = await client.getContentForSection({
-    relativePath: path,
-    section: 'posts'
-  });
+  export const request = async (
+  client: Client,
+  variables: { section: string; relativePath: string }
+) => {
+  const content = await client.requestWithForm(
+    (gql) => gql`
+      query ContentQuery($section: String!, $relativePath: String!) {
+        getDocument(section: $section, relativePath: $relativePath) {
+          __typename
+          ... on Authors_Document {
+            data {
+              ...on Author_Doc_Data {
+                name
+              }
+            }
+          }
+        }
+      }`,
+      {
+        variables: {
+          relativePath: 'my-author.md',
+          section: 'authors'
+        }
+      })
 
   return { props: content };
 }
 
-export default function Home(props) {
-  const [formData, form] = useForm<Query, DocumentUnion>(props).data;
-  usePlugin(form);
-
-  return (
-    <div>
-      <h1>{formData.data.title}</h1>
-    </div>
-  );
+export default function Page(props: { getDocument: Tina.SectionDocumentUnion }) {
+  return <MyComponent {...props.getDocument} />;
 }
 ```
 
@@ -380,3 +382,130 @@ yarn tina-gql schema:gen-query --typescript
 ```
 
 This will create a file at `.tina/types.ts`.
+
+# The GraphQL Client
+
+The goal of this package and the Content API is to allow the developer to write code in the same way they normally would while giving them the ability to edit content through Tina. To that end this package is responsible for 2 things: Data fetching to the GraphQL API and connecting that data to a Tina form.
+
+## Data-fetching:
+
+```ts
+// requestWithForm takes the underlying query and adds to it Tina-specific fields
+const payload = await client.requestWithForm(
+  (gql) => gql`
+    query ContentQuery($section: String!, $relativePath: String!) {
+      getDocument(section: $section, relativePath: $relativePath) {
+        __typename
+        ... on Authors_Document {
+          data {
+            __typename
+            ... on Author_Doc_Data {
+              name
+            }
+          }
+        }
+      }
+    }
+  `,
+  {
+    variables,
+  }
+);
+```
+
+In our examples you'll often see this getting called from `getStaticProps` or `getServerSideProps`. Everything in the `payload` is serializable so there's no magic going on here. We just add some fields that we need for the `useForm` hook below. We also expose a `client.request` function, which won't add any Tina form fields.
+
+> Note: it may be desirable to support other GraphQL clients in the future, there's not much stopping us from doing this, but for simplicity we're using `fetch` and not doing any caching or normalization on the client.
+
+## Connecting to Tina forms
+
+Passing this payload into the `useForm` hook will initialize a form for each node in the query:
+
+```tsx
+const result = useForm({
+  // pass the payload from your request
+  payload: payload,
+  // When creating a new document, you'll want to redirect the user to it:
+  onNewDocument: (args) => {
+    const path = generatePath(args);
+    window.location.assign(path);
+  },
+});
+```
+
+The `result` variable here will have the identical data that you passed in from the `payload` variable, but there's a side-effect in the hook which creates forms in Tina.
+
+### Why don't we use the `useForm` hook from `tinacms`?
+
+If you're familiar with TinaCMS you'll notice that this looks similar to the hook provided, with some slight differences:
+
+With the TinaCMS hook:
+
+- We pass an instance of the form as an argument
+- The sidebar isn't automatically registered
+- The values we get back are **form** values
+- We also get back the form instance
+
+With the `tina-gateway` hook:
+
+- We didn't initialize a form anywhere
+- The sidebar is automatically registered
+- The values we get back are from the query
+- We don't have access to the form
+
+> NOTE: we don't have any reason not to provide access to the form, it's just not been necessary yet.
+
+The primary reason for the altered API is that we initialize the form for you, with all of the fields being built automatically. We'll also create potentially several forms depending on how many nodes you've queried for.
+
+There's also the fact that GraphQL APIs resolve content relationships, this capability leads to some friction when you're building the form yourself. If you expect to query across relationships:
+
+```graphql
+{
+  getDocument(...) {
+    ...on Post_Document {
+      data {
+        ...on Post_Doc_Data {
+          title
+          author {
+            ...on Author_Document {
+              data {
+                ...on Author_Doc_Data {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+How would this look as forms in Tina? We'd need to know that `author` is actually referencing another node, and we'd need to split our response into multiple forms. The `post` form would need to treat the `author` field as a reference, while the `author` from would be where you can alter the author's data. And to make things more difficult, when the `post` form change's it's `author` value, you'll have to refetch the author data from the server and recreate that form.
+
+We're referring to this as the author problem, it gets to the core of how we can give developers the expressive control of GraphQL without having to unwind it's benefits for usage in Tina.
+
+### What about field customization?
+
+Since Tina gives you full control over your field components, you'll inevitably want to make some changes to provided field types or bring your own components entirely. This isn't currently possible but we're exploring where we'd like to put this logic. In general the `useForm` hook from `tina-gateway` should be able to compose anything you, the as the developer, would like to provide while still orchestrating the form building automatically.
+
+### What if I don't like GraphQL?
+
+GraphQL is at the center of our solution, it's strict types are what allow us to generate a Tina form based on your `.tina` config, however using GraphQL for your website isn't for everyone - and we don't intend to make it mandatory. For now, the only way to work with the Content API is through GraphQL queries, but we hope to improve this package to the point that it's able to work without requiring the developer to write GraphQL if they don't want to.
+
+An example of how this might look:
+
+```ts
+client.query.author("path-to-author.md");
+// getting relational data
+client.query.post("path-to-post.md").include("author");
+// or making a mutation
+client.mutation.post("path-to-post.md", {
+  data: {
+    some: "data",
+  },
+});
+```
+
+This type of work isn't a priority right now, and the example above would require us to **generate** a client for you, in much the same way as is done in [Prisma's client](https://www.prisma.io/docs/concepts/components/prisma-client).
