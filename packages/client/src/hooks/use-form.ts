@@ -209,13 +209,7 @@ export function useForm<T>({
               name: "sectionTemplate",
               label: "Template",
               description: "Select the section & template",
-              options: [
-                {
-                  value: "",
-                  label: "",
-                },
-                ...options,
-              ],
+              options,
             },
             {
               component: "text",
