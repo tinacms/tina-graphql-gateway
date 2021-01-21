@@ -55,7 +55,7 @@ yarn add --dev tina-graphql-gateway-cli
 
 This CLI performs a few functions:
 
-- Generates graphql and typescript types based on your content's schema.
+- Generates GraphQL and TypeScript types based on your content's schema.
 - Auditing your content's schema and checking for errors.
 - Running a GraphQL server using the built-in filesystem adapter.
 
