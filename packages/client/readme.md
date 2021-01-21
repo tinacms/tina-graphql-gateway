@@ -566,7 +566,7 @@ const [modifiedPostValues, postForm] = useForm(postFormConfig)
 const [modifiedAuthorValues, authorForm] = useForm(authorFormConfig)
 ```
 
-But when the `postForm`'s `author` field changes the author form would be for the wrong author! So we'll have to connect those manually and refetch the author data from the server on each change. As you can see this is pretty cumbersome, and it unwinds any benefit we had from GraphQL in the first place.
+But when the `postForm`'s `author` field changes, the author form would be for the wrong author! So we'll have to connect those manually and refetch the author data from the server on each change. As you can see this is pretty cumbersome, and it unwinds any benefit we had from GraphQL in the first place.
 
 We're referring to this as "The Author Problem", and it gets to the core of why we've found it useful to do the heavy lifting of Tina configuration automatically.
 
