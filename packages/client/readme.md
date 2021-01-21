@@ -591,5 +591,3 @@ client.mutation.post("path-to-post.md", {
   },
 });
 ```
-
-This type of work isn't a priority right now, and the example above would require us to **generate** a client for you, in much the same way as is done in [Prisma's client](https://www.prisma.io/docs/concepts/components/prisma-client).
