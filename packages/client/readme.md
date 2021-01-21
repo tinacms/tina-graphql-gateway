@@ -522,7 +522,7 @@ GraphQL APIs resolve content relationships (like a graph!), this capability lead
 }
 ```
 
-How would this look as forms in Tina? We'd need to know that `author` is actually referencing another node, and we'd need to split our response into multiple forms. The `post` form would need to treat the `author` field as a reference (perhaps a select field with all possible "authors"), while the `author` from would be where you can alter the author's data. And to make things more difficult, when the `post` form change's it's `author` value, you'll have to refetch the author data from the server and recreate that form.
+How would this look as forms in Tina? We'd need to know that `author` is actually referencing another node, and we'd need to split our response into multiple forms. The `post` form would need to treat the `author` field as a reference (perhaps a select field with all possible "authors"), while the `author` from would be where you can alter the author's data. And to make things more difficult, when the `post` form changes its `author` value, you'll have to refetch the author data from the server and recreate that form.
 
 ```ts
 const postFormConfig = {
