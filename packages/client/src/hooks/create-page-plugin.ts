@@ -34,7 +34,6 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
       section: sectionTemplateArray[0],
       template: sectionTemplateArray[1],
     };
-    console.log(payload);
 
     try {
       const res = await cms.api.tina.addPendingContent(payload);
