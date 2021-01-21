@@ -289,6 +289,7 @@ import {
 import type * as Tina from "../.tina/types";
 
 export async function getServerProps({ params }) {
+  // Omitted for brevity, see above for how to configure your client
   const client = new Client({...});
 
   export const request = async (
