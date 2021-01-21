@@ -372,7 +372,7 @@ We can automatically generate TypeScript types based on your schema by running t
 yarn tina-gql schema:types
 ```
 
-This will create a typescript file at `.tina/types.ts` and a GraphQL schema file at `.tina/schema.gql`. The graphql file is useful for VS Code users who have the [GraphQL extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql). You can configure it for your project by adding a `graphql.config.js` at the root of your project:
+This will create a TypeScript file at `.tina/types.ts` and a GraphQL schema file at `.tina/schema.gql`. The GraphQL schema file is useful for VS Code users who have the [GraphQL extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql). You can configure it for your project by adding a `graphql.config.js` at the root of your project:
 
 ```js
 // graphql.config.js
