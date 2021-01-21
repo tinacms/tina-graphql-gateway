@@ -3,7 +3,7 @@ import { useCMS, TinaCMS } from "tinacms";
 import { createFormMachine } from "./form-service";
 import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import { ContentCreatorPlugin } from "./create-page-plugin";
+import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
 import has from "lodash.has";
 import * as yup from "yup";
@@ -135,6 +135,18 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     active: {
       // entry: (context) => console.log("ctx", context.formRefs),
       on: {
+        // RETRY: {
+        //   target: "initializing",
+        //   actions: assign({
+        //     payload: (context, event) => {
+        //       return event.value.payload;
+        //     },
+        //     queryString: (context, event) => {
+        //       return event.value.queryString;
+        //     },
+        //     formRefs: (context, event) => ({}),
+        //   }),
+        // },
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
@@ -157,13 +169,65 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
 export function useForm<T>({
   payload,
   onSubmit,
+  onNewDocument,
 }: {
   payload: object;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
+  onNewDocument?: OnNewDocument;
 }): T {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
   const cms = useCMS();
+
+  React.useEffect(() => {
+    const run = async () => {
+      const res = await cms.api.tina.request(
+        (gql) => gql`
+          {
+            getSections {
+              slug
+              templates
+            }
+          }
+        `,
+        { variables: {} }
+      );
+      const options = [];
+      res.getSections.forEach((section) => {
+        section.templates.map((template) => {
+          const optionValue = `${section.slug}.${template}`;
+          const optionLabel = `Section: ${section.slug} - Template: ${template}`;
+          options.push({ value: optionValue, label: optionLabel });
+        });
+      });
+      cms.plugins.add(
+        new ContentCreatorPlugin({
+          onNewDocument: onNewDocument,
+          fields: [
+            {
+              component: "select",
+              name: "sectionTemplate",
+              label: "Template",
+              description: "Select the section & template",
+              options,
+            },
+            {
+              component: "text",
+              name: "relativePath",
+              label: "Relative Path",
+              description:
+                'The path relative to the given section. Example: "my-blog-post.md"',
+              placeholder: "...",
+            },
+          ],
+          label: "Add Document",
+        })
+      );
+    };
+
+    run();
+  }, [cms]);
+
   const [current, send] = useMachine(formsMachine, {
     context: {
       payload,

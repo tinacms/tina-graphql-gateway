@@ -1,40 +1,47 @@
 import { AddContentPlugin, Field, TinaCMS } from "tinacms";
 
-interface CreateContentButtonOptions<FormShape> {
+interface CreateContentButtonOptions {
   label: string;
   fields: any[];
-  section: string;
+  onNewDocument: OnNewDocument;
 }
 
-export class ContentCreatorPlugin<
-  FormShape = { filename: string; template: string }
-> implements AddContentPlugin<FormShape> {
+type FormShape = { sectionTemplate: string; relativePath: string };
+
+export type OnNewDocument = (args: {
+  section: { slug: string };
+  relativePath: string;
+  breadcrumbs: string[];
+  path: string;
+}) => void;
+
+export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
   __type: "content-creator" = "content-creator";
   fields: AddContentPlugin<FormShape>["fields"];
-  section: string;
-
+  onNewDocument: OnNewDocument;
   name: string;
 
-  constructor(options: CreateContentButtonOptions<FormShape>) {
+  constructor(options: CreateContentButtonOptions) {
     this.fields = options.fields;
-    this.section = options.section;
     this.name = options.label;
+    this.onNewDocument = options.onNewDocument;
   }
 
   async onSubmit(form: FormShape, cms: TinaCMS) {
+    const sectionTemplateArray = form.sectionTemplate.split(".");
     const payload = {
-      // @ts-ignore
-      relativePath: form.filename,
-      section: this.section,
-      // @ts-ignore
-      template: form.template,
+      relativePath: form.relativePath,
+      section: sectionTemplateArray[0],
+      template: sectionTemplateArray[1],
     };
-    const res = await cms.api.tina.addPendingContent(payload);
 
-    const redirectURL = `/${
-      this.section
-    }/${res.addPendingDocument.breadcrumbs.join("/")}`;
+    try {
+      const res = await cms.api.tina.addPendingContent(payload);
+      cms.alerts.info("Document created!");
 
-    window.location.href = redirectURL;
+      this.onNewDocument(res.addPendingDocument.sys);
+    } catch (e) {
+      cms.alerts.error(e.message);
+    }
   }
 }
