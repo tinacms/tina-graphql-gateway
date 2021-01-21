@@ -286,7 +286,7 @@ import {
   Client,
 } from "tina-graphql-gateway";
 // These are your generated types from CLI
-import type * Tina from "../.tina/types";
+import type * as Tina from "../.tina/types";
 
 export async function getServerProps({ params }) {
   const client = new Client({...});
