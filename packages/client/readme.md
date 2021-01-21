@@ -362,7 +362,7 @@ From your site's server (This example uses NextJS's API functions)
 
 ### In memory (Coming soon)
 
-This is our recommended token storage mechanism if possible. Storing tokens in memory means that the user session will not be persisted between refreshes or across browser tabs. This approach does not require a server to handle auth, and is the least vulernable to attacks.
+This is our recommended token storage mechanism if possible. Storing tokens in memory means that the user session will not be persisted between refreshes or across browser tabs. This approach does not require a server to handle auth, and is the least vulnerable to attacks.
 
 ## TypeScript and GraphQL Schema
 
