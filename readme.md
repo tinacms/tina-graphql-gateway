@@ -119,3 +119,42 @@ POST http://localhost:4445/clients
 ```
 
 This should give a response with a `client_id` property.
+
+## Managing License Headers
+
+All *.js, *.ts, and *.tsx files require a license header to be present.
+
+### Add License
+
+To add the license to a file, run the following command at the project root:
+
+```bash
+yarn license:add
+```
+
+This will search through the project for any files that requires a header and add it if it isn't already present.
+
+### Delete License
+
+To remove all license headers: at the project root run:
+
+```bash
+yarn license:delete
+```
+
+This will search the project for files that contain a license header and subsequently removes the header from them.
+
+### Update License
+
+When the license needs to be changed, first run the following command at the root of the project:
+
+```bash
+yarn license:delete
+```
+
+Then you may edit the **scripts/license.txt** file. Once complete, run the following command at the root of the project to add the new license to the required files: 
+
+```bash
+yarn license:add
+```
+
