@@ -11,16 +11,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import {
-  Client,
-  DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
-} from "tina-graphql-gateway";
-
-export const createClient = (editMode: boolean) => {
-  return new Client({
-    realm: "",
-    clientId: process.env.SITE_CLIENT_ID,
-    redirectURI: "",
-    customAPI: !editMode ? DEFAULT_LOCAL_TINA_GQL_SERVER_URL : undefined,
-  });
-};
