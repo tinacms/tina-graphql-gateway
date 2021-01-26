@@ -486,7 +486,7 @@ With the `tina-gateway` hook:
 
 - We didn't do any form configuration (this is already done in your template definitions), instead we passed our query result.
 - The sidebar is automatically registered
-- The values we get back are from the query result, however they're values are updated when form values change.
+- The values we get back are from the query result, however their values are updated when form values change.
 
 The key benefit here is you'll receive the data you queried for, meaning you don't need to do anything special for your content to work with Tina.
 
