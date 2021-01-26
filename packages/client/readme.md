@@ -389,7 +389,7 @@ module.exports = {
 
 # Conceptual Overview
 
-The goal of this package and the Content API in general is to allow the developer to write code in the same way they normally would while giving them the ability to edit content through Tina. To that end this package is responsible for 2 things: Data fetching to the GraphQL API and connecting that data to a Tina form.
+The goal of this package is to give developers the ability to automatically build Tina forms based on the data they're querying for. To that end this package is responsible for 2 things: Data fetching from the GraphQL API and connecting that data to a Tina form.
 
 ## Data-fetching:
 
