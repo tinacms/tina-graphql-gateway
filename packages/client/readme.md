@@ -492,7 +492,7 @@ The key benefit here is you'll receive the data you queried for, meaning you don
 
 ### Under the hood
 
-When the hook recieves a result from `requestWithForm`, there are additional fields that reflect what you would pass in to Tina's [form configuration](https://tina.io/docs/plugins/forms/#form-configuration). Instead of requiring you to provide this (and force you to deal with multiple sources of truth), we initialize the form for you with all of the fields being built automatically.
+When the hook receives a result from `requestWithForm`, there are additional fields that reflect what you would pass into Tina's [form configuration](https://tina.io/docs/plugins/forms/#form-configuration). Instead of requiring you to provide this (and force you to deal with multiple sources of truth), we initialize the form for you with all of the fields being built automatically.
 
 ### Keeping the benefits of GraphQL
 
