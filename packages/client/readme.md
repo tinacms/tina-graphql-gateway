@@ -426,7 +426,7 @@ As you can see there's nothing particularly special about this process - you que
 
 ## Connecting to Tina forms
 
-When working with Tina, you'll inevitably face a fork in the road: save my content to a CMS, or use a free-form data store like `.json` or `.md` files. The tradeoffs are many, but a few things jump out as big questions you'll need to answer:
+When working with Tina, you'll inevitably face a fork in the road: save content to a CMS, or use a free-form data store like `.json` or `.md` files. The tradeoffs are many, but a few things jump out as big questions you'll need to answer:
 
 ### Using free-form data stores
 
