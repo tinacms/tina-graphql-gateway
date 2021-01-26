@@ -482,7 +482,7 @@ With the TinaCMS hook:
 - The sidebar isn't automatically registered
 - The values we get back are **form** values
 
-With the `tina-gateway` hook:
+With the `tina-graphql-gateway` hook:
 
 - We didn't do any form configuration (this is already done in your template definitions), instead we passed our query result.
 - The sidebar is automatically registered
