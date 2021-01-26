@@ -484,7 +484,7 @@ With the TinaCMS hook:
 
 With the `tina-graphql-gateway` hook:
 
-- We didn't do any form configuration (this is already done in your template definitions), instead we passed our query result.
+- We don't need to set any form configuration (this is already done in your template definitions), instead we passed our query result.
 - The sidebar is automatically registered
 - The values we get back are from the query result, however their values are updated when form values change.
 
