@@ -418,7 +418,7 @@ const payload = await client.requestWithForm(
 
 Note the function name `requestWithForm` - this will take your query and "hydrate" it with additional fields needed by Tina. We also expose a `request` function, which won't add any Tina form fields.
 
-> It may be desirable to support other GraphQL clients like apollo in the future, there's not much stopping us from doing this, but for simplicity we're using `fetch` and not doing any caching or normalization on the client.
+> It may be desirable to support other GraphQL clients like Apollo in the future, there's not much stopping us from doing this, but for simplicity, we're using `fetch` and not doing any caching or normalization on the client.
 
 ### Using the data on your site
 
