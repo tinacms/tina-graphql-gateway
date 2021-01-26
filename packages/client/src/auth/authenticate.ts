@@ -25,9 +25,8 @@ limitations under the License.
 */
 
 import popupWindow from "./popupWindow";
-import { useGenerator } from "./useGenerator";
 
-const TINA_AUTH_CONFIG = "tina_auth_config";
+const TINA_LOGIN_EVENT = "tinaCloudLogin";
 export const AUTH_TOKEN_KEY = "tinacms-auth";
 export type TokenObject = {
   id_token: string;
@@ -36,48 +35,31 @@ export type TokenObject = {
 };
 export const authenticate = (
   clientId: string,
-  oauthHost: string,
-  redirectURI: string
+  orgDashboardUrl: string,
 ): Promise<TokenObject> => {
-  const { state, codeChallenge, codeVerifier } = useGenerator();
-
-  const signInUrl = new URL(`${oauthHost}/login`);
-  signInUrl.searchParams.append("client_id", clientId);
-  signInUrl.searchParams.append("redirect_uri", redirectURI);
-  signInUrl.searchParams.append("response_type", "code");
-  signInUrl.searchParams.append("state", state);
-  signInUrl.searchParams.append("scope", "openid");
-  signInUrl.searchParams.append("code_challenge", codeChallenge);
-  signInUrl.searchParams.append("code_challenge_method", "S256");
-
   return new Promise((resolve) => {
     // @ts-ignore
     let authTab: Window | undefined;
 
     // TODO - Grab this from the URL instead of passing through localstorage
-    window.addEventListener("storage", function (e: StorageEvent) {
-      if (e.key == TINA_AUTH_CONFIG) {
-        const config = JSON.parse(e.newValue);
-        const formData = `grant_type=authorization_code&client_id=${clientId}&redirect_uri=${redirectURI}&code=${config.code}&code_verifier=${codeVerifier}`;
-
-        fetch(`${oauthHost}/oauth2/token`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((json) => {
-            const token = json;
-            if (authTab) {
-              authTab.close();
-            }
-            resolve(token);
-          });
+    window.addEventListener("message", function (e: MessageEvent) {
+      if (e.data.source === TINA_LOGIN_EVENT) {
+        if (authTab) {
+          authTab.close();
+        }
+        resolve({
+          id_token: e.data.id_token,
+          access_token: e.data.access_token,
+          refresh_token: e.data.refresh_token,
+        });
       }
     });
-    authTab = popupWindow(signInUrl.href, "_blank", window, 1000, 700);
+    authTab = popupWindow(
+      `https://${orgDashboardUrl}/signin?clientId=${clientId}`,
+      "_blank",
+      window,
+      1000,
+      700
+    );
   });
 };
