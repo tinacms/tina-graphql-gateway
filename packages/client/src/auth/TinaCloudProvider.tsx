@@ -144,8 +144,8 @@ export const AuthWallInner = ({
     <>
       {activeModal === "authenticate" && (
         <ModalBuilder
-          title="Forestry Authorization"
-          message="To save edits, Tina requires Forestry authorization. On save, changes will get commited to Forestry using your account."
+          title="Tina Cloud Authorization"
+          message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
           close={close}
           actions={[
             {
@@ -153,7 +153,7 @@ export const AuthWallInner = ({
               action: close,
             },
             {
-              name: "Continue to Forestry",
+              name: "Continue to Tina Cloud",
               action: async () => {
                 const token = await client.authenticate();
                 onAuthSuccess(token);
