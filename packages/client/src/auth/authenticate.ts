@@ -35,7 +35,7 @@ export type TokenObject = {
 };
 export const authenticate = (
   clientId: string,
-  orgDashboardUrl: string,
+  realm: string
 ): Promise<TokenObject> => {
   return new Promise((resolve) => {
     // @ts-ignore
@@ -55,7 +55,7 @@ export const authenticate = (
       }
     });
     authTab = popupWindow(
-      `https://${orgDashboardUrl}/signin?clientId=${clientId}`,
+      `https://${realm}.tinajs.dev/signin?clientId=${clientId}`,
       "_blank",
       window,
       1000,

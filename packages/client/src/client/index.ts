@@ -12,23 +12,24 @@ limitations under the License.
 */
 
 import {
+  AUTH_TOKEN_KEY,
+  TokenObject,
+  authenticate,
+} from "../auth/authenticate";
+import {
+  DocumentNode,
+  GraphQLSchema,
+  buildClientSchema,
+  getIntrospectionQuery,
+  print,
+} from "graphql";
+import {
   formBuilder,
   mutationGenerator,
   queryGenerator,
 } from "@forestryio/graphql-helpers";
+
 import gql from "graphql-tag";
-import {
-  getIntrospectionQuery,
-  buildClientSchema,
-  print,
-  DocumentNode,
-  GraphQLSchema,
-} from "graphql";
-import {
-  authenticate,
-  TokenObject,
-  AUTH_TOKEN_KEY,
-} from "../auth/authenticate";
 import { transformPayload } from "./transform-payload";
 
 interface AddVariables {
@@ -53,6 +54,7 @@ interface ServerOptions {
 
 export class Client {
   serverURL: string;
+  realm: string;
   oauthHost: string;
   identityHost: string;
   schema: GraphQLSchema;
@@ -73,6 +75,7 @@ export class Client {
         `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);
     this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
+    this.realm = options.realm;
 
     switch (tokenStorage) {
       case "LOCAL_STORAGE":
@@ -265,11 +268,7 @@ export class Client {
   }
 
   async authenticate() {
-    const token = await authenticate(
-      this.clientId,
-      this.oauthHost,
-      this.redirectURI
-    );
+    const token = await authenticate(this.clientId, this.realm);
     this.setToken(token);
     return token;
   }
