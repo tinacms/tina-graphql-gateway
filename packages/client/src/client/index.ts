@@ -251,17 +251,28 @@ export class Client {
 
     const json = await res.json();
     if (json.errors) {
-      console.error(json.errors);
-      // throw new Error("Failed to fetch API");
+      return json;
     }
     return json.data;
   }
 
   async isAuthorized(): Promise<boolean> {
+    if (this.isLocalClient()) {
+      return true;
+    }
+
     return this.isAuthenticated(); // TODO - check access
   }
 
+  isLocalClient(): boolean {
+    return !this.clientId;
+  }
+
   async isAuthenticated(): Promise<boolean> {
+    if (this.isLocalClient()) {
+      return true;
+    }
+
     return !!(await this.getUser());
   }
 

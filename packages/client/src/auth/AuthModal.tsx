@@ -54,8 +54,8 @@ export function TinaCloudAuthenticationModal({
   const cms = useCMS();
   return (
     <ModalBuilder
-      title="Forestry Authorization"
-      message="To save edits, Tina requires Forestry authorization. On save, changes will get commited to Forestry using your account."
+      title="Tina Cloud Authorization"
+      message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
       close={close}
       actions={[
         {
@@ -63,7 +63,7 @@ export function TinaCloudAuthenticationModal({
           action: close,
         },
         {
-          name: "Continue to Forestry",
+          name: "Continue to Tina Cloud",
           action: async () => {
             const token = await cms.api.tina.authenticate();
             onAuthSuccess(token);
