@@ -27,6 +27,7 @@ yarn create next-app --example blog-starter-typescript blog-starter-typescript-a
 This package provides you with:
 
 - A `Client` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
+- A `LocalClient` class - which talks to the local server if you've got one. Ideal for static builds and developement testing.
 - A `useForm` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
@@ -177,7 +178,6 @@ export default withTina(MyApp, {
     tina: new Client({
       realm: "your-realm-name", // this was set by you in the previous step
       clientId: "your-client-id", // this is visible in your Tina.io dashboard
-      redirectURI: "your webpage url", //e.g http://localhost:3000
       // customContentApiUrl: "", // might be used to swap out or proxy through a custom backend service.
       // tokenStorage: (Default Memory). Possible values: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM".
       // NOTE: If you choose to use LOCAL_STORAGE, you may be prone to CSRF vulnerabilities.
@@ -282,14 +282,13 @@ yarn tina-gql server:start
 ```tsx
 import {
   useForm,
-  Client,
+  LocalClient,
 } from "tina-graphql-gateway";
 // These are your generated types from CLI
 import type * as Tina from "../.tina/types";
 
 export async function getServerProps({ params }) {
-  // Omitted for brevity, see above for how to configure your client
-  const client = new Client({...});
+  const client = new LocalClient();
 
   export const request = async (
   client: Client,
