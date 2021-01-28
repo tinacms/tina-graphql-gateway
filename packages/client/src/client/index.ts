@@ -56,7 +56,6 @@ export class Client {
   serverURL: string;
   realm: string;
   tinaBackendUrl: string;
-  identityHost: string;
   schema: GraphQLSchema;
   clientId: string;
   query: string;
