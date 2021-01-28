@@ -38,24 +38,21 @@ interface AddVariables {
   params?: any;
 }
 
-const TINA_BACKEND_URL =
-  "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev";
-
 interface ServerOptions {
   realm: string;
   clientId: string;
   branch: string;
   redirectURI: string;
-  customAPI?: string;
-  identityProxy?: string;
+  customContentApiUrl?: string;
   getTokenFn?: () => TokenObject;
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
+const TINA_CLOUD_API_URL = "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev"
+
 export class Client {
-  serverURL: string;
+  contentApiUrl: string;
   realm: string;
-  tinaBackendUrl: string;
   schema: GraphQLSchema;
   clientId: string;
   query: string;
@@ -66,10 +63,9 @@ export class Client {
 
   constructor({ tokenStorage = "MEMORY", ...options }: ServerOptions) {
     const _this = this;
-    (this.serverURL =
-      options.customAPI ||
+    (this.contentApiUrl =
+      options.customContentApiUrl ||
       `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
-      (this.tinaBackendUrl = TINA_BACKEND_URL);
     this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
     this.realm = options.realm;
@@ -236,7 +232,7 @@ export class Client {
     query: ((gqlTag: typeof gql) => DocumentNode) | string,
     { variables }: { variables: VariableType }
   ) {
-    const res = await fetch(this.serverURL, {
+    const res = await fetch(this.contentApiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -282,7 +278,7 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${this.tinaBackendUrl}/currentUser`;
+    const url = `${TINA_CLOUD_API_URL}/currentUser`;
 
     try {
       const res = await fetch(url, {
