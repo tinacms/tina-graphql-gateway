@@ -18,6 +18,7 @@ require("dotenv").config();
 module.exports = {
   env: {
     SITE_CLIENT_ID: process.env.SITE_CLIENT_ID,
+    REALM_NAME: process.env.REALM_NAME,
     DEPLOYED_URL: process.env.DEPLOYED_URL,
     GIT_REPO_SLUG: process.env.VERCEL_GIT_REPO_SLUG,
     GIT_REPO_OWNER: process.env.VERCEL_GIT_REPO_OWNER,
