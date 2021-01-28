@@ -38,8 +38,8 @@ interface AddVariables {
   params?: any;
 }
 
-const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX =
-  "auth.ca-central-1.amazoncognito.com";
+const TINA_BACKEND_URL =
+  "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev";
 
 interface ServerOptions {
   realm: string;
@@ -55,7 +55,7 @@ interface ServerOptions {
 export class Client {
   serverURL: string;
   realm: string;
-  oauthHost: string;
+  tinaBackendUrl: string;
   identityHost: string;
   schema: GraphQLSchema;
   clientId: string;
@@ -70,9 +70,7 @@ export class Client {
     (this.serverURL =
       options.customAPI ||
       `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
-      (this.oauthHost =
-        options.identityProxy ||
-        `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);
+      (this.tinaBackendUrl = TINA_BACKEND_URL);
     this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
     this.realm = options.realm;
@@ -274,13 +272,13 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${this.oauthHost}/oauth2/userInfo`;
+    const url = `${this.tinaBackendUrl}/currentUser`;
 
     try {
       const res = await fetch(url, {
         method: "GET",
         headers: new Headers({
-          Authorization: "Bearer " + this.getToken().access_token,
+          Authorization: "Bearer " + this.getToken().id_token,
           "Content-Type": "application/json",
         }),
       });
