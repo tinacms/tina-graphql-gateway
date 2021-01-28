@@ -56,9 +56,9 @@ export const TinaCloudProvider = ({
 
   const onClose = async () => {
     setActiveModal(null);
-    // if (!(await client.isAuthorized())) {
-    //   cms.disable();
-    // }
+    if (!(await client.isAuthorized())) {
+      cms.disable();
+    }
   };
 
   const beginAuth = async () => {

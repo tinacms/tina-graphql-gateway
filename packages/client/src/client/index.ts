@@ -248,11 +248,7 @@ export class Client {
       }),
     });
 
-    const json = await res.json();
-    if (json.errors) {
-      return { errors: json.errors };
-    }
-    return json.data;
+    return res.json();
   }
 
   async isAuthorized(): Promise<boolean> {
