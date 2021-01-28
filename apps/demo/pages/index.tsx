@@ -13,7 +13,7 @@ limitations under the License.
 
 import { Sidebar } from "../components/sidebar";
 
-const Main = (props) => {
+const Main = () => {
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
       <Sidebar relativePath="" />
