@@ -11,12 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useForm } from "tina-graphql-gateway";
-import { createClient } from "../utils/createClient";
+import { LocalClient, useForm } from "tina-graphql-gateway";
 import type * as Tina from "../.tina/types";
 import { Sidebar } from "../components/sidebar";
 
-const client = createClient(false);
+const client = new LocalClient();
 
 export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   if (typeof params.path === "string") {

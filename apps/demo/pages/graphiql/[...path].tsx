@@ -12,12 +12,12 @@ limitations under the License.
 */
 
 import { useRouter } from "next/router";
-import { createClient } from "../../utils/createClient";
+import { LocalClient } from "tina-graphql-gateway";
 import { Explorer } from "../../components/graphiql";
 
-const client = createClient(false);
+const client = new LocalClient();
 
-export const getServerSideProps = async (props) => {
+export const getServerSideProps = async () => {
   const result = await client.request(
     (gql) => gql`
       query SectionsQuery {
