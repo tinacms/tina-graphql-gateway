@@ -42,13 +42,13 @@ interface ServerOptions {
   realm: string;
   clientId: string;
   branch: string;
-  redirectURI: string;
   customContentApiUrl?: string;
   getTokenFn?: () => TokenObject;
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
-const TINA_CLOUD_API_URL = "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev"
+const TINA_CLOUD_API_URL =
+  "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev";
 
 export class Client {
   contentApiUrl: string;
@@ -56,7 +56,6 @@ export class Client {
   schema: GraphQLSchema;
   clientId: string;
   query: string;
-  redirectURI: string;
   setToken: (_token: TokenObject) => void;
   private getToken: () => TokenObject;
   private token: string; // used with memory storage
@@ -66,8 +65,7 @@ export class Client {
     (this.contentApiUrl =
       options.customContentApiUrl ||
       `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
-    this.redirectURI = options.redirectURI;
-    this.clientId = options.clientId;
+      (this.clientId = options.clientId);
     this.realm = options.realm;
 
     switch (tokenStorage) {
@@ -305,3 +303,18 @@ export { ForestryMediaStore } from "./media-store";
 
 export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL =
   "http://localhost:4001/graphql";
+
+export class LocalClient extends Client {
+  constructor(props?: { customContentApiUrl?: string }) {
+    const clientProps = {
+      realm: "",
+      clientId: "",
+      branch: "",
+      customContentApiUrl:
+        props && props.customContentApiUrl
+          ? props.customContentApiUrl
+          : DEFAULT_LOCAL_TINA_GQL_SERVER_URL,
+    };
+    super(clientProps);
+  }
+}
