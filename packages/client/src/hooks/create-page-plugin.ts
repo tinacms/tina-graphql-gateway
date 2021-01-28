@@ -41,7 +41,12 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
   }
 
   async onSubmit(form: FormShape, cms: TinaCMS) {
-    const sectionTemplateArray = form.sectionTemplate.split(".");
+    const sectionTemplateArray = form.sectionTemplate
+      ? form.sectionTemplate.split(".")
+      : this.fields
+          .find((field) => field.name === "sectionTemplate")
+          // @ts-ignore - FIXME: we need a way to supply an initial value https://github.com/tinacms/tinacms/issues/1715
+          .options[0].value.split(".");
     const payload = {
       relativePath: form.relativePath,
       section: sectionTemplateArray[0],
@@ -50,9 +55,15 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
 
     try {
       const res = await cms.api.tina.addPendingContent(payload);
-      cms.alerts.info("Document created!");
+      if (res.errors) {
+        res.errors.map((e) => {
+          cms.alerts.error(e.message);
+        });
+      } else {
+        cms.alerts.info("Document created!");
 
-      this.onNewDocument(res.addPendingDocument.sys);
+        this.onNewDocument(res.addPendingDocument.sys);
+      }
     } catch (e) {
       cms.alerts.error(e.message);
     }
