@@ -44,15 +44,15 @@ interface ServerOptions {
   branch: string;
   redirectURI: string;
   customContentApiUrl?: string;
-  customTinaCloudApiUrl?: string;
   getTokenFn?: () => TokenObject;
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
+const TINA_CLOUD_API_URL = "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev"
+
 export class Client {
   contentApiUrl: string;
   realm: string;
-  tinaCloudApiUrl: string;
   schema: GraphQLSchema;
   clientId: string;
   query: string;
@@ -66,7 +66,6 @@ export class Client {
     (this.contentApiUrl =
       options.customContentApiUrl ||
       `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
-    this.tinaCloudApiUrl = options.customTinaCloudApiUrl || "auth.ca-central-1.amazoncognito.com";
     this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
     this.realm = options.realm;
@@ -279,7 +278,7 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${this.tinaCloudApiUrl}/currentUser`;
+    const url = `${TINA_CLOUD_API_URL}/currentUser`;
 
     try {
       const res = await fetch(url, {
