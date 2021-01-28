@@ -21,6 +21,6 @@ export const createClient = (editMode: boolean) => {
     realm: process.env.REALM_NAME,
     clientId: process.env.SITE_CLIENT_ID,
     redirectURI: "",
-    customAPI: !editMode ? DEFAULT_LOCAL_TINA_GQL_SERVER_URL : undefined,
+    customContentApiUrl: !editMode ? DEFAULT_LOCAL_TINA_GQL_SERVER_URL : undefined,
   });
 };
