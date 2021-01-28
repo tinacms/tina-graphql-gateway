@@ -29,12 +29,13 @@ limitations under the License.
 
 */
 
-import React, { useState, useEffect } from "react";
-import { useCMS, TinaProvider, TinaCMS } from "tinacms";
-import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
-import type { TokenObject } from "./authenticate";
-import { TinaCloudAuthenticationModal, ModalBuilder } from "./AuthModal";
+import { ModalBuilder, TinaCloudAuthenticationModal } from "./AuthModal";
+import React, { useEffect, useState } from "react";
+import { TinaCMS, TinaProvider, useCMS } from "tinacms";
+
 import { Client } from "../client";
+import type { TokenObject } from "./authenticate";
+import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
 
 interface ProviderProps {
   children: any;

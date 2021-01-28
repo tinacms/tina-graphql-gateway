@@ -12,23 +12,24 @@ limitations under the License.
 */
 
 import {
+  AUTH_TOKEN_KEY,
+  TokenObject,
+  authenticate,
+} from "../auth/authenticate";
+import {
+  DocumentNode,
+  GraphQLSchema,
+  buildClientSchema,
+  getIntrospectionQuery,
+  print,
+} from "graphql";
+import {
   formBuilder,
   mutationGenerator,
   queryGenerator,
 } from "@forestryio/graphql-helpers";
+
 import gql from "graphql-tag";
-import {
-  getIntrospectionQuery,
-  buildClientSchema,
-  print,
-  DocumentNode,
-  GraphQLSchema,
-} from "graphql";
-import {
-  authenticate,
-  TokenObject,
-  AUTH_TOKEN_KEY,
-} from "../auth/authenticate";
 import { transformPayload } from "./transform-payload";
 
 interface AddVariables {
@@ -37,24 +38,21 @@ interface AddVariables {
   params?: any;
 }
 
-const REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX =
-  "auth.ca-central-1.amazoncognito.com";
-
 interface ServerOptions {
   realm: string;
   clientId: string;
   branch: string;
   redirectURI: string;
-  customAPI?: string;
-  identityProxy?: string;
+  customContentApiUrl?: string;
   getTokenFn?: () => TokenObject;
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
+const TINA_CLOUD_API_URL = "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev"
+
 export class Client {
-  serverURL: string;
-  oauthHost: string;
-  identityHost: string;
+  contentApiUrl: string;
+  realm: string;
   schema: GraphQLSchema;
   clientId: string;
   query: string;
@@ -65,14 +63,12 @@ export class Client {
 
   constructor({ tokenStorage = "MEMORY", ...options }: ServerOptions) {
     const _this = this;
-    (this.serverURL =
-      options.customAPI ||
+    (this.contentApiUrl =
+      options.customContentApiUrl ||
       `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
-      (this.oauthHost =
-        options.identityProxy ||
-        `https://tina-auth-${options.realm}.${REACT_APP_USER_POOL_DASHBOARD_DOMAIN_SUFFIX}`);
     this.redirectURI = options.redirectURI;
     this.clientId = options.clientId;
+    this.realm = options.realm;
 
     switch (tokenStorage) {
       case "LOCAL_STORAGE":
@@ -236,7 +232,7 @@ export class Client {
     query: ((gqlTag: typeof gql) => DocumentNode) | string,
     { variables }: { variables: VariableType }
   ) {
-    const res = await fetch(this.serverURL, {
+    const res = await fetch(this.contentApiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -276,23 +272,19 @@ export class Client {
   }
 
   async authenticate() {
-    const token = await authenticate(
-      this.clientId,
-      this.oauthHost,
-      this.redirectURI
-    );
+    const token = await authenticate(this.clientId, this.realm);
     this.setToken(token);
     return token;
   }
 
   async getUser() {
-    const url = `${this.oauthHost}/oauth2/userInfo`;
+    const url = `${TINA_CLOUD_API_URL}/currentUser`;
 
     try {
       const res = await fetch(url, {
         method: "GET",
         headers: new Headers({
-          Authorization: "Bearer " + this.getToken().access_token,
+          Authorization: "Bearer " + this.getToken().id_token,
           "Content-Type": "application/json",
         }),
       });
