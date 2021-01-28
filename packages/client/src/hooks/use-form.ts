@@ -146,30 +146,18 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
       },
     },
     active: {
-      // entry: (context) => console.log("ctx", context.formRefs),
       on: {
-        // RETRY: {
-        //   target: "initializing",
-        //   actions: assign({
-        //     payload: (context, event) => {
-        //       return event.value.payload;
-        //     },
-        //     queryString: (context, event) => {
-        //       return event.value.queryString;
-        //     },
-        //     formRefs: (context, event) => ({}),
-        //   }),
-        // },
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
-              // FIXME: this is pretty heavy-handed, ideally we have a better way of only updating parts of the payload that changed
               const temp = { ...context.payload };
-              const hasQueriedKey = has(temp, event.pathAndValue.path);
-              // If we didn't query for it, don't populate it
-              if (hasQueriedKey) {
-                set(temp, event.pathAndValue.path, event.pathAndValue.value);
-              }
+              // FIXME: this breaks when adding a block and then populating it, we don't get an event
+              // for when a sortable item is added or changed, need this fix to come from OSS
+              // TODO: If we didn't query for it, don't populate it.
+              // for now this will populate values which we may not have asked for in the data
+              // key. But to do this properly we'll need to traverse the query and store the paths
+              // which should be populated
+              set(temp, event.pathAndValue.path, event.pathAndValue.value);
               return temp;
             },
           }),

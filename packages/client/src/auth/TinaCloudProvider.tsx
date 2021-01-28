@@ -29,12 +29,13 @@ limitations under the License.
 
 */
 
-import React, { useState, useEffect } from "react";
-import { useCMS, TinaProvider, TinaCMS } from "tinacms";
-import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
-import type { TokenObject } from "./authenticate";
-import { TinaCloudAuthenticationModal, ModalBuilder } from "./AuthModal";
+import { ModalBuilder, TinaCloudAuthenticationModal } from "./AuthModal";
+import React, { useEffect, useState } from "react";
+import { TinaCMS, TinaProvider, useCMS } from "tinacms";
+
 import { Client } from "../client";
+import type { TokenObject } from "./authenticate";
+import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
 
 interface ProviderProps {
   children: any;
@@ -101,6 +102,10 @@ const LoginScreen = () => {
   return <div>Please wait while we log you in</div>;
 };
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export const AuthWallInner = ({
   children,
   cms,
@@ -116,36 +121,34 @@ export const AuthWallInner = ({
   const [showChildren, setShowChildren] = useState<boolean>(false);
 
   React.useEffect(() => {
-    beginAuth();
+    client.isAuthenticated().then((isAuthenticated) => {
+      if (isAuthenticated) {
+        setShowChildren(true);
+        cms.enable();
+      } else {
+        // FIXME: might be some sort of race-condition when loading styles
+        sleep(500).then(() => {
+          setActiveModal("authenticate");
+        });
+      }
+    });
   }, []);
 
-  const beginAuth = async () => {
-    const user = await client.getUser();
-    if (!user) {
-      setActiveModal("authenticate");
-    } else {
-      cms.enable();
-    }
-  };
-
   const onAuthSuccess = async (token: TokenObject) => {
-    if (await client.isAuthorized()) {
-      cms.enable();
+    if (await client.isAuthenticated()) {
+      setShowChildren(true);
       setActiveModal(null);
     } else {
       throw new Error("No access to repo"); // TODO - display modal here
     }
   };
 
-  useCMSEvent("cms:enable", () => setShowChildren(true), []);
-  useCMSEvent("cms:disable", () => setShowChildren(true), []);
-
   return (
     <>
       {activeModal === "authenticate" && (
         <ModalBuilder
-          title="Forestry Authorization"
-          message="To save edits, Tina requires Forestry authorization. On save, changes will get commited to Forestry using your account."
+          title="Tina Cloud Authorization"
+          message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
           close={close}
           actions={[
             {
@@ -153,7 +156,7 @@ export const AuthWallInner = ({
               action: close,
             },
             {
-              name: "Continue to Forestry",
+              name: "Continue to Tina Cloud",
               action: async () => {
                 const token = await client.authenticate();
                 onAuthSuccess(token);
@@ -168,6 +171,11 @@ export const AuthWallInner = ({
   );
 };
 
+/**
+ * Provides an authentication wall so Tina is not enabled without a valid user session.
+ *
+ * Note: this will not restrict access for local filesystem clients
+ */
 export const TinaCloudAuthWall = (props: {
   cms: TinaCMS;
   children: React.ReactNode;
