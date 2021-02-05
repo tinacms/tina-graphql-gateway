@@ -81,15 +81,21 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     initializing: {
       invoke: {
         src: async (context, event) => {
-          const payloadSchema = yup.object().required();
 
           const accum = {};
 
-          const pl = await payloadSchema.validate(context.payload);
+          const isPayloadPresent = async () => {
+            const payloadSchema = yup.object().required();
+            await payloadSchema.validate(context.payload)
+            return true
+          }
+          if(!isPayloadPresent) {
+            throw new Error("Payload not present")
+          }
 
-          const keys = Object.keys(pl);
+          const keys = Object.keys(context.payload);
           await Promise.all(
-            Object.values(pl).map(async (payloadItem, index) => {
+            Object.values(context.payload).map(async (payloadItem, index) => {
               // validate payload
               let dataSchema = yup.object().shape({
                 // @ts-ignore
