@@ -223,6 +223,9 @@ export class Client {
     const schema = await this.getSchema();
     const formifiedQuery = formBuilder(query(gql), schema);
 
+    // console.log("request");
+    // console.log(print(formifiedQuery));
+
     return this.request(print(formifiedQuery), { variables });
   }
 
@@ -230,6 +233,8 @@ export class Client {
     query: ((gqlTag: typeof gql) => DocumentNode) | string,
     { variables }: { variables: VariableType }
   ) {
+    // console.log("request");
+    // console.log(typeof query === "function" ? print(query(gql)) : query);
     const res = await fetch(this.contentApiUrl, {
       method: "POST",
       headers: {
