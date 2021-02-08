@@ -76,7 +76,6 @@ const filterForValidFormNodes = async (payload: object) => {
             name: yup.string().required(),
           }),
         });
-        await dataSchema.validate(payloadItem);
         try {
           await dataSchema.validate(payloadItem);
         } catch (e) {
@@ -88,6 +87,7 @@ const filterForValidFormNodes = async (payload: object) => {
       if(await containsValidForm()) {
         accum[keys[index]] = payloadItem;
       }
+
     })
   );
 
@@ -118,7 +118,12 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
         src: async (context, event) => {
           const isPayloadPresent = async () => {
             const payloadSchema = yup.object().required();
-            await payloadSchema.validate(context.payload)
+            try {
+              await payloadSchema.validate(context.payload)
+            }
+            catch {
+              return false
+            }
             return true
           }
 
