@@ -465,6 +465,26 @@ interface NodeType {
   values: object;
 }
 
+export const getFragments = (args: {
+  queryString: string;
+  node: NodeType;
+  schema: GraphQLSchema;
+}) => {
+  const fragments: string[] = [];
+  const typeInfo = new TypeInfo(args.schema);
+
+  const queryAst = parse(args.queryString);
+
+  const visitor: VisitorType = {
+    leave: {
+      FragmentDefinition(node, key) {
+        fragments.push(print(node));
+      }
+    },
+  }
+  visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
+}
+
 export const splitDataNode = (args: {
   queryString: string;
   node: NodeType;
@@ -484,9 +504,6 @@ export const splitDataNode = (args: {
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
-      FragmentDefinition(node, key) {
-        fragments.push(print(node));
-      },
       Field(node, key, parent, path, ancestors) {
         const type = typeInfo.getType();
         if (type) {

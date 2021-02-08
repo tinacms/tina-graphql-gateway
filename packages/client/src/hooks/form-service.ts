@@ -18,7 +18,7 @@ import {
   SpawnedActorRef,
   sendParent,
 } from "xstate";
-import { splitDataNode } from "@forestryio/graphql-helpers";
+import { splitDataNode, getFragments } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
@@ -40,11 +40,18 @@ export const createFormMachine = (initialContext: {
         invoke: {
           id: id + "breakdownData",
           src: async (context, event) => {
-            return splitDataNode({
-              queryString: context.queryString,
-              node: context.node,
-              schema: await context.client.getSchema(),
-            });
+            return {
+              queries : splitDataNode({
+                queryString: context.queryString,
+                node: context.node,
+                schema: await context.client.getSchema(),
+              }),
+              fragments: getFragments({
+                queryString: context.queryString,
+                node: context.node,
+                schema: await context.client.getSchema(),
+              }),
+            }
           },
           onDone: {
             target: "ready",

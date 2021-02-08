@@ -17,10 +17,12 @@ import {
   queryGenerator,
   formBuilder,
   splitDataNode,
+  getFragments,
 } from "./queryBuilder";
 
 export {
   slugify,
+  getFragments,
   splitDataNode,
   formBuilder,
   queryGenerator,
