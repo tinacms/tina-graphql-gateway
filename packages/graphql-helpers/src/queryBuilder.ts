@@ -484,6 +484,7 @@ export const getFragments = (args: {
   return fragments
 }
 
+// Split node data takes the query, and splits apart amy reference nodes:
 export const splitDataNode = (args: {
   queryString: string;
   node: NodeType;
