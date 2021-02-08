@@ -24,6 +24,10 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 
   const content = await client.requestWithForm(
     (gql) => gql`
+    fragment AuthorFragment on Author_Doc_Data {
+  name
+}
+
       query ContentQuery($section: String!, $relativePath: String!) {
         getDocument(section: $section, relativePath: $relativePath) {
           ... on Menus_Document {
@@ -39,9 +43,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
                 title
                 author {
                   data {
-                    ... on Author_Doc_Data {
-                      name
-                    }
+                    ...AuthorFragment
                   }
                 }
               }
@@ -49,9 +51,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
           }
           ... on Authors_Document {
             data {
-              ... on Author_Doc_Data {
-                name
-              }
+              ...AuthorFragment
             }
           }
           ... on Pages_Document {

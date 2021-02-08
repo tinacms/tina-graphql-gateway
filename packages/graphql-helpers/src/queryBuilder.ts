@@ -499,7 +499,6 @@ export const splitDataNode = (args: {
       mutation: string;
     };
   } = {};
-  const fragments: string[] = [];
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
@@ -981,7 +980,7 @@ export const splitDataNode = (args: {
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
 
-  return { queries, fragments };
+  return queries;
 };
 
 /**
