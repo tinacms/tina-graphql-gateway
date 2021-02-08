@@ -470,11 +470,9 @@ export const getFragments = (args: {
   node: NodeType;
   schema: GraphQLSchema;
 }) => {
-  const fragments: string[] = [];
-  const typeInfo = new TypeInfo(args.schema);
-
   const queryAst = parse(args.queryString);
 
+  const fragments: string[] = [];
   const visitor: VisitorType = {
     leave: {
       FragmentDefinition(node, key) {
@@ -482,7 +480,8 @@ export const getFragments = (args: {
       }
     },
   }
-  visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
+  visit(queryAst, visitWithTypeInfo(new TypeInfo(args.schema), visitor));
+  return fragments
 }
 
 export const splitDataNode = (args: {
