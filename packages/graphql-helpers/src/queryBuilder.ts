@@ -512,250 +512,247 @@ export const splitDataNode = (args: {
               return
           } 
 
-            if (isGraphQLUnionType) {
-              // @ts-ignore
-              const f = Object.values(queryType?.getFields()).find((field) => {
-                const queryNamedType = getNamedType(field.type);
-                return queryNamedType.name === namedType.name;
-              });
-              const mutationFields = mutationType?.getFields();
-              if (!mutationFields) {
-                throw new Error("oh no");
-              }
-              const m = Object.values(mutationFields).find((field) => {
-                const mutationNamedType = getNamedType(field.type);
-                return mutationNamedType.name === namedType.name;
-              });
-              if (!f) {
-                throw new Error("oh no");
-              }
-              const paramInputType = m?.args.find((arg) => {
-                return arg.name === "params";
-              });
-              if (!paramInputType) {
-                throw new Error("oh no");
-              }
-              if (!m) {
-                throw new Error("oh no");
-              }
+          if (isGraphQLUnionType) {
+            // @ts-ignore
+            const f = Object.values(queryType?.getFields()).find((field) => {
+              const queryNamedType = getNamedType(field.type);
+              return queryNamedType.name === namedType.name;
+            });
+            const mutationFields = mutationType?.getFields();
+            if (!mutationFields) {
+              throw new Error("oh no");
+            }
+            const m = Object.values(mutationFields).find((field) => {
+              const mutationNamedType = getNamedType(field.type);
+              return mutationNamedType.name === namedType.name;
+            });
+            if (!f) {
+              throw new Error("oh no");
+            }
+            const paramInputType = m?.args.find((arg) => {
+              return arg.name === "params";
+            });
+            if (!paramInputType) {
+              throw new Error("oh no");
+            }
+            if (!m) {
+              throw new Error("oh no");
+            }
 
-              const docAst = get(queryAst, path);
-              const newQuery: DocumentNode = {
-                kind: "Document" as const,
-                definitions: [
-                  {
-                    kind: "OperationDefinition" as const,
-                    operation: "query",
-                    name: {
-                      kind: "Name" as const,
-                      value: f.name,
-                    },
-                    variableDefinitions: [
-                      {
-                        kind: "VariableDefinition" as const,
-                        variable: {
-                          kind: "Variable" as const,
-                          name: {
-                            kind: "Name" as const,
-                            value: "section",
-                          },
-                        },
-                        type: {
-                          kind: "NonNullType" as const,
-                          type: {
-                            kind: "NamedType" as const,
-                            name: {
-                              kind: "Name" as const,
-                              value: "String",
-                            },
-                          },
-                        },
-                      },
-                      {
-                        kind: "VariableDefinition" as const,
-                        variable: {
-                          kind: "Variable" as const,
-                          name: {
-                            kind: "Name" as const,
-                            value: "relativePath",
-                          },
-                        },
-                        type: {
-                          kind: "NonNullType" as const,
-                          type: {
-                            kind: "NamedType" as const,
-                            name: {
-                              kind: "Name" as const,
-                              value: "String",
-                            },
-                          },
-                        },
-                      },
-                    ],
-                    selectionSet: {
-                      kind: "SelectionSet",
-                      selections: [
-                        {
-                          kind: "Field",
-                          name: {
-                            kind: "Name",
-                            value: f.name,
-                          },
-                          arguments: [
-                            {
-                              kind: "Argument",
-                              name: {
-                                kind: "Name",
-                                value: "relativePath",
-                              },
-                              value: {
-                                kind: "Variable",
-                                name: {
-                                  kind: "Name",
-                                  value: "relativePath",
-                                },
-                              },
-                            },
-                          ],
-                          directives: [],
-                          selectionSet: docAst.selectionSet,
-                        },
-                      ],
-                    },
+            const docAst = get(queryAst, path);
+            const newQuery: DocumentNode = {
+              kind: "Document" as const,
+              definitions: [
+                {
+                  kind: "OperationDefinition" as const,
+                  operation: "query",
+                  name: {
+                    kind: "Name" as const,
+                    value: f.name,
                   },
-                ],
-              };
-              const newMutation: DocumentNode = {
-                kind: "Document" as const,
-                definitions: [
-                  {
-                    kind: "OperationDefinition" as const,
-                    operation: "mutation",
-                    name: {
-                      kind: "Name" as const,
-                      value: m.name,
+                  variableDefinitions: [
+                    {
+                      kind: "VariableDefinition" as const,
+                      variable: {
+                        kind: "Variable" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "section",
+                        },
+                      },
+                      type: {
+                        kind: "NonNullType" as const,
+                        type: {
+                          kind: "NamedType" as const,
+                          name: {
+                            kind: "Name" as const,
+                            value: "String",
+                          },
+                        },
+                      },
                     },
-                    variableDefinitions: [
-                      {
-                        kind: "VariableDefinition" as const,
-                        variable: {
-                          kind: "Variable" as const,
+                    {
+                      kind: "VariableDefinition" as const,
+                      variable: {
+                        kind: "Variable" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "relativePath",
+                        },
+                      },
+                      type: {
+                        kind: "NonNullType" as const,
+                        type: {
+                          kind: "NamedType" as const,
                           name: {
                             kind: "Name" as const,
-                            value: "relativePath",
-                          },
-                        },
-                        type: {
-                          kind: "NonNullType" as const,
-                          type: {
-                            kind: "NamedType" as const,
-                            name: {
-                              kind: "Name" as const,
-                              value: "String",
-                            },
+                            value: "String",
                           },
                         },
                       },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
                       {
-                        kind: "VariableDefinition" as const,
-                        variable: {
-                          kind: "Variable" as const,
-                          name: {
-                            kind: "Name" as const,
-                            value: "params",
-                          },
+                        kind: "Field",
+                        name: {
+                          kind: "Name",
+                          value: f.name,
                         },
-                        type: {
-                          kind: "NonNullType" as const,
-                          type: {
-                            kind: "NamedType" as const,
+                        arguments: [
+                          {
+                            kind: "Argument",
                             name: {
-                              kind: "Name" as const,
-                              value: getNamedType(paramInputType?.type).name,
+                              kind: "Name",
+                              value: "relativePath",
                             },
-                          },
-                        },
-                      },
-                    ],
-                    selectionSet: {
-                      kind: "SelectionSet",
-                      selections: [
-                        {
-                          kind: "Field",
-                          name: {
-                            kind: "Name",
-                            value: m.name,
-                          },
-                          arguments: [
-                            {
-                              kind: "Argument",
+                            value: {
+                              kind: "Variable",
                               name: {
                                 kind: "Name",
                                 value: "relativePath",
                               },
-                              value: {
-                                kind: "Variable",
-                                name: {
-                                  kind: "Name",
-                                  value: "relativePath",
-                                },
+                            },
+                          },
+                        ],
+                        directives: [],
+                        selectionSet: docAst.selectionSet,
+                      },
+                    ],
+                  },
+                },
+              ],
+            };
+            const newMutation: DocumentNode = {
+              kind: "Document" as const,
+              definitions: [
+                {
+                  kind: "OperationDefinition" as const,
+                  operation: "mutation",
+                  name: {
+                    kind: "Name" as const,
+                    value: m.name,
+                  },
+                  variableDefinitions: [
+                    {
+                      kind: "VariableDefinition" as const,
+                      variable: {
+                        kind: "Variable" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "relativePath",
+                        },
+                      },
+                      type: {
+                        kind: "NonNullType" as const,
+                        type: {
+                          kind: "NamedType" as const,
+                          name: {
+                            kind: "Name" as const,
+                            value: "String",
+                          },
+                        },
+                      },
+                    },
+                    {
+                      kind: "VariableDefinition" as const,
+                      variable: {
+                        kind: "Variable" as const,
+                        name: {
+                          kind: "Name" as const,
+                          value: "params",
+                        },
+                      },
+                      type: {
+                        kind: "NonNullType" as const,
+                        type: {
+                          kind: "NamedType" as const,
+                          name: {
+                            kind: "Name" as const,
+                            value: getNamedType(paramInputType?.type).name,
+                          },
+                        },
+                      },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: {
+                          kind: "Name",
+                          value: m.name,
+                        },
+                        arguments: [
+                          {
+                            kind: "Argument",
+                            name: {
+                              kind: "Name",
+                              value: "relativePath",
+                            },
+                            value: {
+                              kind: "Variable",
+                              name: {
+                                kind: "Name",
+                                value: "relativePath",
                               },
                             },
-                            {
-                              kind: "Argument",
+                          },
+                          {
+                            kind: "Argument",
+                            name: {
+                              kind: "Name",
+                              value: "params",
+                            },
+                            value: {
+                              kind: "Variable",
                               name: {
                                 kind: "Name",
                                 value: "params",
                               },
-                              value: {
-                                kind: "Variable",
-                                name: {
-                                  kind: "Name",
-                                  value: "params",
-                                },
-                              },
                             },
-                          ],
-                          directives: [],
-                          selectionSet: docAst.selectionSet,
-                        },
-                      ],
-                    },
+                          },
+                        ],
+                        directives: [],
+                        selectionSet: docAst.selectionSet,
+                      },
+                    ],
                   },
-                ],
-              };
-              let dataPath: string[] = [];
-              const anc = ancestors[0];
-              const pathAccum: (string | number)[] = [];
-              path.map((p, i) => {
-                pathAccum.push(p);
-                const item: ASTNode | ASTNode[] = get(anc, pathAccum);
-                if (Array.isArray(item)) {
-                } else {
-                  switch (item.kind) {
-                    case "OperationDefinition":
-                      break;
-                    case "SelectionSet":
-                      break;
-                    case "InlineFragment":
-                      break;
-                    case "Field":
-                      dataPath.push(item.name?.value);
-                      break;
-                  }
+                },
+              ],
+            };
+            let dataPath: string[] = [];
+            const anc = ancestors[0];
+            const pathAccum: (string | number)[] = [];
+            path.map((p, i) => {
+              pathAccum.push(p);
+              const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+              if (Array.isArray(item)) {
+              } else {
+                switch (item.kind) {
+                  case "OperationDefinition":
+                    break;
+                  case "SelectionSet":
+                    break;
+                  case "InlineFragment":
+                    break;
+                  case "Field":
+                    dataPath.push(item.name?.value);
+                    break;
                 }
-              });
-              queries[dataPath.join(".")] = {
-                query: print(newQuery),
-                mutation: print(newMutation),
-                fragments: [],
-                path: [...path],
-              };
-            }
-          if (namedType instanceof GraphQLObjectType) {
-            const implementsNodeInterface = !!namedType
-              .getInterfaces()
-              .find((i) => i.name === "Node");
+              }
+            });
+            queries[dataPath.join(".")] = {
+              query: print(newQuery),
+              mutation: print(newMutation),
+              fragments: [],
+              path: [...path],
+            };
+          }
+          if (isGraphQLObjectType) {
 
               // @ts-ignore
               const f = Object.values(queryType?.getFields()).find((field) => {
