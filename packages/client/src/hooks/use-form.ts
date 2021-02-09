@@ -127,9 +127,8 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             return true
           }
 
-          // TODO - do we need this check? 
           if(!(await isPayloadPresent())) {
-            throw new Error("Payload not present")
+            return null // data may not be fetched yet so don't throw error
           }
 
           const result = await filterForValidFormNodes(context.payload)
