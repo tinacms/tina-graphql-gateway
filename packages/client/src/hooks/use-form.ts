@@ -150,6 +150,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
+              // console.log(event);
               const temp = { ...context.payload };
               // FIXME: this breaks when adding a block and then populating it, we don't get an event
               // for when a sortable item is added or changed, need this fix to come from OSS

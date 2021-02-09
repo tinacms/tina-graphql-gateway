@@ -3981,7 +3981,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@tinacms/forms", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.3.0"],
             ["final-form", "npm:4.20.1"],
-            ["final-form-arrays", "virtual:2a079adb34d640d5b78fb7f056d0d72c85c4ca6f6719f76005cdbd4c8629bf8b4cdc6e57c61229d5bc2b2d3d1bad67dbfbd93c5ae98c2ffc6fa1c6555ebb599c#npm:3.0.2"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["react", "npm:16.13.1"]
           ],
           "packagePeers": [
@@ -3994,7 +3994,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@tinacms/forms", "virtual:86a4577da7cc31e672dd2fc7953819504281cef01c375acdbe1b02800b3743c891a5dc7931d6e17bb1700686a0877e12a1e7569f385f0c00a46cf8dfffd436e5#npm:0.5.0"],
             ["final-form", "npm:4.20.1"],
-            ["final-form-arrays", "virtual:2a079adb34d640d5b78fb7f056d0d72c85c4ca6f6719f76005cdbd4c8629bf8b4cdc6e57c61229d5bc2b2d3d1bad67dbfbd93c5ae98c2ffc6fa1c6555ebb599c#npm:3.0.2"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["react", "npm:16.13.1"]
           ],
           "packagePeers": [
@@ -4007,7 +4007,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@tinacms/forms", "virtual:8eccf3a51b3b58fa2e7321314d5e9b09a3a2825ea2716017473cd57c289e4ef3616c24f5470e58e77d9d6bf0ca74eb4cc1f42c03fbe5397076c45de68b555c4e#npm:0.31.0"],
             ["final-form", "npm:4.20.1"],
-            ["final-form-arrays", "virtual:2a079adb34d640d5b78fb7f056d0d72c85c4ca6f6719f76005cdbd4c8629bf8b4cdc6e57c61229d5bc2b2d3d1bad67dbfbd93c5ae98c2ffc6fa1c6555ebb599c#npm:3.0.2"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["react", "npm:16.13.1"]
           ],
           "packagePeers": [
@@ -11356,10 +11356,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["final-form-arrays", [
-        ["virtual:2a079adb34d640d5b78fb7f056d0d72c85c4ca6f6719f76005cdbd4c8629bf8b4cdc6e57c61229d5bc2b2d3d1bad67dbfbd93c5ae98c2ffc6fa1c6555ebb599c#npm:3.0.2", {
-          "packageLocation": "./.yarn/$$virtual/final-form-arrays-virtual-651c9eead5/0/cache/final-form-arrays-npm-3.0.2-0e8c67eade-16a7fb6e68.zip/node_modules/final-form-arrays/",
+        ["virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2", {
+          "packageLocation": "./.yarn/$$virtual/final-form-arrays-virtual-7759fd4c6f/0/cache/final-form-arrays-npm-3.0.2-0e8c67eade-16a7fb6e68.zip/node_modules/final-form-arrays/",
           "packageDependencies": [
-            ["final-form-arrays", "virtual:2a079adb34d640d5b78fb7f056d0d72c85c4ca6f6719f76005cdbd4c8629bf8b4cdc6e57c61229d5bc2b2d3d1bad67dbfbd93c5ae98c2ffc6fa1c6555ebb599c#npm:3.0.2"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["final-form", "npm:4.20.1"]
           ],
           "packagePeers": [
@@ -23134,6 +23134,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],
             ["crypto-js", "npm:4.0.0"],
             ["final-form", "npm:4.20.1"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:9680361f3aa50190b6de3024fd0701a64a04dcab511f1195194be2012517bfb75b0ef37186065aaef744e6391005e752e58b4eccb77c1007b4796e03dd8f1c82#npm:2.11.0"],
             ["isomorphic-unfetch", "npm:3.0.0"],
@@ -23195,6 +23196,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],
             ["crypto-js", "npm:4.0.0"],
             ["final-form", "npm:4.20.1"],
+            ["final-form-arrays", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:9680361f3aa50190b6de3024fd0701a64a04dcab511f1195194be2012517bfb75b0ef37186065aaef744e6391005e752e58b4eccb77c1007b4796e03dd8f1c82#npm:2.11.0"],
             ["isomorphic-unfetch", "npm:3.0.0"],

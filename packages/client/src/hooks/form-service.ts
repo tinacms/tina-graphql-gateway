@@ -20,6 +20,9 @@ import {
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
+import meh from "final-form-arrays";
+import * as ff from "final-form";
+
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
 
@@ -287,14 +290,58 @@ ${mutation}
     },
   });
 
+  const changeValue = (state, name, mutate) => {
+    const before = ff.getIn(state.formState.values, name);
+    // console.log("doit", before);
+    const after = mutate(before);
+    // console.log("didit", after);
+    state.formState.values =
+      ff.setIn(state.formState.values, name, after) || {};
+    // console.log("diditagain", state.formState);
+  };
+  const formCopy = { ...form.finalForm };
+  const { move: moveCopy, remove: removeCopy, insert: insertCopy } = {
+    ...form.finalForm.mutators,
+  };
+  form.finalForm.mutators.move = (name, from, to) => {
+    const vv = context.node.data[name];
+    // console.log(form.finalForm.getState());
+    // console.log(vv.value);
+    let state = {
+      formState: { values: { [name]: vv } },
+    };
+    try {
+      meh.move([name, from, to], state, { changeValue });
+    } catch (e) {
+      // console.log("move", name, from, to, state);
+      const ev = {
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "data", name],
+          value: state.formState.values[name],
+        },
+      };
+      console.log("ddooit");
+      console.log(ev);
+
+      callback(ev);
+    }
+    return moveCopy(name, from, to);
+  };
+  // form.finalForm.fieldArray
+  // form.finalForm.change = (name: string, value: any) => {
+  //   console.log("i changed", name, value);
+  //   return formCopy.change(name, value);
+  // };
+
   form.subscribe(
-    (values) => {
+    (all) => {
       // Sync form value changes to value key
       callback({
         type: "ON_FIELD_CHANGE",
         values: {
           path: [context.queryFieldName, "values"],
-          value: values.values,
+          value: all.values,
         },
       });
     },
