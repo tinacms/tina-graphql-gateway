@@ -6,7 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
   GraphQLArgument,
+  ASTNode,
 } from "graphql";
+import get from 'lodash.get';
 
 interface FieldInterpretterProps {
   mutationName: string
@@ -30,6 +32,8 @@ abstract class FieldInterpretter {
   abstract getQuery(): DocumentNode;
 
   abstract getMutation(): DocumentNode;
+
+  abstract getDataPath(path: readonly (string | number)[], ancestors: any): string[]
 }
 
 export const getFieldInterpretter = (namedType: GraphQLNamedType, args: FieldInterpretterProps): FieldInterpretter | undefined => {
@@ -238,6 +242,31 @@ class SectionDocumentUnionInterpretter extends FieldInterpretter {
       ],
     }
   }
+
+  getDataPath(path: readonly (string | number)[], ancestors: any): string[] {
+    let dataPath: string[] = [];
+    const anc = ancestors[0];
+    const pathAccum: (string | number)[] = [];
+    path.map((p, i) => {
+      pathAccum.push(p);
+      const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+      if (Array.isArray(item)) {
+      } else {
+        switch (item.kind) {
+          case "OperationDefinition":
+            break;
+          case "SelectionSet":
+            break;
+          case "InlineFragment":
+            break;
+          case "Field":
+            dataPath.push(item.name?.value);
+            break;
+        }
+      }
+    });
+    return dataPath
+  }
 }
 
 class GraphQLObjectTypeInterpretter extends FieldInterpretter {
@@ -409,5 +438,35 @@ class GraphQLObjectTypeInterpretter extends FieldInterpretter {
         },
       ],
     };
+  }
+
+  getDataPath(path: readonly (string | number)[], ancestors: any): string[] {
+    let dataPath: string[] = [];
+    const anc = ancestors[0];
+    const pathAccum: (string | number)[] = [];
+    path.map((p, i) => {
+      pathAccum.push(p);
+      const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+      if (Array.isArray(item)) {
+      } else {
+        switch (item.kind) {
+          case "OperationDefinition":
+            break;
+          case "SelectionSet":
+            break;
+          case "InlineFragment":
+            break;
+          case "Field":
+            const value = item.alias
+              ? item.alias.value
+              : item.name.value;
+
+            dataPath.push(value);
+        }
+      }
+    });
+    return dataPath
+
+    
   }
 }
