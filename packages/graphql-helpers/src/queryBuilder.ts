@@ -512,34 +512,35 @@ export const splitDataNode = (args: {
               return
           } 
 
-          if (isGraphQLUnionType) {
-            // @ts-ignore
-            const f = Object.values(queryType?.getFields()).find((field) => {
-              const queryNamedType = getNamedType(field.type);
-              return queryNamedType.name === namedType.name;
-            });
-            const mutationFields = mutationType?.getFields();
-            if (!mutationFields) {
-              throw new Error("oh no");
-            }
-            const m = Object.values(mutationFields).find((field) => {
-              const mutationNamedType = getNamedType(field.type);
-              return mutationNamedType.name === namedType.name;
-            });
-            if (!f) {
-              throw new Error("oh no");
-            }
-            const paramInputType = m?.args.find((arg) => {
-              return arg.name === "params";
-            });
-            if (!paramInputType) {
-              throw new Error("oh no");
-            }
-            if (!m) {
-              throw new Error("oh no");
-            }
+          // @ts-ignore
+          const f = Object.values(queryType?.getFields()).find((field) => {
+            const queryNamedType = getNamedType(field.type);
+            return queryNamedType.name === namedType.name;
+          });
+          const mutationFields = mutationType?.getFields();
+          if (!mutationFields) {
+            throw new Error("oh no");
+          }
+          const m = Object.values(mutationFields).find((field) => {
+            const mutationNamedType = getNamedType(field.type);
+            return mutationNamedType.name === namedType.name;
+          });
+          if (!f) {
+            throw new Error("oh no");
+          }
+          const paramInputType = m?.args.find((arg) => {
+            return arg.name === "params";
+          });
+          if (!paramInputType) {
+            throw new Error("oh no");
+          }
+          if (!m) {
+            throw new Error("oh no");
+          }
 
-            const docAst = get(queryAst, path);
+          const docAst = get(queryAst, path);
+
+          if (isGraphQLUnionType) {
             const newQuery: DocumentNode = {
               kind: "Document" as const,
               definitions: [
@@ -753,34 +754,6 @@ export const splitDataNode = (args: {
             };
           }
           if (isGraphQLObjectType) {
-
-              // @ts-ignore
-              const f = Object.values(queryType?.getFields()).find((field) => {
-                const queryNamedType = getNamedType(field.type);
-                return queryNamedType.name === namedType.name;
-              });
-              const mutationFields = mutationType?.getFields();
-              if (!mutationFields) {
-                throw new Error("oh no");
-              }
-              const m = Object.values(mutationFields).find((field) => {
-                const mutationNamedType = getNamedType(field.type);
-                return mutationNamedType.name === namedType.name;
-              });
-              if (!f) {
-                throw new Error("oh no");
-              }
-              const paramInputType = m?.args.find((arg) => {
-                return arg.name === "params";
-              });
-              if (!paramInputType) {
-                throw new Error("oh no");
-              }
-              if (!m) {
-                throw new Error("oh no");
-              }
-
-              const docAst = get(queryAst, path);
               const newQuery: DocumentNode = {
                 kind: "Document" as const,
                 definitions: [
