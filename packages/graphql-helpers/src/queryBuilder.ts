@@ -976,16 +976,22 @@ export const splitDataNode = (args: {
     },
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
-  fragmentPaths.forEach((fragmenPath) => {
+  fragmentPaths.forEach((fragmentPath) => {
     Object.values(queries).forEach((query, index) => {
-      const fragmentPathString = fragmenPath.path.join(".");
-      if (fragmentPathString.startsWith(query.path.join("."))) {
-        query.fragments.push(fragmenPath.fragment);
+      if (hasSubArray(fragmentPath.path, query.path)) {
+        query.fragments.push(fragmentPath.fragment);
       }
     });
   });
 
   return { queries, fragments };
+};
+
+// Checks if main array has the same values at the same indeces for a sub array
+const hasSubArray = (main: (number | string)[], sub: (number | string)[]) => {
+  return sub.every((item, index) => {
+    return main[index] === item;
+  });
 };
 
 /**
