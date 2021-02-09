@@ -131,6 +131,9 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             return null // data may not be fetched yet so don't throw error
           }
 
+          // TODO maybe a bit of a code smell here
+          // Should we instead only pass in relevant info
+          // into this function? (instead of implictly filtering them out)
           const result = await filterForValidFormNodes(context.payload)
           if (Object.keys(result).length === 0) {
             throw new Error("No queries could be used as a Tina form");
