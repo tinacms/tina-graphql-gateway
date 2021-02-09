@@ -555,29 +555,10 @@ export const splitDataNode = (args: {
 
           const newQuery = fieldInterpretter.getQuery()
           const newMutation = fieldInterpretter.getMutation()
+          let dataPath = fieldInterpretter.getDataPath(path,ancestors)
 
           if (isGraphQLUnionType) {
-            let dataPath: string[] = [];
-            const anc = ancestors[0];
-            const pathAccum: (string | number)[] = [];
-            path.map((p, i) => {
-              pathAccum.push(p);
-              const item: ASTNode | ASTNode[] = get(anc, pathAccum);
-              if (Array.isArray(item)) {
-              } else {
-                switch (item.kind) {
-                  case "OperationDefinition":
-                    break;
-                  case "SelectionSet":
-                    break;
-                  case "InlineFragment":
-                    break;
-                  case "Field":
-                    dataPath.push(item.name?.value);
-                    break;
-                }
-              }
-            });
+
             queries[dataPath.join(".")] = {
               query: print(newQuery),
               mutation: print(newMutation),
@@ -586,32 +567,6 @@ export const splitDataNode = (args: {
             };
           }
           if (isGraphQLObjectType) {
-
-              let dataPath: string[] = [];
-              const anc = ancestors[0];
-              const pathAccum: (string | number)[] = [];
-              path.map((p, i) => {
-                pathAccum.push(p);
-                const item: ASTNode | ASTNode[] = get(anc, pathAccum);
-                if (Array.isArray(item)) {
-                } else {
-                  switch (item.kind) {
-                    case "OperationDefinition":
-                      break;
-                    case "SelectionSet":
-                      break;
-                    case "InlineFragment":
-                      break;
-                    case "Field":
-                      const value = item.alias
-                        ? item.alias.value
-                        : item.name.value;
-
-                      dataPath.push(value);
-                      break;
-                  }
-                }
-              });
               // FIXME: not sure why but `path` is `[]` without copying it
               const pathCopy = [...path];
               queries[dataPath.join(".")] = {
