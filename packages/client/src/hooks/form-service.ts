@@ -40,17 +40,15 @@ export const createFormMachine = (initialContext: {
         invoke: {
           id: id + "breakdownData",
           src: async (context, event) => {
+
+            const queryDetails = {
+              queryString: context.queryString,
+              node: context.node,
+              schema: await context.client.getSchema(),
+            }
             return {
-              queries : splitDataNode({
-                queryString: context.queryString,
-                node: context.node,
-                schema: await context.client.getSchema(),
-              }),
-              fragments: getFragments({
-                queryString: context.queryString,
-                node: context.node,
-                schema: await context.client.getSchema(),
-              }),
+              queries : splitDataNode(queryDetails),
+              fragments: getFragments(queryDetails),
             }
           },
           onDone: {
