@@ -497,8 +497,16 @@ export const splitDataNode = (args: {
         const type = typeInfo.getType();
         if (type) {
           const namedType = getNamedType(type);
-          if (namedType instanceof GraphQLUnionType) {
-            if (namedType.name === "SectionDocumentUnion") {
+
+          const isGraphQLUnionType = namedType instanceof GraphQLUnionType && namedType.name === "SectionDocumentUnion"
+          const isGraphQLObjectType = namedType instanceof GraphQLObjectType
+
+          if(!isGraphQLUnionType && !isGraphQLObjectType)
+          {
+            return
+          }
+
+            if (isGraphQLUnionType) {
               // @ts-ignore
               const f = Object.values(queryType?.getFields()).find((field) => {
                 const queryNamedType = getNamedType(field.type);
@@ -738,7 +746,6 @@ export const splitDataNode = (args: {
                 path: [...path],
               };
             }
-          }
           if (namedType instanceof GraphQLObjectType) {
             const implementsNodeInterface = !!namedType
               .getInterfaces()
