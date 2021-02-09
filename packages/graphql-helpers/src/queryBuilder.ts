@@ -502,6 +502,8 @@ export const splitDataNode = (args: {
           const isGraphQLUnionType = namedType instanceof GraphQLUnionType && namedType.name === "SectionDocumentUnion"
           const isGraphQLObjectType = namedType instanceof GraphQLObjectType
 
+          //TODO - Instead of doing this check, we should just check if fieldInterpretter below exists.
+          // Leaving here for now as things may break on the calculation of fieldInterpretter's constructor args
           if(!isGraphQLUnionType && !isGraphQLObjectType)
           {
             return
@@ -511,7 +513,7 @@ export const splitDataNode = (args: {
             .getInterfaces()
             .find((i) => i.name === "Node")) {
               return
-          } 
+          }
 
           // @ts-ignore
           const f = Object.values(queryType?.getFields()).find((field) => {
@@ -557,25 +559,13 @@ export const splitDataNode = (args: {
           const newMutation = fieldInterpretter.getMutation()
           let dataPath = fieldInterpretter.getDataPath(path,ancestors)
 
-          if (isGraphQLUnionType) {
-
-            queries[dataPath.join(".")] = {
-              query: print(newQuery),
-              mutation: print(newMutation),
-              fragments: [],
-              path: [...path],
-            };
-          }
-          if (isGraphQLObjectType) {
-              // FIXME: not sure why but `path` is `[]` without copying it
-              const pathCopy = [...path];
-              queries[dataPath.join(".")] = {
-                query: print(newQuery),
-                mutation: print(newMutation),
-                fragments: [],
-                path: pathCopy,
-              };
-          }
+          const pathCopy = [...path];
+          queries[dataPath.join(".")] = {
+            query: print(newQuery),
+            mutation: print(newMutation),
+            fragments: [],
+            path: pathCopy,
+          };
         }
       },
     },
