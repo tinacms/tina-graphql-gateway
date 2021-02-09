@@ -553,9 +553,10 @@ export const splitDataNode = (args: {
             return
           }
 
+          const newQuery = fieldInterpretter.getQuery()
+          const newMutation = fieldInterpretter.getMutation()
+
           if (isGraphQLUnionType) {
-            const newQuery = fieldInterpretter.getQuery()
-            const newMutation = fieldInterpretter.getMutation()
             let dataPath: string[] = [];
             const anc = ancestors[0];
             const pathAccum: (string | number)[] = [];
@@ -585,8 +586,7 @@ export const splitDataNode = (args: {
             };
           }
           if (isGraphQLObjectType) {
-            const newQuery = fieldInterpretter.getQuery()
-            const newMutation = fieldInterpretter.getMutation()
+
               let dataPath: string[] = [];
               const anc = ancestors[0];
               const pathAccum: (string | number)[] = [];
