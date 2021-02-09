@@ -506,6 +506,12 @@ export const splitDataNode = (args: {
             return
           }
 
+          if (namedType instanceof GraphQLObjectType && !namedType
+            .getInterfaces()
+            .find((i) => i.name === "Node")) {
+              return
+          } 
+
             if (isGraphQLUnionType) {
               // @ts-ignore
               const f = Object.values(queryType?.getFields()).find((field) => {
@@ -751,7 +757,6 @@ export const splitDataNode = (args: {
               .getInterfaces()
               .find((i) => i.name === "Node");
 
-            if (implementsNodeInterface) {
               // @ts-ignore
               const f = Object.values(queryType?.getFields()).find((field) => {
                 const queryNamedType = getNamedType(field.type);
@@ -976,7 +981,6 @@ export const splitDataNode = (args: {
                 fragments: [],
                 path: pathCopy,
               };
-            }
           }
         }
       },
