@@ -132,7 +132,6 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             throw new Error("Payload not present")
           }
 
-          // TODO - Should we fail if form node is invalid instead of filtering them out?
           const result = await filterForValidFormNodes(context.payload)
           if (Object.keys(result).length === 0) {
             throw new Error("No queries could be used as a Tina form");
