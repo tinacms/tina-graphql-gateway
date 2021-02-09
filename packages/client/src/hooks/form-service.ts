@@ -99,8 +99,14 @@ type NodeFormContext = {
   cms: TinaCMS;
   client: Client;
   formRef: null | SpawnedActorRef<any, any>;
-  queries: { [key: string]: { query: string; mutation: string } } | null;
-  fragments: string[];
+  queries: {
+    [key: string]: {
+      query: string;
+      mutation: string;
+      fragments: string[];
+    };
+  } | null;
+  fragments: { name: string; fragment: string }[];
   error: null | string;
   onSubmit: (args: any) => void;
 };
@@ -255,15 +261,26 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
+      const queryForMutation = context.queries[context.queryFieldName];
+      const mutation = queryForMutation.mutation;
+
+      const frags = [];
+      queryForMutation.fragments.forEach((fragment) => {
+        frags.push(
+          context.fragments.find((fr) => fr.name === fragment).fragment
+        );
+      });
+
       try {
         await context.onSubmit({
-          mutationString: `${context.fragments.join("\n")}
-${context.queries[context.queryFieldName].mutation}
+          mutationString: `${frags.join("\n")}
+${mutation}
 `,
           relativePath: context.node.sys.relativePath,
           values: values,
           sys: context.node.sys,
         });
+        context.cms.alerts.info("Document saved!");
       } catch (e) {
         context.cms.alerts.info(e.message);
       }

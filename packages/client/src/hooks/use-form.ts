@@ -245,7 +245,10 @@ export function useForm<T>({
             : cms.api.tina
                 .request(values.mutationString, { variables })
                 .then((res) => {
-                  // console.log("res", res);
+                  if (res.errors) {
+                    console.error(res);
+                    cms.alerts.error("Unable to update document");
+                  }
                 });
         });
       },

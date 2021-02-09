@@ -478,14 +478,20 @@ export const splitDataNode = (args: {
     [key: string]: {
       query: string;
       mutation: string;
+      path: (number | string)[];
+      fragments: string[];
     };
   } = {};
-  const fragments: string[] = [];
+  const fragments: { name: string; fragment: string }[] = [];
+  const fragmentPaths: { path: (string | number)[]; fragment: string }[] = [];
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
-      FragmentDefinition(node, key) {
-        fragments.push(print(node));
+      FragmentDefinition(node, key, parent, path) {
+        fragments.push({ name: node.name.value, fragment: print(node) });
+      },
+      FragmentSpread(node, key, parent, path) {
+        fragmentPaths.push({ path: [...path], fragment: node.name.value });
       },
       Field(node, key, parent, path, ancestors) {
         const type = typeInfo.getType();
@@ -728,6 +734,8 @@ export const splitDataNode = (args: {
               queries[dataPath.join(".")] = {
                 query: print(newQuery),
                 mutation: print(newMutation),
+                fragments: [],
+                path: [...path],
               };
             }
           }
@@ -953,9 +961,13 @@ export const splitDataNode = (args: {
                   }
                 }
               });
+              // FIXME: not sure why but `path` is `[]` without copying it
+              const pathCopy = [...path];
               queries[dataPath.join(".")] = {
                 query: print(newQuery),
                 mutation: print(newMutation),
+                fragments: [],
+                path: pathCopy,
               };
             }
           }
@@ -964,8 +976,22 @@ export const splitDataNode = (args: {
     },
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
+  fragmentPaths.forEach((fragmentPath) => {
+    Object.values(queries).forEach((query, index) => {
+      if (hasSubArray(fragmentPath.path, query.path)) {
+        query.fragments.push(fragmentPath.fragment);
+      }
+    });
+  });
 
   return { queries, fragments };
+};
+
+// Checks if main array has the same values at the same indeces for a sub array
+const hasSubArray = (main: (number | string)[], sub: (number | string)[]) => {
+  return sub.every((item, index) => {
+    return main[index] === item;
+  });
 };
 
 /**
