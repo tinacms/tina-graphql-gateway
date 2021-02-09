@@ -246,6 +246,7 @@ export function useForm<T>({
                 .request(values.mutationString, { variables })
                 .then((res) => {
                   if (res.errors) {
+                    console.error(res);
                     cms.alerts.error("Unable to update document");
                   }
                 });

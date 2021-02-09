@@ -280,6 +280,7 @@ ${mutation}
           values: values,
           sys: context.node.sys,
         });
+        context.cms.alerts.info("Document saved!");
       } catch (e) {
         context.cms.alerts.info(e.message);
       }
