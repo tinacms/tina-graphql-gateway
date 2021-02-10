@@ -300,20 +300,20 @@ ${mutation}
     ...form.finalForm.mutators,
   };
   form.finalForm.mutators.move = (name, from, to) => {
-    const dataValue = context.node.data[name];
+    const dataValue = getIn(context.node.data, name);
     let state = {
-      formState: { values: { [name]: dataValue } },
+      formState: { values: { fakeValue: dataValue } },
     };
     try {
       // @ts-ignore state is expecting the full final-form state, but we don't need it
-      finalFormArrays.move([name, from, to], state, { changeValue });
+      finalFormArrays.move(["fakeValue", from, to], state, { changeValue });
       // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
     } catch (e) {
       callback({
         type: "ON_FIELD_CHANGE",
         values: {
-          path: [context.queryFieldName, "data", name],
-          value: state.formState.values[name],
+          path: [context.queryFieldName, "data", ...name.split(".")],
+          value: state.formState.values.fakeValue,
         },
       });
     }
@@ -323,21 +323,20 @@ ${mutation}
   };
 
   form.finalForm.mutators.remove = (name, index) => {
-    const dataValue = context.node.data[name];
+    const dataValue = getIn(context.node.data, name);
     let state = {
-      formState: { values: { [name]: dataValue } },
+      formState: { values: { fakeValue: dataValue } },
     };
     try {
       // @ts-ignore state is expecting the full final-form state, but we don't need it
-      finalFormArrays.remove([name, index], state, { changeValue });
+      finalFormArrays.remove(["fakeValue", index], state, { changeValue });
       // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
     } catch (e) {
-      console.log("newvalue", state.formState.values[name]);
       callback({
         type: "ON_FIELD_CHANGE",
         values: {
-          path: [context.queryFieldName, "data", name],
-          value: state.formState.values[name],
+          path: [context.queryFieldName, "data", ...name.split(".")],
+          value: state.formState.values.fakeValue,
         },
       });
     }
@@ -353,10 +352,19 @@ ${mutation}
       formState: { values: { [name]: dataValue } },
     };
     try {
-      console.log(item);
-      const i = { __typename: "LayerDarkFeature_Data" };
+      let newItem = item;
+      // FIXME: this is a pretty rough translation, not sure if "_Data" would be present in all cases
+      // This should be abstracted in to graphql-helpers so we can commonize these transforms
+      if (item._template) {
+        newItem =
+          item._template.charAt(0).toUpperCase() +
+          item._template.slice(1) +
+          "_Data";
+      }
       // @ts-ignore state is expecting the full final-form state, but we don't need it
-      finalFormArrays.insert([name, index, i], state, { changeValue });
+      finalFormArrays.insert([name, index, { __typename: newItem }], state, {
+        changeValue,
+      });
       // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
     } catch (e) {
       callback({
