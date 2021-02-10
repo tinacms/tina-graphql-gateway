@@ -355,13 +355,25 @@ ${mutation}
       // FIXME: this is a pretty rough translation, not sure if "_Data" would be present in all cases
       // This should be abstracted in to graphql-helpers so we can commonize these transforms
       if (item._template) {
-        newItem =
-          item._template.charAt(0).toUpperCase() +
-          item._template.slice(1) +
-          "_Data";
+        newItem = {
+          __typename:
+            item._template.charAt(0).toUpperCase() +
+            item._template.slice(1) +
+            "_Data",
+        };
+      } else {
+        // if item is -> {}, the real insertCopy doesn't set up the event listeners properly
+        // so inputs within the added field won't work for some reason
+        if (
+          item &&
+          Object.keys(item).length === 0 &&
+          item.constructor === Object
+        ) {
+          item = null;
+        }
       }
       finalFormArrays.insert(
-        ["fakeValue", index, { __typename: newItem }],
+        ["fakeValue", index, newItem],
         // @ts-ignore state is expecting the full final-form state, but we don't need it
         state,
         {
