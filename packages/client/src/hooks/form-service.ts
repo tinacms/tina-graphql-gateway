@@ -20,8 +20,8 @@ import {
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
-import meh from "final-form-arrays";
-import * as ff from "final-form";
+import finalFormArrays from "final-form-arrays";
+import { getIn, setIn } from "final-form";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
@@ -291,48 +291,86 @@ ${mutation}
   });
 
   const changeValue = (state, name, mutate) => {
-    const before = ff.getIn(state.formState.values, name);
-    // console.log("doit", before);
+    const before = getIn(state.formState.values, name);
     const after = mutate(before);
-    // console.log("didit", after);
-    state.formState.values =
-      ff.setIn(state.formState.values, name, after) || {};
-    // console.log("diditagain", state.formState);
+    state.formState.values = setIn(state.formState.values, name, after) || {};
   };
-  const formCopy = { ...form.finalForm };
+
   const { move: moveCopy, remove: removeCopy, insert: insertCopy } = {
     ...form.finalForm.mutators,
   };
   form.finalForm.mutators.move = (name, from, to) => {
-    const vv = context.node.data[name];
-    // console.log(form.finalForm.getState());
-    // console.log(vv.value);
+    const dataValue = context.node.data[name];
     let state = {
-      formState: { values: { [name]: vv } },
+      formState: { values: { [name]: dataValue } },
     };
     try {
-      meh.move([name, from, to], state, { changeValue });
+      // @ts-ignore state is expecting the full final-form state, but we don't need it
+      finalFormArrays.move([name, from, to], state, { changeValue });
+      // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
     } catch (e) {
-      // console.log("move", name, from, to, state);
-      const ev = {
+      callback({
         type: "ON_FIELD_CHANGE",
         values: {
           path: [context.queryFieldName, "data", name],
           value: state.formState.values[name],
         },
-      };
-      console.log("ddooit");
-      console.log(ev);
-
-      callback(ev);
+      });
     }
+
+    // Return the copy like nothing ever happened
     return moveCopy(name, from, to);
   };
-  // form.finalForm.fieldArray
-  // form.finalForm.change = (name: string, value: any) => {
-  //   console.log("i changed", name, value);
-  //   return formCopy.change(name, value);
-  // };
+
+  form.finalForm.mutators.remove = (name, index) => {
+    const dataValue = context.node.data[name];
+    let state = {
+      formState: { values: { [name]: dataValue } },
+    };
+    try {
+      // @ts-ignore state is expecting the full final-form state, but we don't need it
+      finalFormArrays.remove([name, index], state, { changeValue });
+      // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
+    } catch (e) {
+      console.log("newvalue", state.formState.values[name]);
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "data", name],
+          value: state.formState.values[name],
+        },
+      });
+    }
+
+    // Return the copy like nothing ever happened
+    return removeCopy(name, index);
+  };
+
+  form.finalForm.mutators.insert = (name, index, item) => {
+    const dataValue = context.node.data[name] || [];
+    console.log("insert", { name, index, item, dataValue });
+    let state = {
+      formState: { values: { [name]: dataValue } },
+    };
+    try {
+      console.log(item);
+      const i = { __typename: "LayerDarkFeature_Data" };
+      // @ts-ignore state is expecting the full final-form state, but we don't need it
+      finalFormArrays.insert([name, index, i], state, { changeValue });
+      // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
+    } catch (e) {
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "data", name],
+          value: state.formState.values[name],
+        },
+      });
+    }
+
+    // Return the copy like nothing ever happened
+    return insertCopy(name, index, item);
+  };
 
   form.subscribe(
     (all) => {
