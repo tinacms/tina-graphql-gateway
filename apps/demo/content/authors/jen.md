@@ -25,6 +25,8 @@ From helping beginners with no running experience complete their first marathons
 
 ---
 
+Featured product called <Reference value="name" />
+
 **Five-time NCAA Individual Champion**
 
 **Three-time US Olympian**
