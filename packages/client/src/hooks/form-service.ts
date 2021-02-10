@@ -346,10 +346,9 @@ ${mutation}
   };
 
   form.finalForm.mutators.insert = (name, index, item) => {
-    const dataValue = context.node.data[name] || [];
-    console.log("insert", { name, index, item, dataValue });
+    const dataValue = getIn(context.node.data, name);
     let state = {
-      formState: { values: { [name]: dataValue } },
+      formState: { values: { fakeValue: dataValue } },
     };
     try {
       let newItem = item;
@@ -361,17 +360,21 @@ ${mutation}
           item._template.slice(1) +
           "_Data";
       }
-      // @ts-ignore state is expecting the full final-form state, but we don't need it
-      finalFormArrays.insert([name, index, { __typename: newItem }], state, {
-        changeValue,
-      });
+      finalFormArrays.insert(
+        ["fakeValue", index, { __typename: newItem }],
+        // @ts-ignore state is expecting the full final-form state, but we don't need it
+        state,
+        {
+          changeValue,
+        }
+      );
       // FIXME: this throws an error, probably because of "state" but the mutation works :shrug:
     } catch (e) {
       callback({
         type: "ON_FIELD_CHANGE",
         values: {
-          path: [context.queryFieldName, "data", name],
-          value: state.formState.values[name],
+          path: [context.queryFieldName, "data", ...name.split(".")],
+          value: state.formState.values.fakeValue,
         },
       });
     }
