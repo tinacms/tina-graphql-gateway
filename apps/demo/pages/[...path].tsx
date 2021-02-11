@@ -58,19 +58,6 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
             data {
               ... on BlockPage_Doc_Data {
                 title
-                blocks {
-                  __typename
-                  ... on Sidecar_Data {
-                    text {
-                      raw
-                    }
-                  }
-                  ... on PageReference_Data {
-                    description {
-                      raw
-                    }
-                  }
-                }
               }
             }
           }
