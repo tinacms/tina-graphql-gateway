@@ -94,6 +94,17 @@ const filterForValidFormNodes = async (payload: object) => {
   return accum
 }
 
+const isPayloadPresent = async (context: FormsContext) => {
+  const payloadSchema = yup.object().required();
+  try {
+    await payloadSchema.validate(context.payload)
+  }
+  catch {
+    return false
+  }
+  return true
+}
+
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   id: "forms",
   initial: "initializing",
@@ -116,18 +127,8 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     initializing: {
       invoke: {
         src: async (context, event) => {
-          const isPayloadPresent = async () => {
-            const payloadSchema = yup.object().required();
-            try {
-              await payloadSchema.validate(context.payload)
-            }
-            catch {
-              return false
-            }
-            return true
-          }
 
-          if(!(await isPayloadPresent())) {
+          if(!(await isPayloadPresent(context))) {
             return null // data may not be fetched yet so don't throw error
           }
 
