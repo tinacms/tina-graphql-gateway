@@ -22,6 +22,33 @@ import {
   parse,
 } from "graphql";
 
+const getMutationInputType = (  mutation: string, schema: GraphQLSchema) => {
+  // FIXME: this is assuming we're passing in a valid mutation with the top-level
+  // selection being the mutation
+  const parsedMutation = parse(mutation);
+  const mutationName = parsedMutation.definitions.find(
+    (def) =>
+      def.kind === "OperationDefinition" && def.operation === "mutation"
+    // @ts-ignore
+  ).selectionSet.selections[0].name.value;
+  const mutationType = schema.getMutationType();
+
+  if (!mutationType) {
+    throw new Error(`Expected to find mutation type in schema`);
+  }
+
+  const mutationNameType = mutationType.getFields()[mutationName];
+  if (!mutationNameType) {
+    throw new Error(`Expected to find mutation type ${mutationNameType}`);
+  }
+
+  const paramsArg = mutationNameType.args.find(
+    (arg) => arg.name === "params"
+  );
+  return paramsArg.type;
+}
+
+
 export const transformPayload = ({
   mutation,
   values,
@@ -40,30 +67,8 @@ export const transformPayload = ({
 }) => {
   try {
     const accum = {};
-    // FIXME: this is assuming we're passing in a valid mutation with the top-level
-    // selection being the mutation
-    const parsedMutation = parse(mutation);
-    const mutationName = parsedMutation.definitions.find(
-      (def) =>
-        def.kind === "OperationDefinition" && def.operation === "mutation"
-      // @ts-ignore
-    ).selectionSet.selections[0].name.value;
-    const mutationType = schema.getMutationType();
 
-    if (!mutationType) {
-      throw new Error(`Expected to find mutation type in schema`);
-    }
-
-    const mutationNameType = mutationType.getFields()[mutationName];
-
-    if (!mutationNameType) {
-      throw new Error(`Expected to find mutation type ${mutationNameType}`);
-    }
-
-    const paramsArg = mutationNameType.args.find(
-      (arg) => arg.name === "params"
-    );
-    const inputType = paramsArg.type;
+    const inputType = getMutationInputType(mutation,schema)
 
     if (inputType instanceof GraphQLInputObjectType) {
       // SectionParams is special because we need to include the seciton
