@@ -290,6 +290,21 @@ ${mutation}
     },
   });
 
+  /**
+   *
+   * The following changes to final-form mutators are not intended to
+   * be a long-term solution. The goal of these changes is to enable
+   * the ability to "subscribe" to field-level changes for array mutations.
+   *
+   * An example of this is that we don't get any sort of event from Tina
+   * when a new block or list item is added, rearranged, or removed. This
+   * makes it impossible for us to keep the `data` of our GraphQL response
+   * in-sync with form state.
+   *
+   * A long-term solution for this should be discussed in this ticket
+   * https://github.com/tinacms/tinacms/issues/1669
+   *
+   */
   const changeValue = (state, name, mutate) => {
     const before = getIn(state.formState.values, name);
     const after = mutate(before);
