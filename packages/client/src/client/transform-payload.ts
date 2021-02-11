@@ -48,7 +48,6 @@ const getMutationInputType = (  mutation: string, schema: GraphQLSchema) => {
   return paramsArg.type;
 }
 
-
 export const transformPayload = ({
   mutation,
   values,
@@ -66,7 +65,7 @@ export const transformPayload = ({
   };
 }) => {
   try {
-    const accum = {};
+    const accum = {}; // TODO - this name is a bit ambiguous
 
     const inputType = getMutationInputType(mutation,schema)
 
@@ -110,11 +109,14 @@ export const transformPayload = ({
         `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
       );
     }
-  } catch (e) {
+  } catch (e) { 
+    // TODO - Shouldn't we bubble up errors like the one above?
     console.log("oh no", e);
   }
 };
 
+// TODO - instead of adding onto accum from within this function, can we just return the new value? 
+// This function could instead be renamed to something like "getFieldTypesFromTemplate"
 const transformInputObject = (
   values: object,
   accum: { [key: string]: unknown },
@@ -154,6 +156,8 @@ const transformInputObject = (
         if (field.type instanceof GraphQLList) {
           fieldTypes[field.name] = (valueForField || []).map((val) => {
             if (fieldType instanceof GraphQLInputObjectType) {
+              // TODO - by creating a blank accum object & returning here, 
+              // aren't we losing all our accum properties set before this point?
               return transformInputObject(val, {}, fieldType);
             } else {
               throw new Error(
