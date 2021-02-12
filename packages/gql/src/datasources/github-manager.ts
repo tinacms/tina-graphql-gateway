@@ -48,21 +48,21 @@ const cache = new LRU<string, string | string[]>({
   },
 });
 
-/**
- * TODO: this should be cleared from a Github webhook so we can keep a reasonable cache in-memory.
- * For now, it's only used when we perform an update from GraphQL, so beware that content changes from Github
- * won't show up until the cache clears that key or the app restarts.
- */
+/*
+  ref is used as the the branch for now, so in future we may switch to commits
+*/
 export const clearCache = ({
   owner,
   repo,
+  ref,
   path,
 }: {
   owner: string;
   repo: string;
+  ref: string;
   path?: string;
 }) => {
-  const repoPrefix = `${owner}:${repo}__`;
+  const repoPrefix = `${owner}:${repo}:${ref}__`;
   if (path) {
     const key = `${repoPrefix}${path}`;
     console.log("[LRU cache]: clearing key ", key);
@@ -78,11 +78,11 @@ export const clearCache = ({
 };
 
 const getAndSetFromCache = async (
-  { owner, repo }: { owner: string; repo: string },
+  { owner, repo, ref }: { owner: string; repo: string, ref: string },
   key: string,
   setter: () => Promise<string | string[]>
 ) => {
-  const keyName = `${owner}:${repo}__${key}`;
+  const keyName = `${owner}:${repo}:${ref}__${key}`;
   const value = cache.get(keyName);
 
   if (value) {
@@ -103,6 +103,7 @@ export class GithubManager implements DataSource {
   repoConfig: {
     owner: string;
     repo: string;
+    ref: string;
   };
   appOctoKit: Octokit;
   constructor({
@@ -444,11 +445,13 @@ export class GithubManager implements DataSource {
     clearCache({
       owner: this.repoConfig.owner,
       repo: this.repoConfig.repo,
+      ref: this.repoConfig.ref,
       path: fullFilePath,
     });
     clearCache({
       owner: this.repoConfig.owner,
       repo: this.repoConfig.repo,
+      ref: this.repoConfig.ref,
       path: fullTemplatePath,
     });
 
@@ -469,6 +472,7 @@ export class GithubManager implements DataSource {
     clearCache({
       owner: this.repoConfig.owner,
       repo: this.repoConfig.repo,
+      ref: this.repoConfig.ref,
       path: fullPath,
     });
     const { _body, ...data } = params;
