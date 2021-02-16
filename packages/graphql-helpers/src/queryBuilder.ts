@@ -245,6 +245,10 @@ const buildSysForType = (type: GraphQLNamedType): FieldNode => {
 
   return {
     kind: "Field" as const,
+    alias: {
+      kind: "Name",
+      value: "_internalSys",
+    },
     name: {
       kind: "Name" as const,
       value: "sys",
@@ -459,7 +463,7 @@ const buildFields = (
 };
 
 interface NodeType {
-  sys: object;
+  _internalSys: object;
   data: object;
   form: object;
   values: object;

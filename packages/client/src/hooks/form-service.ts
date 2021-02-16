@@ -259,7 +259,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
 
   const form = new Form({
     id: context.queryFieldName,
-    label: context.node.sys.basename,
+    label: context.node._internalSys.basename,
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
@@ -278,9 +278,9 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
           mutationString: `${frags.join("\n")}
 ${mutation}
 `,
-          relativePath: context.node.sys.relativePath,
+          relativePath: context.node._internalSys.relativePath,
           values: values,
-          sys: context.node.sys,
+          sys: context.node._internalSys,
         });
         context.cms.alerts.info("Document saved!");
       } catch (e) {
