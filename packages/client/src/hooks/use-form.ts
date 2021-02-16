@@ -272,7 +272,7 @@ type Field = {
 
 export type DocumentNode = {
   // id: string;
-  sys: {
+  _internalSys: {
     filename: string;
     relativePath: string;
     basename: string;

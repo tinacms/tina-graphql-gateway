@@ -127,7 +127,7 @@ export class Client {
       }
     }`;
 
-    const result = await this.request<AddVariables>(mutation, {
+    const result = await this.request(mutation, {
       variables: props,
     });
 
@@ -136,7 +136,7 @@ export class Client {
 
   getSchema = async () => {
     if (!this.schema) {
-      const data = await this.request(getIntrospectionQuery(), {
+      const data = await this.request<any>(getIntrospectionQuery(), {
         variables: {},
       });
 
@@ -153,7 +153,7 @@ export class Client {
     const schema = await this.getSchema();
     const query = queryGenerator(variables, schema);
     const formifiedQuery = formBuilder(query, schema);
-    const res = await this.request(print(formifiedQuery), { variables });
+    const res = await this.request<any>(print(formifiedQuery), { variables });
     const result = Object.values(res)[0];
     const mutation = mutationGenerator(variables, schema);
 
@@ -216,20 +216,21 @@ export class Client {
     };
   };
 
-  async requestWithForm<VariableType>(
+  async requestWithForm<ReturnType>(
     query: (gqlTag: typeof gql) => DocumentNode,
-    { variables }: { variables: VariableType }
+    { variables }: { variables }
   ) {
     const schema = await this.getSchema();
     const formifiedQuery = formBuilder(query(gql), schema);
+    // console.log(print(formifiedQuery), { variables });
 
-    return this.request(print(formifiedQuery), { variables });
+    return this.request<ReturnType>(print(formifiedQuery), { variables });
   }
 
-  async request<VariableType>(
+  async request<ReturnType>(
     query: ((gqlTag: typeof gql) => DocumentNode) | string,
-    { variables }: { variables: VariableType }
-  ) {
+    { variables }: { variables: object }
+  ): Promise<ReturnType> {
     const res = await fetch(this.contentApiUrl, {
       method: "POST",
       headers: {
@@ -246,7 +247,7 @@ export class Client {
     if (json.errors) {
       return json;
     }
-    return json.data;
+    return json.data as ReturnType;
   }
 
   async isAuthorized(): Promise<boolean> {
