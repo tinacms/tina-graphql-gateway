@@ -20,8 +20,10 @@ import {
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
+
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
+import { fixMutators } from "./temporary-fix-mutators";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
@@ -92,7 +94,7 @@ export const createFormMachine = (initialContext: {
   });
 };
 
-type NodeFormContext = {
+export type NodeFormContext = {
   queryFieldName: string;
   queryString: string;
   node: DocumentNode;
@@ -111,7 +113,7 @@ type NodeFormContext = {
   onSubmit: (args: any) => void;
 };
 
-type NodeFormEvent = {
+export type NodeFormEvent = {
   type: "ON_FIELD_CHANGE";
   values: { path: (string | number)[]; value: unknown };
 };
@@ -287,14 +289,22 @@ ${mutation}
     },
   });
 
+  /**
+   *
+   * HEADS UP this should be removed when
+   * https://github.com/tinacms/tinacms/issues/1669 is resolved
+   *
+   */
+  fixMutators({ context, form, callback });
+
   form.subscribe(
-    (values) => {
+    (all) => {
       // Sync form value changes to value key
       callback({
         type: "ON_FIELD_CHANGE",
         values: {
           path: [context.queryFieldName, "values"],
-          value: values.values,
+          value: all.values,
         },
       });
     },
