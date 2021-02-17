@@ -267,7 +267,8 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
       const mutation = queryForMutation.mutation;
 
       const frags = [];
-      queryForMutation.fragments.forEach((fragment) => {
+      let uniqueFragments = [...new Set(queryForMutation.fragments)];
+      uniqueFragments.forEach((fragment) => {
         frags.push(
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
