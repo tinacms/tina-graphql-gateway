@@ -59,6 +59,52 @@ interface FormsContext {
   onSubmit?: (args: { mutationString: string; variables: object }) => void;
 }
 
+const filterForValidFormNodes = async (payload: object) => {
+  const keys = Object.keys(payload);
+  const accum = {} as object;
+  await Promise.all(
+    Object.values(payload).map(async (payloadItem, index) => {
+      
+      const containsValidForm = async () => {
+        // validate payload
+        let dataSchema = yup.object().shape({
+          // @ts-ignore
+          form: yup.object().required().shape({
+            // @ts-ignore
+            label: yup.string().required(),
+            // @ts-ignore
+            name: yup.string().required(),
+          }),
+        });
+        try {
+          await dataSchema.validate(payloadItem);
+        } catch (e) {
+          return false
+        }
+        return true
+      }
+
+      if(await containsValidForm()) {
+        accum[keys[index]] = payloadItem;
+      }
+
+    })
+  );
+
+  return accum
+}
+
+const isPayloadPresent = async (context: FormsContext) => {
+  const payloadSchema = yup.object().required();
+  try {
+    await payloadSchema.validate(context.payload)
+  }
+  catch {
+    return false
+  }
+  return true
+}
+
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   id: "forms",
   initial: "initializing",
@@ -81,40 +127,20 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     initializing: {
       invoke: {
         src: async (context, event) => {
-          const payloadSchema = yup.object().required();
 
-          const accum = {};
+          if(!(await isPayloadPresent(context))) {
+            return null // data may not be fetched yet so don't throw error
+          }
 
-          const pl = await payloadSchema.validate(context.payload);
-
-          const keys = Object.keys(pl);
-          await Promise.all(
-            Object.values(pl).map(async (payloadItem, index) => {
-              // validate payload
-              let dataSchema = yup.object().shape({
-                // @ts-ignore
-                form: yup.object().required().shape({
-                  // @ts-ignore
-                  label: yup.string().required(),
-                  // @ts-ignore
-                  name: yup.string().required(),
-                }),
-              });
-
-              try {
-                const item = await dataSchema.validate(payloadItem);
-                accum[keys[index]] = item;
-              } catch (e) {}
-
-              return true;
-            })
-          );
-
-          if (Object.keys(accum).length === 0) {
+          // TODO maybe a bit of a code smell here
+          // Should we instead only pass in relevant info
+          // into this function? (instead of implictly filtering them out)
+          const result = await filterForValidFormNodes(context.payload)
+          if (Object.keys(result).length === 0) {
             throw new Error("No queries could be used as a Tina form");
           }
 
-          return accum;
+          return result;
         },
         onDone: {
           target: "active",
