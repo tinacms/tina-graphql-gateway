@@ -167,12 +167,12 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForm<T>({
+export function useForm<T extends object>({
   payload,
   onSubmit,
   onNewDocument,
 }: {
-  payload: object;
+  payload: T;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   onNewDocument?: OnNewDocument;
 }): T {
