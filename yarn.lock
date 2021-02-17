@@ -9239,7 +9239,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"final-form-arrays@npm:^3.0.1":
+"final-form-arrays@npm:^3.0.1, final-form-arrays@npm:^3.0.2":
   version: 3.0.2
   resolution: "final-form-arrays@npm:3.0.2"
   peerDependencies:
@@ -9257,7 +9257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"final-form@npm:4.20.1, final-form@npm:^4.18.2":
+"final-form@npm:^4.18.2, final-form@npm:^4.20.1":
   version: 4.20.1
   resolution: "final-form@npm:4.20.1"
   dependencies:
@@ -20005,7 +20005,8 @@ fsevents@^1.2.7:
     codemirror: ^5.55.0
     cors: ^2.8.5
     crypto-js: ^4.0.0
-    final-form: 4.20.1
+    final-form: ^4.20.1
+    final-form-arrays: ^3.0.2
     graphql: ^15.1.0
     graphql-tag: ^2.11.0
     isomorphic-unfetch: ^3.0.0
