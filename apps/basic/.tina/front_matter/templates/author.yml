@@ -1,0 +1,7 @@
+---
+label: Author
+fields:
+  - label: Name
+    name: name
+    type: text
+

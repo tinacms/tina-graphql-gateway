@@ -11,17 +11,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { friendlyName, templateTypeName, templateName, slugify } from "./util";
-import { formBuilder, splitDataNode } from "./queryBuilder";
-import { mutationGenerator, queryGenerator } from "./dummy-generators";
-
-export {
-  slugify,
-  splitDataNode,
-  formBuilder,
-  queryGenerator,
-  templateTypeName,
-  mutationGenerator,
-  templateName,
-  friendlyName,
-};
+/// <reference types="next" />
+/// <reference types="next/types/global" />

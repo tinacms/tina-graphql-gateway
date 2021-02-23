@@ -20,6 +20,7 @@ import {
 } from "xstate";
 import { splitDataNode } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
+import { print } from "graphql";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
@@ -44,7 +45,6 @@ export const createFormMachine = (initialContext: {
           src: async (context, event) => {
             return splitDataNode({
               queryString: context.queryString,
-              node: context.node,
               schema: await context.client.getSchema(),
             });
           },
@@ -273,6 +273,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
       });
+      console.log(uniqueFragments);
 
       try {
         await context.onSubmit({
