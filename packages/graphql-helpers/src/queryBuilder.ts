@@ -477,68 +477,6 @@ export const buildSelectionsFields = (
   );
 };
 
-export const splitDataNode2 = (args: {
-  queryString: string;
-  schema: GraphQLSchema;
-}) => {
-  const { schema } = args;
-  const typeInfo = new TypeInfo(schema);
-  const queryType = schema.getQueryType();
-  const mutationType = schema.getMutationType();
-  const queryAst = parse(args.queryString);
-
-  const queries = {};
-  const fragmentDefinitions = [];
-  const fragmentSpreads = [];
-
-  const visitor: VisitorType = {
-    leave: {
-      FragmentDefinition(node, key, parent, path) {
-        fragmentDefinitions.push({
-          name: node.name.value,
-          fragment: print(node),
-        });
-      },
-      FragmentSpread(node, key, parent, path) {
-        fragmentSpreads.push({ path: [...path], fragment: node.name.value });
-      },
-      // Document(node) {
-      // },
-      SelectionSet(node) {
-        // const type = typeInfo.getType();
-        // if (type) {
-        //   const namedType = getNamedType(type);
-        //   // console.log(namedType);
-        //   if (
-        //     namedType instanceof GraphQLObjectType &&
-        //     namedType.getInterfaces().find((i) => i.name === "Node")
-        //   ) {
-        //     console.log(node, namedType);
-        //   }
-        // }
-      },
-
-      Field(node, key, parent, path, ancestors) {
-        const type = typeInfo.getType();
-        if (type) {
-          const namedType = getNamedType(type);
-          // console.log(namedType.name);
-          // if (namedType instanceof GraphQLObjectType) {
-          // }
-        }
-      },
-    },
-  };
-
-  visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
-  console.log(fragmentSpreads);
-
-  return {
-    queries: {},
-    fragments: [],
-  };
-};
-
 /**
  * The role of `splitDataNode` is to look at a query and find all of the nodes
  * that could be returned by it, and to split that information into subsets of
