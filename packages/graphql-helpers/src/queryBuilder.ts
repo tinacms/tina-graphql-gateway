@@ -618,9 +618,9 @@ export const splitDataNode = (args: {
     fragmentSpreads.forEach((fragmentSpread) => {
       if (hasSubArray(fragmentSpread.path, fragmentDefinition.path)) {
         fragmentDefinition.subFragments.push(fragmentSpread.fragment);
-        console.log(
-          `Fragment definition ${fragmentDefinition.name} is using fragment spread ${fragmentSpread.fragment}`
-        );
+        // console.log(
+        //   `Fragment definition ${fragmentDefinition.name} is using fragment spread ${fragmentSpread.fragment}`
+        // );
       }
     });
   });
@@ -676,13 +676,13 @@ export const splitDataNode = (args: {
       }
     });
     if (fragmentsForQuery.length > 0) {
-      console.log(
-        `Query operation ${
-          keys[index]
-        } is using fragments ${fragmentsForQuery.join(", ")}`
-      );
+      // console.log(
+      //   `Query operation ${
+      //     keys[index]
+      //   } is using fragments ${fragmentsForQuery.join(", ")}`
+      // );
     } else {
-      console.log(`Query operation ${keys[index]} is not using any fragments`);
+      // console.log(`Query operation ${keys[index]} is not using any fragments`);
     }
     query.fragments = fragmentsForQuery;
   });

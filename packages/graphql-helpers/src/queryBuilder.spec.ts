@@ -13,6 +13,7 @@ limitations under the License.
 
 import { splitDataNode } from "./queryBuilder";
 import { buildSchema } from "graphql";
+import prettier from "prettier";
 import fs from "fs";
 import path from "path";
 
@@ -55,19 +56,21 @@ describe("splitDataNode", () => {
     });
 
     const getPostDocumentQuery = splitNodes.queries["getPostsDocument"];
-    console.log(getPostDocumentQuery);
 
     expect(getPostDocumentQuery.fragments).toEqual(
       expect.arrayContaining(["PostFragment", "PostDetailsFragment"])
     );
+
     expect(getPostDocumentQuery.mutation).toEqual(gql`
       mutation updatePostsDocument(
         $relativePath: String!
         $params: Posts_Input!
       ) {
-        data {
-          __typename
-          ...PostFragment
+        updatePostsDocument(relativePath: $relativePath, params: $params) {
+          data {
+            __typename
+            ...PostFragment
+          }
         }
       }
     `);
@@ -76,7 +79,8 @@ describe("splitDataNode", () => {
 
 /**
  *
- * This just "dedents" the template literal, calling it "gql" has the nice
+ * This just formats the template literal with prettier so comparing strings doesn't fail
+ * due to differences in whitespace, calling it "gql" has the nice
  * side-effect that IDEs often provide graphql syntax highlighting for it
  */
 export function gql(
@@ -88,23 +92,10 @@ export function gql(
   for (let i = 0; i < strings.length; ++i) {
     str += strings[i];
     if (i < values.length) {
-      // istanbul ignore next (Ignore else inside Babel generated code)
       const value = values[i];
 
-      str += value; // interpolation
+      str += value;
     }
   }
-  const trimmedStr = str
-    .replace(/^\n*/m, "") //  remove leading newline
-    .replace(/[ \t]*$/, ""); // remove trailing spaces and tabs
-
-  // fixes indentation by removing leading spaces and tabs from each line
-  let indent = "";
-  for (const char of trimmedStr) {
-    if (char !== " " && char !== "\t") {
-      break;
-    }
-    indent += char;
-  }
-  return trimmedStr.replace(RegExp("^" + indent, "mg"), ""); // remove indent
+  return prettier.format(str, { parser: "graphql" });
 }
