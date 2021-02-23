@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { formify, splitDataNode } from "./queryBuilder";
+import { formify, splitQuery } from "./queryBuilder";
 import { buildSchema, parse, print } from "graphql";
 import prettier from "prettier";
 import fs from "fs";
@@ -49,7 +49,7 @@ const query = gql`
 `;
 
 describe("formify", () => {
-  test("it takes the query and adds Tina form fields to it", async () => {
+  test("adds Tina form configurations to each node in the query graph", async () => {
     const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
     const formifiedQuery = formify(parse(query), buildSchema(schema));
     expect(print(formifiedQuery)).toEqual(gql`
@@ -145,10 +145,10 @@ describe("formify", () => {
   });
 });
 
-describe("splitDataNode", () => {
-  test("it should include fragments and nested fragments", async () => {
+describe("splitQuery", () => {
+  test("includes fragments and nested fragments\n\tand its mutation matches the shape of the query", async () => {
     const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
-    const splitNodes = splitDataNode({
+    const splitNodes = splitQuery({
       queryString: query,
       schema: buildSchema(schema),
     });
@@ -158,7 +158,6 @@ describe("splitDataNode", () => {
     expect(getPostDocumentQuery.fragments).toEqual(
       expect.arrayContaining(["PostFragment", "PostDetailsFragment"])
     );
-
     expect(getPostDocumentQuery.mutation).toEqual(gql`
       mutation updatePostsDocument(
         $relativePath: String!
