@@ -44,6 +44,7 @@
     "@types/jest": "^26.0.4",
     "@types/lodash.camelcase": "^4.3.6",
     "@types/lodash.upperfirst": "^4.3.6",
+    "@types/node": "^14.14.31",
     "jest": "^26.1.0",
     "ts-jest": "^26.1.2"
   }
