@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { splitDataNode } from "./queryBuilder";
-import { buildSchema } from "graphql";
+import { formify, splitDataNode } from "./queryBuilder";
+import { buildSchema, parse, print } from "graphql";
 import prettier from "prettier";
 import fs from "fs";
 import path from "path";
@@ -26,9 +26,33 @@ const PATH_TO_TEST_SCHEMA = path.join(
   ".tina/__generated__/schema.gql"
 );
 
-describe("splitDataNode", () => {
-  test("it should include fragments and nested fragments", async () => {
-    const query = gql`
+const query = gql`
+  fragment PostDetailsFragment on Post_Details_Data {
+    reading_time
+  }
+
+  fragment PostFragment on Post_Doc_Data {
+    title
+    details {
+      ...PostDetailsFragment
+    }
+  }
+
+  query PostQuery {
+    getPostsDocument(relativePath: "welcome.md") {
+      data {
+        __typename
+        ...PostFragment
+      }
+    }
+  }
+`;
+
+describe("formify", () => {
+  test("it takes the query and adds Tina form fields to it", async () => {
+    const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
+    const formifiedQuery = formify(parse(query), buildSchema(schema));
+    expect(print(formifiedQuery)).toEqual(gql`
       fragment PostDetailsFragment on Post_Details_Data {
         reading_time
       }
@@ -46,9 +70,83 @@ describe("splitDataNode", () => {
             __typename
             ...PostFragment
           }
+          values {
+            ... on Post_Doc_Values {
+              title
+              details {
+                reading_time
+              }
+              author
+              _body {
+                raw
+              }
+              _template
+            }
+          }
+          form {
+            ... on Post_Doc_Form {
+              label
+              name
+              fields {
+                ... on TextField {
+                  name
+                  label
+                  component
+                }
+                ... on Post_Details_GroupField {
+                  name
+                  label
+                  component
+                  fields {
+                    ... on TextField {
+                      name
+                      label
+                      component
+                    }
+                  }
+                }
+                ... on SelectField {
+                  name
+                  label
+                  component
+                  options
+                }
+                ... on TextareaField {
+                  name
+                  label
+                  component
+                }
+              }
+            }
+          }
+          _internalSys: sys {
+            filename
+            basename
+            breadcrumbs
+            path
+            relativePath
+            extension
+            template
+            section {
+              type
+              path
+              label
+              create
+              match
+              new_doc_ext
+              templates
+              slug
+            }
+          }
         }
+        _queryString
       }
-    `;
+    `);
+  });
+});
+
+describe("splitDataNode", () => {
+  test("it should include fragments and nested fragments", async () => {
     const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
     const splitNodes = splitDataNode({
       queryString: query,
