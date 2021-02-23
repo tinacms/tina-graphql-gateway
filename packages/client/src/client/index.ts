@@ -23,20 +23,10 @@ import {
   getIntrospectionQuery,
   print,
 } from "graphql";
-import {
-  formBuilder,
-  mutationGenerator,
-  queryGenerator,
-} from "@forestryio/graphql-helpers";
+import { formBuilder, queryGenerator } from "@forestryio/graphql-helpers";
 
 import gql from "graphql-tag";
 import { transformPayload } from "./transform-payload";
-
-interface AddVariables {
-  path: string;
-  template: string;
-  params?: any;
-}
 
 interface ServerOptions {
   realm: string;
@@ -144,46 +134,6 @@ export class Client {
     }
 
     return this.schema;
-  };
-
-  generateMutation = async (variables: {
-    relativePath: string;
-    section: string;
-  }) => {
-    const schema = await this.getSchema();
-    const query = queryGenerator(variables, schema);
-    const formifiedQuery = formBuilder(query, schema);
-    const res = await this.request<any>(print(formifiedQuery), { variables });
-    const result = Object.values(res)[0];
-    const mutation = mutationGenerator(variables, schema);
-
-    const params = await transformPayload({
-      mutation: print(mutation),
-      // @ts-ignore FIXME: this needs an assertion
-      values: result.values,
-      schema,
-      sys: res.sys,
-    });
-
-    return {
-      queryString: print(mutation),
-      variables: {
-        relativePath: variables.relativePath,
-        params,
-      },
-    };
-  };
-
-  generateQuery = async (variables: {
-    relativePath: string;
-    section: string;
-  }) => {
-    const schema = await this.getSchema();
-    const query = queryGenerator(variables, schema);
-    return {
-      queryString: print(query),
-      variables: { relativePath: variables.relativePath },
-    };
   };
 
   prepareVariables = async ({
