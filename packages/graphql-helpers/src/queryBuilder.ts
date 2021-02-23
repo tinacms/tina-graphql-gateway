@@ -40,7 +40,7 @@ type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
 /**
  *
- * Given a valid GraphQL query,the `formBuilder` will populate the query
+ * Given a valid GraphQL query,the `formify` will populate the query
  * with additional information needed by Tina on the frontend so we're able
  * to render a Tina form.
  *
@@ -97,7 +97,7 @@ type VisitorType = Visitor<ASTKindToNode, ASTNode>;
  *  }
  * ```
  */
-export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
+export const formify = (query: DocumentNode, schema: GraphQLSchema) => {
   const typeInfo = new TypeInfo(schema);
 
   const pathsToPopulate: {
