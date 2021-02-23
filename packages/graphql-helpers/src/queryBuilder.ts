@@ -478,7 +478,7 @@ export const buildSelectionsFields = (
 };
 
 /**
- * The role of `splitDataNode` is to look at a query and find all of the nodes
+ * The role of `splitQuery` is to look at a query and find all of the nodes
  * that could be returned by it, and to split that information into subsets of
  * the query's original graph. It returns the nodes being queried along with information
  * about what fragments they're using, how to query those nodes by themselves, and
@@ -489,7 +489,7 @@ export const buildSelectionsFields = (
  * of our data needs, the form is focused solely on the task of submitting mutations for a
  * given document.
  */
-export const splitDataNode = (args: {
+export const splitQuery = (args: {
   queryString: string;
   schema: GraphQLSchema;
 }) => {
