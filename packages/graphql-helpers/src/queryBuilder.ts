@@ -688,10 +688,18 @@ export const splitDataNode = (args: {
   });
 
   const recursiveFragmentSpread = (
-    fragmentDefinition: typeof fragmentDefinitions[0],
+    fragmentName: string,
     fragmentDefinitionItems: typeof fragmentDefinitions,
     accumulator: string[]
   ) => {
+    const fragmentDefinition = fragmentDefinitions.find(
+      ({ name }) => fragmentName === name
+    );
+    if (!fragmentDefinition) {
+      throw new Error(
+        `Expected to find a fragment definition for ${fragmentName}`
+      );
+    }
     if (fragmentDefinition?.subFragments.length > 0) {
       fragmentDefinition?.subFragments.map((subFragment) => {
         accumulator.push(subFragment);
@@ -706,7 +714,7 @@ export const splitDataNode = (args: {
         }
         if (subFragmentDefinition?.subFragments.length > 0) {
           recursiveFragmentSpread(
-            subFragmentDefinition,
+            subFragmentDefinition.name,
             fragmentDefinitionItems,
             accumulator
           );
@@ -722,16 +730,8 @@ export const splitDataNode = (args: {
       if (hasSubArray(fragmentSpread.path, query.path)) {
         fragmentsForQuery.push(fragmentSpread.fragment);
 
-        const fragmentDefinition = fragmentDefinitions.find(
-          ({ name }) => fragmentSpread.fragment === name
-        );
-        if (!fragmentDefinition) {
-          throw new Error(
-            `Expected to find a fragment definition for ${fragmentSpread.fragment}`
-          );
-        }
         recursiveFragmentSpread(
-          fragmentDefinition,
+          fragmentSpread.fragment,
           fragmentDefinitions,
           fragmentsForQuery
         );
@@ -748,23 +748,6 @@ export const splitDataNode = (args: {
     }
     query.fragments = fragmentsForQuery;
   });
-
-  // fragmentSpreads.forEach((fragmentPath, index) => {
-  //   const fgs = [fragmentPath.fragment];
-  //   fragmentDefinitions.forEach((fragmentDefinitions) => {
-  //     if (hasSubArray(fragmentPath.path, fragmentDefinitions.path)) {
-  //       fgs.push(fragmentDefinitions.name);
-  //     }
-  //   });
-
-  //   console.log(fragmentPath.fragment, fgs);
-  //   Object.values(queries).forEach((query, index) => {
-  //     if (hasSubArray(fragmentPath.path, query.path)) {
-  //       query.fragments.push(fragmentPath.fragment);
-
-  //     }
-  //   });
-  // });
 
   return { queries, fragments: fragmentDefinitions };
 };
