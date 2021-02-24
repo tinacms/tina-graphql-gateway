@@ -53,21 +53,29 @@ const template = {
   name: "sample",
 };
 
-describe("Text builder", () => {
-  test("sets the field type as part of the form field union", async () => {
-    const accumulator: Definitions[] = [];
-    await builder.form({
-      cache,
-      template,
-      accumulator,
-      includeBody: false,
-    });
+const config = (accumulator: Definitions[]) => ({
+  cache,
+  template,
+  accumulator,
+  includeBody: false,
+});
 
-    expect(
-      gql`
-        ${accumulator.map((acc) => print(acc)).join("\n")}
-      `
-    ).toEqual(gql`
+const prettify = (arr: Definitions[]) => {
+  return gql`
+    ${arr.map((acc) => print(acc)).join("\n")}
+  `;
+};
+
+const run = async (command: keyof typeof builder) => {
+  const accumulator: Definitions[] = [];
+  await builder[command](config(accumulator));
+
+  return prettify(accumulator);
+};
+
+describe("Text builds", () => {
+  test("a union type of type TextField", async () => {
+    expect(await run("form")).toEqual(gql`
       type TextField implements FormField {
         name: String
         label: String
@@ -81,59 +89,23 @@ describe("Text builder", () => {
       }
     `);
   });
-  test("sets the value type as part value object", async () => {
-    const accumulator: Definitions[] = [];
-    await builder.values({
-      cache,
-      template,
-      accumulator,
-      includeBody: false,
-    });
-
-    expect(
-      gql`
-        ${accumulator.map((acc) => print(acc)).join("\n")}
-      `
-    ).toEqual(gql`
+  test("a value of type String", async () => {
+    expect(await run("values")).toEqual(gql`
       type Sample_Values {
         title: String
         _template: String
       }
     `);
   });
-  test("sets the data type as part data object", async () => {
-    const accumulator: Definitions[] = [];
-    await builder.data({
-      cache,
-      template,
-      accumulator,
-      includeBody: false,
-    });
-
-    expect(
-      gql`
-        ${accumulator.map((acc) => print(acc)).join("\n")}
-      `
-    ).toEqual(gql`
+  test("a field of type String", async () => {
+    expect(await run("data")).toEqual(gql`
       type Sample_Data {
         title: String
       }
     `);
   });
-  test("sets the input type as part input object", async () => {
-    const accumulator: Definitions[] = [];
-    await builder.input({
-      cache,
-      template,
-      accumulator,
-      includeBody: false,
-    });
-
-    expect(
-      gql`
-        ${accumulator.map((acc) => print(acc)).join("\n")}
-      `
-    ).toEqual(gql`
+  test("an input of type String", async () => {
+    expect(await run("input")).toEqual(gql`
       input Sample_Input {
         title: String
       }
