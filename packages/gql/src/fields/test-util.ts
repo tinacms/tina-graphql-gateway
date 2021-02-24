@@ -117,7 +117,7 @@ export const setupRunner = (field: Field) => {
     const string = gql`
       ${accumulator.map((acc) => print(acc)).join("\n")}
     `;
-    console.log(string);
+    // console.log(string);
     return string;
   };
 
