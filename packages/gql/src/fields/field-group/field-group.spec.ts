@@ -13,25 +13,41 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
+import { Field } from "..";
 
-const field = {
-  label: "My Title",
-  name: "title",
-  type: "textarea" as const,
+const field: Field = {
+  label: "My Group",
+  name: "some_group",
+  type: "field_group" as const,
+  fields: [
+    {
+      label: "Title",
+      name: "title",
+      type: "text" as const,
+      __namespace: "",
+    },
+  ],
   __namespace: "",
 };
 
 const run = setupRunner(field);
 
-describe("Text builds", () => {
-  test("a union type of type TextareaField", async () => {
+describe("Field group builds", () => {
+  test("a union type of type SomeGroup_GroupField", async () => {
     expect(await run("form")).toEqual(gql`
-      type TextareaField implements FormField {
+      type TextField implements FormField {
         name: String
         label: String
         component: String
       }
-      union Sample_FormFieldsUnion = TextareaField
+      union SomeGroup_FormFieldsUnion = TextField
+      type SomeGroup_GroupField implements FormField {
+        name: String
+        label: String
+        component: String
+        fields: [SomeGroup_FormFieldsUnion]
+      }
+      union Sample_FormFieldsUnion = SomeGroup_GroupField
       type Sample_Form {
         label: String
         name: String
@@ -39,39 +55,37 @@ describe("Text builds", () => {
       }
     `);
   });
-  test("a value of type LongTextInitialValue", async () => {
+  test("a value of type SomeGroup_Values", async () => {
     expect(await run("values")).toEqual(gql`
-      type LongTextInitialValue {
-        raw: String
+      type SomeGroup_Values {
+        title: String
       }
       type Sample_Values {
-        title: LongTextInitialValue
+        some_group: SomeGroup_Values
         _template: String
       }
     `);
   });
-  test("a field of type LongTextData", async () => {
+  test("a field of type SomeGroup_Data", async () => {
     expect(await run("data")).toEqual(gql`
-      type LongTextValue {
-        raw: String
-        markdownAst: JSONObject
-        html: String
+      type SomeGroup_Data {
+        title: String
       }
       type Sample_Data {
-        title: LongTextValue
+        some_group: SomeGroup_Data
       }
     `);
   });
   // FIXME: this should probably not have the "Title_" prefix on it
   // though it might be becauase we have different validation rules
   // depending on which field it belongs to?
-  test("an input of type Title_LongTextInput", async () => {
+  test("an input of type SomeGroup_Input", async () => {
     expect(await run("input")).toEqual(gql`
-      input Title_LongTextInput {
-        raw: String
+      input SomeGroup_Input {
+        title: String
       }
       input Sample_Input {
-        title: Title_LongTextInput
+        some_group: SomeGroup_Input
       }
     `);
   });
