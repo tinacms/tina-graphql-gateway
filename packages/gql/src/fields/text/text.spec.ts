@@ -11,33 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import fs from "fs";
-import path from "path";
-import { cacheInit } from "../../cache";
-import { text } from ".";
-import { FileSystemManager } from "../../datasources/filesystem-manager";
-import {
-  parse,
-  print,
-  printType,
-  buildSchema,
-  typeFromAST,
-  printSchema,
-  GraphQLObjectType,
-  buildASTSchema,
-  buildClientSchema,
-} from "graphql";
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
-import type { Definitions } from "../templates/build";
-import { builder } from "../templates/build";
-
-const PATH_TO_TEST_APP = path.join(
-  path.resolve(__dirname, "../../../../../"),
-  "apps/test"
-);
-
-const datasource = new FileSystemManager(PATH_TO_TEST_APP);
-const cache = cacheInit(datasource);
+import { setupRunner } from "../test-util";
 
 const field = {
   label: "My Title",
@@ -46,32 +21,7 @@ const field = {
   __namespace: "",
 };
 
-const template = {
-  __namespace: "",
-  fields: [field],
-  label: "Sample",
-  name: "sample",
-};
-
-const config = (accumulator: Definitions[]) => ({
-  cache,
-  template,
-  accumulator,
-  includeBody: false,
-});
-
-const prettify = (arr: Definitions[]) => {
-  return gql`
-    ${arr.map((acc) => print(acc)).join("\n")}
-  `;
-};
-
-const run = async (command: keyof typeof builder) => {
-  const accumulator: Definitions[] = [];
-  await builder[command](config(accumulator));
-
-  return prettify(accumulator);
-};
+const run = setupRunner(field);
 
 describe("Text builds", () => {
   test("a union type of type TextField", async () => {
