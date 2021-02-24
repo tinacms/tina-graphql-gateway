@@ -19,11 +19,15 @@ import {
   getNamedType,
   GraphQLUnionType,
   buildSchema,
-  parse,
-  GraphQLType,
+  print,
 } from "graphql";
 import { FileSystemManager } from "../datasources/filesystem-manager";
+import { gql } from "@forestryio/graphql-helpers/dist/test-util";
+import { builder } from "../fields/templates/build";
 import { cacheInit } from "../cache";
+
+import type { Definitions } from "../fields/templates/build";
+import type { Field } from ".";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
@@ -79,4 +83,43 @@ export const assertNoTypeCollisions = (
   const schema = new GraphQLSchema({ query: t });
   // Useful to grab a snapshot
   // console.log(printSchema(schema));
+};
+
+const PATH_TO_TEST_APP = path.join(
+  path.resolve(__dirname, "../../../../../"),
+  "apps/test"
+);
+
+const datasource = new FileSystemManager(PATH_TO_TEST_APP);
+const cache = cacheInit(datasource);
+
+export const setupRunner = (field: Field) => {
+  const template = {
+    __namespace: "",
+    fields: [field],
+    label: "Sample",
+    name: "sample",
+  };
+
+  const config = (accumulator: Definitions[]) => ({
+    cache,
+    template,
+    accumulator,
+    includeBody: false,
+  });
+
+  const prettify = (arr: Definitions[]) => {
+    return gql`
+      ${arr.map((acc) => print(acc)).join("\n")}
+    `;
+  };
+
+  const run = async (command: keyof typeof builder) => {
+    const accumulator: Definitions[] = [];
+    await builder[command](config(accumulator));
+
+    return prettify(accumulator);
+  };
+
+  return run;
 };
