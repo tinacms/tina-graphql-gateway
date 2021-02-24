@@ -29,7 +29,7 @@ const field: SelectField = {
 
 const run = setupRunner(field);
 
-describe("Field group builds", () => {
+describe(`Field of type ${field.type} builds`, () => {
   test("a union type of type SelectField", async () => {
     expect(await run("form")).toEqual(gql`
       type SelectField implements FormField {

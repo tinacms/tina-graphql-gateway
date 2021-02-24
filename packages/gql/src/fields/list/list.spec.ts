@@ -26,7 +26,7 @@ const field: ListField = {
 
 const run = setupRunner(field);
 
-describe("Field group builds", () => {
+describe(`Field of type ${field.type} builds`, () => {
   test("a union type of type ListField", async () => {
     expect(await run("form")).toEqual(gql`
       type TextField implements FormField {
