@@ -23,7 +23,7 @@ import {
   getIntrospectionQuery,
   print,
 } from "graphql";
-import { formBuilder, queryGenerator } from "@forestryio/graphql-helpers";
+import { formify } from "@forestryio/graphql-helpers";
 
 import gql from "graphql-tag";
 import { transformPayload } from "./transform-payload";
@@ -171,8 +171,7 @@ export class Client {
     { variables }: { variables }
   ) {
     const schema = await this.getSchema();
-    const formifiedQuery = formBuilder(query(gql), schema);
-    // console.log(print(formifiedQuery), { variables });
+    const formifiedQuery = formify(query(gql), schema);
 
     return this.request<ReturnType>(print(formifiedQuery), { variables });
   }
