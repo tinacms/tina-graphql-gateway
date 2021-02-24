@@ -13,8 +13,9 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
+import type { TextareaField } from ".";
 
-const field = {
+const field: TextareaField = {
   label: "My Title",
   name: "title",
   type: "textarea" as const,
