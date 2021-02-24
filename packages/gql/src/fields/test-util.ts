@@ -113,11 +113,8 @@ export const setupRunner = (field: Field) => {
   const run = async (command: keyof typeof build) => {
     const accumulator: Definitions[] = [];
     await build[command](config(accumulator));
-
-    const string = gql`
-      ${accumulator.map((acc) => print(acc)).join("\n")}
-    `;
-    // console.log(string);
+    const accumulatorString = accumulator.map((acc) => print(acc));
+    const string = gql(accumulatorString);
     return string;
   };
 
