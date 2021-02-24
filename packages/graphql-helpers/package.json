@@ -11,12 +11,11 @@
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tsup src/index.ts src/test-util.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts src/test-util.ts --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "serve": "yarn nodemon dist/index.js",
-    "test": "jest --passWithNoTests",
-    "test-watch": "jest  --passWithNoTests --watch"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@types/lodash.get": "^4.4.6",
@@ -31,6 +30,7 @@
     "lodash.snakecase": "^4.1.1",
     "lodash.upperfirst": "^4.3.1",
     "object-visit": "^1.0.1",
+    "prettier": "^2.2.1",
     "tslib": "^1.11.1",
     "tsup": "^3.7.0"
   },
@@ -47,7 +47,6 @@
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^14.14.31",
     "jest": "^26.1.0",
-    "prettier": "^2.2.1",
     "ts-jest": "^26.1.2"
   }
 }

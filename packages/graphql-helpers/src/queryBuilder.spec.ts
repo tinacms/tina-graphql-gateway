@@ -13,9 +13,9 @@ limitations under the License.
 
 import { formify, splitQuery } from "./queryBuilder";
 import { buildSchema, parse, print } from "graphql";
-import prettier from "prettier";
 import fs from "fs";
 import path from "path";
+import { gql } from "./test-util";
 
 const PATH_TO_TEST_APP = path.join(
   path.resolve(__dirname, "../../.."),
@@ -173,26 +173,3 @@ describe("splitQuery", () => {
     `);
   });
 });
-
-/**
- *
- * This just formats the template literal with prettier so comparing strings doesn't fail
- * due to differences in whitespace, calling it "gql" has the nice
- * side-effect that IDEs often provide graphql syntax highlighting for it
- */
-export function gql(
-  strings: TemplateStringsArray,
-  ...values: string[]
-): string {
-  let str = "";
-
-  for (let i = 0; i < strings.length; ++i) {
-    str += strings[i];
-    if (i < values.length) {
-      const value = values[i];
-
-      str += value;
-    }
-  }
-  return prettier.format(str, { parser: "graphql" });
-}
