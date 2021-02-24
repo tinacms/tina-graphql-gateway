@@ -219,12 +219,24 @@ const buildParseFunction = ({
       .join(".");
 
     if (field.component === "select" && context.queries[queryPath]) {
+      const queryObj = context.queries[queryPath];
+      const frags = [];
+      let uniqueFragments = [...new Set(queryObj.fragments)];
+      uniqueFragments.forEach((fragment) => {
+        frags.push(
+          context.fragments.find((fr) => fr.name === fragment).fragment
+        );
+      });
       context.client
-        .request(context.queries[queryPath].query, {
-          variables: {
-            relativePath: value,
-          },
-        })
+        .request(
+          `${frags.join("\n")}
+${queryObj.query}`,
+          {
+            variables: {
+              relativePath: value,
+            },
+          }
+        )
         .then((res) => {
           callback({
             type: "ON_FIELD_CHANGE",
@@ -273,7 +285,6 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
       });
-      console.log(uniqueFragments);
 
       try {
         await context.onSubmit({
