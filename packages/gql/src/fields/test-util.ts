@@ -23,8 +23,10 @@ import {
 } from "graphql";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
-import { builder } from "../fields/templates/build";
+import { template } from "../fields/templates";
 import { cacheInit } from "../cache";
+
+const { build } = template;
 
 import type { Definitions } from "../fields/templates/build";
 import type { Field } from ".";
@@ -108,17 +110,15 @@ export const setupRunner = (field: Field) => {
     includeBody: false,
   });
 
-  const prettify = (arr: Definitions[]) => {
-    return gql`
-      ${arr.map((acc) => print(acc)).join("\n")}
-    `;
-  };
-
-  const run = async (command: keyof typeof builder) => {
+  const run = async (command: keyof typeof build) => {
     const accumulator: Definitions[] = [];
-    await builder[command](config(accumulator));
+    await build[command](config(accumulator));
 
-    return prettify(accumulator);
+    const string = gql`
+      ${accumulator.map((acc) => print(acc)).join("\n")}
+    `;
+    // console.log(string);
+    return string;
   };
 
   return run;
