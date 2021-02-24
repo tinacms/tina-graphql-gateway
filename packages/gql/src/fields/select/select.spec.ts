@@ -13,41 +13,32 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
-import { FieldGroupField } from ".";
+import type { SelectField } from ".";
 
-const field: FieldGroupField = {
-  label: "My Group",
-  name: "some_group",
-  type: "field_group" as const,
-  fields: [
-    {
-      label: "Title",
-      name: "title",
-      type: "text" as const,
-      __namespace: "",
+const field: SelectField = {
+  label: "My Select",
+  name: "my_select",
+  type: "select" as const,
+  config: {
+    source: {
+      type: "simple",
     },
-  ],
-  __namespace: "",
+    options: ["option A"],
+  },
 };
 
 const run = setupRunner(field);
 
 describe("Field group builds", () => {
-  test("a union type of type SomeGroup_GroupField", async () => {
+  test("a union type of type SelectField", async () => {
     expect(await run("form")).toEqual(gql`
-      type TextField implements FormField {
+      type SelectField implements FormField {
         name: String
         label: String
         component: String
+        options: [String]
       }
-      union SomeGroup_FormFieldsUnion = TextField
-      type SomeGroup_GroupField implements FormField {
-        name: String
-        label: String
-        component: String
-        fields: [SomeGroup_FormFieldsUnion]
-      }
-      union Sample_FormFieldsUnion = SomeGroup_GroupField
+      union Sample_FormFieldsUnion = SelectField
       type Sample_Form {
         label: String
         name: String
@@ -55,24 +46,19 @@ describe("Field group builds", () => {
       }
     `);
   });
-  test("a value of type SomeGroup_Values", async () => {
+  // FIXME: this shouldn't be reference for a simple options field
+  test("a value of type Reference", async () => {
     expect(await run("values")).toEqual(gql`
-      type SomeGroup_Values {
-        title: String
-      }
       type Sample_Values {
-        some_group: SomeGroup_Values
+        my_select: Reference
         _template: String
       }
     `);
   });
-  test("a field of type SomeGroup_Data", async () => {
+  test("a field of type String", async () => {
     expect(await run("data")).toEqual(gql`
-      type SomeGroup_Data {
-        title: String
-      }
       type Sample_Data {
-        some_group: SomeGroup_Data
+        my_select: String
       }
     `);
   });
@@ -81,11 +67,8 @@ describe("Field group builds", () => {
   // depending on which field it belongs to?
   test("an input of type SomeGroup_Input", async () => {
     expect(await run("input")).toEqual(gql`
-      input SomeGroup_Input {
-        title: String
-      }
       input Sample_Input {
-        some_group: SomeGroup_Input
+        my_select: String
       }
     `);
   });

@@ -13,9 +13,9 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
-import { Field } from "..";
+import { FieldGroupListField } from ".";
 
-const field: Field = {
+const field: FieldGroupListField = {
   label: "My Group",
   name: "some_group",
   type: "field_group_list" as const,
