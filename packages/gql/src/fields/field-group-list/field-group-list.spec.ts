@@ -32,7 +32,7 @@ const field: FieldGroupListField = {
 
 const run = setupRunner(field);
 
-describe("Field group builds", () => {
+describe(`Field of type ${field.type} builds`, () => {
   test("a union type of type SomeGroup_GroupField", async () => {
     expect(await run("form")).toEqual(gql`
       type TextField implements FormField {

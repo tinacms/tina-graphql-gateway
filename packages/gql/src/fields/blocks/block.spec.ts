@@ -25,7 +25,7 @@ const field: BlocksField = {
 
 const run = setupRunner(field);
 
-describe("Block builds", () => {
+describe(`Type ${field.type} builds`, () => {
   test("a union type of type SelectField", async () => {
     expect(await run("form")).toEqual(gql`
       type TextField implements FormField {
