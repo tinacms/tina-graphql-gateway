@@ -64,7 +64,7 @@ export class Client {
     const _this = this;
     (this.contentApiUrl =
       options.customContentApiUrl ||
-      `https://content.tinajs.dev/github/${options.realm}/${options.clientId}/${options.branch}`),
+      `https://content.tinajs.dev/content/${options.realm}/${options.clientId}/github/${options.branch}`),
       (this.clientId = options.clientId);
     this.realm = options.realm;
 
