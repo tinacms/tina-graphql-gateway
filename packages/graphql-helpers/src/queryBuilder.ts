@@ -34,14 +34,13 @@ import {
 } from "graphql";
 import set from "lodash.set";
 import get from "lodash.get";
-import { friendlyName } from "./util";
-import { getFieldInterpretter } from './fieldInterpretter';
+import { getFieldInterpretter } from "./fieldInterpretter";
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>;
 
 /**
  *
- * Given a valid GraphQL query,the `formBuilder` will populate the query
+ * Given a valid GraphQL query,the `formify` will populate the query
  * with additional information needed by Tina on the frontend so we're able
  * to render a Tina form.
  *
@@ -98,7 +97,7 @@ type VisitorType = Visitor<ASTKindToNode, ASTNode>;
  *  }
  * ```
  */
-export const formBuilder = (query: DocumentNode, schema: GraphQLSchema) => {
+export const formify = (query: DocumentNode, schema: GraphQLSchema) => {
   const typeInfo = new TypeInfo(schema);
 
   const pathsToPopulate: {
@@ -246,19 +245,28 @@ const buildSysForType = (type: GraphQLNamedType): FieldNode => {
 
   return {
     kind: "Field" as const,
+    alias: {
+      kind: "Name",
+      value: "_internalSys",
+    },
     name: {
       kind: "Name" as const,
       value: "sys",
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: buildFields(Object.values(type.getFields()), (fields) => {
-        return {
-          continue: true,
-          // prevent infinite loop by not include documents
-          filteredFields: fields.filter((field) => field.name !== "documents"),
-        };
-      }),
+      selections: buildSelectionsFields(
+        Object.values(type.getFields()),
+        (fields) => {
+          return {
+            continue: true,
+            // prevent infinite loop by not include documents
+            filteredFields: fields.filter(
+              (field) => field.name !== "documents"
+            ),
+          };
+        }
+      ),
     },
   };
 };
@@ -274,7 +282,7 @@ const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: buildTypes(type.getTypes()),
+      selections: buildSelectionInlineFragments(type.getTypes()),
     },
   };
 };
@@ -290,12 +298,12 @@ const buildFormForType = (type: GraphQLNamedType): FieldNode => {
     },
     selectionSet: {
       kind: "SelectionSet" as const,
-      selections: buildTypes(type.getTypes()),
+      selections: buildSelectionInlineFragments(type.getTypes()),
     },
   };
 };
 
-const buildTypes = (
+const buildSelectionInlineFragments = (
   types: GraphQLObjectType<any, any>[],
   callback?: (
     fields: GraphQLField<any, any>[]
@@ -334,7 +342,12 @@ const buildTypes = (
                   },
                   selectionSet: {
                     kind: "SelectionSet" as const,
-                    selections: [...buildTypes(namedType.getTypes(), callback)],
+                    selections: [
+                      ...buildSelectionInlineFragments(
+                        namedType.getTypes(),
+                        callback
+                      ),
+                    ],
                   },
                 };
               } else if (namedType instanceof GraphQLObjectType) {
@@ -347,7 +360,7 @@ const buildTypes = (
                   selectionSet: {
                     kind: "SelectionSet" as const,
                     selections: [
-                      ...buildFields(
+                      ...buildSelectionsFields(
                         Object.values(namedType.getFields()),
                         callback
                       ),
@@ -367,7 +380,7 @@ const buildTypes = (
   });
 };
 
-const buildFields = (
+export const buildSelectionsFields = (
   fields: GraphQLField<any, any>[],
   callback?: (
     fields: GraphQLField<any, any>[]
@@ -392,7 +405,7 @@ const buildFields = (
           },
         ];
       }
-      return buildFields(
+      return buildSelectionsFields(
         result.filteredFields.filter((field) => {
           if (isScalarType(getNamedType(field.type))) {
             return true;
@@ -425,7 +438,9 @@ const buildFields = (
           },
           selectionSet: {
             kind: "SelectionSet" as const,
-            selections: [...buildTypes(namedType.getTypes(), callback)],
+            selections: [
+              ...buildSelectionInlineFragments(namedType.getTypes(), callback),
+            ],
           },
         };
       } else if (namedType instanceof GraphQLObjectType) {
@@ -438,7 +453,10 @@ const buildFields = (
           selectionSet: {
             kind: "SelectionSet" as const,
             selections: [
-              ...buildFields(Object.values(namedType.getFields()), callback),
+              ...buildSelectionsFields(
+                Object.values(namedType.getFields()),
+                callback
+              ),
             ],
           },
         };
@@ -459,16 +477,20 @@ const buildFields = (
   );
 };
 
-interface NodeType {
-  sys: object;
-  data: object;
-  form: object;
-  values: object;
-}
-
-export const splitDataNode = (args: {
+/**
+ * The role of `splitQuery` is to look at a query and find all of the nodes
+ * that could be returned by it, and to split that information into subsets of
+ * the query's original graph. It returns the nodes being queried along with information
+ * about what fragments they're using, how to query those nodes by themselves, and
+ * finally how to mutate those nodes.
+ *
+ * The purpose of this is that while we represent our data as a Graph, it needs to be
+ * delegated to our Tina form system, which is a lower-level API that has no knowledge
+ * of our data needs, the form is focused solely on the task of submitting mutations for a
+ * given document.
+ */
+export const splitQuery = (args: {
   queryString: string;
-  node: NodeType;
   schema: GraphQLSchema;
 }) => {
   const { schema } = args;
@@ -483,36 +505,56 @@ export const splitDataNode = (args: {
       fragments: string[];
     };
   } = {};
-  const fragments: { name: string; fragment: string }[] = [];
-  const fragmentPaths: { path: (string | number)[]; fragment: string }[] = [];
+  const fragmentDefinitions: {
+    name: string;
+    path: (string | number)[];
+    fragment: string;
+    subFragments: string[];
+  }[] = [];
+  const fragmentSpreads: {
+    path: (string | number)[];
+    fragment: string;
+    // fragments: typeof fragmentDefinitions[];
+  }[] = [];
   const queryAst = parse(args.queryString);
   const visitor: VisitorType = {
     leave: {
       FragmentDefinition(node, key, parent, path) {
-        fragments.push({ name: node.name.value, fragment: print(node) });
+        fragmentDefinitions.push({
+          name: node.name.value,
+          path: [...path],
+          fragment: print(node),
+          subFragments: [],
+        });
       },
       FragmentSpread(node, key, parent, path) {
-        fragmentPaths.push({ path: [...path], fragment: node.name.value });
+        fragmentSpreads.push({
+          path: [...path],
+          fragment: node.name.value,
+          // fragments: [],
+        });
       },
       Field(node, key, parent, path, ancestors) {
         const type = typeInfo.getType();
         if (type) {
           const namedType = getNamedType(type);
 
-          const isGraphQLUnionType = namedType instanceof GraphQLUnionType && namedType.name === "SectionDocumentUnion"
-          const isGraphQLObjectType = namedType instanceof GraphQLObjectType
+          const isGraphQLUnionType =
+            namedType instanceof GraphQLUnionType &&
+            namedType.name === "SectionDocumentUnion";
+          const isGraphQLObjectType = namedType instanceof GraphQLObjectType;
 
           //TODO - Instead of doing this check, we should just check if fieldInterpretter below exists.
           // Leaving here for now as things may break on the calculation of fieldInterpretter's constructor args
-          if(!isGraphQLUnionType && !isGraphQLObjectType)
-          {
-            return
+          if (!isGraphQLUnionType && !isGraphQLObjectType) {
+            return;
           }
 
-          if (namedType instanceof GraphQLObjectType && !namedType
-            .getInterfaces()
-            .find((i) => i.name === "Node")) {
-              return
+          if (
+            namedType instanceof GraphQLObjectType &&
+            !namedType.getInterfaces().find((i) => i.name === "Node")
+          ) {
+            return;
           }
 
           // @ts-ignore
@@ -542,22 +584,21 @@ export const splitDataNode = (args: {
           }
 
           const docAst = get(queryAst, path);
-          
+
           const fieldInterpretter = getFieldInterpretter(namedType, {
-            mutationName: m.name, 
+            mutationName: m.name,
             fieldName: f.name,
             docAst,
-            paramInputType
-          })
+            paramInputType,
+          });
 
-          if(!fieldInterpretter)
-          {
-            return
+          if (!fieldInterpretter) {
+            return;
           }
 
-          const newQuery = fieldInterpretter.getQuery()
-          const newMutation = fieldInterpretter.getMutation()
-          let dataPath = fieldInterpretter.getDataPath(path,ancestors)
+          const newQuery = fieldInterpretter.getQuery();
+          const newMutation = fieldInterpretter.getMutation();
+          let dataPath = fieldInterpretter.getDataPath(path, ancestors);
 
           const pathCopy = [...path];
           queries[dataPath.join(".")] = {
@@ -571,15 +612,82 @@ export const splitDataNode = (args: {
     },
   };
   visit(queryAst, visitWithTypeInfo(typeInfo, visitor));
-  fragmentPaths.forEach((fragmentPath) => {
-    Object.values(queries).forEach((query, index) => {
-      if (hasSubArray(fragmentPath.path, query.path)) {
-        query.fragments.push(fragmentPath.fragment);
+
+  fragmentDefinitions.forEach((fragmentDefinition) => {
+    // loop through all fragment spreads, see if your fragment definition is using any other fragments
+    fragmentSpreads.forEach((fragmentSpread) => {
+      if (hasSubArray(fragmentSpread.path, fragmentDefinition.path)) {
+        fragmentDefinition.subFragments.push(fragmentSpread.fragment);
+        // console.log(
+        //   `Fragment definition ${fragmentDefinition.name} is using fragment spread ${fragmentSpread.fragment}`
+        // );
       }
     });
   });
 
-  return { queries, fragments };
+  const recursiveFragmentSpread = (
+    fragmentName: string,
+    fragmentDefinitionItems: typeof fragmentDefinitions,
+    accumulator: string[]
+  ) => {
+    const fragmentDefinition = fragmentDefinitions.find(
+      ({ name }) => fragmentName === name
+    );
+    if (!fragmentDefinition) {
+      throw new Error(
+        `Expected to find a fragment definition for ${fragmentName}`
+      );
+    }
+    if (fragmentDefinition?.subFragments.length > 0) {
+      fragmentDefinition?.subFragments.map((subFragment) => {
+        accumulator.push(subFragment);
+
+        const subFragmentDefinition = fragmentDefinitionItems.find(
+          ({ name }) => subFragment === name
+        );
+        if (!subFragmentDefinition) {
+          throw new Error(
+            `Expected to find a fragment definition for ${subFragment}`
+          );
+        }
+        if (subFragmentDefinition?.subFragments.length > 0) {
+          recursiveFragmentSpread(
+            subFragmentDefinition.name,
+            fragmentDefinitionItems,
+            accumulator
+          );
+        }
+      });
+    }
+  };
+
+  const keys = Object.keys(queries);
+  Object.values(queries).forEach((query, index) => {
+    const fragmentsForQuery: string[] = [];
+    fragmentSpreads.forEach((fragmentSpread) => {
+      if (hasSubArray(fragmentSpread.path, query.path)) {
+        fragmentsForQuery.push(fragmentSpread.fragment);
+
+        recursiveFragmentSpread(
+          fragmentSpread.fragment,
+          fragmentDefinitions,
+          fragmentsForQuery
+        );
+      }
+    });
+    if (fragmentsForQuery.length > 0) {
+      // console.log(
+      //   `Query operation ${
+      //     keys[index]
+      //   } is using fragments ${fragmentsForQuery.join(", ")}`
+      // );
+    } else {
+      // console.log(`Query operation ${keys[index]} is not using any fragments`);
+    }
+    query.fragments = fragmentsForQuery;
+  });
+
+  return { queries, fragments: fragmentDefinitions };
 };
 
 // Checks if main array has the same values at the same indeces for a sub array
@@ -587,279 +695,6 @@ const hasSubArray = (main: (number | string)[], sub: (number | string)[]) => {
   return sub.every((item, index) => {
     return main[index] === item;
   });
-};
-
-/**
- *
- * This generates a query to a "reasonable" depth for the data key of a given section
- * It's not meant for production use
- */
-export const queryGenerator = (
-  variables: { relativePath: string; section: string },
-  schema: GraphQLSchema
-): DocumentNode => {
-  const t = schema.getQueryType();
-  const queryFields = t?.getFields();
-  if (queryFields) {
-    const queryName = `get${friendlyName(variables.section)}Document`;
-    const queryField = queryFields[queryName];
-
-    const returnType = getNamedType(queryField.type);
-    if (returnType instanceof GraphQLObjectType) {
-      let depth = 0;
-      const fields = buildFields(
-        Object.values(returnType.getFields()).filter(
-          (field) => field.name === "data"
-        ),
-        (fields) => {
-          const filteredFieldsList = [
-            "sys",
-            "__typename",
-            "template",
-            "html",
-            "form",
-            "values",
-            "markdownAst",
-          ];
-          depth = depth + 1;
-          const filteredFields = fields.filter((field) => {
-            return !filteredFieldsList.includes(field.name);
-          });
-
-          return { continue: depth < 5, filteredFields };
-        }
-      );
-
-      return {
-        kind: "Document" as const,
-        definitions: [
-          {
-            kind: "OperationDefinition" as const,
-            operation: "query",
-            name: {
-              kind: "Name" as const,
-              value: queryName,
-            },
-            variableDefinitions: [
-              {
-                kind: "VariableDefinition" as const,
-                variable: {
-                  kind: "Variable" as const,
-                  name: {
-                    kind: "Name" as const,
-                    value: "relativePath",
-                  },
-                },
-                type: {
-                  kind: "NonNullType" as const,
-                  type: {
-                    kind: "NamedType" as const,
-                    name: {
-                      kind: "Name" as const,
-                      value: "String",
-                    },
-                  },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: {
-                    kind: "Name",
-                    value: queryName,
-                  },
-                  arguments: [
-                    {
-                      kind: "Argument",
-                      name: {
-                        kind: "Name",
-                        value: "relativePath",
-                      },
-                      value: {
-                        kind: "Variable",
-                        name: {
-                          kind: "Name",
-                          value: "relativePath",
-                        },
-                      },
-                    },
-                  ],
-                  directives: [],
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: fields,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      };
-    } else {
-      throw new Error(
-        "Expected return type to be an instance of GraphQLObject"
-      );
-    }
-  } else {
-    throw new Error("Unable to find query fields for provided schema");
-  }
-};
-
-/**
- *
- * This generates a query to a "reasonable" depth for the data key of a given section
- * It's not meant for production use
- */
-export const mutationGenerator = (
-  variables: { relativePath: string; section: string },
-  schema: GraphQLSchema
-): DocumentNode => {
-  const t = schema.getQueryType();
-  const queryFields = t?.getFields();
-  if (queryFields) {
-    const mutationName = `update${friendlyName(variables.section)}Document`;
-    const queryName = `get${friendlyName(variables.section)}Document`;
-    const queryField = queryFields[queryName];
-
-    const returnType = getNamedType(queryField.type);
-    if (returnType instanceof GraphQLObjectType) {
-      let depth = 0;
-      const fields = buildFields(
-        Object.values(returnType.getFields()).filter(
-          (field) => field.name === "data"
-        ),
-        (fields) => {
-          const filteredFieldsList = [
-            "sys",
-            "__typename",
-            "template",
-            "html",
-            "form",
-            "values",
-            "markdownAst",
-          ];
-          depth = depth + 1;
-          const filteredFields = fields.filter((field) => {
-            return !filteredFieldsList.includes(field.name);
-          });
-
-          return { continue: depth < 5, filteredFields };
-        }
-      );
-
-      return {
-        kind: "Document" as const,
-        definitions: [
-          {
-            kind: "OperationDefinition" as const,
-            operation: "mutation",
-            name: {
-              kind: "Name" as const,
-              value: mutationName,
-            },
-            variableDefinitions: [
-              {
-                kind: "VariableDefinition" as const,
-                variable: {
-                  kind: "Variable" as const,
-                  name: {
-                    kind: "Name" as const,
-                    value: "relativePath",
-                  },
-                },
-                type: {
-                  kind: "NonNullType" as const,
-                  type: {
-                    kind: "NamedType" as const,
-                    name: {
-                      kind: "Name" as const,
-                      value: "String",
-                    },
-                  },
-                },
-              },
-              {
-                kind: "VariableDefinition" as const,
-                variable: {
-                  kind: "Variable" as const,
-                  name: {
-                    kind: "Name" as const,
-                    value: "params",
-                  },
-                },
-                type: {
-                  kind: "NonNullType" as const,
-                  type: {
-                    kind: "NamedType" as const,
-                    name: {
-                      kind: "Name" as const,
-                      value: `${friendlyName(variables.section)}_Input`,
-                    },
-                  },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: {
-                    kind: "Name",
-                    value: mutationName,
-                  },
-                  arguments: [
-                    {
-                      kind: "Argument",
-                      name: {
-                        kind: "Name",
-                        value: "relativePath",
-                      },
-                      value: {
-                        kind: "Variable",
-                        name: {
-                          kind: "Name",
-                          value: "relativePath",
-                        },
-                      },
-                    },
-                    {
-                      kind: "Argument",
-                      name: {
-                        kind: "Name",
-                        value: "params",
-                      },
-                      value: {
-                        kind: "Variable",
-                        name: {
-                          kind: "Name",
-                          value: "params",
-                        },
-                      },
-                    },
-                  ],
-                  directives: [],
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: fields,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      };
-    } else {
-      throw new Error(
-        "Expected return type to be an instance of GraphQLObject"
-      );
-    }
-  } else {
-    throw new Error("Unable to find query fields for provided schema");
-  }
 };
 
 function assertIsObjectType(

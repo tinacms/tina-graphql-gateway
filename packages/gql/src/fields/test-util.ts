@@ -19,11 +19,17 @@ import {
   getNamedType,
   GraphQLUnionType,
   buildSchema,
-  parse,
-  GraphQLType,
+  print,
 } from "graphql";
 import { FileSystemManager } from "../datasources/filesystem-manager";
+import { gql } from "@forestryio/graphql-helpers/dist/test-util";
+import { template } from "../fields/templates";
 import { cacheInit } from "../cache";
+
+const { build } = template;
+
+import type { Definitions } from "../fields/templates/build";
+import type { Field } from ".";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
@@ -81,37 +87,36 @@ export const assertNoTypeCollisions = (
   // console.log(printSchema(schema));
 };
 
-/**
- *
- * This just "dedents" the template literal, calling it "gql" has the nice
- * side-effect that IDEs often provide graphql syntax highlighting for it
- */
-export function gql(
-  strings: TemplateStringsArray,
-  ...values: string[]
-): string {
-  let str = "";
+const PATH_TO_TEST_APP = path.join(
+  path.resolve(__dirname, "../../../../"),
+  "apps/test"
+);
 
-  for (let i = 0; i < strings.length; ++i) {
-    str += strings[i];
-    if (i < values.length) {
-      // istanbul ignore next (Ignore else inside Babel generated code)
-      const value = values[i];
+const datasource = new FileSystemManager(PATH_TO_TEST_APP);
+const cache = cacheInit(datasource);
 
-      str += value; // interpolation
-    }
-  }
-  const trimmedStr = str
-    .replace(/^\n*/m, "") //  remove leading newline
-    .replace(/[ \t]*$/, ""); // remove trailing spaces and tabs
+export const setupRunner = (field: Field) => {
+  const template = {
+    __namespace: "",
+    fields: [field],
+    label: "Sample",
+    name: "sample",
+  };
 
-  // fixes indentation by removing leading spaces and tabs from each line
-  let indent = "";
-  for (const char of trimmedStr) {
-    if (char !== " " && char !== "\t") {
-      break;
-    }
-    indent += char;
-  }
-  return trimmedStr.replace(RegExp("^" + indent, "mg"), ""); // remove indent
-}
+  const config = (accumulator: Definitions[]) => ({
+    cache,
+    template,
+    accumulator,
+    includeBody: false,
+  });
+
+  const run = async (command: keyof typeof build) => {
+    const accumulator: Definitions[] = [];
+    await build[command](config(accumulator));
+    const accumulatorString = accumulator.map((acc) => print(acc));
+    const string = gql(accumulatorString);
+    return string;
+  };
+
+  return run;
+};

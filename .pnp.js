@@ -45,6 +45,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {
         "name": "demo",
         "reference": "workspace:apps/demo"
+      },
+      {
+        "name": "test",
+        "reference": "workspace:apps/test"
       }
     ],
     "enableTopLevelFallback": true,
@@ -55,6 +59,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["demo", ["workspace:apps/demo"]],
       ["forestry-schema", ["workspace:packages/forestry-schema-extension"]],
       ["sc", ["workspace:."]],
+      ["test", ["workspace:apps/test"]],
       ["tina-graphql-gateway", ["virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client", "workspace:packages/client"]],
       ["tina-graphql-gateway-cli", ["workspace:packages/cli"]]
     ],
@@ -2504,6 +2509,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash.kebabcase", "npm:4.1.6"],
             ["@types/lodash.set", "npm:4.3.6"],
             ["@types/lodash.upperfirst", "npm:4.3.6"],
+            ["@types/node", "npm:14.14.31"],
+            ["@types/prettier", "npm:2.2.1"],
             ["graphql", "npm:15.3.0"],
             ["jest", "npm:26.1.0"],
             ["lodash.camelcase", "npm:4.3.0"],
@@ -2513,6 +2520,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.snakecase", "npm:4.1.1"],
             ["lodash.upperfirst", "npm:4.3.1"],
             ["object-visit", "npm:1.0.1"],
+            ["prettier", "npm:2.2.1"],
             ["ts-jest", "virtual:23afd5ce58ee21a819bf3b29aea391fd3a730601309c03ed281fc04a148c1fdc4e77aab651de0c440b09f82700e0985836b951436eb37149b26c567d40a3ac43#npm:26.1.4"],
             ["tslib", "npm:1.13.0"],
             ["tsup", "npm:3.7.0"]
@@ -5078,6 +5086,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:14.0.27"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:14.14.31", {
+          "packageLocation": "./.yarn/cache/@types-node-npm-14.14.31-4f1a9dff64-635dc8a089.zip/node_modules/@types/node/",
+          "packageDependencies": [
+            ["@types/node", "npm:14.14.31"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["@types/normalize-package-data", [
@@ -5094,6 +5109,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-prettier-npm-2.0.2-6cb7f49b31-f661ba2c63.zip/node_modules/@types/prettier/",
           "packageDependencies": [
             ["@types/prettier", "npm:2.0.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:2.2.1", {
+          "packageLocation": "./.yarn/cache/@types-prettier-npm-2.2.1-bc35c4da60-9dc257dfc5.zip/node_modules/@types/prettier/",
+          "packageDependencies": [
+            ["@types/prettier", "npm:2.2.1"]
           ],
           "linkType": "HARD",
         }]
@@ -22990,6 +23012,59 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "webpack"
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["test", [
+        ["workspace:apps/test", {
+          "packageLocation": "./apps/test/",
+          "packageDependencies": [
+            ["test", "workspace:apps/test"],
+            ["@forestryio/gql", "workspace:packages/gql"],
+            ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
+            ["@tailwindcss/ui", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.3.1"],
+            ["@tinacms/core", "npm:0.31.0"],
+            ["@tinacms/forms", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.3.0"],
+            ["@tinacms/icons", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.7.0"],
+            ["@tinacms/react-core", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.2.13"],
+            ["@tinacms/react-forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.32.0"],
+            ["@tinacms/react-modals", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.29.0"],
+            ["@types/js-cookie", "npm:2.2.6"],
+            ["@types/node", "npm:13.13.15"],
+            ["@types/react", "npm:16.9.43"],
+            ["@types/styled-components", "npm:5.1.3"],
+            ["@urql/core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:1.12.3"],
+            ["@xstate/react", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:1.0.1"],
+            ["autoprefixer", "npm:9.8.5"],
+            ["codemirror", "npm:5.59.1"],
+            ["dotenv", "npm:8.2.0"],
+            ["fast-glob", "npm:3.2.4"],
+            ["final-form", "npm:4.20.1"],
+            ["formik", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:2.1.5"],
+            ["graphiql", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:1.2.2"],
+            ["graphql", "npm:15.3.0"],
+            ["graphql-tag", "virtual:9680361f3aa50190b6de3024fd0701a64a04dcab511f1195194be2012517bfb75b0ef37186065aaef744e6391005e752e58b4eccb77c1007b4796e03dd8f1c82#npm:2.11.0"],
+            ["js-cookie", "npm:2.2.1"],
+            ["next", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:9.5.1"],
+            ["nodemon", "npm:2.0.7"],
+            ["postcss-import", "npm:12.0.1"],
+            ["prop-types", "npm:15.7.2"],
+            ["react", "npm:16.13.1"],
+            ["react-dom", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:16.13.1"],
+            ["react-is", "npm:16.13.1"],
+            ["react-markdown", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:4.3.1"],
+            ["styled-components", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:5.2.0"],
+            ["styled-jsx", "virtual:b2f8d4577823caf8733777264b63b40a71c48d45514ef9cc4dc1ad64de231e912eec8a858600d932805b56b36f2919e17e5d87db9cd8a1301d9fbfaa0bfcf04d#npm:3.3.0"],
+            ["tailwindcss", "npm:1.6.0"],
+            ["tina-graphql-gateway", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/client"],
+            ["tina-graphql-gateway-cli", "workspace:packages/cli"],
+            ["tinacms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.31.0"],
+            ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=5b02a2"],
+            ["urql", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:1.10.0"],
+            ["xstate", "npm:4.13.0"],
+            ["yup", "npm:0.28.5"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["test-exclude", [

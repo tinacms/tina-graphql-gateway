@@ -23,20 +23,10 @@ import {
   getIntrospectionQuery,
   print,
 } from "graphql";
-import {
-  formBuilder,
-  mutationGenerator,
-  queryGenerator,
-} from "@forestryio/graphql-helpers";
+import { formify } from "@forestryio/graphql-helpers";
 
 import gql from "graphql-tag";
 import { transformPayload } from "./transform-payload";
-
-interface AddVariables {
-  path: string;
-  template: string;
-  params?: any;
-}
 
 interface ServerOptions {
   realm: string;
@@ -127,7 +117,7 @@ export class Client {
       }
     }`;
 
-    const result = await this.request<AddVariables>(mutation, {
+    const result = await this.request(mutation, {
       variables: props,
     });
 
@@ -136,7 +126,7 @@ export class Client {
 
   getSchema = async () => {
     if (!this.schema) {
-      const data = await this.request(getIntrospectionQuery(), {
+      const data = await this.request<any>(getIntrospectionQuery(), {
         variables: {},
       });
 
@@ -144,46 +134,6 @@ export class Client {
     }
 
     return this.schema;
-  };
-
-  generateMutation = async (variables: {
-    relativePath: string;
-    section: string;
-  }) => {
-    const schema = await this.getSchema();
-    const query = queryGenerator(variables, schema);
-    const formifiedQuery = formBuilder(query, schema);
-    const res = await this.request(print(formifiedQuery), { variables });
-    const result = Object.values(res)[0];
-    const mutation = mutationGenerator(variables, schema);
-
-    const params = await transformPayload({
-      mutation: print(mutation),
-      // @ts-ignore FIXME: this needs an assertion
-      values: result.values,
-      schema,
-      sys: res.sys,
-    });
-
-    return {
-      queryString: print(mutation),
-      variables: {
-        relativePath: variables.relativePath,
-        params,
-      },
-    };
-  };
-
-  generateQuery = async (variables: {
-    relativePath: string;
-    section: string;
-  }) => {
-    const schema = await this.getSchema();
-    const query = queryGenerator(variables, schema);
-    return {
-      queryString: print(query),
-      variables: { relativePath: variables.relativePath },
-    };
   };
 
   prepareVariables = async ({
@@ -216,20 +166,20 @@ export class Client {
     };
   };
 
-  async requestWithForm<VariableType>(
+  async requestWithForm<ReturnType>(
     query: (gqlTag: typeof gql) => DocumentNode,
-    { variables }: { variables: VariableType }
+    { variables }: { variables }
   ) {
     const schema = await this.getSchema();
-    const formifiedQuery = formBuilder(query(gql), schema);
+    const formifiedQuery = formify(query(gql), schema);
 
-    return this.request(print(formifiedQuery), { variables });
+    return this.request<ReturnType>(print(formifiedQuery), { variables });
   }
 
-  async request<VariableType>(
+  async request<ReturnType>(
     query: ((gqlTag: typeof gql) => DocumentNode) | string,
-    { variables }: { variables: VariableType }
-  ) {
+    { variables }: { variables: object }
+  ): Promise<ReturnType> {
     const res = await fetch(this.contentApiUrl, {
       method: "POST",
       headers: {
@@ -246,7 +196,7 @@ export class Client {
     if (json.errors) {
       return json;
     }
-    return json.data;
+    return json.data as ReturnType;
   }
 
   async isAuthorized(): Promise<boolean> {

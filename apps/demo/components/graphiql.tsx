@@ -13,7 +13,7 @@ limitations under the License.
 
 import React from "react";
 import GraphiQL from "graphiql";
-import { formBuilder } from "@forestryio/graphql-helpers";
+import { formify, queryGenerator } from "@forestryio/graphql-helpers";
 import { useMachine } from "@xstate/react";
 import { Machine, assign, createMachine, StateSchema } from "xstate";
 import { useForm } from "tina-graphql-gateway";
@@ -111,11 +111,16 @@ export const graphiqlMachine = createMachine<
           invoke: {
             id: "generateQuery",
             src: async (context, event) => {
-              return context.cms.api.tina.generateQuery({
+              const variables = {
                 // @ts-ignore
                 relativePath: context.variables.relativePath,
                 section: context.section,
-              });
+              };
+              const query = queryGenerator(variables, context.schema);
+              return {
+                queryString: print(query),
+                variables: { relativePath: variables.relativePath },
+              };
             },
             onDone: {
               target: "ready",
@@ -136,7 +141,7 @@ export const graphiqlMachine = createMachine<
               }
 
               const documentNode = parse(context.queryString);
-              return print(formBuilder(documentNode, context.schema));
+              return print(formify(documentNode, context.schema));
             },
             onDone: {
               target: "ready",
