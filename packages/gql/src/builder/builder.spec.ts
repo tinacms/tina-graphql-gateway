@@ -16,34 +16,25 @@ import path from "path";
 import { cacheInit } from "../cache";
 import { schemaBuilder } from ".";
 import { FileSystemManager } from "../datasources/filesystem-manager";
-import { parse, printSchema, buildASTSchema } from "graphql";
+import { parse } from "graphql";
+
+const PATH_TO_TEST_APP = path.join(
+  path.resolve(__dirname, "../../../../"),
+  "apps/test"
+);
+const PATH_TO_TEST_SCHEMA = path.join(
+  PATH_TO_TEST_APP,
+  ".tina/__generated__/schema.gql"
+);
 
 describe("Schema builder", () => {
-  test("does it", async () => {
-    const fixtures: string[] = await fs.readdirSync(
-      path.join(process.cwd(), "src/fixtures")
-    );
+  test("matches schema snapshot", async () => {
+    const datasource = new FileSystemManager(PATH_TO_TEST_APP);
+    const cache = cacheInit(datasource);
+    const { schema } = await schemaBuilder({ cache });
 
-    await Promise.all(
-      fixtures
-        .filter((f) => f !== ".DS_Store")
-        .map(async (f) => {
-          const projectRoot = path.join(process.cwd(), `src/fixtures/${f}`);
-          const datasource = new FileSystemManager(projectRoot);
-          const cache = cacheInit(datasource);
-          const { schema } = await schemaBuilder({ cache });
+    const schemaFile = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
 
-          const schemaString = printSchema(buildASTSchema(schema));
-
-          // await fs
-          //   .writeFileSync(path.join(projectRoot, "ast-schema.graphql"), schemaString)
-
-          const schemaFile = await fs
-            .readFileSync(path.join(projectRoot, "ast-schema.graphql"))
-            .toString();
-
-          expect(parse(schemaFile)).toMatchObject(schema);
-        })
-    );
+    expect(parse(schemaFile)).toMatchObject(schema);
   });
 });

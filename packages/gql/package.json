@@ -13,8 +13,7 @@
     "watch": "yarn tsup src/index.ts src/server.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/server.js",
-    "no-test": "jest --passWithNoTests",
-    "test-watch": "jest --watch"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",

@@ -28,7 +28,11 @@ const LICENSE_HEADER: string[] = [
   `limitations under the License.`,
 ];
 
-const licenseIgnoreList = [".pnp.js", "apps/demo/.tina/types.ts"];
+const licenseIgnoreList = [
+  ".pnp.js",
+  "apps/demo/.tina/__generated__/types.ts",
+  "apps/test/.tina/__generated__/types.ts",
+];
 
 runChecksOnPullRequest();
 

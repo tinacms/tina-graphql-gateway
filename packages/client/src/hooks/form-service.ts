@@ -18,8 +18,9 @@ import {
   SpawnedActorRef,
   sendParent,
 } from "xstate";
-import { splitDataNode } from "@forestryio/graphql-helpers";
+import { splitQuery } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
+import { print } from "graphql";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
@@ -42,9 +43,8 @@ export const createFormMachine = (initialContext: {
         invoke: {
           id: id + "breakdownData",
           src: async (context, event) => {
-            return splitDataNode({
+            return splitQuery({
               queryString: context.queryString,
-              node: context.node,
               schema: await context.client.getSchema(),
             });
           },
@@ -219,12 +219,24 @@ const buildParseFunction = ({
       .join(".");
 
     if (field.component === "select" && context.queries[queryPath]) {
+      const queryObj = context.queries[queryPath];
+      const frags = [];
+      let uniqueFragments = [...new Set(queryObj.fragments)];
+      uniqueFragments.forEach((fragment) => {
+        frags.push(
+          context.fragments.find((fr) => fr.name === fragment).fragment
+        );
+      });
       context.client
-        .request(context.queries[queryPath].query, {
-          variables: {
-            relativePath: value,
-          },
-        })
+        .request(
+          `${frags.join("\n")}
+${queryObj.query}`,
+          {
+            variables: {
+              relativePath: value,
+            },
+          }
+        )
         .then((res) => {
           callback({
             type: "ON_FIELD_CHANGE",
@@ -259,7 +271,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
 
   const form = new Form({
     id: context.queryFieldName,
-    label: context.node.sys.basename,
+    label: context.node._internalSys.basename,
     fields,
     initialValues: context.node.values,
     onSubmit: async (values) => {
@@ -267,7 +279,8 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
       const mutation = queryForMutation.mutation;
 
       const frags = [];
-      queryForMutation.fragments.forEach((fragment) => {
+      let uniqueFragments = [...new Set(queryForMutation.fragments)];
+      uniqueFragments.forEach((fragment) => {
         frags.push(
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
@@ -278,9 +291,9 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
           mutationString: `${frags.join("\n")}
 ${mutation}
 `,
-          relativePath: context.node.sys.relativePath,
+          relativePath: context.node._internalSys.relativePath,
           values: values,
-          sys: context.node.sys,
+          sys: context.node._internalSys,
         });
         context.cms.alerts.info("Document saved!");
       } catch (e) {

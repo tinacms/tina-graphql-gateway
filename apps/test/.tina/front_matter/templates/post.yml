@@ -1,0 +1,23 @@
+---
+label: Post
+fields:
+  - label: Title
+    name: title
+    type: text
+  - label: Details
+    name: details
+    type: field_group
+    fields:
+      - label: Reading Time
+        name: reading_time
+        type: text
+  - label: Author
+    name: author
+    type: select
+    config:
+      source:
+        type: pages
+        section: authors
+
+pages:
+  - content/posts/welcome.md
