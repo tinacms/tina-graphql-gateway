@@ -1,6 +1,6 @@
 # CLI
 
-The CLI can be used to setup your local site with Forestry.io configuration.
+The "Tina Graphql-Gateway CLI" can be used to set up your project with Tina Cloud configuration, and run a local version of the Tina Cloud content-api (using your file system's content).
 
 ## Getting started
 
@@ -27,14 +27,14 @@ You can get help on any command with `-h` or `--help`.
 e.g:
 
 ```bash
-yarn forestry schema:gen-query --help
+yarn tina-gql schema:gen-query --help
 ```
 
 This will describe how to use the schema:gen-query command.
 
 ## Commands
 
-### forestry schema:gen-query \[options\]
+### tina-gql schema:gen-query \[options\]
 
 Generate a GraphQL query for your site's schema
 
@@ -42,15 +42,15 @@ Generate a GraphQL query for your site's schema
 
 --typescript Include this option to also generate typescript types for your schema
 
-### forestry schema:audit \[options\]
+### tina-gql schema:audit \[options\]
 
-Check for **.forestry/front_matter/templates** folder for any issues.
+Check for **.tina/front_matter/templates** folder for any issues.
 
 #### Options
 
---path <forestryPath> Specify a relative path to the .forestry folder (eg. my-site)
+--path <tinaPath> Specify a relative path to the .tina folder (eg. my-site)
 
-### forestry server:start \[options\]
+### tina-gql server:start \[options\]
 
 Start a GraphQL server using your Filesystem's content as the datasource.
 
@@ -66,10 +66,10 @@ To run this project locally in another directory, you can create a symlink by ru
 npm link
 ```
 
-Then Forestry can be run in another directory by running:
+Then `tina-gql` can be run in another directory by running:
 
 ```bash
-forestry <commands>
+tina-gql <commands>
 ```
 
 _Alternatively, the CLI can be added to a project instead of being used globally._
@@ -77,7 +77,7 @@ _Alternatively, the CLI can be added to a project instead of being used globally
 To run the command locally in this project directory, you can run:
 
 ```bash
-yarn forestry <commands>
+yarn tina-gql <commands>
 ```
 
 ### .env
