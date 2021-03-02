@@ -282,24 +282,23 @@ export function useForm<T extends object>({
     const subscription = service.subscribe((state) => {
       if (state.matches("active")) {
         const formIds = Object.keys(state.context.formRefs);
-        console.log(state.context.cms.plugins.all("form"));
         const forms = state.context.cms.plugins
           .all("form")
           .map((formPlugin) => {
-            // @ts-ignore
-            if (formIds.includes(formPlugin.id)) {
+            if (formIds.includes(formPlugin.name)) {
               return formPlugin;
             } else {
               return false;
             }
           })
           .filter(Boolean);
+
         setTinaForms(forms);
       }
     });
 
     return subscription.unsubscribe;
-  }, [service]); // note: service should never change
+  }, [service, setTinaForms]); // note: service should never change
 
   React.useEffect(() => {
     send({ type: "RETRY", value: { payload, queryString } });
