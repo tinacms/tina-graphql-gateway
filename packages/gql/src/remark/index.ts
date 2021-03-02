@@ -19,6 +19,7 @@ import mdx from "remark-mdx";
 import removePosition from "unist-util-remove-position";
 
 export const toHTML = async ({ contents: c }: { contents: string }) => {
+  // @ts-ignore
   var compiler = unified().use(parse).use(remark2rehype).use(htmlStringify);
 
   const { contents } = compiler.processSync({ contents: c });
@@ -27,6 +28,7 @@ export const toHTML = async ({ contents: c }: { contents: string }) => {
 };
 
 export const toAst = async ({ contents }: { contents: string }) => {
+  // @ts-ignore
   var tree = unified().use(parse).use(mdx).parse(contents);
 
   removePosition(tree, true);
