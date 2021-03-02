@@ -1,8 +1,10 @@
-# CLI
+# Tina Graphql-Gateway CLI
 
 The "Tina Graphql-Gateway CLI" can be used to set up your project with Tina Cloud configuration, and run a local version of the Tina Cloud content-api (using your file system's content).
 
 ## Getting started
+
+The CLI can be installed as a dev dependency in your project.
 
 Npm:
 
