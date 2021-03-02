@@ -88,8 +88,3 @@ To run the command locally in this project directory, you can run:
 ```bash
 yarn tina-gql <commands>
 ```
-
-### .env
-
-To access some third party services, you will need to add a .env file.
-Use the .env.example to fill in the example keys.
