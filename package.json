@@ -16,8 +16,8 @@
     "license:delete": "$PWD/scripts/delete-license.sh",
     "ci:build": "yarn workspaces foreach -pt --exclude demo run build",
     "ci:version-check": "yarn version check",
-    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish",
-    "ci:test": "yarn workspaces foreach --exclude=sc --exclude=demo --verbose run test"
+    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish",
+    "ci:test": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --verbose run test"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
