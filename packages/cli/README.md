@@ -18,6 +18,7 @@ yarn add --dev tina-graphql-gateway-cli
 
 ## Usage
 
+Arguments wrapped in `<>` in the command name are required.
 Arguments wrapped in `[]` in the command name are optional.
 
 ## Help
@@ -34,13 +35,21 @@ This will describe how to use the schema:gen-query command.
 
 ## Commands
 
-### tina-gql schema:gen-query \[options\]
+### tina-gql server:start \[options\]
 
-Generate a GraphQL query for your site's schema
+Start a GraphQL server using your Filesystem's content as the datasource. Your site will need to have a valid .tina configuration to define its schema.
 
 #### Options
 
---typescript Include this option to also generate typescript types for your schema
+--port <port> Specify a port to run the server on. (default 4001)
+
+### tina-gql schema:types \[options\]
+
+Generate Typescript types based on your site's schema.
+
+#### Options
+
+--schema, -s Dump the graphql SDL
 
 ### tina-gql schema:audit \[options\]
 
@@ -50,13 +59,13 @@ Check for **.tina/front_matter/templates** folder for any issues.
 
 --path <tinaPath> Specify a relative path to the .tina folder (eg. my-site)
 
-### tina-gql server:start \[options\]
+### tina-gql schema:dump \[options\]
 
-Start a GraphQL server using your Filesystem's content as the datasource.
+Dump JSON schema into specified path
 
 #### Options
 
---port <port> Specify a port to run the server on. (default 4001)
+--folder <folder> Dump the schema into the given path
 
 ## Development
 
