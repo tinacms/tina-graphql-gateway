@@ -234,7 +234,7 @@ export const Explorer = ({
     }
   );
 
-  const res = useForm<object>({
+  const [res] = useForm({
     payload: current.context.result,
     onSubmit: (args: { queryString: string; variables: object }) => {
       send({ type: "SETUP_MUTATION", value: args });

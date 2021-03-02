@@ -54,7 +54,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 };
 
 const Home = (props: any) => {
-  const { getDocument } = useForm({ payload: props });
+  const [{ getDocument }] = useForm({ payload: props });
   const { form, sys, ...rest } = getDocument;
 
   return (

@@ -12,13 +12,13 @@ limitations under the License.
 */
 
 import React from "react";
-import { useCMS, TinaCMS } from "tinacms";
+import { useCMS } from "tinacms";
+import type { TinaCMS, Form } from "tinacms";
 import { createFormMachine } from "./form-service";
 import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
-import has from "lodash.has";
 import * as yup from "yup";
 
 interface FormsMachineSchemaType extends StateSchema {
@@ -64,7 +64,6 @@ const filterForValidFormNodes = async (payload: object) => {
   const accum = {} as object;
   await Promise.all(
     Object.values(payload).map(async (payloadItem, index) => {
-      
       const containsValidForm = async () => {
         // validate payload
         let dataSchema = yup.object().shape({
@@ -79,31 +78,29 @@ const filterForValidFormNodes = async (payload: object) => {
         try {
           await dataSchema.validate(payloadItem);
         } catch (e) {
-          return false
+          return false;
         }
-        return true
-      }
+        return true;
+      };
 
-      if(await containsValidForm()) {
+      if (await containsValidForm()) {
         accum[keys[index]] = payloadItem;
       }
-
     })
   );
 
-  return accum
-}
+  return accum;
+};
 
 const isPayloadPresent = async (context: FormsContext) => {
   const payloadSchema = yup.object().required();
   try {
-    await payloadSchema.validate(context.payload)
+    await payloadSchema.validate(context.payload);
+  } catch {
+    return false;
   }
-  catch {
-    return false
-  }
-  return true
-}
+  return true;
+};
 
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   id: "forms",
@@ -127,15 +124,14 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     initializing: {
       invoke: {
         src: async (context, event) => {
-
-          if(!(await isPayloadPresent(context))) {
-            return null // data may not be fetched yet so don't throw error
+          if (!(await isPayloadPresent(context))) {
+            return null; // data may not be fetched yet so don't throw error
           }
 
           // TODO maybe a bit of a code smell here
           // Should we instead only pass in relevant info
           // into this function? (instead of implictly filtering them out)
-          const result = await filterForValidFormNodes(context.payload)
+          const result = await filterForValidFormNodes(context.payload);
           if (Object.keys(result).length === 0) {
             throw new Error("No queries could be used as a Tina form");
           }
@@ -201,7 +197,7 @@ export function useForm<T extends object>({
   payload: T;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   onNewDocument?: OnNewDocument;
-}): T {
+}): [T, Form[]] {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
   const cms = useCMS();
@@ -255,7 +251,7 @@ export function useForm<T extends object>({
     run();
   }, [cms]);
 
-  const [current, send] = useMachine(formsMachine, {
+  const [current, send, service] = useMachine(formsMachine, {
     context: {
       payload,
       formRefs: {},
@@ -281,12 +277,36 @@ export function useForm<T extends object>({
     },
   });
 
+  const [tinaForms, setTinaForms] = React.useState([]);
+  React.useEffect(() => {
+    const subscription = service.subscribe((state) => {
+      if (state.matches("active")) {
+        const formIds = Object.keys(state.context.formRefs);
+        console.log(state.context.cms.plugins.all("form"));
+        const forms = state.context.cms.plugins
+          .all("form")
+          .map((formPlugin) => {
+            // @ts-ignore
+            if (formIds.includes(formPlugin.id)) {
+              return formPlugin;
+            } else {
+              return false;
+            }
+          })
+          .filter(Boolean);
+        setTinaForms(forms);
+      }
+    });
+
+    return subscription.unsubscribe;
+  }, [service]); // note: service should never change
+
   React.useEffect(() => {
     send({ type: "RETRY", value: { payload, queryString } });
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore
-  return current.context.payload;
+  return [current.context.payload, tinaForms];
 }
 
 type Field = {
