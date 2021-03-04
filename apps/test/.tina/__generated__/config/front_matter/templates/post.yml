@@ -1,0 +1,7 @@
+---
+name: post
+label: My Poster
+fields:
+  - type: text
+    label: My Title
+    name: title

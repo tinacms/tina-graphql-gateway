@@ -3,8 +3,7 @@ sections:
   - label: Posts
     path: content/posts
     templates:
-      - post-4
-      - post-3
+      - post
     type: directory
     create: documents
     match: '**/*.md'
