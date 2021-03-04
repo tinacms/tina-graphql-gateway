@@ -204,25 +204,29 @@ export function useForm<T extends object>({
 
   React.useEffect(() => {
     const run = async () => {
-      const res = await cms.api.tina.request(
-        (gql) => gql`
-          {
-            getSections {
-              slug
-              templates
+
+      const getSectionOptions = async () => {
+        const res = await cms.api.tina.request(
+          (gql) => gql`
+            {
+              getSections {
+                slug
+                templates
+              }
             }
-          }
-        `,
-        { variables: {} }
-      );
-      const options = [];
-      res.getSections.forEach((section) => {
-        section.templates.map((template) => {
-          const optionValue = `${section.slug}.${template}`;
-          const optionLabel = `Section: ${section.slug} - Template: ${template}`;
-          options.push({ value: optionValue, label: optionLabel });
+          `,
+          { variables: {} }
+        );
+        const options = [];
+        res.getSections.forEach((section) => {
+          section.templates.map((template) => {
+            const optionValue = `${section.slug}.${template}`;
+            const optionLabel = `Section: ${section.slug} - Template: ${template}`;
+            options.push({ value: optionValue, label: optionLabel });
+          });
         });
-      });
+      }
+
       cms.plugins.add(
         new ContentCreatorPlugin({
           onNewDocument: onNewDocument,
@@ -232,7 +236,7 @@ export function useForm<T extends object>({
               name: "sectionTemplate",
               label: "Template",
               description: "Select the section & template",
-              options,
+              options: (await getSectionOptions()),
             },
             {
               component: "text",
