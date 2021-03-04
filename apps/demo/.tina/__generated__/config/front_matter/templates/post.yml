@@ -5,3 +5,5 @@ fields:
   - name: title
     label: Title
     type: text
+pages:
+  - content/posts/welcome.md

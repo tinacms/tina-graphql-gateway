@@ -4,6 +4,7 @@ export default defineSchema({
   sections: [
     {
       label: "Posts",
+      name: "posts",
       path: "contente/posts",
       templates: [
         {
