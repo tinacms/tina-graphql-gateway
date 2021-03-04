@@ -189,7 +189,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-const useAddSectionPagePlugin = (onNewDocument?: OnNewDocument) => 
+const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => 
 {
   const cms = useCMS();
 
@@ -247,7 +247,7 @@ const useAddSectionPagePlugin = (onNewDocument?: OnNewDocument) =>
   }, [cms]);
 }
 
-function useFormattedPayload<T extends object>(  {
+function useRegisterFormsAndSyncPayload<T extends object>(  {
   payload,
   onSubmit,
 }: {
@@ -332,9 +332,9 @@ export function useForm<T extends object>({
   // TODO - Should we pull this out of this file. 
   // Or return it as a factory function which can 
   // optionally be called.
-  useAddSectionPagePlugin(onNewDocument)
+  useAddSectionDocumentPlugin(onNewDocument)
 
-  const {data, retry} = useFormattedPayload({payload,onSubmit})
+  const { data, retry } = useRegisterFormsAndSyncPayload({payload,onSubmit})
 
   React.useEffect(() => {
     retry()
