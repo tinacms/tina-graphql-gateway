@@ -3285,6 +3285,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],
             ["dataloader", "npm:2.0.0"],
             ["express", "npm:4.17.1"],
+            ["fast-glob", "npm:3.2.5"],
             ["fs-extra", "npm:9.0.1"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tools", "virtual:da13a30a6e301b39ba678943fb8238deb4e88d6c903b3d358ed3287e900f73070039490f9fd527beaeccf057bdd5bd26db7a649ff1cd56117997a44652fe8580#npm:6.2.1"],
@@ -13252,6 +13253,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/fast-glob-npm-3.2.4-be5d1d4c86-18f9eca898.zip/node_modules/fast-glob/",
           "packageDependencies": [
             ["fast-glob", "npm:3.2.4"],
+            ["@nodelib/fs.stat", "npm:2.0.3"],
+            ["@nodelib/fs.walk", "npm:1.2.4"],
+            ["glob-parent", "npm:5.1.1"],
+            ["merge2", "npm:1.4.1"],
+            ["micromatch", "npm:4.0.2"],
+            ["picomatch", "npm:2.2.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.2.5", {
+          "packageLocation": "./.yarn/cache/fast-glob-npm-3.2.5-0225b8bd94-1a33c4a68d.zip/node_modules/fast-glob/",
+          "packageDependencies": [
+            ["fast-glob", "npm:3.2.5"],
             ["@nodelib/fs.stat", "npm:2.0.3"],
             ["@nodelib/fs.walk", "npm:1.2.4"],
             ["glob-parent", "npm:5.1.1"],

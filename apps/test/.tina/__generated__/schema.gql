@@ -68,16 +68,15 @@ type Query {
   getPostsList: [Posts_Document]
 }
 
-union Posts_Data = Post4_Doc_Data | Post3_Doc_Data
+union Posts_Data = Post_Doc_Data
 
 input Posts_Input {
-  post4: Post4_Doc_Input
-  post3: Post3_Doc_Input
+  post: Post_Doc_Input
 }
 
-union Posts_Values = Post4_Doc_Values | Post3_Doc_Values
+union Posts_Values = Post_Doc_Values
 
-union Posts_Form = Post4_Doc_Form | Post3_Doc_Form
+union Posts_Form = Post_Doc_Form
 
 type Posts_Document implements Node & Document {
   id: ID!
@@ -93,9 +92,8 @@ type LongTextValue {
   html: String
 }
 
-type Post4_Doc_Data {
-  titlez: String
-  author: Posts_Document
+type Post_Doc_Data {
+  title: String
   _body: LongTextValue
 }
 
@@ -103,9 +101,8 @@ type LongTextInitialValue {
   raw: String
 }
 
-type Post4_Doc_Values {
-  titlez: String
-  author: Reference
+type Post_Doc_Values {
+  title: String
   _body: LongTextInitialValue
   _template: String
 }
@@ -116,146 +113,26 @@ type TextField implements FormField {
   component: String
 }
 
-type SelectField implements FormField {
-  name: String
-  label: String
-  component: String
-  options: [String]
-}
-
 type TextareaField implements FormField {
   name: String
   label: String
   component: String
 }
 
-union Post4_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
+union Post_Doc_FormFieldsUnion = TextField | TextareaField
 
-type Post4_Doc_Form {
+type Post_Doc_Form {
   label: String
   name: String
-  fields: [Post4_Doc_FormFieldsUnion]
+  fields: [Post_Doc_FormFieldsUnion]
 }
 
 input Body_LongTextInput {
   raw: String
 }
 
-input Post4_Doc_Input {
-  titlez: String
-  author: String
-  _body: Body_LongTextInput
-}
-
-type MyBlockTemplateMyGroup_MyGroupItem_Data {
-  my_group_group_item: String
-}
-
-type MyBlockTemplate_MyGroup_Data {
-  my_group_item: MyBlockTemplateMyGroup_MyGroupItem_Data
-}
-
-type MyBlockTemplate_Data {
-  my_tiem_name: String
-  my_group: MyBlockTemplate_MyGroup_Data
-}
-
-union Post3_MyBlocs_Data = MyBlockTemplate_Data
-
-type Post3_Doc_Data {
-  my_titlez: String
-  my_blocs: [Post3_MyBlocs_Data]
-  _body: LongTextValue
-}
-
-type MyBlockTemplateMyGroup_MyGroupItem_Values {
-  my_group_group_item: String
-}
-
-type MyBlockTemplate_MyGroup_Values {
-  my_group_item: MyBlockTemplateMyGroup_MyGroupItem_Values
-}
-
-type MyBlockTemplate_Values {
-  my_tiem_name: String
-  my_group: MyBlockTemplate_MyGroup_Values
-  _template: String
-}
-
-union Post3_MyBlocs_Values = MyBlockTemplate_Values
-
-type Post3_Doc_Values {
-  my_titlez: String
-  my_blocs: [Post3_MyBlocs_Values]
-  _body: LongTextInitialValue
-  _template: String
-}
-
-union MyBlockTemplateMyGroup_MyGroupItem_FormFieldsUnion = TextField
-
-type MyBlockTemplateMyGroup_MyGroupItem_GroupField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [MyBlockTemplateMyGroup_MyGroupItem_FormFieldsUnion]
-}
-
-union MyBlockTemplate_MyGroup_FormFieldsUnion = MyBlockTemplateMyGroup_MyGroupItem_GroupField
-
-type MyBlockTemplate_MyGroup_GroupField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [MyBlockTemplate_MyGroup_FormFieldsUnion]
-}
-
-union MyBlockTemplate_FormFieldsUnion = TextField | MyBlockTemplate_MyGroup_GroupField
-
-type MyBlockTemplate_Form {
-  label: String
-  name: String
-  fields: [MyBlockTemplate_FormFieldsUnion]
-}
-
-type Post3_MyBlocs_BlocksFieldTemplates {
-  myBlockTemplate: MyBlockTemplate_Form
-}
-
-type Post3_MyBlocs_BlocksField implements FormField {
-  name: String
-  label: String
-  component: String
-  templates: Post3_MyBlocs_BlocksFieldTemplates
-}
-
-union Post3_Doc_FormFieldsUnion = TextField | Post3_MyBlocs_BlocksField | TextareaField
-
-type Post3_Doc_Form {
-  label: String
-  name: String
-  fields: [Post3_Doc_FormFieldsUnion]
-}
-
-input MyBlockTemplateMyGroup_MyGroupItem_Input {
-  my_group_group_item: String
-}
-
-input MyBlockTemplate_MyGroup_Input {
-  my_group_item: MyBlockTemplateMyGroup_MyGroupItem_Input
-}
-
-input MyBlockTemplate_Input {
-  my_tiem_name: String
-  my_group: MyBlockTemplate_MyGroup_Input
-}
-
-input MyBlocs_Input {
-  myBlockTemplate: MyBlockTemplate_Input
-}
-
-input Post3_Doc_Input {
-  my_titlez: String
-  my_blocs: [MyBlocs_Input]
+input Post_Doc_Input {
+  title: String
   _body: Body_LongTextInput
 }
 
