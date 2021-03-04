@@ -1,6 +1,7 @@
 ---
 sections:
   - label: Posts
+    name: posts
     path: content/posts
     templates:
       - post
