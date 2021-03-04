@@ -1,7 +1,9 @@
 ---
 name: post
-label: My Poster
+label: Post
 fields:
   - type: text
-    label: My Title
+    label: Title
     name: title
+pages:
+  - content/post/welcome.md
