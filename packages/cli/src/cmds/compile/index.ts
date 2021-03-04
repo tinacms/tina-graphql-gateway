@@ -152,16 +152,7 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
       return transformField(field);
     })
   );
-  // let currentObject;
-  // try {
-  //   currentObject = jsyaml.load(await fs.readFileSync(outputYmlPath));
-  // } catch (e) {}
-  // // If there are `pages`, don't overwrite them. These are used internally by the API
-  // // @ts-ignore
-  // if (currentObject?.pages) {
-  //   // @ts-ignore
-  //   output.pages = currentObject.pages;
-  // }
+
   const templateString = "---\n" + jsyaml.dump(output);
   await fs.outputFile(outputYmlPath, templateString);
   return true;
@@ -222,15 +213,6 @@ const transpile = async (projectDir, tempDir) => {
         return true;
       })
   );
-};
-
-export const defineModel = (config: TinaCloudTemplate) => {
-  try {
-    assertShape<TinaCloudTemplate>(config, (yup) =>
-      yup.object({ fields: yup.array().required() })
-    );
-  } catch (e) {}
-  return { _definitionType: "model", config };
 };
 
 export const defineSchema = (config: TinaCloudSchema) => {
