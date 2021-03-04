@@ -262,20 +262,21 @@ export function useForm<T extends object>({
 
   useAddSectionPagePlugin(onNewDocument)
 
-  const [current, send, service] = useMachine(formsMachine, {
-    context: {
-      payload,
-      formRefs: {},
-      cms,
-      queryString,
-      onSubmit: (values) => {
-        cms.api.tina.prepareVariables(values).then((variables) => {
-          onSubmit
-            ? onSubmit({
-                queryString: values.mutationString,
-                variables,
-              })
-            : cms.api.tina
+  const useFormMachine = () => {
+    const result = useMachine(formsMachine, {
+      context: {
+        payload,
+        formRefs: {},
+        cms,
+        queryString,
+        onSubmit: (values) => {
+          cms.api.tina.prepareVariables(values).then((variables) => {
+            onSubmit
+              ? onSubmit({
+                  queryString: values.mutationString,
+                  variables,
+                })
+              : cms.api.tina
                 .request(values.mutationString, { variables })
                 .then((res) => {
                   if (res.errors) {
@@ -283,10 +284,15 @@ export function useForm<T extends object>({
                     cms.alerts.error("Unable to update document");
                   }
                 });
-        });
+          });
+        },
       },
-    },
-  });
+    });
+    
+    return result
+  }
+
+  const [current, send, service] = useFormMachine()
 
   const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
