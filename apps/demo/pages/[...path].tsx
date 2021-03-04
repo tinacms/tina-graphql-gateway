@@ -26,41 +26,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
     (gql) => gql`
       query ContentQuery($section: String!, $relativePath: String!) {
         getDocument(section: $section, relativePath: $relativePath) {
-          ... on Menus_Document {
-            data {
-              ... on Menu_Doc_Data {
-                logo
-              }
-            }
-          }
-          ... on Posts_Document {
-            data {
-              ... on Post_Doc_Data {
-                title
-                author {
-                  data {
-                    ... on Author_Doc_Data {
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-          ... on Authors_Document {
-            data {
-              ... on Author_Doc_Data {
-                name
-              }
-            }
-          }
-          ... on Pages_Document {
-            data {
-              ... on BlockPage_Doc_Data {
-                title
-              }
-            }
-          }
+          id
         }
       }
     `,

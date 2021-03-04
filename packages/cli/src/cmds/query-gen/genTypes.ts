@@ -30,7 +30,7 @@ export async function genTypes(
 ${typescriptTypes}
 `
   );
-  console.log("Generated types at" + successText(` ${typesPath}`));
+  console.log(`Typescript types => ${successText(typesPath)}`);
 
   const schemaString = await printSchema(schema);
   const schemaPath = process.cwd() + "/.tina/__generated__/schema.gql";
@@ -41,6 +41,6 @@ ${typescriptTypes}
 ${schemaString}
   `
   );
-  console.log("Generated schema at" + successText(` ${schemaPath}`));
+  console.log(`GraphQL types ====> ${successText(schemaPath)}`);
   next();
 }

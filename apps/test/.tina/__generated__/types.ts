@@ -62,11 +62,10 @@ export type Section = {
   documents?: Maybe<Array<Maybe<Document>>>;
 };
 
-export type SectionDocumentUnion = Posts_Document | Authors_Document;
+export type SectionDocumentUnion = Posts_Document;
 
 export type SectionParams = {
   posts?: Maybe<Posts_Input>;
-  authors?: Maybe<Authors_Input>;
 };
 
 export type Mutation = {
@@ -74,7 +73,6 @@ export type Mutation = {
   addPendingDocument?: Maybe<Document>;
   updateDocument?: Maybe<SectionDocumentUnion>;
   updatePostsDocument?: Maybe<Posts_Document>;
-  updateAuthorsDocument?: Maybe<Authors_Document>;
 };
 
 
@@ -96,12 +94,6 @@ export type MutationUpdatePostsDocumentArgs = {
   params?: Maybe<Posts_Input>;
 };
 
-
-export type MutationUpdateAuthorsDocumentArgs = {
-  relativePath?: Maybe<Scalars['String']>;
-  params?: Maybe<Authors_Input>;
-};
-
 export type Query = {
   __typename?: 'Query';
   _queryString?: Maybe<Scalars['String']>;
@@ -111,8 +103,6 @@ export type Query = {
   getSection?: Maybe<Section>;
   getPostsDocument?: Maybe<Posts_Document>;
   getPostsList?: Maybe<Array<Maybe<Posts_Document>>>;
-  getAuthorsDocument?: Maybe<Authors_Document>;
-  getAuthorsList?: Maybe<Array<Maybe<Authors_Document>>>;
 };
 
 
@@ -136,20 +126,16 @@ export type QueryGetPostsDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
 };
 
-
-export type QueryGetAuthorsDocumentArgs = {
-  relativePath?: Maybe<Scalars['String']>;
-};
-
-export type Posts_Data = Post_Doc_Data;
+export type Posts_Data = Post4_Doc_Data | Post3_Doc_Data;
 
 export type Posts_Input = {
-  post?: Maybe<Post_Doc_Input>;
+  post4?: Maybe<Post4_Doc_Input>;
+  post3?: Maybe<Post3_Doc_Input>;
 };
 
-export type Posts_Values = Post_Doc_Values;
+export type Posts_Values = Post4_Doc_Values | Post3_Doc_Values;
 
-export type Posts_Form = Post_Doc_Form;
+export type Posts_Form = Post4_Doc_Form | Post3_Doc_Form;
 
 export type Posts_Document = Node & Document & {
   __typename?: 'Posts_Document';
@@ -160,11 +146,6 @@ export type Posts_Document = Node & Document & {
   form?: Maybe<Posts_Form>;
 };
 
-export type Post_Details_Data = {
-  __typename?: 'Post_Details_Data';
-  reading_time?: Maybe<Scalars['String']>;
-};
-
 export type LongTextValue = {
   __typename?: 'LongTextValue';
   raw?: Maybe<Scalars['String']>;
@@ -172,17 +153,11 @@ export type LongTextValue = {
   html?: Maybe<Scalars['String']>;
 };
 
-export type Post_Doc_Data = {
-  __typename?: 'Post_Doc_Data';
-  title?: Maybe<Scalars['String']>;
-  details?: Maybe<Post_Details_Data>;
-  author?: Maybe<Authors_Document>;
+export type Post4_Doc_Data = {
+  __typename?: 'Post4_Doc_Data';
+  titlez?: Maybe<Scalars['String']>;
+  author?: Maybe<Posts_Document>;
   _body?: Maybe<LongTextValue>;
-};
-
-export type Post_Details_Values = {
-  __typename?: 'Post_Details_Values';
-  reading_time?: Maybe<Scalars['String']>;
 };
 
 export type LongTextInitialValue = {
@@ -190,10 +165,9 @@ export type LongTextInitialValue = {
   raw?: Maybe<Scalars['String']>;
 };
 
-export type Post_Doc_Values = {
-  __typename?: 'Post_Doc_Values';
-  title?: Maybe<Scalars['String']>;
-  details?: Maybe<Post_Details_Values>;
+export type Post4_Doc_Values = {
+  __typename?: 'Post4_Doc_Values';
+  titlez?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['Reference']>;
   _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
@@ -204,16 +178,6 @@ export type TextField = FormField & {
   name?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
-};
-
-export type Post_Details_FormFieldsUnion = TextField;
-
-export type Post_Details_GroupField = FormField & {
-  __typename?: 'Post_Details_GroupField';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<Post_Details_FormFieldsUnion>>>;
 };
 
 export type SelectField = FormField & {
@@ -231,73 +195,148 @@ export type TextareaField = FormField & {
   component?: Maybe<Scalars['String']>;
 };
 
-export type Post_Doc_FormFieldsUnion = TextField | Post_Details_GroupField | SelectField | TextareaField;
+export type Post4_Doc_FormFieldsUnion = TextField | SelectField | TextareaField;
 
-export type Post_Doc_Form = {
-  __typename?: 'Post_Doc_Form';
+export type Post4_Doc_Form = {
+  __typename?: 'Post4_Doc_Form';
   label?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<Post_Doc_FormFieldsUnion>>>;
-};
-
-export type Post_Details_Input = {
-  reading_time?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<Post4_Doc_FormFieldsUnion>>>;
 };
 
 export type Body_LongTextInput = {
   raw?: Maybe<Scalars['String']>;
 };
 
-export type Post_Doc_Input = {
-  title?: Maybe<Scalars['String']>;
-  details?: Maybe<Post_Details_Input>;
+export type Post4_Doc_Input = {
+  titlez?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   _body?: Maybe<Body_LongTextInput>;
 };
 
-export type Authors_Data = Author_Doc_Data;
-
-export type Authors_Input = {
-  author?: Maybe<Author_Doc_Input>;
+export type MyBlockTemplateMyGroup_MyGroupItem_Data = {
+  __typename?: 'MyBlockTemplateMyGroup_MyGroupItem_Data';
+  my_group_group_item?: Maybe<Scalars['String']>;
 };
 
-export type Authors_Values = Author_Doc_Values;
-
-export type Authors_Form = Author_Doc_Form;
-
-export type Authors_Document = Node & Document & {
-  __typename?: 'Authors_Document';
-  id: Scalars['ID'];
-  sys?: Maybe<SystemInfo>;
-  data?: Maybe<Authors_Data>;
-  values?: Maybe<Authors_Values>;
-  form?: Maybe<Authors_Form>;
+export type MyBlockTemplate_MyGroup_Data = {
+  __typename?: 'MyBlockTemplate_MyGroup_Data';
+  my_group_item?: Maybe<MyBlockTemplateMyGroup_MyGroupItem_Data>;
 };
 
-export type Author_Doc_Data = {
-  __typename?: 'Author_Doc_Data';
-  name?: Maybe<Scalars['String']>;
+export type MyBlockTemplate_Data = {
+  __typename?: 'MyBlockTemplate_Data';
+  my_tiem_name?: Maybe<Scalars['String']>;
+  my_group?: Maybe<MyBlockTemplate_MyGroup_Data>;
+};
+
+export type Post3_MyBlocs_Data = MyBlockTemplate_Data;
+
+export type Post3_Doc_Data = {
+  __typename?: 'Post3_Doc_Data';
+  my_titlez?: Maybe<Scalars['String']>;
+  my_blocs?: Maybe<Array<Maybe<Post3_MyBlocs_Data>>>;
   _body?: Maybe<LongTextValue>;
 };
 
-export type Author_Doc_Values = {
-  __typename?: 'Author_Doc_Values';
-  name?: Maybe<Scalars['String']>;
+export type MyBlockTemplateMyGroup_MyGroupItem_Values = {
+  __typename?: 'MyBlockTemplateMyGroup_MyGroupItem_Values';
+  my_group_group_item?: Maybe<Scalars['String']>;
+};
+
+export type MyBlockTemplate_MyGroup_Values = {
+  __typename?: 'MyBlockTemplate_MyGroup_Values';
+  my_group_item?: Maybe<MyBlockTemplateMyGroup_MyGroupItem_Values>;
+};
+
+export type MyBlockTemplate_Values = {
+  __typename?: 'MyBlockTemplate_Values';
+  my_tiem_name?: Maybe<Scalars['String']>;
+  my_group?: Maybe<MyBlockTemplate_MyGroup_Values>;
+  _template?: Maybe<Scalars['String']>;
+};
+
+export type Post3_MyBlocs_Values = MyBlockTemplate_Values;
+
+export type Post3_Doc_Values = {
+  __typename?: 'Post3_Doc_Values';
+  my_titlez?: Maybe<Scalars['String']>;
+  my_blocs?: Maybe<Array<Maybe<Post3_MyBlocs_Values>>>;
   _body?: Maybe<LongTextInitialValue>;
   _template?: Maybe<Scalars['String']>;
 };
 
-export type Author_Doc_FormFieldsUnion = TextField | TextareaField;
+export type MyBlockTemplateMyGroup_MyGroupItem_FormFieldsUnion = TextField;
 
-export type Author_Doc_Form = {
-  __typename?: 'Author_Doc_Form';
-  label?: Maybe<Scalars['String']>;
+export type MyBlockTemplateMyGroup_MyGroupItem_GroupField = FormField & {
+  __typename?: 'MyBlockTemplateMyGroup_MyGroupItem_GroupField';
   name?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<Author_Doc_FormFieldsUnion>>>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<MyBlockTemplateMyGroup_MyGroupItem_FormFieldsUnion>>>;
 };
 
-export type Author_Doc_Input = {
+export type MyBlockTemplate_MyGroup_FormFieldsUnion = MyBlockTemplateMyGroup_MyGroupItem_GroupField;
+
+export type MyBlockTemplate_MyGroup_GroupField = FormField & {
+  __typename?: 'MyBlockTemplate_MyGroup_GroupField';
   name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<MyBlockTemplate_MyGroup_FormFieldsUnion>>>;
+};
+
+export type MyBlockTemplate_FormFieldsUnion = TextField | MyBlockTemplate_MyGroup_GroupField;
+
+export type MyBlockTemplate_Form = {
+  __typename?: 'MyBlockTemplate_Form';
+  label?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<MyBlockTemplate_FormFieldsUnion>>>;
+};
+
+export type Post3_MyBlocs_BlocksFieldTemplates = {
+  __typename?: 'Post3_MyBlocs_BlocksFieldTemplates';
+  myBlockTemplate?: Maybe<MyBlockTemplate_Form>;
+};
+
+export type Post3_MyBlocs_BlocksField = FormField & {
+  __typename?: 'Post3_MyBlocs_BlocksField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+  templates?: Maybe<Post3_MyBlocs_BlocksFieldTemplates>;
+};
+
+export type Post3_Doc_FormFieldsUnion = TextField | Post3_MyBlocs_BlocksField | TextareaField;
+
+export type Post3_Doc_Form = {
+  __typename?: 'Post3_Doc_Form';
+  label?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<Post3_Doc_FormFieldsUnion>>>;
+};
+
+export type MyBlockTemplateMyGroup_MyGroupItem_Input = {
+  my_group_group_item?: Maybe<Scalars['String']>;
+};
+
+export type MyBlockTemplate_MyGroup_Input = {
+  my_group_item?: Maybe<MyBlockTemplateMyGroup_MyGroupItem_Input>;
+};
+
+export type MyBlockTemplate_Input = {
+  my_tiem_name?: Maybe<Scalars['String']>;
+  my_group?: Maybe<MyBlockTemplate_MyGroup_Input>;
+};
+
+export type MyBlocs_Input = {
+  myBlockTemplate?: Maybe<MyBlockTemplate_Input>;
+};
+
+export type Post3_Doc_Input = {
+  my_titlez?: Maybe<Scalars['String']>;
+  my_blocs?: Maybe<Array<Maybe<MyBlocs_Input>>>;
   _body?: Maybe<Body_LongTextInput>;
 };
 

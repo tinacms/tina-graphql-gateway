@@ -16,6 +16,7 @@ import { chain } from "../middleware";
 import { genTypes, attachSchema } from "./query-gen";
 import { audit, migrate, dump } from "./audit";
 import { startServer } from "./start-server";
+import { compile } from "./compile";
 
 export const CMD_GEN_TYPES = "schema:types";
 export const CMD_AUDIT = "schema:audit";
@@ -23,6 +24,7 @@ export const CMD_DUMP = "schema:dump";
 export const CMD_MIGRATE = "schema:migrate";
 export const CMD_START_SERVER = "server:start";
 export const CMD_START_PLAYGROUND = "server:playground";
+export const CMD_COMPILE_MODELS = "models:compile";
 
 const startServerPortOption = {
   name: "--port <port>",
@@ -74,6 +76,11 @@ export const baseCmds: Command[] = [
     description: "Dump JSON schema into specified path",
     options: [schemaDumpOption],
     action: (options) => chain([dump], options),
+  },
+  {
+    command: CMD_COMPILE_MODELS,
+    description: "Compile models into static files for the server",
+    action: (options) => chain([compile], options),
   },
   {
     command: CMD_START_SERVER,

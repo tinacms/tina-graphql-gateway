@@ -1,0 +1,7 @@
+---
+label: Post
+name: post
+fields:
+  - name: title
+    label: Title
+    type: text
