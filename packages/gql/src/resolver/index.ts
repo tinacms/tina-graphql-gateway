@@ -355,7 +355,11 @@ const resolveDocument = async ({
 
   const realArgs = { relativePath, section: args.section };
   const { data, content } = await datasource.getData(realArgs);
-  const template = await datasource.getTemplateForDocument(realArgs);
+  assertShape<{ _template: string }>(data, (yup) =>
+    yup.object({ _template: yup.string().required() })
+  );
+  const { _template, ...rest } = data;
+  const template = await datasource.getTemplate(_template);
   const { basename, filename, extension } = await datasource.getDocumentMeta(
     realArgs
   );
@@ -377,13 +381,13 @@ const resolveDocument = async ({
     data: await resolve.data({
       datasource,
       template: template,
-      data,
+      data: rest,
       content,
     }),
     values: await resolve.values({
       datasource,
       template,
-      data,
+      data: rest,
       content: content || "",
     }),
   };

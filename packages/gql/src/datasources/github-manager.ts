@@ -78,7 +78,7 @@ export const clearCache = ({
 };
 
 const getAndSetFromCache = async (
-  { owner, repo, ref }: { owner: string; repo: string, ref: string },
+  { owner, repo, ref }: { owner: string; repo: string; ref: string },
   key: string,
   setter: () => Promise<string | string[]>
 ) => {
@@ -214,7 +214,7 @@ export class GithubManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (sectionSlug?: string) => {
+  getDocumentsForSection = async (sectionSlug: string) => {
     const templates = await this.getTemplatesForSection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
