@@ -71,10 +71,13 @@ export class FileSystemManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (sectionSlug?: string) => {
-    const templates = await this.getTemplatesForSection(sectionSlug);
-    const pages = templates.map((template) => template.pages || []);
-    return _.flatten(pages);
+  getDocumentsForSection = async (sectionSlug: string) => {
+    const section = await this.getSection(sectionSlug);
+    const fullPath = p.join(this.rootPath, section.path);
+
+    // FIXME: replace with fast-glob
+    const documents = await readDir(fullPath, this.dirLoader);
+    return documents;
   };
   getAllTemplates = async () => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
@@ -283,17 +286,17 @@ export class FileSystemManager implements DataSource {
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplateWithoutName(template, {
-      namespace: false,
-    });
+    // const templateData = await this.getTemplateWithoutName(template, {
+    //   namespace: false,
+    // });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
     const path = p.join(sectionData.path, relativePath);
-    const updatedTemplateData = {
-      ...templateData,
-      pages: [...(templateData.pages ? templateData.pages : []), path],
-    };
+    // const updatedTemplateData = {
+    //   ...templateData,
+    //   pages: [...(templateData.pages ? templateData.pages : []), path],
+    // };
 
     const fullFilePath = p.join(this.rootPath, path);
     const fullTemplatePath = p.join(fullPath, `${template}.yml`);
@@ -301,10 +304,11 @@ export class FileSystemManager implements DataSource {
     this.loader.clear(fullFilePath);
     this.loader.clear(fullTemplatePath);
 
-    await writeFile(fullFilePath, "---");
+    const documentString = "---\n" + jsyaml.dump({ _template: template });
+    await writeFile(fullFilePath, documentString);
 
-    const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
-    await writeFile(fullTemplatePath, templateString);
+    // const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
+    // await writeFile(fullTemplatePath, templateString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
