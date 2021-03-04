@@ -247,6 +247,47 @@ const useAddSectionPagePlugin = (onNewDocument?: OnNewDocument) =>
   }, [cms]);
 }
 
+function useFormMachine<T extends object>(  {
+  payload,
+  onSubmit,
+}: {
+  payload: T;
+  onSubmit?: (args: { queryString: string; variables: object }) => void; }) {
+  const cms = useCMS()
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
+  const queryString = payload._queryString;
+
+  const [current, send, service] = useMachine(formsMachine, {
+    context: {
+      payload,
+      formRefs: {},
+      cms,
+      queryString,
+      onSubmit: (values) => {
+        cms.api.tina.prepareVariables(values).then((variables) => {
+          onSubmit
+            ? onSubmit({
+                queryString: values.mutationString,
+                variables,
+              })
+            : cms.api.tina
+              .request(values.mutationString, { variables })
+              .then((res) => {
+                if (res.errors) {
+                  console.error(res);
+                  cms.alerts.error("Unable to update document");
+                }
+              });
+        });
+      },
+    },
+  });
+  
+  return { newPayload: current.context.payload, retry: () => {
+    send({ type: "RETRY", value: { payload, queryString } })
+  }, service }
+}
+
 export function useForm<T extends object>({
   payload,
   onSubmit,
@@ -258,43 +299,13 @@ export function useForm<T extends object>({
 }): [T, Form[]] {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
-  const cms = useCMS();
 
+  // TODO - Should we pull this out of this file. 
+  // Or return it as a factory function which can 
+  // optionally be called.
   useAddSectionPagePlugin(onNewDocument)
 
-  const useFormMachine = () => {
-    const [current, send, service] = useMachine(formsMachine, {
-      context: {
-        payload,
-        formRefs: {},
-        cms,
-        queryString,
-        onSubmit: (values) => {
-          cms.api.tina.prepareVariables(values).then((variables) => {
-            onSubmit
-              ? onSubmit({
-                  queryString: values.mutationString,
-                  variables,
-                })
-              : cms.api.tina
-                .request(values.mutationString, { variables })
-                .then((res) => {
-                  if (res.errors) {
-                    console.error(res);
-                    cms.alerts.error("Unable to update document");
-                  }
-                });
-          });
-        },
-      },
-    });
-    
-    return { newPayload: current.context.payload, retry: () => {
-      send({ type: "RETRY", value: { payload, queryString } })
-    }, service }
-  }
-
-  const {newPayload, retry, service} = useFormMachine()
+  const {newPayload, retry, service} = useFormMachine({payload,onSubmit})
 
   const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
