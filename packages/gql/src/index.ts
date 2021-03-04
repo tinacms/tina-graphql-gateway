@@ -42,6 +42,7 @@ export const gql = async ({
     });
     return result;
   } catch (e) {
+    console.log(e);
     return { error: e.message };
   }
 };

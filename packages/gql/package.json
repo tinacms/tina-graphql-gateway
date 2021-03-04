@@ -73,7 +73,7 @@
     "jest-matcher-utils": "^26.4.2",
     "nodemon": "^2.0.4",
     "ts-jest": "^26.1.2",
-    "tsup": "^3.6.1",
+    "tsup": "^3.7.0",
     "typedoc": "^0.19.2",
     "typescript": "^3.8.3"
   }

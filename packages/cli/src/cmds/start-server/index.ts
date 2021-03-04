@@ -17,9 +17,14 @@ import childProcess from "child_process";
 import path from "path";
 import cors from "cors";
 import http from "http";
+import { buildSchema } from "@forestryio/gql";
 import express from "express";
 // @ts-ignore
 import bodyParser from "body-parser";
+import { genTypes } from "../query-gen";
+import { compile } from "../compile";
+import chokidar from "chokidar";
+import { successText } from "../../utils/theme";
 
 interface Options {
   port?: number;
@@ -41,6 +46,27 @@ export async function startServer(
       process.exit(code);
     });
   }
+  let projectRoot = path.join(process.cwd());
+  let ready = false;
+  chokidar
+    .watch(`${projectRoot}/**/*.ts`, {
+      ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
+    })
+    .on("ready", async () => {
+      console.log("Generating Tina config");
+      await compile();
+      const schema = await buildSchema(process.cwd());
+      await genTypes({ schema }, () => {}, {});
+      ready = true;
+    })
+    .on("all", async () => {
+      if (ready) {
+        console.log("Tina change detected, regenerating config");
+        await compile();
+        const schema = await buildSchema(process.cwd());
+        await genTypes({ schema }, () => {}, {});
+      }
+    });
   await gqlServer({ port });
 }
 

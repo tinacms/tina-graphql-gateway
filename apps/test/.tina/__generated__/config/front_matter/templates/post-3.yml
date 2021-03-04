@@ -1,0 +1,12 @@
+---
+name: post-3
+label: My Poster
+fields:
+  - type: text
+    label: My Title
+    name: my_titlez
+  - type: blocks
+    label: My Blocks
+    name: my_blocs
+    template_types:
+      - my-block-template
