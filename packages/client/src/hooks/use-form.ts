@@ -189,17 +189,8 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForm<T extends object>({
-  payload,
-  onSubmit,
-  onNewDocument,
-}: {
-  payload: T;
-  onSubmit?: (args: { queryString: string; variables: object }) => void;
-  onNewDocument?: OnNewDocument;
-}): [T, Form[]] {
-  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
-  const queryString = payload._queryString;
+const useAddSectionPagePlugin = (onNewDocument?: OnNewDocument) => 
+{
   const cms = useCMS();
 
   React.useEffect(() => {
@@ -254,6 +245,22 @@ export function useForm<T extends object>({
 
     run();
   }, [cms]);
+}
+
+export function useForm<T extends object>({
+  payload,
+  onSubmit,
+  onNewDocument,
+}: {
+  payload: T;
+  onSubmit?: (args: { queryString: string; variables: object }) => void;
+  onNewDocument?: OnNewDocument;
+}): [T, Form[]] {
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
+  const queryString = payload._queryString;
+  const cms = useCMS();
+
+  useAddSectionPagePlugin(onNewDocument)
 
   const [current, send, service] = useMachine(formsMachine, {
     context: {
