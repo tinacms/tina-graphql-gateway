@@ -12,10 +12,9 @@ export default defineSchema({
           label: "Post",
           fields: [
             {
-              label: "Reference",
-              name: "posts",
-              type: "reference",
-              section: "posts",
+              type: "text",
+              label: "Title",
+              name: "title",
             },
           ],
         },
