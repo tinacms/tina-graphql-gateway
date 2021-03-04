@@ -6,13 +6,13 @@ const temp: TinaCloudTemplate = {
   fields: [
     {
       label: "Title",
-      name: "titlez",
+      name: "title",
       type: "text",
     },
     {
-      label: "Author",
+      label: "Post",
       type: "reference",
-      name: "author",
+      name: "other_post",
       section: "posts",
     },
   ],
