@@ -1,9 +1,0 @@
----
-name: post
-label: My Poster
-fields:
-  - type: text
-    label: My Title
-    name: title
-pages:
-  - content/posts/welcome.md
