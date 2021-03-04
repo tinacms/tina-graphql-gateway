@@ -247,7 +247,7 @@ const useAddSectionPagePlugin = (onNewDocument?: OnNewDocument) =>
   }, [cms]);
 }
 
-function useFormMachine<T extends object>(  {
+function useFormattedPayload<T extends object>(  {
   payload,
   onSubmit,
 }: {
@@ -256,8 +256,9 @@ function useFormMachine<T extends object>(  {
   const cms = useCMS()
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
+  const [tinaForms, setTinaForms] = React.useState([]);
 
-  const [current, send, service] = useMachine(formsMachine, {
+  const [machineState, send, service] = useMachine(formsMachine, {
     context: {
       payload,
       formRefs: {},
@@ -282,32 +283,7 @@ function useFormMachine<T extends object>(  {
       },
     },
   });
-  
-  return { newPayload: current.context.payload, retry: () => {
-    send({ type: "RETRY", value: { payload, queryString } })
-  }, service }
-}
 
-export function useForm<T extends object>({
-  payload,
-  onSubmit,
-  onNewDocument,
-}: {
-  payload: T;
-  onSubmit?: (args: { queryString: string; variables: object }) => void;
-  onNewDocument?: OnNewDocument;
-}): [T, Form[]] {
-  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
-  const queryString = payload._queryString;
-
-  // TODO - Should we pull this out of this file. 
-  // Or return it as a factory function which can 
-  // optionally be called.
-  useAddSectionPagePlugin(onNewDocument)
-
-  const {newPayload, retry, service} = useFormMachine({payload,onSubmit})
-
-  const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
     const subscription = service.subscribe((state) => {
       if (state.matches("active")) {
@@ -329,13 +305,43 @@ export function useForm<T extends object>({
 
     return subscription.unsubscribe;
   }, [service, setTinaForms]); // note: service should never change
+  
+  return { 
+      data: { 
+        payload: machineState.context.payload, 
+        tinaForms 
+      }, 
+      retry: () => {
+        send({ type: "RETRY", value: { payload, queryString } })
+      },  
+  }
+}
+
+export function useForm<T extends object>({
+  payload,
+  onSubmit,
+  onNewDocument,
+}: {
+  payload: T;
+  onSubmit?: (args: { queryString: string; variables: object }) => void;
+  onNewDocument?: OnNewDocument;
+}): [T, Form[]] {
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
+  const queryString = payload._queryString;
+
+  // TODO - Should we pull this out of this file. 
+  // Or return it as a factory function which can 
+  // optionally be called.
+  useAddSectionPagePlugin(onNewDocument)
+
+  const {data, retry} = useFormattedPayload({payload,onSubmit})
 
   React.useEffect(() => {
     retry()
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore
-  return [newPayload, tinaForms];
+  return [data.payload, data.tinaForms];
 }
 
 type Field = {
