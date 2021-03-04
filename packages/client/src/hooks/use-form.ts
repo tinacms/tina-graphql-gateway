@@ -289,12 +289,12 @@ export function useForm<T extends object>({
       },
     });
     
-    return { current, retry: () => {
+    return { newPayload: current.context.payload, retry: () => {
       send({ type: "RETRY", value: { payload, queryString } })
     }, service }
   }
 
-  const {current, retry, service} = useFormMachine()
+  const {newPayload, retry, service} = useFormMachine()
 
   const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
@@ -324,7 +324,7 @@ export function useForm<T extends object>({
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore
-  return [current.context.payload, tinaForms];
+  return [newPayload, tinaForms];
 }
 
 type Field = {
