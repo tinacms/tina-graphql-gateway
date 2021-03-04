@@ -4,16 +4,18 @@ export default defineSchema({
   sections: [
     {
       label: "Posts",
+      name: "posts",
       path: "content/posts",
       templates: [
         {
           name: "post",
-          label: "My Poster",
+          label: "Post",
           fields: [
             {
-              type: "text",
-              label: "My Title",
-              name: "title",
+              label: "Reference",
+              name: "posts",
+              type: "reference",
+              section: "posts",
             },
           ],
         },
