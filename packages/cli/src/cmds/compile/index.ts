@@ -153,6 +153,14 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
     })
   );
 
+  try {
+    const existingDocument = jsyaml.load(await fs.readFileSync(outputYmlPath));
+    console.log("ex", existingDocument);
+    if (existingDocument.pages) {
+      output.pages = existingDocument.pages;
+    }
+  } catch (e) {}
+
   const templateString = "---\n" + jsyaml.dump(output);
   await fs.outputFile(outputYmlPath, templateString);
   return true;
@@ -160,7 +168,6 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
 
 export const compile = async () => {
   await fs.remove(tinaTempPath);
-  await fs.remove(tinaConfigPath);
   await transpile(tinaPath, tinaTempPath);
   const schemaFunc = require(`${tinaTempPath}/schema.js`);
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
@@ -193,6 +200,8 @@ export const compile = async () => {
     )
   );
   console.log(`Tina config ======> ${successText(tinaConfigPath)}`);
+  // TODO: remove stale yml
+  // await fs.remove(tinaConfigPath);
   await fs.remove(tinaTempPath);
 };
 
