@@ -263,7 +263,7 @@ export function useForm<T extends object>({
   useAddSectionPagePlugin(onNewDocument)
 
   const useFormMachine = () => {
-    const result = useMachine(formsMachine, {
+    const [current, send, service] = useMachine(formsMachine, {
       context: {
         payload,
         formRefs: {},
@@ -289,10 +289,10 @@ export function useForm<T extends object>({
       },
     });
     
-    return result
+    return { current, send, service }
   }
 
-  const [current, send, service] = useFormMachine()
+  const {current, send, service} = useFormMachine()
 
   const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
