@@ -134,7 +134,7 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
       `front_matter/templates/${definition.name}.yml`
     )
   );
-  const output = { ...definition };
+  const output: { pages?: string[] } & typeof definition = { ...definition };
   output.fields = await Promise.all(
     definition.fields.map(async (field) => {
       if (field.type === "blocks") {
@@ -155,7 +155,9 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
 
   try {
     const existingDocument = jsyaml.load(await fs.readFileSync(outputYmlPath));
-    console.log("ex", existingDocument);
+    assertShape<{ pages: string[] }>(existingDocument, (yup) =>
+      yup.object({ pages: yup.array(yup.string()) })
+    );
     if (existingDocument.pages) {
       output.pages = existingDocument.pages;
     }
@@ -253,6 +255,7 @@ export interface TinaCloudSettings {
 }
 interface TinaCloudSection {
   path: string;
+  name: string;
   label: string;
   templates: TinaCloudTemplate[];
 }
