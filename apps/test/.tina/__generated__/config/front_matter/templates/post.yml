@@ -1,0 +1,9 @@
+---
+name: post
+label: Post
+fields:
+  - type: text
+    label: Title
+    name: title
+pages:
+  - content/post/welcome.md
