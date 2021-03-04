@@ -289,10 +289,12 @@ export function useForm<T extends object>({
       },
     });
     
-    return { current, send, service }
+    return { current, retry: () => {
+      send({ type: "RETRY", value: { payload, queryString } })
+    }, service }
   }
 
-  const {current, send, service} = useFormMachine()
+  const {current, retry, service} = useFormMachine()
 
   const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
@@ -318,7 +320,7 @@ export function useForm<T extends object>({
   }, [service, setTinaForms]); // note: service should never change
 
   React.useEffect(() => {
-    send({ type: "RETRY", value: { payload, queryString } });
+    retry()
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore
