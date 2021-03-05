@@ -356,7 +356,9 @@ const resolveDocument = async ({
   const realArgs = { relativePath, section: args.section };
   const { data, content } = await datasource.getData(realArgs);
   assertShape<{ _template: string }>(data, (yup) =>
-    yup.object({ _template: yup.string().required() })
+    yup.object({
+      _template: yup.string().required(),
+    })
   );
   const { _template, ...rest } = data;
   const template = await datasource.getTemplate(_template);
@@ -498,16 +500,6 @@ const addPendingDocument = async (
   await context.datasource.addDocument(args);
 
   return true;
-};
-
-const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => {
-    return f?.name === fieldName;
-  });
-  if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
-  }
-  return field;
 };
 
 /**

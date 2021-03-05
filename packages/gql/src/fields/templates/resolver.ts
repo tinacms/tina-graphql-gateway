@@ -41,7 +41,11 @@ export const resolve = {
     const values = content ? { ...rest, _body: content } : rest;
 
     await sequential(Object.keys(values), async (key) => {
-      const field = findField([...template.fields, textarea.contentField], key);
+      const field = findField(
+        [...template.fields, textarea.contentField],
+        key,
+        template
+      );
       return (accum[key] = await dataValue(datasource, field, values[key]));
     });
 
@@ -61,7 +65,11 @@ export const resolve = {
     const values = content ? { ...rest, _body: content } : rest;
 
     await sequential(Object.keys(values), async (key) => {
-      const field = findField([...template.fields, textarea.contentField], key);
+      const field = findField(
+        [...template.fields, textarea.contentField],
+        key,
+        template
+      );
       return (accum[key] = await dataInitialValuesField(
         datasource,
         field,
@@ -290,12 +298,23 @@ const inputField = async ({
   }
 };
 
-const findField = (fields: Field[], fieldName: string) => {
+const findField = (
+  fields: Field[],
+  fieldName: string,
+  template: TemplateData
+) => {
   const field = fields.find((f) => {
     return f?.name === fieldName;
   });
   if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
+    // console.log(fields);
+    throw new Error(
+      `Unable to find field for item with name: ${fieldName} on template ${
+        template.name
+      } Possible fields are: ${template.fields
+        .map((field) => field.name)
+        .join(", ")}`
+    );
   }
   return field;
 };

@@ -1,7 +1,6 @@
 ---
 title: Love More Than Ever!
-author: content/authors/emily.md
+author: content/authors/terrence.md
 image: /uploads/pride-nikki-2.JPG
-hashtags: []
+_template: post
 ---
-
