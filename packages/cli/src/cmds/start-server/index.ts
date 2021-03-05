@@ -17,7 +17,7 @@ import { buildSchema } from "@forestryio/gql";
 import { genTypes } from "../query-gen";
 import { compile } from "../compile";
 import chokidar from "chokidar";
-import { successText } from "../../utils/theme";
+import { successText, dangerText } from "../../utils/theme";
 
 interface Options {
   port?: number;
@@ -31,16 +31,6 @@ export async function startServer(
   _next,
   { port = 4001, command }: Options
 ) {
-  if (typeof command === "string") {
-    const commands = command.split(" ");
-    const ps = childProcess.spawn(commands[0], [commands[1]], {
-      stdio: "inherit",
-    });
-    ps.on("close", (code) => {
-      console.log(`child process exited with code ${code}`);
-      process.exit(code);
-    });
-  }
   let projectRoot = path.join(process.cwd());
   let ready = false;
   chokidar
@@ -48,18 +38,42 @@ export async function startServer(
       ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
     })
     .on("ready", async () => {
-      console.log("Generating Tina config");
-      await compile();
-      const schema = await buildSchema(process.cwd());
-      await genTypes({ schema }, () => {}, {});
-      ready = true;
-    })
-    .on("all", async () => {
-      if (ready) {
-        console.log("Tina change detected, regenerating config");
+      try {
+        console.log("Generating Tina config");
         await compile();
         const schema = await buildSchema(process.cwd());
         await genTypes({ schema }, () => {}, {});
+        ready = true;
+        if (typeof command === "string") {
+          const commands = command.split(" ");
+          const ps = childProcess.spawn(commands[0], [commands[1]], {
+            stdio: "inherit",
+          });
+          ps.on("close", (code) => {
+            console.log(`child process exited with code ${code}`);
+            process.exit(code);
+          });
+        }
+      } catch (e) {
+        console.log(dangerText(`${e.message}, exiting...`));
+        process.exit(0);
+      }
+    })
+    .on("all", async (event, path) => {
+      if (ready) {
+        console.log("Tina change detected, regenerating config");
+        try {
+          await compile();
+          const schema = await buildSchema(process.cwd());
+          await genTypes({ schema }, () => {}, {});
+        } catch (e) {
+          console.log(
+            dangerText(
+              "Compilation failed with errors, server has not been restarted"
+            )
+          );
+          console.log(e.message);
+        }
       }
     });
 
