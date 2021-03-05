@@ -255,9 +255,9 @@ yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
                 .isValidSync(item.type, { strict: true });
 
               if (!isAType) {
-                console.log(
-                  `type must be one of ${types.join(", ")}, got ${item.type}`
-                );
+                // console.log(
+                //   `type must be one of ${types.join(", ")}, got ${item.type}`
+                // );
               } else {
                 // TODO: provide better messages by validating the invalid
                 // schema with the appropriate yup schema
