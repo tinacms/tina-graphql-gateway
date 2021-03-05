@@ -63,7 +63,7 @@
               "name": "author",
               "label": "Author",
               "type": "reference",
-              "section": "authors"
+              "section": "author"
             }
           ]
         }

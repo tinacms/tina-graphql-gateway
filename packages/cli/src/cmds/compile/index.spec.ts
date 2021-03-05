@@ -142,6 +142,13 @@ const invalidCases: { [key: string]: Case } = {
       ],
     }),
   },
+  "reference field with a section that does not exist": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "reference",
+      section: "abc",
+    }),
+  },
 };
 
 const validCases: { [key: string]: Case } = {
@@ -196,6 +203,44 @@ const validCases: { [key: string]: Case } = {
           ],
         },
       ],
+    }),
+  },
+  "toggle field": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "toggle",
+    }),
+  },
+  "tags field": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "tags",
+    }),
+  },
+  "image field": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "image",
+    }),
+  },
+  "number field": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "number",
+    }),
+  },
+  "reference field with a section that exists": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "reference",
+      section: "posts",
+    }),
+  },
+  "reference-list field with a section that exists": {
+    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+      ...validFieldPartial,
+      type: "reference-list",
+      section: "posts",
     }),
   },
 };

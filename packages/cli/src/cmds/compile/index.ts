@@ -248,11 +248,12 @@ yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
             return true;
           } else {
             if (item.type) {
-              const isAType = yup
-                .string()
-                .oneOf(types)
-                .required()
-                .isValidSync(item.type, { strict: true });
+              const isAType = false;
+              // const isAType = yup
+              //   .string()
+              //   .oneOf(types)
+              //   .required()
+              //   .isValidSync(item.type, { strict: true });
 
               if (!isAType) {
                 // console.log(
@@ -283,120 +284,176 @@ yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
   );
 });
 
-const baseSchema = yup.object({
-  label: yup.string().required(),
-  name: yup.string().required(),
-  description: yup.string(),
-});
-let types = [
-  "text",
-  "textarea",
-  "select",
-  "list",
-  "group",
-  "group-list",
-  "blocks",
-];
-
-const TextSchema = baseSchema.label("text").shape({
-  type: yup
-    .string()
-    .matches(/^text$/)
-    .required(),
-});
-const TextAreaSchema = baseSchema.label("textarea").shape({
-  type: yup
-    .string()
-    .matches(/^textarea$/)
-    .required(),
-});
-const SelectSchema = baseSchema.label("select").shape({
-  type: yup
-    .string()
-    .matches(/^select$/)
-    .required(),
-  options: yup.array().min(1).of(yup.string()).required(),
-});
-const ListSchema = baseSchema.label("list").shape({
-  type: yup
-    .string()
-    .matches(/^list$/)
-    .required(),
-});
-const GroupSchema = baseSchema.label("group").shape({
-  type: yup
-    .string()
-    .matches(/^group$/)
-    .required(),
-  fields: yup.lazy(() =>
-    yup
-      .array()
-      .min(1, (message) => `${message.path} must have at least 1 item`)
-      // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
-      .oneOfSchemas(FieldSchemas)
-      .required()
-  ),
-});
-const GroupListSchema = baseSchema.label("group-list").shape({
-  type: yup
-    .string()
-    .matches(/^group-list$/)
-    .required(),
-  fields: yup.lazy(() =>
-    yup
-      .array()
-      .min(1, (message) => `${message.path} must have at least 1 item`)
-      // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
-      .oneOfSchemas(FieldSchemas)
-      .required()
-  ),
-});
-
-const BlocksSchema = baseSchema.label("blocks").shape({
-  type: yup
-    .string()
-    .matches(/^blocks$/)
-    .required(),
-  templates: yup.lazy(() =>
-    yup
-      .array()
-      .min(1, (message) => `${message.path} must have at least 1 item`)
-      .of(TemplateSchema)
-      .required("templates is a required field")
-  ),
-});
-let schemaMap = {
-  text: TextSchema,
-  textarea: TextAreaSchema,
-  select: SelectSchema,
-  list: ListSchema,
-  group: GroupSchema,
-  "group-list": GroupListSchema,
-  blocks: BlocksSchema,
-};
-var FieldSchemas = [
-  TextSchema,
-  TextAreaSchema,
-  SelectSchema,
-  ListSchema,
-  BlocksSchema,
-  // FIXME: for some reason these mess up the blocks test if they're listed before it
-  GroupSchema,
-  GroupListSchema,
-];
-
-const TemplateSchema = yup.object({
-  label: yup.string().required(),
-  name: yup.string().required(),
-  fields: yup
-    .array()
-    .min(1, (message) => `${message.path} must have at least 1 item`)
-    // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
-    .oneOfSchemas(FieldSchemas)
-    .required(),
-});
-
 export const defineSchema = (config: TinaCloudSchema) => {
+  const baseSchema = yup.object({
+    label: yup.string().required(),
+    name: yup.string().required(),
+    description: yup.string(),
+  });
+  let types = [
+    "text",
+    "number",
+    "textarea",
+    "tags",
+    "select",
+    "list",
+    "group",
+    "group-list",
+    "blocks",
+    "reference",
+    "reference-list",
+  ];
+
+  const TextSchema = baseSchema.label("text").shape({
+    type: yup
+      .string()
+      .matches(/^text$/)
+      .required(),
+  });
+
+  const ToggleSchema = baseSchema.label("toggle").shape({
+    type: yup
+      .string()
+      .matches(/^toggle$/)
+      .required(),
+  });
+
+  const ImageSchema = baseSchema.label("image").shape({
+    type: yup
+      .string()
+      .matches(/^image$/)
+      .required(),
+  });
+
+  const NumberSchema = baseSchema.label("number").shape({
+    type: yup
+      .string()
+      .matches(/^number$/)
+      .required(),
+  });
+  const TextAreaSchema = baseSchema.label("textarea").shape({
+    type: yup
+      .string()
+      .matches(/^textarea$/)
+      .required(),
+  });
+  const TagsSchema = baseSchema.label("tags").shape({
+    type: yup
+      .string()
+      .matches(/^tags$/)
+      .required(),
+  });
+  const SelectSchema = baseSchema.label("select").shape({
+    type: yup
+      .string()
+      .matches(/^select$/)
+      .required(),
+    options: yup.array().min(1).of(yup.string()).required(),
+  });
+  const ListSchema = baseSchema.label("list").shape({
+    type: yup
+      .string()
+      .matches(/^list$/)
+      .required(),
+  });
+  const GroupSchema = baseSchema.label("group").shape({
+    type: yup
+      .string()
+      .matches(/^group$/)
+      .required(),
+    fields: yup.lazy(() =>
+      yup
+        .array()
+        .min(1, (message) => `${message.path} must have at least 1 item`)
+        // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+        .oneOfSchemas(FieldSchemas)
+        .required()
+    ),
+  });
+  const GroupListSchema = baseSchema.label("group-list").shape({
+    type: yup
+      .string()
+      .matches(/^group-list$/)
+      .required(),
+    fields: yup.lazy(() =>
+      yup
+        .array()
+        .min(1, (message) => `${message.path} must have at least 1 item`)
+        // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+        .oneOfSchemas(FieldSchemas)
+        .required()
+    ),
+  });
+  const ReferenceSchema = baseSchema.label("reference").shape({
+    type: yup
+      .string()
+      .matches(/^reference$/)
+      .required(),
+    section: yup
+      .string()
+      .oneOf(config.sections.map((section) => section.name))
+      .required(),
+  });
+  const ReferenceListSchema = baseSchema.label("reference-list").shape({
+    type: yup
+      .string()
+      .matches(/^reference-list$/)
+      .required(),
+    section: yup
+      .string()
+      .oneOf(config.sections.map((section) => section.name))
+      .required(),
+  });
+
+  const BlocksSchema = baseSchema.label("blocks").shape({
+    type: yup
+      .string()
+      .matches(/^blocks$/)
+      .required(),
+    templates: yup.lazy(() =>
+      yup
+        .array()
+        .min(1, (message) => `${message.path} must have at least 1 item`)
+        .of(TemplateSchema)
+        .required("templates is a required field")
+    ),
+  });
+  // let schemaMap = {
+  //   text: TextSchema,
+  //   textarea: TextAreaSchema,
+  //   select: SelectSchema,
+  //   list: ListSchema,
+  //   group: GroupSchema,
+  //   "group-list": GroupListSchema,
+  //   blocks: BlocksSchema,
+  // };
+  var FieldSchemas = [
+    TextSchema,
+    TextAreaSchema,
+    SelectSchema,
+    ListSchema,
+    NumberSchema,
+    TagsSchema,
+    ToggleSchema,
+    ImageSchema,
+    BlocksSchema,
+    // FIXME: for some reason these mess up the blocks test if they're listed before it
+    GroupSchema,
+    GroupListSchema,
+    ReferenceSchema,
+    ReferenceListSchema,
+  ];
+
+  const TemplateSchema = yup.object({
+    label: yup.string().required(),
+    name: yup.string().required(),
+    fields: yup
+      .array()
+      .min(1, (message) => `${message.path} must have at least 1 item`)
+      // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+      .oneOfSchemas(FieldSchemas)
+      .required(),
+  });
   assertShape<TinaCloudSettings>(config, (yup) =>
     yup.object({
       sections: yup
