@@ -235,7 +235,10 @@ ${print(info.operation)}
 
       const params = await resolve.input({
         template,
-        data: values,
+        data: {
+          ...values,
+          _template: template.name,
+        },
         datasource: context.datasource,
         includeBody: true,
       });
@@ -259,7 +262,6 @@ ${print(info.operation)}
           }),
         });
       });
-
       await context.datasource.updateDocument(payload);
       return resolveDocument({
         args: {

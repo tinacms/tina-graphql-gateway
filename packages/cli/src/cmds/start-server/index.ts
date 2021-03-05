@@ -56,6 +56,7 @@ export async function startServer(
         }
       } catch (e) {
         console.log(dangerText(`${e.message}, exiting...`));
+        console.log(e);
         process.exit(0);
       }
     })

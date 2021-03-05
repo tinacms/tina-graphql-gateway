@@ -41,6 +41,9 @@ import type {
 } from "../types";
 import { Octokit } from "@octokit/rest";
 
+// const tinaPath = ".tina";
+const tinaPath = ".tina/__generated__/config";
+
 const cache = new LRU<string, string | string[]>({
   max: 50,
   length: function (v: string, key) {
@@ -220,7 +223,7 @@ export class GithubManager implements DataSource {
     return _.flatten(pages);
   };
   getAllTemplates = async () => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, `front_matter/templates`);
     const templates = await this.readDir(fullPath, this.dirLoader);
     return await sequential(
       templates,
@@ -235,7 +238,7 @@ export class GithubManager implements DataSource {
     );
   getSettingsData = async () => {
     const { data } = await this.readFile<Settings>(
-      p.join(this.rootPath, ".tina/settings.yml"),
+      p.join(this.rootPath, tinaPath, "settings.yml"),
       this.loader
     );
 
@@ -362,7 +365,7 @@ export class GithubManager implements DataSource {
     if (!sectionData) {
       throw new Error(`No section found for ${args.section}`);
     }
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await this.readDir(fullPath, this.dirLoader);
 
     const template = (
@@ -389,7 +392,7 @@ export class GithubManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await this.readDir(fullPath, this.dirLoader);
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
@@ -408,7 +411,7 @@ export class GithubManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await this.readDir(fullPath, this.dirLoader);
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
@@ -423,7 +426,7 @@ export class GithubManager implements DataSource {
     return data;
   };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
     const templateData = await this.getTemplateWithoutName(template, {
       namespace: false,
