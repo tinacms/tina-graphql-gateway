@@ -46,15 +46,17 @@ type Section {
   documents: [Document]
 }
 
-union SectionDocumentUnion = Posts_Document
+union SectionDocumentUnion = Authors_Document | Posts_Document
 
 input SectionParams {
+  authors: Authors_Input
   posts: Posts_Input
 }
 
 type Mutation {
   addPendingDocument(relativePath: String, section: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
+  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
 }
 
@@ -64,8 +66,108 @@ type Query {
   getDocument(section: String, relativePath: String): SectionDocumentUnion
   getSections: [Section]
   getSection(section: String): Section
+  getAuthorsDocument(relativePath: String): Authors_Document
+  getAuthorsList: [Authors_Document]
   getPostsDocument(relativePath: String): Posts_Document
   getPostsList: [Posts_Document]
+}
+
+union Authors_Data = Author_Doc_Data
+
+input Authors_Input {
+  author: Author_Doc_Input
+}
+
+union Authors_Values = Author_Doc_Values
+
+union Authors_Form = Author_Doc_Form
+
+type Authors_Document implements Node & Document {
+  id: ID!
+  sys: SystemInfo
+  data: Authors_Data
+  values: Authors_Values
+  form: Authors_Form
+}
+
+type Author_Accolades_Data {
+  figure: String
+  description: String
+}
+
+type LongTextValue {
+  raw: String
+  markdownAst: JSONObject
+  html: String
+}
+
+type Author_Doc_Data {
+  name: String
+  image: String
+  accolades: [Author_Accolades_Data]
+  _body: LongTextValue
+}
+
+type Author_Accolades_Values {
+  figure: String
+  description: String
+}
+
+type LongTextInitialValue {
+  raw: String
+}
+
+type Author_Doc_Values {
+  name: String
+  image: String
+  accolades: [Author_Accolades_Values]
+  _body: LongTextInitialValue
+  _template: String
+}
+
+type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union Author_Accolades_FormFieldsUnion = TextField
+
+type Author_Accolades_GroupListField implements FormField {
+  name: String
+  label: String
+  component: String
+  fields: [Author_Accolades_FormFieldsUnion]
+}
+
+type TextareaField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+union Author_Doc_FormFieldsUnion = TextField | Author_Accolades_GroupListField | TextareaField
+
+type Author_Doc_Form {
+  label: String
+  name: String
+  fields: [Author_Doc_FormFieldsUnion]
+}
+
+input Author_Accolades_Input {
+  figure: String
+  description: String
+}
+
+input Body_LongTextInput {
+  raw: String
+}
+
+input Author_Doc_Input {
+  name: String
+  image: String
+  accolades: [Author_Accolades_Input]
+  _body: Body_LongTextInput
 }
 
 union Posts_Data = Post_Doc_Data
@@ -86,40 +188,29 @@ type Posts_Document implements Node & Document {
   form: Posts_Form
 }
 
-type LongTextValue {
-  raw: String
-  markdownAst: JSONObject
-  html: String
-}
-
 type Post_Doc_Data {
   title: String
+  image: String
+  author: Authors_Document
   _body: LongTextValue
-}
-
-type LongTextInitialValue {
-  raw: String
 }
 
 type Post_Doc_Values {
   title: String
+  image: String
+  author: Reference
   _body: LongTextInitialValue
   _template: String
 }
 
-type TextField implements FormField {
+type SelectField implements FormField {
   name: String
   label: String
   component: String
+  options: [String]
 }
 
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-union Post_Doc_FormFieldsUnion = TextField | TextareaField
+union Post_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
 
 type Post_Doc_Form {
   label: String
@@ -127,12 +218,10 @@ type Post_Doc_Form {
   fields: [Post_Doc_FormFieldsUnion]
 }
 
-input Body_LongTextInput {
-  raw: String
-}
-
 input Post_Doc_Input {
   title: String
+  image: String
+  author: String
   _body: Body_LongTextInput
 }
 

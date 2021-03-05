@@ -5,5 +5,14 @@ fields:
   - name: title
     label: Title
     type: text
-pages:
-  - content/posts/welcome.md
+  - name: image
+    label: Image
+    type: text
+  - name: author
+    label: Author
+    type: select
+    section: authors
+    config:
+      source:
+        type: pages
+        section: authors

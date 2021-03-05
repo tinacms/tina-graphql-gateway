@@ -1,13 +1,7 @@
 ---
 name: Jen Rhines
+_template: author
 image: "/uploads/jen-headshot.jpg"
-gallery:
-  - "/uploads/jen-stretch.jpg"
-  - "/uploads/jen.jpg"
-  - "/uploads/jen-bio.jpg"
-anecdotes:
-  - Wellness coach & founder
-  - Adidas Endurance Coach and Brand Ambassador
 accolades:
   - figure: 5x
     description: NCAA Champion
