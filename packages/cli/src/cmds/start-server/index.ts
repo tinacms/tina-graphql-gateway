@@ -11,16 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// @ts-ignore
-import { gql } from "@forestryio/gql";
 import childProcess from "child_process";
 import path from "path";
-import cors from "cors";
-import http from "http";
 import { buildSchema } from "@forestryio/gql";
-import express from "express";
-// @ts-ignore
-import bodyParser from "body-parser";
 import { genTypes } from "../query-gen";
 import { compile } from "../compile";
 import chokidar from "chokidar";
@@ -67,25 +60,56 @@ export async function startServer(
         await genTypes({ schema }, () => {}, {});
       }
     });
-  await gqlServer({ port });
+
+  const state = {
+    server: null,
+    sockets: [],
+  };
+
+  let isReady = false;
+
+  const start = async () => {
+    const s = require("./server");
+    state.server = await s.default();
+    state.server.listen(port, () => {
+      console.log(`Started on port: ${successText(port.toString())}`);
+    });
+    state.server.on("connection", (socket) => {
+      state.sockets.push(socket);
+    });
+  };
+
+  const restart = async () => {
+    console.log("Detected change to gql package, restarting...");
+    Object.keys(require.cache).forEach((id) => {
+      if (id.startsWith(gqlDir)) {
+        const d = delete require.cache[require.resolve(id)];
+      }
+    });
+
+    state.sockets.forEach((socket, index) => {
+      if (socket.destroyed === false) {
+        socket.destroy();
+      }
+    });
+    state.sockets = [];
+    state.server.close(() => {
+      console.log("Server closed");
+      start();
+    });
+  };
+
+  const gqlIndex = `/Users/jeffsee/code/graphql-demo/packages/gql/dist/index.js`;
+  const gqlDir = `/Users/jeffsee/code/graphql-demo/packages`;
+  chokidar
+    .watch(gqlIndex)
+    .on("ready", async () => {
+      isReady = true;
+      start();
+    })
+    .on("all", async () => {
+      if (isReady) {
+        restart();
+      }
+    });
 }
-
-export const gqlServer = async ({ port }: { port: number }) => {
-  const app = express();
-  const server = http.createServer(app);
-  app.use(cors());
-  app.use(bodyParser.json());
-
-  let projectRoot = path.join(process.cwd());
-
-  app.post("/graphql", async (req, res) => {
-    const { query, variables } = req.body;
-    const result = await gql({ projectRoot, query, variables });
-    return res.json(result);
-  });
-
-  server.listen(port, () => {
-    console.info(`Listening on http://localhost:${port}`);
-  });
-  return server;
-};
