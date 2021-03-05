@@ -24,7 +24,10 @@ const tinaPath = path.join(process.cwd(), ".tina");
 const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
 const tinaConfigPath = tinaTempPath.replace("temp", "config");
 
-const transformField = async (tinaField: TinaField) => {
+const transformField = async (
+  tinaField: TinaField,
+  schema: TinaCloudSchema
+) => {
   const field = (await yup
     .object()
     .shape({
@@ -58,7 +61,6 @@ const transformField = async (tinaField: TinaField) => {
             "toggle",
           ],
           (message) => {
-            console.log(message);
             return `Expected one of ${message.values} but got ${message.value}`;
           }
         ),
@@ -71,7 +73,9 @@ const transformField = async (tinaField: TinaField) => {
     return {
       ...field,
       type: "field_group",
-      fields: await Promise.all(field.fields.map(transformField)),
+      fields: await Promise.all(
+        field.fields.map((field) => transformField(field, schema))
+      ),
     };
   }
   if (field.type === "toggle") {
@@ -84,10 +88,19 @@ const transformField = async (tinaField: TinaField) => {
     return {
       ...field,
       type: "field_group_list",
-      fields: await Promise.all(field.fields.map(transformField)),
+      fields: await Promise.all(
+        field.fields.map((field) => transformField(field, schema))
+      ),
     };
   }
   if (field.type === "reference") {
+    yup
+      .object({
+        section: yup
+          .string()
+          .oneOf(schema.sections.map((section) => section.name)),
+      })
+      .validate(field);
     return {
       ...field,
       type: "select",
@@ -114,7 +127,10 @@ const transformField = async (tinaField: TinaField) => {
   return field;
 };
 
-const buildTemplate = async (definition: TinaCloudTemplate) => {
+const buildTemplate = async (
+  definition: TinaCloudTemplate,
+  schema: TinaCloudSchema
+) => {
   yup
     .object()
     .shape({
@@ -142,14 +158,14 @@ const buildTemplate = async (definition: TinaCloudTemplate) => {
         // @ts-ignore
         f.template_types = await Promise.all(
           field.templates.map(async (template, index) => {
-            await buildTemplate(template);
+            await buildTemplate(template, schema);
             return template.name;
           })
         );
         f.templates = undefined;
         return f;
       }
-      return transformField(field);
+      return transformField(field, schema);
     })
   );
 
@@ -187,7 +203,7 @@ export const compile = async () => {
       async (section) =>
         await Promise.all(
           section.templates.map(async (definition) => {
-            await buildTemplate(definition);
+            await buildTemplate(definition, schemaObject);
           })
         )
     )

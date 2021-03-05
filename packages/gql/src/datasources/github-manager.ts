@@ -249,7 +249,7 @@ export class GithubManager implements DataSource {
     const result = sectionsSettings.find(({ slug }) => slug === section);
 
     if (!result) {
-      throw new Error(`Expected tofind section with slug ${section}`);
+      throw new Error(`Expected to find section with slug ${section}`);
     }
 
     return result;
