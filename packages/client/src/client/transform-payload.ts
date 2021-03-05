@@ -90,7 +90,6 @@ export const transformPayload = ({
             const payload = {
               [section.name]: transformedInput,
             };
-            console.log(payload);
             return payload;
           } else {
             throw new Error(

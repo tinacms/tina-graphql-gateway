@@ -156,7 +156,10 @@ ${print(info.operation)}
       }
 
       const realParams = await resolve.input({
-        data: values,
+        data: {
+          ...values,
+          _template: template.name,
+        },
         template,
         datasource: context.datasource,
         includeBody: true,
