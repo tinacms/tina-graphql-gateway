@@ -180,6 +180,9 @@ export const compile = async () => {
   delete require.cache[require.resolve(`${tinaTempPath}/schema.js`)];
   const schemaFunc = require(`${tinaTempPath}/schema.js`);
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
+  await compileInner(schemaObject);
+};
+export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const sectionOutput = {
     ...schemaObject,
     sections: schemaObject.sections.map((section) => {
@@ -231,12 +234,189 @@ const transpile = async (projectDir, tempDir) => {
   );
 };
 
+yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
+  return this.test(
+    "one-of-schemas",
+    "Not all items in ${path} match one of the allowed schemas",
+    (items) => {
+      if (typeof items === "undefined") {
+        return;
+      }
+      return items.every((item) => {
+        return schemas.some((schema, index) => {
+          if (schema.isValidSync(item, { strict: true })) {
+            return true;
+          } else {
+            if (item.type) {
+              const isAType = yup
+                .string()
+                .oneOf(types)
+                .required()
+                .isValidSync(item.type, { strict: true });
+
+              if (!isAType) {
+                console.log(
+                  `type must be one of ${types.join(", ")}, got ${item.type}`
+                );
+              } else {
+                // TODO: provide better messages by validating the invalid
+                // schema with the appropriate yup schema
+                // const schema = schemaMap[item.type];
+                // if (!schema) {
+                //   console.log("no schema validate", item.type);
+                // } else {
+                //   console.log("about to validate", item, "with");
+                //   try {
+                //     TextAreaSchema.validateSync(item);
+                //   } catch (e) {
+                //     console.log(e.errors);
+                //   }
+                // }
+              }
+            }
+
+            return false;
+          }
+        });
+      });
+    }
+  );
+});
+
+const baseSchema = yup.object({
+  label: yup.string().required(),
+  name: yup.string().required(),
+  description: yup.string(),
+});
+let types = [
+  "text",
+  "textarea",
+  "select",
+  "list",
+  "group",
+  "group-list",
+  "blocks",
+];
+
+const TextSchema = baseSchema.label("text").shape({
+  type: yup
+    .string()
+    .matches(/^text$/)
+    .required(),
+});
+const TextAreaSchema = baseSchema.label("textarea").shape({
+  type: yup
+    .string()
+    .matches(/^textarea$/)
+    .required(),
+});
+const SelectSchema = baseSchema.label("select").shape({
+  type: yup
+    .string()
+    .matches(/^select$/)
+    .required(),
+  options: yup.array().min(1).of(yup.string()).required(),
+});
+const ListSchema = baseSchema.label("list").shape({
+  type: yup
+    .string()
+    .matches(/^list$/)
+    .required(),
+});
+const GroupSchema = baseSchema.label("group").shape({
+  type: yup
+    .string()
+    .matches(/^group$/)
+    .required(),
+  fields: yup.lazy(() =>
+    yup
+      .array()
+      .min(1, (message) => `${message.path} must have at least 1 item`)
+      // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+      .oneOfSchemas(FieldSchemas)
+      .required()
+  ),
+});
+const GroupListSchema = baseSchema.label("group-list").shape({
+  type: yup
+    .string()
+    .matches(/^group-list$/)
+    .required(),
+  fields: yup.lazy(() =>
+    yup
+      .array()
+      .min(1, (message) => `${message.path} must have at least 1 item`)
+      // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+      .oneOfSchemas(FieldSchemas)
+      .required()
+  ),
+});
+
+const BlocksSchema = baseSchema.label("blocks").shape({
+  type: yup
+    .string()
+    .matches(/^blocks$/)
+    .required(),
+  templates: yup.lazy(() =>
+    yup
+      .array()
+      .min(1, (message) => `${message.path} must have at least 1 item`)
+      .of(TemplateSchema)
+      .required("templates is a required field")
+  ),
+});
+let schemaMap = {
+  text: TextSchema,
+  textarea: TextAreaSchema,
+  select: SelectSchema,
+  list: ListSchema,
+  group: GroupSchema,
+  "group-list": GroupListSchema,
+  blocks: BlocksSchema,
+};
+var FieldSchemas = [
+  TextSchema,
+  TextAreaSchema,
+  SelectSchema,
+  ListSchema,
+  BlocksSchema,
+  // FIXME: for some reason these mess up the blocks test if they're listed before it
+  GroupSchema,
+  GroupListSchema,
+];
+
+const TemplateSchema = yup.object({
+  label: yup.string().required(),
+  name: yup.string().required(),
+  fields: yup
+    .array()
+    .min(1, (message) => `${message.path} must have at least 1 item`)
+    // @ts-ignore custom method to mimic oneOf for objects https://github.com/jquense/yup/issues/69#issuecomment-496814887
+    .oneOfSchemas(FieldSchemas)
+    .required(),
+});
+
 export const defineSchema = (config: TinaCloudSchema) => {
-  try {
-    assertShape<TinaCloudSettings>(config, (yup) =>
-      yup.object({ sections: yup.array().required() })
-    );
-  } catch (e) {}
+  assertShape<TinaCloudSettings>(config, (yup) =>
+    yup.object({
+      sections: yup
+        .array()
+        .min(1, (message) => `${message.path} must have at least 1 item`)
+        .of(
+          yup.object({
+            label: yup.string().required(),
+            path: yup.string().required(),
+            name: yup.string().required(),
+            templates: yup
+              .array()
+              .min(1, (message) => `${message.path} must have at least 1 item`)
+              .of(TemplateSchema)
+              .required("templates is a required field"),
+          })
+        )
+        .required("sections is a required field"),
+    })
+  );
   return { _definitionType: "schema", config };
 };
 
@@ -245,11 +425,7 @@ export function assertShape<T extends object>(
   yupSchema: (args: typeof yup) => yup.AnySchema<unknown, unknown>
 ): asserts value is T {
   const shape = yupSchema(yup);
-  try {
-    shape.validateSync(value);
-  } catch (e) {
-    throw new Error(`Failed to assertShape - ${e.message}`);
-  }
+  shape.validateSync(value);
 }
 
 export interface TinaCloudSchema {
