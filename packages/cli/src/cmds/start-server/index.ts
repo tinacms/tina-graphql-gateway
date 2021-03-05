@@ -24,6 +24,8 @@ interface Options {
   command?: string;
 }
 
+const gqlPackageFile = require.resolve("@forestryio/gql");
+
 export async function startServer(
   _ctx,
   _next,
@@ -81,11 +83,7 @@ export async function startServer(
 
   const restart = async () => {
     console.log("Detected change to gql package, restarting...");
-    Object.keys(require.cache).forEach((id) => {
-      if (id.startsWith(gqlDir)) {
-        const d = delete require.cache[require.resolve(id)];
-      }
-    });
+    delete require.cache[gqlPackageFile];
 
     state.sockets.forEach((socket, index) => {
       if (socket.destroyed === false) {
@@ -99,10 +97,8 @@ export async function startServer(
     });
   };
 
-  const gqlIndex = `/Users/jeffsee/code/graphql-demo/packages/gql/dist/index.js`;
-  const gqlDir = `/Users/jeffsee/code/graphql-demo/packages`;
   chokidar
-    .watch(gqlIndex)
+    .watch(gqlPackageFile)
     .on("ready", async () => {
       isReady = true;
       start();
