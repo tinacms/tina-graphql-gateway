@@ -2,7 +2,7 @@
 sections:
   - label: Posts
     name: posts
-    path: contente/posts
+    path: content/posts
     templates:
       - post
     type: directory

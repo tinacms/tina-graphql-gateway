@@ -5,7 +5,7 @@ export default defineSchema({
     {
       label: "Posts",
       name: "posts",
-      path: "contente/posts",
+      path: "content/posts",
       templates: [
         {
           label: "Post",
