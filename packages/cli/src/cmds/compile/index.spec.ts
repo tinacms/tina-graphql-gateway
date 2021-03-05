@@ -46,7 +46,7 @@ const safeReplaceAt = <T extends object>(
 };
 
 const invalidCases: { [key: string]: Case } = {
-  // @ts-ignore
+  //@ts-ignore
   "misspelled section": { sectionz: [{}] },
   // @ts-ignore
   "no section defiend": {},

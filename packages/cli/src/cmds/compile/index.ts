@@ -18,7 +18,7 @@ import * as ts from "typescript";
 import * as jsyaml from "js-yaml";
 import * as yup from "yup";
 import * as _ from "lodash";
-import { successText } from "../../utils/theme";
+import { successText, dangerText } from "../../utils/theme";
 
 const tinaPath = path.join(process.cwd(), ".tina");
 const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
@@ -233,68 +233,92 @@ const transpile = async (projectDir, tempDir) => {
       })
   );
 };
+type validationMessage = {
+  message: string;
+};
+class ValidationError extends Error {
+  public validationMessage: validationMessage;
+  constructor(validationMessage: validationMessage, ...params) {
+    // Pass remaining arguments (including vendor specific ones) to parent constructor
+    super(...params);
 
-yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
-  return this.test(
-    "one-of-schemas",
-    "Not all items in ${path} match one of the allowed schemas",
-    (items) => {
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ValidationError);
+    }
+
+    this.name = "ValidationError";
+    this.validationMessage = validationMessage;
+  }
+}
+
+export const defineSchema = (config: TinaCloudSchema) => {
+  yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
+    return this.test("one-of-schemas", function (items, context) {
       if (typeof items === "undefined") {
         return;
       }
-      return items.every((item) => {
-        return schemas.some((schema, index) => {
-          if (schema.isValidSync(item, { strict: true })) {
-            return true;
-          } else {
-            if (item.type) {
-              const isAType = false;
-              // const isAType = yup
-              //   .string()
-              //   .oneOf(types)
-              //   .required()
-              //   .isValidSync(item.type, { strict: true });
 
-              if (!isAType) {
-                // console.log(
-                //   `type must be one of ${types.join(", ")}, got ${item.type}`
-                // );
-              } else {
-                // TODO: provide better messages by validating the invalid
-                // schema with the appropriate yup schema
-                // const schema = schemaMap[item.type];
-                // if (!schema) {
-                //   console.log("no schema validate", item.type);
-                // } else {
-                //   console.log("about to validate", item, "with");
-                //   try {
-                //     TextAreaSchema.validateSync(item);
-                //   } catch (e) {
-                //     console.log(e.errors);
-                //   }
-                // }
+      try {
+        return items.every((item) => {
+          return schemas.some((schema, index) => {
+            if (schema.isValidSync(item, { strict: true })) {
+              return true;
+            } else {
+              if (item.type) {
+                const isAType = yup
+                  .string()
+                  .oneOf(types)
+                  .required()
+                  .isValidSync(item.type, { strict: true });
+
+                if (!isAType) {
+                  throw new ValidationError({
+                    message: `at path ${
+                      context.path
+                    } \`type\` must be one of:\n\t${types.join(
+                      ", "
+                    )}\nbut received \`${item.type}\``,
+                  });
+                } else {
+                  const schema = schemaMap[item.type];
+
+                  let error = "";
+                  if (!schema) {
+                    // console.log("no schema validate", item.type);
+                  } else {
+                    try {
+                      schema.validateSync(item);
+                    } catch (e) {
+                      error = e.errors.join("\n");
+                      throw new ValidationError({
+                        message: `Not all items in ${context.path} match one of the allowed schemas:\n\t${error}`,
+                      });
+                    }
+                  }
+                }
               }
+
+              return false;
             }
-
-            return false;
-          }
+          });
         });
-      });
-    }
-  );
-});
-
-export const defineSchema = (config: TinaCloudSchema) => {
-  const baseSchema = yup.object({
-    label: yup.string().required(),
-    name: yup.string().required(),
-    description: yup.string(),
+      } catch (e) {
+        if (e instanceof ValidationError) {
+          return context.createError(e.validationMessage);
+        } else {
+          throw e;
+        }
+      }
+    });
   });
   let types = [
     "text",
     "number",
     "textarea",
     "tags",
+    "image",
+    "toggle",
     "select",
     "list",
     "group",
@@ -303,6 +327,11 @@ export const defineSchema = (config: TinaCloudSchema) => {
     "reference",
     "reference-list",
   ];
+  const baseSchema = yup.object({
+    label: yup.string().required(),
+    name: yup.string().required(),
+    description: yup.string(),
+  });
 
   const TextSchema = baseSchema.label("text").shape({
     type: yup
@@ -401,7 +430,11 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .required(),
     section: yup
       .string()
-      .oneOf(config.sections.map((section) => section.name))
+      .oneOf(
+        config.sections.map((section) => section.name),
+        (message) =>
+          `${message.path} must be one of the following values: ${message.values}, but instead received: ${message.value}`
+      )
       .required(),
   });
 
@@ -418,15 +451,17 @@ export const defineSchema = (config: TinaCloudSchema) => {
         .required("templates is a required field")
     ),
   });
-  // let schemaMap = {
-  //   text: TextSchema,
-  //   textarea: TextAreaSchema,
-  //   select: SelectSchema,
-  //   list: ListSchema,
-  //   group: GroupSchema,
-  //   "group-list": GroupListSchema,
-  //   blocks: BlocksSchema,
-  // };
+  let schemaMap = {
+    text: TextSchema,
+    textarea: TextAreaSchema,
+    select: SelectSchema,
+    list: ListSchema,
+    group: GroupSchema,
+    "group-list": GroupListSchema,
+    reference: ReferenceSchema,
+    "reference-list": ReferenceListSchema,
+    blocks: BlocksSchema,
+  };
   var FieldSchemas = [
     TextSchema,
     TextAreaSchema,
@@ -482,7 +517,15 @@ export function assertShape<T extends object>(
   yupSchema: (args: typeof yup) => yup.AnySchema<unknown, unknown>
 ): asserts value is T {
   const shape = yupSchema(yup);
-  shape.validateSync(value);
+  try {
+    shape.validateSync(value);
+  } catch (e) {
+    throw new Error(
+      `There were some issues when compiling your schema:\n${dangerText(
+        e.errors.join("\n")
+      )}`
+    );
+  }
 }
 
 export interface TinaCloudSchema {
