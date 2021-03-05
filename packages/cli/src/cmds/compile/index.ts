@@ -28,46 +28,29 @@ const transformField = async (
   tinaField: TinaField,
   schema: TinaCloudSchema
 ) => {
-  const field = (await yup
-    .object()
-    .shape({
-      name: yup
-        .string()
-        .transform((value) => {
-          return _.snakeCase(value);
-        })
-        .matches(
-          /^[a-zA-Z0-9_]*$/,
-          (message) =>
-            `the name field can only contain alphanumeric characters and underscores, got ${message.value}`
-        )
-        .required("the name field is required"),
-      label: yup.string().required(),
-      type: yup
-        .string()
-        .oneOf(
-          [
-            "text",
-            "textarea",
-            "group",
-            "blocks",
-            "group-list",
-            "number",
-            "select",
-            "image",
-            "list",
-            "reference",
-            "reference-list",
-            "toggle",
-          ],
-          (message) => {
-            return `Expected one of ${message.values} but got ${message.value}`;
-          }
-        ),
-    })
-    // FIXME: casting back to TinaField, but probably
-    // want to check the entire object, like 'options' for a select field
-    .validate(tinaField)) as TinaField;
+  const field = tinaField;
+  // const field = (await yup
+  //   .object()
+  //   .shape({
+  //     name: yup
+  //       .string()
+  //       .transform((value) => {
+  //         return _.snakeCase(value);
+  //       })
+  //       .matches(
+  //         /^[a-zA-Z0-9_]*$/,
+  //         (message) =>
+  //           `the name field can only contain alphanumeric characters and underscores, got ${message.value}`
+  //       )
+  //       .required("the name field is required"),
+  //     label: yup.string().required(),
+  //     type: yup.string().oneOf(types, (message) => {
+  //       return `Expected one of ${message.values} but got ${message.value}`;
+  //     }),
+  //   })
+  // FIXME: casting back to TinaField, but probably
+  // want to check the entire object, like 'options' for a select field
+  // .validate(tinaField)) as TinaField;
 
   if (field.type === "group") {
     return {
@@ -93,6 +76,12 @@ const transformField = async (
       ),
     };
   }
+  if (field.type === "tags") {
+    return {
+      ...field,
+      type: "tag_list",
+    };
+  }
   if (field.type === "reference") {
     yup
       .object({
@@ -102,7 +91,8 @@ const transformField = async (
       })
       .validate(field);
     return {
-      ...field,
+      name: field.name,
+      label: field.label,
       type: "select",
       config: {
         source: {
@@ -114,13 +104,28 @@ const transformField = async (
   }
   if (field.type === "reference-list") {
     return {
-      ...field,
+      name: field.name,
+      label: field.label,
       type: "list",
       config: {
         source: {
           type: "pages",
           section: field.section,
         },
+      },
+    };
+  }
+
+  if (field.type === "select") {
+    return {
+      name: field.name,
+      label: field.label,
+      type: "select",
+      config: {
+        source: {
+          type: "simple",
+        },
+        options: field.options,
       },
     };
   }
@@ -131,19 +136,6 @@ const buildTemplate = async (
   definition: TinaCloudTemplate,
   schema: TinaCloudSchema
 ) => {
-  yup
-    .object()
-    .shape({
-      name: yup
-        .string()
-        .matches(
-          /^[a-zA-Z0-9_-]*$/,
-          (message) =>
-            `the name field can only contain alphanumeric characters and underscores, got ${message.value}`
-        )
-        .required("the name field is required"),
-    })
-    .validate(definition);
   const outputYmlPath = path.resolve(
     path.join(
       tinaTempPath.replace("temp", "config").replace(".js", ""),
@@ -154,33 +146,66 @@ const buildTemplate = async (
   output.fields = await Promise.all(
     definition.fields.map(async (field) => {
       if (field.type === "blocks") {
-        const f = { ...field };
-        // @ts-ignore
-        f.template_types = await Promise.all(
-          field.templates.map(async (template, index) => {
-            await buildTemplate(template, schema);
-            return template.name;
-          })
-        );
-        f.templates = undefined;
-        return f;
+        return {
+          name: field.name,
+          label: field.label,
+          type: "blocks",
+          template_types: await Promise.all(
+            field.templates.map(async (template, index) => {
+              await buildTemplate(template, schema);
+              return template.name;
+            })
+          ),
+        };
       }
       return transformField(field, schema);
     })
   );
 
+  // Don't write twice to the filesystem
+  // TODO: check that a compiled template matches
+  // with the new one, probably need something robust
+  // here to ensure we're keeping things sane
+  if (compiledTemplates.includes(output.name)) {
+    // console.log(`already compiled template at ${outputYmlPath}, skipping`);
+    return true;
+  } else {
+    compiledTemplates.push(output.name);
+  }
   const templateString = "---\n" + jsyaml.dump(output);
   await fs.outputFile(outputYmlPath, templateString);
   return true;
 };
+let types = [
+  "text",
+  "number",
+  "textarea",
+  "tags",
+  "image",
+  "toggle",
+  "select",
+  "list",
+  "group",
+  "group-list",
+  "blocks",
+  "reference",
+  "reference-list",
+];
+
+let compiledTemplates = [];
 
 export const compile = async () => {
   await fs.remove(tinaTempPath);
   await transpile(tinaPath, tinaTempPath);
-  delete require.cache[require.resolve(`${tinaTempPath}/schema.js`)];
+  Object.keys(require.cache).map((key) => {
+    if (key.startsWith(tinaTempPath)) {
+      delete require.cache[require.resolve(key)];
+    }
+  });
   const schemaFunc = require(`${tinaTempPath}/schema.js`);
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
   await compileInner(schemaObject);
+  compiledTemplates = [];
 };
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const sectionOutput = {
@@ -206,7 +231,7 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
       async (section) =>
         await Promise.all(
           section.templates.map(async (definition) => {
-            await buildTemplate(definition, schemaObject);
+            return buildTemplate(definition, schemaObject);
           })
         )
     )
@@ -312,21 +337,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
       }
     });
   });
-  let types = [
-    "text",
-    "number",
-    "textarea",
-    "tags",
-    "image",
-    "toggle",
-    "select",
-    "list",
-    "group",
-    "group-list",
-    "blocks",
-    "reference",
-    "reference-list",
-  ];
+
   const baseSchema = yup.object({
     label: yup.string().required(),
     name: yup.string().required(),
