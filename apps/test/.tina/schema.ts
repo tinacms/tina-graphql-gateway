@@ -16,6 +16,24 @@ import { defineSchema } from "tina-graphql-gateway-cli";
 export default defineSchema({
   sections: [
     {
+      label: "Authors",
+      name: "authors",
+      path: "content/authors",
+      templates: [
+        {
+          name: "author",
+          label: "Author",
+          fields: [
+            {
+              type: "text",
+              label: "Name",
+              name: "name",
+            },
+          ],
+        },
+      ],
+    },
+    {
       label: "Posts",
       name: "posts",
       path: "content/posts",
@@ -28,6 +46,24 @@ export default defineSchema({
               type: "text",
               label: "Title",
               name: "title",
+            },
+            {
+              type: "group",
+              label: "Details",
+              name: "details",
+              fields: [
+                {
+                  name: "reading_time",
+                  label: "Reading Time",
+                  type: "text",
+                },
+              ],
+            },
+            {
+              type: "reference",
+              label: "Author",
+              name: "author",
+              section: "authors",
             },
           ],
         },

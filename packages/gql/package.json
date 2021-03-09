@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/gql",
-  "version": "0.0.42-canary-3",
+  "version": "0.0.43",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
