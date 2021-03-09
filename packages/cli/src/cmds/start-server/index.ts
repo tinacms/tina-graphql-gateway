@@ -31,52 +31,57 @@ export async function startServer(
   _next,
   { port = 4001, command }: Options
 ) {
+  const startSubprocess = () => {
+    if (typeof command === "string") {
+      const commands = command.split(" ");
+      const ps = childProcess.spawn(commands[0], [commands[1]], {
+        stdio: "inherit",
+      });
+      ps.on("close", (code) => {
+        console.log(`child process exited with code ${code}`);
+        process.exit(code);
+      });
+    }
+  };
   let projectRoot = path.join(process.cwd());
   let ready = false;
-  chokidar
-    .watch(`${projectRoot}/**/*.ts`, {
-      ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
-    })
-    .on("ready", async () => {
-      try {
-        console.log("Generating Tina config");
-        await compile();
-        const schema = await buildSchema(process.cwd());
-        await genTypes({ schema }, () => {}, {});
-        ready = true;
-        if (typeof command === "string") {
-          const commands = command.split(" ");
-          const ps = childProcess.spawn(commands[0], [commands[1]], {
-            stdio: "inherit",
-          });
-          ps.on("close", (code) => {
-            console.log(`child process exited with code ${code}`);
-            process.exit(code);
-          });
-        }
-      } catch (e) {
-        console.log(dangerText(`${e.message}, exiting...`));
-        console.log(e);
-        process.exit(0);
-      }
-    })
-    .on("all", async (event, path) => {
-      if (ready) {
-        console.log("Tina change detected, regenerating config");
+  if (!process.env.CI) {
+    chokidar
+      .watch(`${projectRoot}/**/*.ts`, {
+        ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
+      })
+      .on("ready", async () => {
         try {
+          console.log("Generating Tina config");
           await compile();
           const schema = await buildSchema(process.cwd());
           await genTypes({ schema }, () => {}, {});
+          ready = true;
+          startSubprocess();
         } catch (e) {
-          console.log(
-            dangerText(
-              "Compilation failed with errors, server has not been restarted"
-            )
-          );
-          console.log(e.message);
+          console.log(dangerText(`${e.message}, exiting...`));
+          console.log(e);
+          process.exit(0);
         }
-      }
-    });
+      })
+      .on("all", async (event, path) => {
+        if (ready) {
+          console.log("Tina change detected, regenerating config");
+          try {
+            await compile();
+            const schema = await buildSchema(process.cwd());
+            await genTypes({ schema }, () => {}, {});
+          } catch (e) {
+            console.log(
+              dangerText(
+                "Compilation failed with errors, server has not been restarted"
+              )
+            );
+            console.log(e.message);
+          }
+        }
+      });
+  }
 
   const state = {
     server: null,
@@ -112,15 +117,21 @@ export async function startServer(
     });
   };
 
-  chokidar
-    .watch(gqlPackageFile)
-    .on("ready", async () => {
-      isReady = true;
-      start();
-    })
-    .on("all", async () => {
-      if (isReady) {
-        restart();
-      }
-    });
+  if (!process.env.CI) {
+    chokidar
+      .watch(gqlPackageFile)
+      .on("ready", async () => {
+        isReady = true;
+        start();
+      })
+      .on("all", async () => {
+        if (isReady) {
+          restart();
+        }
+      });
+  } else {
+    console.log("Detected CI environment, omitting watch commands...");
+    start();
+    startSubprocess();
+  }
 }
