@@ -37,8 +37,9 @@ interface ServerOptions {
   tokenStorage?: "MEMORY" | "LOCAL_STORAGE" | "CUSTOM";
 }
 
-const TINA_CLOUD_API_URL =
-  "https://82ptjhdl6d.execute-api.ca-central-1.amazonaws.com/dev";
+const BASE_TINA_URL = process.env.BASE_TINA_URL || `tinajs.io`;
+const IDENTITY_API_URL = `https://identity.${BASE_TINA_URL}`;
+const CONTENT_API_URL = `https://content.${BASE_TINA_URL}`;
 
 export class Client {
   contentApiUrl: string;
@@ -54,7 +55,8 @@ export class Client {
     const _this = this;
     (this.contentApiUrl =
       options.customContentApiUrl ||
-      `https://content.tinajs.dev/content/${options.realm}/${options.clientId}/github/${options.branch}`),
+      `${CONTENT_API_URL}/content/${options.realm}/${options.clientId}/github/${options.branch}`),
+      // `https://content.tinajs.dev/content/${options.realm}/${options.clientId}/github/${options.branch}`),
       (this.clientId = options.clientId);
     this.realm = options.realm;
 
@@ -231,7 +233,7 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${TINA_CLOUD_API_URL}/currentUser`;
+    const url = `${IDENTITY_API_URL}/currentUser`;
 
     try {
       const res = await fetch(url, {
