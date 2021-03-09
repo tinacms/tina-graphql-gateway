@@ -11,7 +11,6 @@ fields:
   - name: author
     label: Author
     type: select
-    section: authors
     config:
       source:
         type: pages
