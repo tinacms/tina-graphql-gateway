@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway-cli",
-  "version": "0.2.32",
+  "version": "0.2.32-canary-5",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -21,8 +21,7 @@
     "@types/jest": "26.0.4",
     "@types/listr": "0.14.2",
     "jest": "26.1.0",
-    "ts-jest": "26.1.2",
-    "typescript": "^3.6.3"
+    "ts-jest": "26.1.2"
   },
   "scripts": {
     "build": "yarn tsup src/index.ts --format cjs --dts",
@@ -37,12 +36,15 @@
     "@graphql-codegen/core": "^1.17.0",
     "@graphql-codegen/typescript": "^1.17.0",
     "@graphql-codegen/typescript-operations": "^1.17.0",
+    "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.157",
     "@types/lodash.get": "^4.4.6",
+    "@types/yup": "^0.29.11",
     "ajv": "^6.12.3",
     "axios": "0.19.0",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
+    "chokidar": "^3.5.1",
     "clear": "^0.1.0",
     "commander": "5.1.0",
     "cookie-parser": "^1.4.4",
@@ -59,7 +61,7 @@
     "http-proxy": "^1.18.0",
     "inquirer": "^6.5.1",
     "isomorphic-unfetch": "^3.0.0",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.0",
     "listr": "0.14.3",
@@ -70,9 +72,11 @@
     "ora": "^4.0.2",
     "path": "^0.12.7",
     "simple-git": "1.124.0",
-    "tsup": "^3.7.0",
+    "tsup": "^4.6.1",
+    "typescript": "^4.2.2",
     "yaml": "^1.10.0",
-    "yo": "^3.1.1"
+    "yo": "^3.1.1",
+    "yup": "^0.32.9"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

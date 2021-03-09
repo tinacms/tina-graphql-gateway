@@ -22,22 +22,16 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 
   const content = await client.requestWithForm(
     (gql) => gql`
-      fragment PostDetailsFragment on Post_Details_Data {
-        reading_time
-      }
-
-      fragment PostFragment on Post_Doc_Data {
-        title
-        details {
-          ...PostDetailsFragment
-        }
-      }
-
-      query ContentQuery($section: String!, $relativePath: String!) {
-        getDocument(section: $section, relativePath: $relativePath) {
+      {
+        getDocument(section: "posts", relativePath: "welcome.md") {
+          __typename
           ... on Posts_Document {
+            id
             data {
-              ...PostFragment
+              __typename
+              ... on Post_Doc_Data {
+                title
+              }
             }
           }
         }

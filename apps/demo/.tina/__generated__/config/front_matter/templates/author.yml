@@ -1,0 +1,20 @@
+---
+label: Author
+name: author
+fields:
+  - name: name
+    type: text
+    label: Name
+  - name: image
+    type: text
+    label: Image
+  - name: accolades
+    type: field_group_list
+    label: Accolades
+    fields:
+      - type: text
+        label: Figure
+        name: figure
+      - type: text
+        label: Description
+        name: description
