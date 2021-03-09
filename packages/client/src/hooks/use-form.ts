@@ -189,40 +189,35 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export function useForm<T extends object>({
-  payload,
-  onSubmit,
-  onNewDocument,
-}: {
-  payload: T;
-  onSubmit?: (args: { queryString: string; variables: object }) => void;
-  onNewDocument?: OnNewDocument;
-}): [T, Form[]] {
-  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
-  const queryString = payload._queryString;
+const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => 
+{
   const cms = useCMS();
 
   React.useEffect(() => {
     const run = async () => {
-      const res = await cms.api.tina.request(
-        (gql) => gql`
-          {
-            getSections {
-              slug
-              templates
+
+      const getSectionOptions = async () => {
+        const res = await cms.api.tina.request(
+          (gql) => gql`
+            {
+              getSections {
+                slug
+                templates
+              }
             }
-          }
-        `,
-        { variables: {} }
-      );
-      const options = [];
-      res.getSections.forEach((section) => {
-        section.templates.map((template) => {
-          const optionValue = `${section.slug}.${template}`;
-          const optionLabel = `Section: ${section.slug} - Template: ${template}`;
-          options.push({ value: optionValue, label: optionLabel });
+          `,
+          { variables: {} }
+        );
+        const options = [];
+        res.getSections.forEach((section) => {
+          section.templates.map((template) => {
+            const optionValue = `${section.slug}.${template}`;
+            const optionLabel = `Section: ${section.slug} - Template: ${template}`;
+            options.push({ value: optionValue, label: optionLabel });
+          });
         });
-      });
+      }
+
       cms.plugins.add(
         new ContentCreatorPlugin({
           onNewDocument: onNewDocument,
@@ -232,7 +227,7 @@ export function useForm<T extends object>({
               name: "sectionTemplate",
               label: "Template",
               description: "Select the section & template",
-              options,
+              options: (await getSectionOptions()),
             },
             {
               component: "text",
@@ -250,8 +245,20 @@ export function useForm<T extends object>({
 
     run();
   }, [cms]);
+}
 
-  const [current, send, service] = useMachine(formsMachine, {
+function useRegisterFormsAndSyncPayload<T extends object>(  {
+  payload,
+  onSubmit,
+}: {
+  payload: T;
+  onSubmit?: (args: { queryString: string; variables: object }) => void; }) {
+  const cms = useCMS()
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
+  const queryString = payload._queryString;
+  const [tinaForms, setTinaForms] = React.useState([]);
+
+  const [machineState, send, service] = useMachine(formsMachine, {
     context: {
       payload,
       formRefs: {},
@@ -265,19 +272,18 @@ export function useForm<T extends object>({
                 variables,
               })
             : cms.api.tina
-                .request(values.mutationString, { variables })
-                .then((res) => {
-                  if (res.errors) {
-                    console.error(res);
-                    cms.alerts.error("Unable to update document");
-                  }
-                });
+              .request(values.mutationString, { variables })
+              .then((res) => {
+                if (res.errors) {
+                  console.error(res);
+                  cms.alerts.error("Unable to update document");
+                }
+              });
         });
       },
     },
   });
 
-  const [tinaForms, setTinaForms] = React.useState([]);
   React.useEffect(() => {
     const subscription = service.subscribe((state) => {
       if (state.matches("active")) {
@@ -299,13 +305,43 @@ export function useForm<T extends object>({
 
     return subscription.unsubscribe;
   }, [service, setTinaForms]); // note: service should never change
+  
+  return { 
+      data: { 
+        payload: machineState.context.payload, 
+        tinaForms 
+      }, 
+      retry: () => {
+        send({ type: "RETRY", value: { payload, queryString } })
+      },  
+  }
+}
+
+export function useForm<T extends object>({
+  payload,
+  onSubmit,
+  onNewDocument,
+}: {
+  payload: T;
+  onSubmit?: (args: { queryString: string; variables: object }) => void;
+  onNewDocument?: OnNewDocument;
+}): [T, Form[]] {
+  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
+  const queryString = payload._queryString;
+
+  // TODO - Should we pull this out of this file. 
+  // Or return it as a factory function which can 
+  // optionally be called.
+  useAddSectionDocumentPlugin(onNewDocument)
+
+  const { data, retry } = useRegisterFormsAndSyncPayload({payload,onSubmit})
 
   React.useEffect(() => {
-    send({ type: "RETRY", value: { payload, queryString } });
+    retry()
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore
-  return [current.context.payload, tinaForms];
+  return [data.payload, data.tinaForms];
 }
 
 type Field = {
