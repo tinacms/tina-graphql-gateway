@@ -11,55 +11,127 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// @ts-ignore
-import { gql } from "@forestryio/gql";
 import childProcess from "child_process";
 import path from "path";
-import cors from "cors";
-import http from "http";
-import express from "express";
-// @ts-ignore
-import bodyParser from "body-parser";
+import { buildSchema } from "@forestryio/gql";
+import { genTypes } from "../query-gen";
+import { compile } from "../compile";
+import chokidar from "chokidar";
+import { successText, dangerText } from "../../utils/theme";
 
 interface Options {
   port?: number;
   command?: string;
 }
 
+const gqlPackageFile = require.resolve("@forestryio/gql");
+
 export async function startServer(
   _ctx,
   _next,
   { port = 4001, command }: Options
 ) {
-  if (typeof command === "string") {
-    const commands = command.split(" ");
-    const ps = childProcess.spawn(commands[0], [commands[1]], {
-      stdio: "inherit",
-    });
-    ps.on("close", (code) => {
-      console.log(`child process exited with code ${code}`);
-      process.exit(code);
-    });
-  }
-  await gqlServer({ port });
-}
-
-export const gqlServer = async ({ port }: { port: number }) => {
-  const app = express();
-  const server = http.createServer(app);
-  app.use(cors());
-  app.use(bodyParser.json());
-
+  const startSubprocess = () => {
+    if (typeof command === "string") {
+      const commands = command.split(" ");
+      const ps = childProcess.spawn(commands[0], [commands[1]], {
+        stdio: "inherit",
+      });
+      ps.on("close", (code) => {
+        console.log(`child process exited with code ${code}`);
+        process.exit(code);
+      });
+    }
+  };
   let projectRoot = path.join(process.cwd());
+  let ready = false;
+  if (!process.env.CI) {
+    chokidar
+      .watch(`${projectRoot}/**/*.ts`, {
+        ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
+      })
+      .on("ready", async () => {
+        try {
+          console.log("Generating Tina config");
+          await compile();
+          const schema = await buildSchema(process.cwd());
+          await genTypes({ schema }, () => {}, {});
+          ready = true;
+          startSubprocess();
+        } catch (e) {
+          console.log(dangerText(`${e.message}, exiting...`));
+          console.log(e);
+          process.exit(0);
+        }
+      })
+      .on("all", async (event, path) => {
+        if (ready) {
+          console.log("Tina change detected, regenerating config");
+          try {
+            await compile();
+            const schema = await buildSchema(process.cwd());
+            await genTypes({ schema }, () => {}, {});
+          } catch (e) {
+            console.log(
+              dangerText(
+                "Compilation failed with errors, server has not been restarted"
+              )
+            );
+            console.log(e.message);
+          }
+        }
+      });
+  }
 
-  app.post("/graphql", async (req, res) => {
-    const { query, variables } = req.body;
-    const result = await gql({ projectRoot, query, variables });
-    return res.json(result);
-  });
+  const state = {
+    server: null,
+    sockets: [],
+  };
 
-  server.listen(port, () => {
-    console.info(`Listening on http://localhost:${port}`);
-  });
-  return server;
-};
+  let isReady = false;
+
+  const start = async () => {
+    const s = require("./server");
+    state.server = await s.default();
+    state.server.listen(port, () => {
+      console.log(`Started on port: ${successText(port.toString())}`);
+    });
+    state.server.on("connection", (socket) => {
+      state.sockets.push(socket);
+    });
+  };
+
+  const restart = async () => {
+    console.log("Detected change to gql package, restarting...");
+    delete require.cache[gqlPackageFile];
+
+    state.sockets.forEach((socket, index) => {
+      if (socket.destroyed === false) {
+        socket.destroy();
+      }
+    });
+    state.sockets = [];
+    state.server.close(() => {
+      console.log("Server closed");
+      start();
+    });
+  };
+
+  if (!process.env.CI) {
+    chokidar
+      .watch(gqlPackageFile)
+      .on("ready", async () => {
+        isReady = true;
+        start();
+      })
+      .on("all", async () => {
+        if (isReady) {
+          restart();
+        }
+      });
+  } else {
+    console.log("Detected CI environment, omitting watch commands...");
+    start();
+    startSubprocess();
+  }
+}
