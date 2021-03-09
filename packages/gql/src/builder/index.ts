@@ -18,7 +18,7 @@ import { sequential } from "../util";
 
 import { template } from "../fields/templates";
 
-import type {
+import {
   DocumentNode,
   UnionTypeDefinitionNode,
   ObjectTypeDefinitionNode,
@@ -26,6 +26,7 @@ import type {
   InputObjectTypeDefinitionNode,
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
+  print,
 } from "graphql";
 import type { DirectorySection, Section } from "../types";
 import type { Cache } from "../cache";

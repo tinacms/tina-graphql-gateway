@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import { LocalClient, useForm } from "tina-graphql-gateway";
-import type * as Tina from "../.tina/types";
+import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
 
 const client = new LocalClient();
@@ -26,38 +26,19 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
     (gql) => gql`
       query ContentQuery($section: String!, $relativePath: String!) {
         getDocument(section: $section, relativePath: $relativePath) {
-          ... on Menus_Document {
-            data {
-              ... on Menu_Doc_Data {
-                logo
-              }
-            }
-          }
           ... on Posts_Document {
+            id
             data {
               ... on Post_Doc_Data {
                 title
-                author {
-                  data {
-                    ... on Author_Doc_Data {
-                      name
-                    }
-                  }
-                }
               }
             }
           }
           ... on Authors_Document {
+            id
             data {
               ... on Author_Doc_Data {
                 name
-              }
-            }
-          }
-          ... on Pages_Document {
-            data {
-              ... on BlockPage_Doc_Data {
-                title
               }
             }
           }

@@ -99,7 +99,7 @@ export interface DataSource {
    * ```
    */
   getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
-  getDocumentsForSection: (section?: string) => Promise<string[]>;
+  getDocumentsForSection: (section: string) => Promise<string[]>;
   getSettingsForSection: (section?: string) => Promise<DirectorySection>;
   getSectionsSettings: () => Promise<DirectorySection[]>;
   getSection: (section: string) => Promise<DirectorySection>;

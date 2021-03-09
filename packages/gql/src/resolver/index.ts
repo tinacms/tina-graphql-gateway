@@ -156,7 +156,10 @@ ${print(info.operation)}
       }
 
       const realParams = await resolve.input({
-        data: values,
+        data: {
+          ...values,
+          _template: template.name,
+        },
         template,
         datasource: context.datasource,
         includeBody: true,
@@ -232,7 +235,10 @@ ${print(info.operation)}
 
       const params = await resolve.input({
         template,
-        data: values,
+        data: {
+          ...values,
+          _template: template.name,
+        },
         datasource: context.datasource,
         includeBody: true,
       });
@@ -256,7 +262,6 @@ ${print(info.operation)}
           }),
         });
       });
-
       await context.datasource.updateDocument(payload);
       return resolveDocument({
         args: {
@@ -355,7 +360,13 @@ const resolveDocument = async ({
 
   const realArgs = { relativePath, section: args.section };
   const { data, content } = await datasource.getData(realArgs);
-  const template = await datasource.getTemplateForDocument(realArgs);
+  assertShape<{ _template: string }>(data, (yup) =>
+    yup.object({
+      _template: yup.string().required(),
+    })
+  );
+  const { _template, ...rest } = data;
+  const template = await datasource.getTemplate(_template);
   const { basename, filename, extension } = await datasource.getDocumentMeta(
     realArgs
   );
@@ -377,13 +388,13 @@ const resolveDocument = async ({
     data: await resolve.data({
       datasource,
       template: template,
-      data,
+      data: rest,
       content,
     }),
     values: await resolve.values({
       datasource,
       template,
-      data,
+      data: rest,
       content: content || "",
     }),
   };
@@ -494,16 +505,6 @@ const addPendingDocument = async (
   await context.datasource.addDocument(args);
 
   return true;
-};
-
-const findField = (fields: Field[], fieldName: string) => {
-  const field = fields.find((f) => {
-    return f?.name === fieldName;
-  });
-  if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
-  }
-  return field;
 };
 
 /**

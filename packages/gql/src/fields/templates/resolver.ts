@@ -32,6 +32,7 @@ import { tag_list } from "../tag-list";
 import type { DataSource } from "../../datasources/datasource";
 import type { Field } from "../../fields";
 import type { TemplateData, DirectorySection } from "../../types";
+import { string } from "yup";
 
 export const resolve = {
   data: async ({ datasource, template, data, content }: any) => {
@@ -41,7 +42,11 @@ export const resolve = {
     const values = content ? { ...rest, _body: content } : rest;
 
     await sequential(Object.keys(values), async (key) => {
-      const field = findField([...template.fields, textarea.contentField], key);
+      const field = findField(
+        [...template.fields, textarea.contentField],
+        key,
+        template
+      );
       return (accum[key] = await dataValue(datasource, field, values[key]));
     });
 
@@ -61,7 +66,11 @@ export const resolve = {
     const values = content ? { ...rest, _body: content } : rest;
 
     await sequential(Object.keys(values), async (key) => {
-      const field = findField([...template.fields, textarea.contentField], key);
+      const field = findField(
+        [...template.fields, textarea.contentField],
+        key,
+        template
+      );
       return (accum[key] = await dataInitialValuesField(
         datasource,
         field,
@@ -123,7 +132,13 @@ export const resolve = {
       template.fields.push(textarea.contentField);
     }
 
-    assertShape<{ [key: string]: unknown }>(data, (yup) => yup.object());
+    if (includeBody) {
+      assertShape<{ _template: string; [key: string]: unknown }>(data, (yup) =>
+        yup.object({ _template: yup.string().required() })
+      );
+    } else {
+      assertShape<{ [key: string]: unknown }>(data, (yup) => yup.object());
+    }
 
     const fieldsToWrite = await sequential(template.fields, async (field) => {
       return inputField({
@@ -132,6 +147,9 @@ export const resolve = {
         value: data[field.name],
       });
     });
+    if (includeBody) {
+      fieldsToWrite.push({ _template: data._template });
+    }
 
     const accum: { [key: string]: unknown } = {};
     fieldsToWrite.filter(Boolean).forEach((item) => {
@@ -290,12 +308,23 @@ const inputField = async ({
   }
 };
 
-const findField = (fields: Field[], fieldName: string) => {
+const findField = (
+  fields: Field[],
+  fieldName: string,
+  template: TemplateData
+) => {
   const field = fields.find((f) => {
     return f?.name === fieldName;
   });
   if (!field) {
-    throw new Error(`Unable to find field for item with name: ${fieldName}`);
+    throw new Error(
+      `Unable to find field for item with name: ${fieldName} on template ${
+        template.name
+      } Possible fields are: ${template.fields
+        .map((field) => field.name)
+        .join(", ")}
+      `
+    );
   }
   return field;
 };

@@ -46,18 +46,16 @@ type Section {
   documents: [Document]
 }
 
-union SectionDocumentUnion = Posts_Document | Authors_Document
+union SectionDocumentUnion = Posts_Document
 
 input SectionParams {
   posts: Posts_Input
-  authors: Authors_Input
 }
 
 type Mutation {
   addPendingDocument(relativePath: String, section: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
-  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
 }
 
 type Query {
@@ -68,8 +66,6 @@ type Query {
   getSection(section: String): Section
   getPostsDocument(relativePath: String): Posts_Document
   getPostsList: [Posts_Document]
-  getAuthorsDocument(relativePath: String): Authors_Document
-  getAuthorsList: [Authors_Document]
 }
 
 union Posts_Data = Post_Doc_Data
@@ -90,10 +86,6 @@ type Posts_Document implements Node & Document {
   form: Posts_Form
 }
 
-type Post_Details_Data {
-  reading_time: String
-}
-
 type LongTextValue {
   raw: String
   markdownAst: JSONObject
@@ -102,13 +94,7 @@ type LongTextValue {
 
 type Post_Doc_Data {
   title: String
-  details: Post_Details_Data
-  author: Authors_Document
   _body: LongTextValue
-}
-
-type Post_Details_Values {
-  reading_time: String
 }
 
 type LongTextInitialValue {
@@ -117,8 +103,6 @@ type LongTextInitialValue {
 
 type Post_Doc_Values {
   title: String
-  details: Post_Details_Values
-  author: Reference
   _body: LongTextInitialValue
   _template: String
 }
@@ -129,38 +113,18 @@ type TextField implements FormField {
   component: String
 }
 
-union Post_Details_FormFieldsUnion = TextField
-
-type Post_Details_GroupField implements FormField {
-  name: String
-  label: String
-  component: String
-  fields: [Post_Details_FormFieldsUnion]
-}
-
-type SelectField implements FormField {
-  name: String
-  label: String
-  component: String
-  options: [String]
-}
-
 type TextareaField implements FormField {
   name: String
   label: String
   component: String
 }
 
-union Post_Doc_FormFieldsUnion = TextField | Post_Details_GroupField | SelectField | TextareaField
+union Post_Doc_FormFieldsUnion = TextField | TextareaField
 
 type Post_Doc_Form {
   label: String
   name: String
   fields: [Post_Doc_FormFieldsUnion]
-}
-
-input Post_Details_Input {
-  reading_time: String
 }
 
 input Body_LongTextInput {
@@ -169,50 +133,6 @@ input Body_LongTextInput {
 
 input Post_Doc_Input {
   title: String
-  details: Post_Details_Input
-  author: String
-  _body: Body_LongTextInput
-}
-
-union Authors_Data = Author_Doc_Data
-
-input Authors_Input {
-  author: Author_Doc_Input
-}
-
-union Authors_Values = Author_Doc_Values
-
-union Authors_Form = Author_Doc_Form
-
-type Authors_Document implements Node & Document {
-  id: ID!
-  sys: SystemInfo
-  data: Authors_Data
-  values: Authors_Values
-  form: Authors_Form
-}
-
-type Author_Doc_Data {
-  name: String
-  _body: LongTextValue
-}
-
-type Author_Doc_Values {
-  name: String
-  _body: LongTextInitialValue
-  _template: String
-}
-
-union Author_Doc_FormFieldsUnion = TextField | TextareaField
-
-type Author_Doc_Form {
-  label: String
-  name: String
-  fields: [Author_Doc_FormFieldsUnion]
-}
-
-input Author_Doc_Input {
-  name: String
   _body: Body_LongTextInput
 }
 

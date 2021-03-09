@@ -194,6 +194,11 @@ export class Client {
 
     const json = await res.json();
     if (json.errors) {
+      throw new Error(
+        `Unable to fetch, errors: \n\t${json.errors
+          .map((error) => error.message)
+          .join("\n")}`
+      );
       return json;
     }
     return json.data as ReturnType;
