@@ -17,7 +17,8 @@ import { version } from "../package.json";
 import { Command } from "./command";
 import { baseCmds as baseCommands } from "./cmds/baseCmds";
 import { logText } from "./utils/theme";
-
+export { defineSchema } from "./cmds/compile";
+export type { TinaCloudTemplate, TinaCloudSettings } from "./cmds/compile";
 
 const program = new commander.Command();
 const registerCommands = (commands: Command[], noHelp: boolean = false) => {

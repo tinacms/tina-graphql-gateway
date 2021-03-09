@@ -40,6 +40,9 @@ import type {
   WithFields,
 } from "../types";
 
+// const tinaPath = ".tina";
+const tinaPath = ".tina/__generated__/config";
+
 export class FileSystemManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
@@ -68,13 +71,16 @@ export class FileSystemManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (sectionSlug?: string) => {
-    const templates = await this.getTemplatesForSection(sectionSlug);
-    const pages = templates.map((template) => template.pages || []);
-    return _.flatten(pages);
+  getDocumentsForSection = async (sectionSlug: string) => {
+    const section = await this.getSection(sectionSlug);
+    const fullPath = p.join(this.rootPath, section.path);
+
+    // FIXME: replace with fast-glob
+    const documents = await readDir(fullPath, this.dirLoader);
+    return documents;
   };
   getAllTemplates = async () => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await readDir(fullPath, this.dirLoader);
     return await sequential(
       templates,
@@ -89,7 +95,7 @@ export class FileSystemManager implements DataSource {
     );
   getSettingsData = async () => {
     const { data } = await readFile<Settings>(
-      p.join(this.rootPath, ".tina/settings.yml"),
+      p.join(this.rootPath, tinaPath, "settings.yml"),
       this.loader
     );
 
@@ -103,7 +109,7 @@ export class FileSystemManager implements DataSource {
     const result = sectionsSettings.find(({ slug }) => slug === section);
 
     if (!result) {
-      throw new Error(`Expected tofind section with slug ${section}`);
+      throw new Error(`Expected to find section with slug ${section}`);
     }
 
     return result;
@@ -216,7 +222,7 @@ export class FileSystemManager implements DataSource {
     if (!sectionData) {
       throw new Error(`No section found for ${args.section}`);
     }
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await readDir(fullPath, this.dirLoader);
 
     const template = (
@@ -243,7 +249,7 @@ export class FileSystemManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await readDir(fullPath, this.dirLoader);
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
@@ -262,7 +268,7 @@ export class FileSystemManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await readDir(fullPath, this.dirLoader);
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`;
@@ -278,19 +284,19 @@ export class FileSystemManager implements DataSource {
     return data;
   };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
-    const fullPath = p.join(this.rootPath, ".tina/front_matter/templates");
+    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplateWithoutName(template, {
-      namespace: false,
-    });
+    // const templateData = await this.getTemplateWithoutName(template, {
+    //   namespace: false,
+    // });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
     const path = p.join(sectionData.path, relativePath);
-    const updatedTemplateData = {
-      ...templateData,
-      pages: [...(templateData.pages ? templateData.pages : []), path],
-    };
+    // const updatedTemplateData = {
+    //   ...templateData,
+    //   pages: [...(templateData.pages ? templateData.pages : []), path],
+    // };
 
     const fullFilePath = p.join(this.rootPath, path);
     const fullTemplatePath = p.join(fullPath, `${template}.yml`);
@@ -298,10 +304,11 @@ export class FileSystemManager implements DataSource {
     this.loader.clear(fullFilePath);
     this.loader.clear(fullTemplatePath);
 
-    await writeFile(fullFilePath, "---");
+    const documentString = "---\n" + jsyaml.dump({ _template: template });
+    await writeFile(fullFilePath, documentString);
 
-    const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
-    await writeFile(fullTemplatePath, templateString);
+    // const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
+    // await writeFile(fullTemplatePath, templateString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
