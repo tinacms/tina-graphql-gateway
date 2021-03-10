@@ -28,6 +28,9 @@ import popupWindow from "./popupWindow";
 
 const TINA_LOGIN_EVENT = "tinaCloudLogin";
 export const AUTH_TOKEN_KEY = "tinacms-auth";
+
+const BASE_TINA_URL = process.env.BASE_TINA_URL || `tina.io`;
+
 export type TokenObject = {
   id_token: string;
   access_token: string;
@@ -55,7 +58,7 @@ export const authenticate = (
       }
     });
     authTab = popupWindow(
-      `https://${realm}.tinajs.dev/signin?clientId=${clientId}`,
+      `https://${realm}.${BASE_TINA_URL}/signin?clientId=${clientId}`,
       "_blank",
       window,
       1000,
