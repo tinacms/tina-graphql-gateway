@@ -29,7 +29,7 @@ import popupWindow from "./popupWindow";
 const TINA_LOGIN_EVENT = "tinaCloudLogin";
 export const AUTH_TOKEN_KEY = "tinacms-auth";
 
-const BASE_TINA_URL = process.env.BASE_TINA_URL || `tinajs.io`;
+const BASE_TINA_URL = process.env.BASE_TINA_URL || `tina.io`;
 
 export type TokenObject = {
   id_token: string;
