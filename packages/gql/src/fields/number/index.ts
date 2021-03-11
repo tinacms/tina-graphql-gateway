@@ -39,7 +39,10 @@ export const number = {
       });
     },
     input: ({ field }: BuildArgs<NumberField>) => {
-      return gql.inputNumber(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.Number,
+      });
     },
   },
   resolve: {
