@@ -34,7 +34,10 @@ export const gql = {
       ],
     });
   },
-  scalar: (name: string, description?: string): ScalarTypeDefinitionNode => {
+  ScalarTypeDefinition: (
+    name: string,
+    description?: string
+  ): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
       name: {
