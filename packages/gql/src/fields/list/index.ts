@@ -122,7 +122,11 @@ export const list = {
       }
     },
     input: async ({ field }: BuildArgs<ListField>) => {
-      return gql.inputValueList(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
   },
   resolve: {

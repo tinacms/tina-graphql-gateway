@@ -34,7 +34,10 @@ export const datetime = {
       return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<DatetimeField>) => {
-      return gql.inputString(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

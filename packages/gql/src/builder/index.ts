@@ -254,17 +254,32 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
           name: "addPendingDocument",
           type: "Document",
           args: [
-            gql.inputString("relativePath"),
-            gql.inputString("section"),
-            gql.inputString("template"),
+            gql.InputValueDefinition({
+              name: "relativePath",
+              type: gql.TYPES.String,
+            }),
+            gql.InputValueDefinition({
+              name: "section",
+              type: gql.TYPES.String,
+            }),
+            gql.InputValueDefinition({
+              name: "template",
+              type: gql.TYPES.String,
+            }),
           ],
         }),
         gql.FieldDefinition({
           name: "updateDocument",
           type: "SectionDocumentUnion",
           args: [
-            gql.inputString("relativePath"),
-            gql.InputValueDefinition({ name: "params", type: "SectionParams" }),
+            gql.InputValueDefinition({
+              name: "relativePath",
+              type: gql.TYPES.String,
+            }),
+            gql.InputValueDefinition({
+              name: "params",
+              type: gql.TYPES.SectionParams,
+            }),
           ],
         }),
         ...mutationsArray.map((mutation) => {
@@ -272,7 +287,10 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
             name: mutation.mutationName,
             type: mutation.returnType,
             args: [
-              gql.inputString("relativePath"),
+              gql.InputValueDefinition({
+                name: "relativePath",
+                type: gql.TYPES.String,
+              }),
               gql.InputValueDefinition({
                 name: "params",
                 type: friendlyName(mutation.section.slug, { suffix: "Input" }),
@@ -296,22 +314,42 @@ const queryDefinition = (sectionMap: sectionMap) => {
       gql.FieldDefinition({
         name: "node",
         type: "Node",
-        args: [gql.inputID("id")],
+        args: [
+          gql.InputValueDefinition({
+            name: "id",
+            type: gql.TYPES.ID,
+            required: true,
+          }),
+        ],
       }),
       gql.FieldDefinition({
         name: "getDocument",
         type: "SectionDocumentUnion",
-        args: [gql.inputString("section"), gql.inputString("relativePath")],
+        args: [
+          gql.InputValueDefinition({
+            name: "section",
+            type: gql.TYPES.String,
+          }),
+          gql.InputValueDefinition({
+            name: "relativePath",
+            type: gql.TYPES.String,
+          }),
+        ],
       }),
       gql.FieldDefinition({
         name: "getSections",
-        type: "Section",
+        type: gql.TYPES.Section,
         list: true,
       }),
       gql.FieldDefinition({
         name: "getSection",
-        type: "Section",
-        args: [gql.inputString("section")],
+        type: gql.TYPES.Section,
+        args: [
+          gql.InputValueDefinition({
+            name: "section",
+            type: gql.TYPES.String,
+          }),
+        ],
       }),
       ...Object.values(sectionMap)
         .filter((section) => !section.mutation)
@@ -326,7 +364,12 @@ const queryDefinition = (sectionMap: sectionMap) => {
             : gql.FieldDefinition({
                 name: section.queryName,
                 type: section.returnType,
-                args: [gql.inputString("relativePath")],
+                args: [
+                  gql.InputValueDefinition({
+                    name: "relativePath",
+                    type: gql.TYPES.String,
+                  }),
+                ],
               });
         }),
     ],

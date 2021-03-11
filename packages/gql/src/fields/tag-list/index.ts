@@ -41,7 +41,11 @@ export const tag_list = {
       });
     },
     input: ({ field }: BuildArgs<TagListField>) => {
-      return gql.inputValueList(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
   },
   resolve: {

@@ -33,7 +33,10 @@ export const boolean = {
       return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.inputString(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {
