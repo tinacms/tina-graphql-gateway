@@ -88,7 +88,7 @@ export const fieldGroup = {
         accumulator,
         includeBody: false,
       });
-      return gql.InputValueDefinition(field.name, name);
+      return gql.InputValueDefinition({ name: field.name, type: name });
     },
   },
   resolve: {
