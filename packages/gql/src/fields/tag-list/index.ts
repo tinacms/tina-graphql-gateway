@@ -21,7 +21,7 @@ export const tag_list = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TagListField>) => {
       accumulator.push(gql.formField(typename));
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });

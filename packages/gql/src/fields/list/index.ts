@@ -70,10 +70,10 @@ export const list = {
       accumulator.push(
         gql.formField(typename, [
           gql.string("defaultItem"),
-          gql.field({ name: "field", type: unionName }),
+          gql.FieldDefinition({ name: "field", type: unionName }),
         ])
       );
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });

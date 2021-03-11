@@ -21,7 +21,7 @@ export const boolean = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<BooleanField>) => {
       accumulator.push(gql.formField(typename));
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });

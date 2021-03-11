@@ -64,7 +64,7 @@ export const fieldGroupList = {
           gql.fieldList({ name: "fields", type: fieldsUnionName }),
         ])
       );
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });

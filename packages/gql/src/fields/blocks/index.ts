@@ -48,7 +48,7 @@ export const blocks: Blocks = {
                 accumulator,
                 includeBody: false,
               });
-              return gql.field({
+              return gql.FieldDefinition({
                 name: friendlyName(t, { lowerCase: true }),
                 type: friendlyName(t, { suffix: "Form" }),
               });
@@ -59,11 +59,11 @@ export const blocks: Blocks = {
 
       accumulator.push(
         gql.formField(typename, [
-          gql.field({ name: "templates", type: templateName }),
+          gql.FieldDefinition({ name: "templates", type: templateName }),
         ])
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });

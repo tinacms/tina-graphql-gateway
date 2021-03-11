@@ -40,7 +40,7 @@ export const fieldGroup = {
         ])
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -58,7 +58,7 @@ export const fieldGroup = {
         includeTemplate: false,
       });
 
-      return gql.field({ name: field.name, type: initialValueName });
+      return gql.FieldDefinition({ name: field.name, type: initialValueName });
     },
     value: async ({
       cache,
@@ -71,7 +71,7 @@ export const fieldGroup = {
         accumulator,
         includeBody: false,
       });
-      return gql.field({ name: field.name, type: name });
+      return gql.FieldDefinition({ name: field.name, type: name });
     },
     input: async ({
       cache,

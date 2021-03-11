@@ -245,7 +245,7 @@ export const gql = {
       },
     },
   }),
-  field: ({
+  FieldDefinition: ({
     name,
     type,
     args = [],
