@@ -185,7 +185,7 @@ export const buildTemplateOrFieldInput = async ({
   }
 
   accumulator.push(
-    gql.input({
+    gql.InputObjectTypeDefinition({
       name,
       fields,
     })

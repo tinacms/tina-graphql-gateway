@@ -125,7 +125,7 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.input({
+        gql.InputObjectTypeDefinition({
           name: friendlyName(field.name, { suffix: "Input" }),
           fields: field.template_types.map((template) =>
             gql.InputValueDefinition(

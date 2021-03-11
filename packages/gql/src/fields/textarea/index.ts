@@ -82,7 +82,7 @@ export const textarea = {
     input: async ({ field, cache, accumulator }: BuildArgs<TextareaField>) => {
       const name = friendlyName(field, { suffix: "LongTextInput" });
       accumulator.push(
-        gql.input({
+        gql.InputObjectTypeDefinition({
           name,
           fields: [gql.inputString("raw")],
         })

@@ -344,7 +344,7 @@ export const gql = {
       },
     };
   },
-  input: ({
+  InputObjectTypeDefinition: ({
     name,
     fields,
   }: {
