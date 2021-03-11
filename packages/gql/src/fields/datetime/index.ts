@@ -28,10 +28,10 @@ export const datetime = {
       });
     },
     initialValue: ({ field }: BuildArgs<DatetimeField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: "String" });
     },
     value: ({ field }: BuildArgs<DatetimeField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: "String" });
     },
     input: ({ field }: BuildArgs<DatetimeField>) => {
       return gql.inputString(field.name);

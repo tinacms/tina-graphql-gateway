@@ -27,9 +27,9 @@ export const gql = {
       name: name,
       interfaces: [gql.NamedType({ name: "FormField" })],
       fields: [
-        gql.string("name"),
-        gql.string("label"),
-        gql.string("component"),
+        gql.FieldDefinition({ name: "name", type: "String" }),
+        gql.FieldDefinition({ name: "label", type: "String" }),
+        gql.FieldDefinition({ name: "component", type: "String" }),
         ...(additionalFields || []),
       ],
     });
@@ -64,24 +64,6 @@ export const gql = {
         name: {
           kind: "Name" as const,
           value: "Reference" as const,
-        },
-      },
-      directives: [],
-    };
-  },
-  string: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "String" as const,
         },
       },
       directives: [],
@@ -255,6 +237,8 @@ export const gql = {
   }: {
     name: string;
     type: string;
+    required?: boolean;
+    list?: boolean;
     args?: InputValueDefinitionNode[];
   }) => {
     return {
