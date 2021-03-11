@@ -358,7 +358,7 @@ export const gql = {
     },
     fields,
   }),
-  union: ({
+  UnionTypeDefinition: ({
     name,
     types,
   }: {

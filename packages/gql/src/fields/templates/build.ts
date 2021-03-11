@@ -139,7 +139,7 @@ export const buildTemplateOrFieldFormFields = async ({
 
   const fieldsUnionName = `${name}FieldsUnion`;
   accumulator.push(
-    gql.union({
+    gql.UnionTypeDefinition({
       name: fieldsUnionName,
       types: _.uniq(
         fields.map((field) => {

@@ -82,7 +82,7 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.union({
+        gql.UnionTypeDefinition({
           name: name,
           types: field.template_types.map((t) =>
             friendlyName(t, { suffix: "Values" })
@@ -104,7 +104,7 @@ export const blocks: Blocks = {
         });
       });
       accumulator.push(
-        gql.union({
+        gql.UnionTypeDefinition({
           name: fieldUnionName,
           types: field.template_types.map((t) =>
             friendlyName(t, { suffix: "Data" })

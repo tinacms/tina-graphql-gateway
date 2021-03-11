@@ -64,7 +64,10 @@ export const list = {
 
       const unionName = "List_FormFieldsUnion";
       accumulator.push(
-        gql.union({ name: unionName, types: ["TextField", "SelectField"] })
+        gql.UnionTypeDefinition({
+          name: unionName,
+          types: ["TextField", "SelectField"],
+        })
       );
 
       accumulator.push(
