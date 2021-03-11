@@ -44,10 +44,13 @@ export const gql = {
       ],
     });
   },
-  ScalarTypeDefinition: (
-    name: string,
-    description?: string
-  ): ScalarTypeDefinitionNode => {
+  ScalarTypeDefinition: ({
+    name,
+    description,
+  }: {
+    name: string;
+    description?: string;
+  }): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
       name: {

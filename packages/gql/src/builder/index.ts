@@ -142,12 +142,12 @@ const interfaceDefinitions = [
  * Definitions for additional scalars, ex. JSON
  */
 const scalarDefinitions = [
-  gql.ScalarTypeDefinition(
-    "Reference",
-    "References another document, used as a foreign key"
-  ),
-  gql.ScalarTypeDefinition("JSON"),
-  gql.ScalarTypeDefinition("JSONObject"),
+  gql.ScalarTypeDefinition({
+    name: "Reference",
+    description: "References another document, used as a foreign key",
+  }),
+  gql.ScalarTypeDefinition({ name: "JSON" }),
+  gql.ScalarTypeDefinition({ name: "JSONObject" }),
 ];
 
 /**
