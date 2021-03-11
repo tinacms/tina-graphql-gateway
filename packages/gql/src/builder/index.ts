@@ -254,7 +254,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
       fields: [
         gql.FieldDefinition({
           name: "addPendingDocument",
-          type: "Document",
+          type: gql.TYPES.Document,
           args: [
             gql.InputValueDefinition({
               name: "relativePath",
@@ -272,7 +272,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
         }),
         gql.FieldDefinition({
           name: "updateDocument",
-          type: "SectionDocumentUnion",
+          type: gql.TYPES.SectionDocumentUnion,
           args: [
             gql.InputValueDefinition({
               name: "relativePath",
@@ -315,7 +315,7 @@ const queryDefinition = (sectionMap: sectionMap) => {
       }),
       gql.FieldDefinition({
         name: "node",
-        type: "Node",
+        type: gql.TYPES.Node,
         args: [
           gql.InputValueDefinition({
             name: "id",
@@ -326,7 +326,7 @@ const queryDefinition = (sectionMap: sectionMap) => {
       }),
       gql.FieldDefinition({
         name: "getDocument",
-        type: "SectionDocumentUnion",
+        type: gql.TYPES.SectionDocumentUnion,
         args: [
           gql.InputValueDefinition({
             name: "section",
@@ -422,24 +422,12 @@ const buildSectionDefinitions = (
     gql.ObjectTypeDefinition({
       name: friendlyName(name, { suffix: "Document" }),
       interfaces: [
-        {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "Node",
-          },
-        },
-        {
-          kind: "NamedType",
-          name: {
-            kind: "Name",
-            value: "Document",
-          },
-        },
+        gql.NamedType({ name: "Node" }),
+        gql.NamedType({ name: "Document" }),
       ],
       fields: [
-        gql.FieldDefinition({ name: "id", type: "ID", required: true }),
-        gql.FieldDefinition({ name: "sys", type: "SystemInfo" }),
+        gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
+        gql.FieldDefinition({ name: "sys", type: gql.TYPES.SystemInfo }),
         gql.FieldDefinition({
           name: "data",
           type: friendlyName(name, { suffix: "Data" }),
