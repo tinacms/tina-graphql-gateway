@@ -36,7 +36,7 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name: templateName,
           fields: await sequential(
             field.template_types,

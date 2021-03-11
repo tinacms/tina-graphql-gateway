@@ -23,7 +23,7 @@ import {
 
 export const gql = {
   formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
-    return gql.object({
+    return gql.ObjectTypeDefinition({
       name: name,
       interfaces: [gql.NamedType({ name: "FormField" })],
       fields: [
@@ -388,7 +388,7 @@ export const gql = {
       },
     };
   },
-  object: ({
+  ObjectTypeDefinition: ({
     name,
     fields,
     interfaces = [],
