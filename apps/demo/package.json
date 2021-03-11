@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "yarn watch",
     "watch": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "next-dev": "next dev --port 2999",
     "build": "next build",
