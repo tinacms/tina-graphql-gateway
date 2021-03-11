@@ -21,21 +21,21 @@ import {
   UnionTypeDefinitionNode,
 } from "graphql";
 
+/**
+ * the `gql` module provides functions and types which can be
+ * used to build up the GraphQL AST. The primary reason for us using
+ * this instead of the [builders provided by the graphql package](https://graphql.org/graphql-js/type/#examples)
+ * is due to the dynamic and asynchronous nature of our needs.
+ *
+ * The tradeoff is a low-level API that's often more verbose, and it's
+ * not a complete match of the GraphQL spec, so additional properties will likely
+ * be needed as our needs grow.
+ */
 export const gql = {
-  TYPES: {
-    SectionDocumentUnion: "SectionDocumentUnion",
-    String: "String",
-    Reference: "Reference",
-    Section: "Section",
-    ID: "ID",
-    SystemInfo: "SystemInfo",
-    SectionParams: "SectionParams",
-    Boolean: "Boolean",
-    Node: "Node",
-    Number: "Int",
-    Document: "Document",
-    JSONObject: "JSONObject",
-  },
+  /**
+   * `FormFieldBuilder` acts as a shortcut to building an entire `ObjectTypeDefinition`, we use this
+   * because all Tina field objects share a common set of fields ('name', 'label', 'component')
+   */
   FormFieldBuilder: ({
     name,
     additionalFields,
@@ -290,4 +290,18 @@ export const gql = {
     },
     fields,
   }),
+  TYPES: {
+    SectionDocumentUnion: "SectionDocumentUnion",
+    String: "String",
+    Reference: "Reference",
+    Section: "Section",
+    ID: "ID",
+    SystemInfo: "SystemInfo",
+    SectionParams: "SectionParams",
+    Boolean: "Boolean",
+    Node: "Node",
+    Number: "Int",
+    Document: "Document",
+    JSONObject: "JSONObject",
+  },
 };

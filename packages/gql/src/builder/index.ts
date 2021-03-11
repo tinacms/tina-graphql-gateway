@@ -26,7 +26,6 @@ import {
   InputObjectTypeDefinitionNode,
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
-  print,
 } from "graphql";
 import type { DirectorySection, Section } from "../types";
 import type { Cache } from "../cache";
