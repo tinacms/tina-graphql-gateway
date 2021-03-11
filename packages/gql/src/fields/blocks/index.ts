@@ -90,7 +90,7 @@ export const blocks: Blocks = {
         })
       );
 
-      return gql.fieldList({ name: field.name, type: name });
+      return gql.FieldDefinition({ name: field.name, type: name, list: true });
     },
     value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = friendlyName(field, { suffix: "Data" });
@@ -111,7 +111,11 @@ export const blocks: Blocks = {
           ),
         })
       );
-      return gql.fieldList({ name: field.name, type: fieldUnionName });
+      return gql.FieldDefinition({
+        name: field.name,
+        type: fieldUnionName,
+        list: true,
+      });
     },
     input: async ({ cache, field, accumulator }) => {
       await sequential(field.template_types, async (templateSlug) => {

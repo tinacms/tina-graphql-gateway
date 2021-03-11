@@ -22,7 +22,12 @@ import {
 } from "graphql";
 
 export const gql = {
-  TYPES: { String: "String" },
+  TYPES: {
+    String: "String",
+    Reference: "Reference",
+    Number: "Int",
+    Document: "Document",
+  },
   formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
     return gql.ObjectTypeDefinition({
       name: name,
@@ -48,42 +53,6 @@ export const gql = {
       description: {
         kind: "StringValue",
         value: description || "",
-      },
-      directives: [],
-    };
-  },
-  reference: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "Reference" as const,
-        },
-      },
-      directives: [],
-    };
-  },
-  number: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "Int",
-        },
       },
       directives: [],
     };
@@ -267,34 +236,6 @@ export const gql = {
 
     return res as FieldDefinitionNode;
   },
-  fieldRequired: ({
-    name,
-    type,
-    args = [],
-  }: {
-    name: string;
-    type: string;
-    args?: InputValueDefinitionNode[];
-  }): FieldDefinitionNode => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
-          },
-        },
-      },
-      arguments: args,
-    };
-  },
   InterfaceTypeDefinition: ({
     name,
     fields,
@@ -311,34 +252,6 @@ export const gql = {
       interfaces: [],
       directives: [],
       fields: fields,
-    };
-  },
-  fieldList: ({
-    name,
-    type,
-    args = [],
-  }: {
-    name: string;
-    type: string;
-    args?: InputValueDefinitionNode[];
-  }): FieldDefinitionNode => {
-    return {
-      kind: "FieldDefinition" as const,
-      arguments: args,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "ListType" as const,
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
-          },
-        },
-      },
     };
   },
   InputObjectTypeDefinition: ({

@@ -107,9 +107,10 @@ export const list = {
           const section = await cache.datasource.getSettingsForSection(
             list.config.source.section
           );
-          return gql.fieldList({
+          return gql.FieldDefinition({
             name: field.name,
             type: friendlyName(section.slug, { suffix: "Document" }),
+            list: true,
           });
         case "simple":
           list = field as SimpleList;

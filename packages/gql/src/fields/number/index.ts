@@ -27,10 +27,16 @@ export const number = {
       });
     },
     initialValue: ({ field }: BuildArgs<NumberField>) => {
-      return gql.number(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.Number,
+      });
     },
     value: ({ field }: BuildArgs<NumberField>) => {
-      return gql.number(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.Number,
+      });
     },
     input: ({ field }: BuildArgs<NumberField>) => {
       return gql.inputNumber(field.name);

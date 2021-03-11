@@ -158,9 +158,10 @@ const systemInfoDefinition = gql.ObjectTypeDefinition({
   fields: [
     gql.FieldDefinition({ name: "filename", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "basename", type: gql.TYPES.String }),
-    gql.fieldList({
+    gql.FieldDefinition({
       name: "breadcrumbs",
       type: gql.TYPES.String,
+      list: true,
       args: [gql.inputBoolean("excludeExtension")],
     }),
     gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
@@ -180,9 +181,17 @@ const sectionDefinition = gql.ObjectTypeDefinition({
     gql.FieldDefinition({ name: "create", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "match", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "new_doc_ext", type: gql.TYPES.String }),
-    gql.fieldList({ name: "templates", type: gql.TYPES.String }),
+    gql.FieldDefinition({
+      name: "templates",
+      type: gql.TYPES.String,
+      list: true,
+    }),
     gql.FieldDefinition({ name: "slug", type: gql.TYPES.String }),
-    gql.fieldList({ name: "documents", type: "Document" }),
+    gql.FieldDefinition({
+      name: "documents",
+      type: gql.TYPES.Document,
+      list: true,
+    }),
   ],
 });
 
@@ -289,9 +298,10 @@ const queryDefinition = (sectionMap: sectionMap) => {
         type: "SectionDocumentUnion",
         args: [gql.inputString("section"), gql.inputString("relativePath")],
       }),
-      gql.fieldList({
+      gql.FieldDefinition({
         name: "getSections",
         type: "Section",
+        list: true,
       }),
       gql.FieldDefinition({
         name: "getSection",
@@ -302,9 +312,10 @@ const queryDefinition = (sectionMap: sectionMap) => {
         .filter((section) => !section.mutation)
         .map((section) => {
           return section.plural
-            ? gql.fieldList({
+            ? gql.FieldDefinition({
                 name: section.queryName,
                 type: section.returnType,
+                list: true,
                 args: [],
               })
             : gql.FieldDefinition({

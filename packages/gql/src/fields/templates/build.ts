@@ -221,7 +221,11 @@ export const buildTemplateOrFieldForm = async ({
       fields: [
         gql.FieldDefinition({ name: "label", type: `String` }),
         gql.FieldDefinition({ name: "name", type: `String` }),
-        gql.fieldList({ name: "fields", type: fieldsUnionName }),
+        gql.FieldDefinition({
+          name: "fields",
+          type: fieldsUnionName,
+          list: true,
+        }),
       ],
     })
   );
