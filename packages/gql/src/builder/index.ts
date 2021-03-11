@@ -74,7 +74,7 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     ...scalarDefinitions,
     systemInfoDefinition,
     sectionDefinition,
-    gql.union({
+    gql.UnionTypeDefinition({
       name: "SectionDocumentUnion",
       types: sections.map((section) =>
         friendlyName(section.slug, { suffix: "Document" })
@@ -320,7 +320,7 @@ const buildSectionDefinitions = (
 ) => {
   const name = friendlyName(section.slug);
   accumulator.push(
-    gql.union({
+    gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: "Data" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Data", true)
@@ -339,7 +339,7 @@ const buildSectionDefinitions = (
     })
   );
   accumulator.push(
-    gql.union({
+    gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: "Values" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Values", true)
@@ -347,7 +347,7 @@ const buildSectionDefinitions = (
     })
   );
   accumulator.push(
-    gql.union({
+    gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: "Form" }),
       types: section.templates.map((template) =>
         templateTypeName(template, "Form", true)
