@@ -27,10 +27,10 @@ export const file = {
       });
     },
     initialValue: ({ field }: BuildArgs<FileField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     value: ({ field }: BuildArgs<FileField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<FileField>) => {
       return gql.inputString(field.name);

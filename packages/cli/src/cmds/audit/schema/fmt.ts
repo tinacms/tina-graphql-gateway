@@ -54,7 +54,7 @@ export const ForestryFMTSchema = {
     label: {
       title: "Label",
       description: "The label used in the sidebar",
-      type: "string",
+      type: gql.TYPES.String,
     },
     hide_body: {
       type: "boolean",
@@ -62,13 +62,13 @@ export const ForestryFMTSchema = {
       description: "Whether to show the body for the markdown file.",
     },
     display_field: {
-      type: "string",
+      type: gql.TYPES.String,
     },
     fields: { $ref: "#/definitions/allFields" },
     pages: {
       type: "array",
       items: {
-        type: "string",
+        type: gql.TYPES.String,
       },
     },
   },

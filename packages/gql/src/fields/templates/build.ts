@@ -106,7 +106,9 @@ export const buildTemplateOrFieldValues = async ({
   }
 
   if (includeTemplate) {
-    fields.push(gql.FieldDefinition({ name: "_template", type: "String" }));
+    fields.push(
+      gql.FieldDefinition({ name: "_template", type: gql.TYPES.String })
+    );
   }
 
   accumulator.push(

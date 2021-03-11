@@ -34,7 +34,7 @@ export const ListField = {
     default: {
       type: "array",
       items: {
-        type: "string",
+        type: gql.TYPES.String,
       },
     },
     config: {
@@ -79,7 +79,7 @@ export const ListField = {
                     options: {
                       type: "array",
                       items: {
-                        type: "string",
+                        type: gql.TYPES.String,
                       },
                     },
                     source: {
@@ -108,7 +108,7 @@ export const ListField = {
                     source: {
                       properties: {
                         type: { const: "pages" },
-                        section: { type: "string" },
+                        section: { type: gql.TYPES.String },
                       },
                       required: ["type", "section"],
                       additionalProperties: false,
@@ -134,9 +134,9 @@ export const ListField = {
                     source: {
                       properties: {
                         type: { const: "documents" },
-                        section: { type: "string" },
-                        file: { type: "string" },
-                        path: { type: "string" },
+                        section: { type: gql.TYPES.String },
+                        file: { type: gql.TYPES.String },
+                        path: { type: gql.TYPES.String },
                       },
                       required: ["type", "section", "file", "path"],
                       additionalProperties: false,
