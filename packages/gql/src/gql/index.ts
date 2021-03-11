@@ -193,7 +193,7 @@ export const gql = {
       },
     },
   }),
-  inputValue: (name: string, type: string) => {
+  InputValueDefinition: (name: string, type: string) => {
     return {
       kind: "InputValueDefinition" as const,
       name: {

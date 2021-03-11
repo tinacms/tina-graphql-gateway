@@ -128,7 +128,7 @@ export const blocks: Blocks = {
         gql.input({
           name: friendlyName(field.name, { suffix: "Input" }),
           fields: field.template_types.map((template) =>
-            gql.inputValue(
+            gql.InputValueDefinition(
               friendlyName(template, { lowerCase: true }),
               templateTypeName(template, "Input", false)
             )
