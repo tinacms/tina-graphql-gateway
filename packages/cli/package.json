@@ -21,7 +21,7 @@
     "@types/jest": "26.0.4",
     "@types/listr": "0.14.2",
     "jest": "26.1.0",
-    "ts-jest": "26.1.2"
+    "ts-jest": "^26.5.3"
   },
   "scripts": {
     "build": "yarn tsup src/index.ts --format cjs --dts",
