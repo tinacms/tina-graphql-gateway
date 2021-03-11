@@ -23,6 +23,7 @@ import {
 
 export const gql = {
   TYPES: {
+    SectionDocumentUnion: "SectionDocumentUnion",
     String: "String",
     Reference: "Reference",
     Section: "Section",
@@ -30,6 +31,7 @@ export const gql = {
     SystemInfo: "SystemInfo",
     SectionParams: "SectionParams",
     Boolean: "Boolean",
+    Node: "Node",
     Number: "Int",
     Document: "Document",
     JSONObject: "JSONObject",
