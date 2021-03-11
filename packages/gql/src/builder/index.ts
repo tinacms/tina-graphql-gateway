@@ -221,7 +221,7 @@ const buildSectionMap = (
  */
 const mutationDefinitions = (mutationsArray: mutationsArray) => {
   return [
-    gql.input({
+    gql.InputObjectTypeDefinition({
       name: "SectionParams",
       fields: mutationsArray.map((ma) => {
         return gql.InputValueDefinition(
@@ -328,7 +328,7 @@ const buildSectionDefinitions = (
     })
   );
   accumulator.push(
-    gql.input({
+    gql.InputObjectTypeDefinition({
       name: friendlyName(name, { suffix: "Input" }),
       fields: section.templates.map((template) =>
         gql.InputValueDefinition(
