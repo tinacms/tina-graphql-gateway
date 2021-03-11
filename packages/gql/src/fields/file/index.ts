@@ -33,7 +33,10 @@ export const file = {
       return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<FileField>) => {
-      return gql.inputString(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

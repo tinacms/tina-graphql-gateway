@@ -20,13 +20,14 @@ import {
   NamedTypeNode,
   UnionTypeDefinitionNode,
 } from "graphql";
-import { boolean } from "yup";
 
 export const gql = {
   TYPES: {
     String: "String",
     Reference: "Reference",
     Section: "Section",
+    ID: "ID",
+    SectionParams: "SectionParams",
     Boolean: "Boolean",
     Number: "Int",
     Document: "Document",
@@ -60,37 +61,6 @@ export const gql = {
       directives: [],
     };
   },
-  inputID: (name: string): InputValueDefinitionNode => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NonNullType",
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "ID",
-        },
-      },
-    },
-  }),
-  inputString: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "String",
-      },
-    },
-  }),
   InputValueDefinition: ({
     name,
     type,
@@ -102,39 +72,60 @@ export const gql = {
     list?: boolean;
     required?: boolean;
   }) => {
-    return {
-      kind: "InputValueDefinition" as const,
+    let res = {};
+    const namedType = {
+      kind: "NamedType" as const,
       name: {
         kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: type,
-        },
+        value: type,
       },
     };
-  },
-  inputValueList: (name: string, type: string) => {
-    return {
+    const def = {
       kind: "InputValueDefinition" as const,
       name: {
         kind: "Name" as const,
         value: name,
       },
-      type: {
-        kind: "ListType" as const,
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
+    };
+    if (list) {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: {
+              kind: "NonNullType",
+              type: namedType,
+            },
           },
-        },
-      },
-    };
+        };
+      } else {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: namedType,
+          },
+        };
+      }
+    } else {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "NonNullType",
+            type: namedType,
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: namedType,
+        };
+      }
+    }
+
+    return res as InputValueDefinitionNode;
   },
   FieldDefinition: ({
     name,
@@ -172,10 +163,8 @@ export const gql = {
           type: {
             kind: "ListType" as const,
             type: {
-              type: {
-                kind: "NonNullType",
-                type: namedType,
-              },
+              kind: "NonNullType",
+              type: namedType,
             },
           },
         };

@@ -140,10 +140,11 @@ export const blocks: Blocks = {
         })
       );
 
-      return gql.inputValueList(
-        field.name,
-        friendlyName(field.name, { suffix: "Input" })
-      );
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: friendlyName(field.name, { suffix: "Input" }),
+        list: true,
+      });
     },
   },
   resolve: {

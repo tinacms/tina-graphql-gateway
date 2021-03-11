@@ -120,7 +120,11 @@ export const fieldGroupList = {
         accumulator,
         includeBody: false,
       });
-      return gql.inputValueList(field.name, name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: name,
+        list: true,
+      });
     },
   },
   resolve: {

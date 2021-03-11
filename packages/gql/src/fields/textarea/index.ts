@@ -84,7 +84,12 @@ export const textarea = {
       accumulator.push(
         gql.InputObjectTypeDefinition({
           name,
-          fields: [gql.inputString("raw")],
+          fields: [
+            gql.InputValueDefinition({
+              name: "raw",
+              type: gql.TYPES.String,
+            }),
+          ],
         })
       );
 
