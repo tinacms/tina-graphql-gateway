@@ -35,7 +35,7 @@ export const textarea = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
       accumulator.push(gql.formField(typename));
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -46,17 +46,17 @@ export const textarea = {
         gql.object({
           name,
           fields: [
-            gql.field({ name: "raw", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: "String" }),
             // TODO: Not sure how to support custom scalars, might be better to
             // force this into a recursive GraphQLObject which matches the
             // remark AST shape
-            // gql.field({ name: "markdownAst", type: "JSONObject" }),
-            // gql.field({ name: "html", type: "String" }),
+            // gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
+            // gql.FieldDefinition({ name: "html", type: "String" }),
           ],
         })
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: name,
       });
@@ -67,14 +67,14 @@ export const textarea = {
         gql.object({
           name,
           fields: [
-            gql.field({ name: "raw", type: "String" }),
-            gql.field({ name: "markdownAst", type: "JSONObject" }),
-            gql.field({ name: "html", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: "String" }),
+            gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
+            gql.FieldDefinition({ name: "html", type: "String" }),
           ],
         })
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: name,
       });

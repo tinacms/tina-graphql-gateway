@@ -106,7 +106,7 @@ export const buildTemplateOrFieldValues = async ({
   }
 
   if (includeTemplate) {
-    fields.push(gql.field({ name: "_template", type: "String" }));
+    fields.push(gql.FieldDefinition({ name: "_template", type: "String" }));
   }
 
   accumulator.push(
@@ -217,8 +217,8 @@ export const buildTemplateOrFieldForm = async ({
     gql.object({
       name,
       fields: [
-        gql.field({ name: "label", type: `String` }),
-        gql.field({ name: "name", type: `String` }),
+        gql.FieldDefinition({ name: "label", type: `String` }),
+        gql.FieldDefinition({ name: "name", type: `String` }),
         gql.fieldList({ name: "fields", type: fieldsUnionName }),
       ],
     })

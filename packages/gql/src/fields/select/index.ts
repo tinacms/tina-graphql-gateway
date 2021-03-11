@@ -23,7 +23,7 @@ export const select = {
     /** Returns one of 3 possible types of select options */
     field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
       accumulator.push(gql.formField(typename, [gql.stringList("options")]));
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -44,7 +44,7 @@ export const select = {
           );
           const name = friendlyName(section.slug);
 
-          return gql.field({
+          return gql.FieldDefinition({
             name: field.name,
             type: friendlyName(name, { suffix: "Document" }),
           });
