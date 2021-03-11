@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@tinacms/core": "^0.31.0",
-    "@tinacms/forms": "^0.3",
+    "@tinacms/forms": "^0.38.0",
     "@tinacms/icons": "^0.7",
     "@tinacms/react-core": "^0.2",
     "@tinacms/react-forms": "^0.31.0",
@@ -60,10 +60,10 @@
   },
   "peerDependencies": {
     "@tinacms/core": "^0.31.0",
-    "@tinacms/forms": "^0.3",
+    "@tinacms/forms": "^0.38.0",
     "@tinacms/icons": "^0.7",
     "@tinacms/react-core": "^0.2",
-    "@tinacms/react-forms": "^0.31.0",
+    "@tinacms/react-forms": "^0.32.0",
     "@tinacms/react-modals": "^0.1",
     "@tinacms/styles": "^0.29.0",
     "react": ">=16.8",
