@@ -221,7 +221,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
     gql.input({
       name: "SectionParams",
       fields: mutationsArray.map((ma) => {
-        return gql.inputValue(
+        return gql.InputValueDefinition(
           ma.section.slug,
           friendlyName(ma.section.slug, { suffix: "Input" })
         );
@@ -244,7 +244,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
           type: "SectionDocumentUnion",
           args: [
             gql.inputString("relativePath"),
-            gql.inputValue("params", "SectionParams"),
+            gql.InputValueDefinition("params", "SectionParams"),
           ],
         }),
         ...mutationsArray.map((mutation) => {
@@ -253,7 +253,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
             type: mutation.returnType,
             args: [
               gql.inputString("relativePath"),
-              gql.inputValue(
+              gql.InputValueDefinition(
                 "params",
                 friendlyName(mutation.section.slug, { suffix: "Input" })
               ),
@@ -328,7 +328,7 @@ const buildSectionDefinitions = (
     gql.input({
       name: friendlyName(name, { suffix: "Input" }),
       fields: section.templates.map((template) =>
-        gql.inputValue(
+        gql.InputValueDefinition(
           friendlyName(template, { lowerCase: true }),
           templateTypeName(template, "Input", true)
         )

@@ -88,7 +88,7 @@ export const textarea = {
         })
       );
 
-      return gql.inputValue(field.name, name);
+      return gql.InputValueDefinition(field.name, name);
     },
   },
   resolve: {
