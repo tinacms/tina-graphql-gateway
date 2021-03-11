@@ -20,6 +20,7 @@ import {
   NamedTypeNode,
   UnionTypeDefinitionNode,
 } from "graphql";
+import { boolean } from "yup";
 
 export const gql = {
   TYPES: {
@@ -130,7 +131,17 @@ export const gql = {
       },
     },
   }),
-  InputValueDefinition: (name: string, type: string) => {
+  InputValueDefinition: ({
+    name,
+    type,
+    list,
+    required,
+  }: {
+    name: string;
+    type: string;
+    list?: boolean;
+    required?: boolean;
+  }) => {
     return {
       kind: "InputValueDefinition" as const,
       name: {

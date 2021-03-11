@@ -67,7 +67,10 @@ export const select = {
       }
     },
     input: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.InputValueDefinition(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

@@ -236,10 +236,10 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
     gql.InputObjectTypeDefinition({
       name: "SectionParams",
       fields: mutationsArray.map((ma) => {
-        return gql.InputValueDefinition(
-          ma.section.slug,
-          friendlyName(ma.section.slug, { suffix: "Input" })
-        );
+        return gql.InputValueDefinition({
+          name: ma.section.slug,
+          type: friendlyName(ma.section.slug, { suffix: "Input" }),
+        });
       }),
     }),
     gql.ObjectTypeDefinition({
@@ -259,7 +259,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
           type: "SectionDocumentUnion",
           args: [
             gql.inputString("relativePath"),
-            gql.InputValueDefinition("params", "SectionParams"),
+            gql.InputValueDefinition({ name: "params", type: "SectionParams" }),
           ],
         }),
         ...mutationsArray.map((mutation) => {
@@ -268,10 +268,10 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
             type: mutation.returnType,
             args: [
               gql.inputString("relativePath"),
-              gql.InputValueDefinition(
-                "params",
-                friendlyName(mutation.section.slug, { suffix: "Input" })
-              ),
+              gql.InputValueDefinition({
+                name: "params",
+                type: friendlyName(mutation.section.slug, { suffix: "Input" }),
+              }),
             ],
           });
         }),
@@ -345,10 +345,10 @@ const buildSectionDefinitions = (
     gql.InputObjectTypeDefinition({
       name: friendlyName(name, { suffix: "Input" }),
       fields: section.templates.map((template) =>
-        gql.InputValueDefinition(
-          friendlyName(template, { lowerCase: true }),
-          templateTypeName(template, "Input", true)
-        )
+        gql.InputValueDefinition({
+          name: friendlyName(template, { lowerCase: true }),
+          type: templateTypeName(template, "Input", true),
+        })
       ),
     })
   );
