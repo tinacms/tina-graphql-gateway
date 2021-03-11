@@ -87,24 +87,6 @@ export const gql = {
       directives: [],
     };
   },
-  stringList: (name: string) => ({
-    kind: "FieldDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    arguments: [],
-    type: {
-      kind: "ListType" as const,
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "String",
-        },
-      },
-    },
-  }),
   inputID: (name: string): InputValueDefinitionNode => ({
     kind: "InputValueDefinition" as const,
     name: {
@@ -213,27 +195,12 @@ export const gql = {
       },
     };
   },
-  fieldID: ({ name }: { name: string }) => ({
-    kind: "FieldDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NonNullType" as const,
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "ID",
-        },
-      },
-    },
-  }),
   FieldDefinition: ({
     name,
     type,
     args = [],
+    list,
+    required,
   }: {
     name: string;
     type: string;
@@ -241,21 +208,63 @@ export const gql = {
     list?: boolean;
     args?: InputValueDefinitionNode[];
   }) => {
-    return {
+    let res = {};
+    let namedType = {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: type,
+      },
+    };
+    let def = {
       kind: "FieldDefinition" as const,
       name: {
         kind: "Name" as const,
         value: name,
       },
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: type,
-        },
-      },
       arguments: args,
     };
+    if (list) {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: {
+              type: {
+                kind: "NonNullType",
+                type: namedType,
+              },
+            },
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: namedType,
+          },
+        };
+      }
+    } else {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "NonNullType" as const,
+            type: namedType,
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: namedType,
+        };
+      }
+    }
+
+    return res as FieldDefinitionNode;
   },
   fieldRequired: ({
     name,

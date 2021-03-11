@@ -82,7 +82,11 @@ export const list = {
       });
     },
     initialValue: async ({ field }: BuildArgs<ListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: "string",
+        list: true,
+      });
     },
     value: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -109,7 +113,11 @@ export const list = {
           });
         case "simple":
           list = field as SimpleList;
-          return gql.stringList(field.name);
+          return gql.FieldDefinition({
+            name: list.name,
+            type: "String",
+            list: true,
+          });
       }
     },
     input: async ({ field }: BuildArgs<ListField>) => {
