@@ -71,7 +71,7 @@ export const buildTemplateOrFieldData = async ({
   }
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields,
     })
@@ -110,7 +110,7 @@ export const buildTemplateOrFieldValues = async ({
   }
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields,
     })
@@ -214,7 +214,7 @@ export const buildTemplateOrFieldForm = async ({
   });
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields: [
         gql.FieldDefinition({ name: "label", type: `String` }),

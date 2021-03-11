@@ -150,7 +150,7 @@ const scalarDefinitions = [
 /**
  * System info provides information about a given document
  */
-const systemInfoDefinition = gql.object({
+const systemInfoDefinition = gql.ObjectTypeDefinition({
   name: "SystemInfo",
   fields: [
     gql.FieldDefinition({ name: "filename", type: "String" }),
@@ -168,7 +168,7 @@ const systemInfoDefinition = gql.object({
   ],
 });
 
-const sectionDefinition = gql.object({
+const sectionDefinition = gql.ObjectTypeDefinition({
   name: "Section",
   fields: [
     gql.FieldDefinition({ name: "type", type: "String" }),
@@ -230,7 +230,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
         );
       }),
     }),
-    gql.object({
+    gql.ObjectTypeDefinition({
       name: "Mutation",
       fields: [
         gql.FieldDefinition({
@@ -269,7 +269,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
 };
 
 const queryDefinition = (sectionMap: sectionMap) => {
-  return gql.object({
+  return gql.ObjectTypeDefinition({
     name: "Query",
     fields: [
       gql.FieldDefinition({
@@ -355,7 +355,7 @@ const buildSectionDefinitions = (
     })
   );
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name: friendlyName(name, { suffix: "Document" }),
       interfaces: [
         {

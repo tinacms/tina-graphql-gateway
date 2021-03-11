@@ -43,7 +43,7 @@ export const textarea = {
     initialValue: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextInitialValue";
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name,
           fields: [
             gql.FieldDefinition({ name: "raw", type: "String" }),
@@ -64,7 +64,7 @@ export const textarea = {
     value: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextValue";
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name,
           fields: [
             gql.FieldDefinition({ name: "raw", type: "String" }),
