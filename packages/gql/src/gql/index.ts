@@ -25,7 +25,7 @@ export const gql = {
   formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
     return gql.object({
       name: name,
-      interfaces: [gql.namedType({ name: "FormField" })],
+      interfaces: [gql.NamedType({ name: "FormField" })],
       fields: [
         gql.string("name"),
         gql.string("label"),
@@ -379,7 +379,7 @@ export const gql = {
       },
     })),
   }),
-  namedType: ({ name }: { name: string }): NamedTypeNode => {
+  NamedType: ({ name }: { name: string }): NamedTypeNode => {
     return {
       kind: "NamedType",
       name: {
