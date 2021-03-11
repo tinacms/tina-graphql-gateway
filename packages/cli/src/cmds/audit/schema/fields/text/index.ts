@@ -25,7 +25,7 @@ export const TextField = {
       const: "text",
     },
     default: {
-      type: gql.TYPES.String,
+      type: "string",
     },
     config: {
       type: "object",

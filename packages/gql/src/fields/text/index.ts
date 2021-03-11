@@ -19,7 +19,7 @@ const typename = "TextField";
 export const text = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextField>) => {
-      accumulator.push(gql.formField(typename));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
       return gql.FieldDefinition({
         name: field.name,
         type: typename,

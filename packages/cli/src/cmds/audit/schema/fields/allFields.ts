@@ -21,7 +21,7 @@ export const AllFields = {
     required: ["type"],
     properties: {
       type: {
-        type: gql.TYPES.String,
+        type: "string",
         enum: [
           "text",
           "textarea",

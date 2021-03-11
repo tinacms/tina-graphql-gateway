@@ -12,17 +12,17 @@ limitations under the License.
 */
 
 const label = {
-  type: gql.TYPES.String,
+  type: "string",
   label: "Label",
   description: "The human-friendly label shown above the input field.",
 };
 const name = {
-  type: gql.TYPES.String,
+  type: "string",
   label: "Name",
   description: "The key used in your front matter.",
 };
 const description = {
-  type: gql.TYPES.String,
+  type: "string",
   label: "Description",
   description: "Help text that appears above the field.",
 };
@@ -39,7 +39,7 @@ const showOnly = {
     "This field will only be shown if the following field equals the following value. Only works with sibling select and toggle fields.",
   properties: {
     field: {
-      type: gql.TYPES.String,
+      type: "string",
     },
     value: {
       type: "boolean",

@@ -20,7 +20,7 @@ const typename = "FileField";
 export const file = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<FileField>) => {
-      accumulator.push(gql.formField(typename));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
       return gql.FieldDefinition({
         name: field.name,
         type: typename,

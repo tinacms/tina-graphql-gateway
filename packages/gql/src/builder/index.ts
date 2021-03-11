@@ -119,13 +119,15 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
 const interfaceDefinitions = [
   gql.InterfaceTypeDefinition({
     name: "Node",
-    fields: [gql.FieldDefinition({ name: "id", type: "ID", required: true })],
+    fields: [
+      gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
+    ],
   }),
   gql.InterfaceTypeDefinition({
     name: "Document",
     fields: [
-      gql.FieldDefinition({ name: "sys", type: "SystemInfo" }),
-      gql.FieldDefinition({ name: "id", type: "ID", required: true }),
+      gql.FieldDefinition({ name: "sys", type: gql.TYPES.SystemInfo }),
+      gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
     ],
   }),
   gql.InterfaceTypeDefinition({

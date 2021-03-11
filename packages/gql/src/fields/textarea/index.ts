@@ -34,7 +34,7 @@ export const textarea = {
   },
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
-      accumulator.push(gql.formField(typename));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
@@ -68,7 +68,10 @@ export const textarea = {
           name,
           fields: [
             gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
-            gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
+            gql.FieldDefinition({
+              name: "markdownAst",
+              type: gql.TYPES.JSONObject,
+            }),
             gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
           ],
         })
