@@ -27,10 +27,18 @@ export const tag_list = {
       });
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: "String",
+        list: true,
+      });
     },
     value: ({ field }: BuildArgs<TagListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: "String",
+        list: true,
+      });
     },
     input: ({ field }: BuildArgs<TagListField>) => {
       return gql.inputValueList(field.name, "String");

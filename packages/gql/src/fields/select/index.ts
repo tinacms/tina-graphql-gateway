@@ -22,7 +22,15 @@ export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
-      accumulator.push(gql.formField(typename, [gql.stringList("options")]));
+      accumulator.push(
+        gql.formField(typename, [
+          gql.FieldDefinition({
+            name: "options",
+            type: "String",
+            list: true,
+          }),
+        ])
+      );
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
