@@ -36,7 +36,11 @@ export const fieldGroup = {
       });
       accumulator.push(
         gql.formField(typename, [
-          gql.fieldList({ name: "fields", type: fieldsUnionName }),
+          gql.FieldDefinition({
+            name: "fields",
+            type: fieldsUnionName,
+            list: true,
+          }),
         ])
       );
 

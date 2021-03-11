@@ -37,7 +37,10 @@ export const select = {
       });
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.reference(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.Reference,
+      });
     },
     value: async ({ cache, field, accumulator }: BuildArgs<SelectField>) => {
       let select;
