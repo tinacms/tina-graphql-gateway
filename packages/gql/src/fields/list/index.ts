@@ -72,7 +72,7 @@ export const list = {
 
       accumulator.push(
         gql.formField(typename, [
-          gql.FieldDefinition({ name: "defaultItem", type: "String" }),
+          gql.FieldDefinition({ name: "defaultItem", type: gql.TYPES.String }),
           gql.FieldDefinition({ name: "field", type: unionName }),
         ])
       );
@@ -84,7 +84,7 @@ export const list = {
     initialValue: async ({ field }: BuildArgs<ListField>) => {
       return gql.FieldDefinition({
         name: field.name,
-        type: "string",
+        type: gql.TYPES.String,
         list: true,
       });
     },
@@ -115,7 +115,7 @@ export const list = {
           list = field as SimpleList;
           return gql.FieldDefinition({
             name: list.name,
-            type: "String",
+            type: gql.TYPES.String,
             list: true,
           });
       }

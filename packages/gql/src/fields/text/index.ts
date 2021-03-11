@@ -26,10 +26,10 @@ export const text = {
       });
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     value: ({ field }: BuildArgs<TextField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<TextField>) => {
       return gql.inputString(field.name);

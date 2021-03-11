@@ -29,7 +29,7 @@ export const FieldGroupListField = {
       properties: {
         required: { type: "boolean" },
         use_select: { type: "boolean" },
-        labelField: { type: "string" },
+        labelField: { type: gql.TYPES.String },
         min: { type: "number" },
         max: { type: "number" },
       },

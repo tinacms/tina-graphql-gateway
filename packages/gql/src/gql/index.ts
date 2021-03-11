@@ -22,14 +22,15 @@ import {
 } from "graphql";
 
 export const gql = {
+  TYPES: { String: "String" },
   formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
     return gql.ObjectTypeDefinition({
       name: name,
       interfaces: [gql.NamedType({ name: "FormField" })],
       fields: [
-        gql.FieldDefinition({ name: "name", type: "String" }),
-        gql.FieldDefinition({ name: "label", type: "String" }),
-        gql.FieldDefinition({ name: "component", type: "String" }),
+        gql.FieldDefinition({ name: "name", type: gql.TYPES.String }),
+        gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
+        gql.FieldDefinition({ name: "component", type: gql.TYPES.String }),
         ...(additionalFields || []),
       ],
     });

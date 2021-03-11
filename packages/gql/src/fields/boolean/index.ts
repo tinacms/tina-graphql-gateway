@@ -27,10 +27,10 @@ export const boolean = {
       });
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     value: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.FieldDefinition({ name: field.name, type: "String" });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<BooleanField>) => {
       return gql.inputString(field.name);

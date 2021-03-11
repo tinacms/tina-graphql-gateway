@@ -26,7 +26,7 @@ export const select = {
         gql.formField(typename, [
           gql.FieldDefinition({
             name: "options",
-            type: "String",
+            type: gql.TYPES.String,
             list: true,
           }),
         ])
@@ -57,7 +57,10 @@ export const select = {
             type: friendlyName(name, { suffix: "Document" }),
           });
         case "simple":
-          return gql.FieldDefinition({ name: field.name, type: "String" });
+          return gql.FieldDefinition({
+            name: field.name,
+            type: gql.TYPES.String,
+          });
       }
     },
     input: async ({ field }: BuildArgs<SelectField>) => {

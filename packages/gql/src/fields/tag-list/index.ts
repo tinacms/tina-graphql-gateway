@@ -29,14 +29,14 @@ export const tag_list = {
     initialValue: ({ field }: BuildArgs<TagListField>) => {
       return gql.FieldDefinition({
         name: field.name,
-        type: "String",
+        type: gql.TYPES.String,
         list: true,
       });
     },
     value: ({ field }: BuildArgs<TagListField>) => {
       return gql.FieldDefinition({
         name: field.name,
-        type: "String",
+        type: gql.TYPES.String,
         list: true,
       });
     },

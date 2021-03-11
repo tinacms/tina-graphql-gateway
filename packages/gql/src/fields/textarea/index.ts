@@ -46,12 +46,12 @@ export const textarea = {
         gql.ObjectTypeDefinition({
           name,
           fields: [
-            gql.FieldDefinition({ name: "raw", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
             // TODO: Not sure how to support custom scalars, might be better to
             // force this into a recursive GraphQLObject which matches the
             // remark AST shape
             // gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
-            // gql.FieldDefinition({ name: "html", type: "String" }),
+            // gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
           ],
         })
       );
@@ -67,9 +67,9 @@ export const textarea = {
         gql.ObjectTypeDefinition({
           name,
           fields: [
-            gql.FieldDefinition({ name: "raw", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
             gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
-            gql.FieldDefinition({ name: "html", type: "String" }),
+            gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
           ],
         })
       );

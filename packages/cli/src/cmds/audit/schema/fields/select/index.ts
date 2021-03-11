@@ -24,7 +24,7 @@ export const SelectField = {
     },
     ...base,
     default: {
-      type: "string",
+      type: gql.TYPES.String,
       removeIfFails: true, // we put [] as a default value in lots of places
     },
     config: {
@@ -64,7 +64,7 @@ export const SelectField = {
               options: {
                 type: "array",
                 items: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
               },
             },
@@ -86,7 +86,7 @@ export const SelectField = {
               source: {
                 properties: {
                   type: { const: "pages" },
-                  section: { type: "string" },
+                  section: { type: gql.TYPES.String },
                 },
                 required: ["type", "section"],
                 additionalProperties: false,
@@ -111,9 +111,9 @@ export const SelectField = {
               source: {
                 properties: {
                   type: { const: "documents" },
-                  section: { type: "string" },
-                  file: { type: "string" },
-                  path: { type: "string" },
+                  section: { type: gql.TYPES.String },
+                  file: { type: gql.TYPES.String },
+                  path: { type: gql.TYPES.String },
                 },
                 required: ["type", "section", "file", "path"],
                 additionalProperties: false,

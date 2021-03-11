@@ -32,14 +32,14 @@ export const imageGallery = {
     initialValue: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.FieldDefinition({
         name: field.name,
-        type: "String",
+        type: gql.TYPES.String,
         list: true,
       });
     },
     value: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.FieldDefinition({
         name: field.name,
-        type: "String",
+        type: gql.TYPES.String,
         list: true,
       });
     },

@@ -21,12 +21,12 @@ export const ForestrySettingsSchema = {
     new_page_extension: {
       title: "New file format",
       description: "New files created in Forestry can be Markdown or HTML",
-      type: "string",
+      type: gql.TYPES.String,
       enum: ["md", "html"],
     },
     version: {
       title: "Schema version",
-      type: "string",
+      type: gql.TYPES.String,
     },
     auto_deploy: {
       title: "",
@@ -36,26 +36,26 @@ export const ForestrySettingsSchema = {
     admin_path: {
       title: "Admin Path",
       description: "The folder where you store the Forestry admin file.",
-      type: "string",
+      type: gql.TYPES.String,
     },
     webhook_url: {
       title: "Webhook URL",
       description:
         "Forestry can send events to a webhook (ie. post_import, post_publish)",
-      type: "string",
+      type: gql.TYPES.String,
     },
     upload_dir: {
-      type: "string",
+      type: gql.TYPES.String,
       title: "Upload Directory",
       description: "The directory where media is stored inside of git",
     },
     public_path: {
-      type: "string",
+      type: gql.TYPES.String,
       title: "Public Path",
       description: "The path where media is served from",
     },
     front_matter_path: {
-      type: "string",
+      type: gql.TYPES.String,
       title: "Front Matter Path",
       description: "",
     },
@@ -65,7 +65,7 @@ export const ForestrySettingsSchema = {
       description: "Override the public path for front matter fields.",
     },
     file_template: {
-      type: "string",
+      type: gql.TYPES.String,
       title: "File Path",
       description:
         "The path where media will be uploaded and served from.\n\nAvailable variables: :filename:, :year:, :month:, :day:.",
@@ -78,13 +78,13 @@ export const ForestrySettingsSchema = {
       additionalProperties: false,
       properties: {
         install_dependencies_command: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Install Dependencies Command",
           description:
             "The command that installs your project dependencies, if necessary. The results of this command will be cached for faster startup times.",
         },
         preview_docker_image: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Preview Docker Image",
           description: "Path to a publicly available image on Docker hub",
         },
@@ -93,29 +93,29 @@ export const ForestrySettingsSchema = {
           title: "Environment Variables",
           description: "Ex. HUGO_ENV=staging",
           items: {
-            type: "string",
+            type: gql.TYPES.String,
           },
         },
         preview_output_directory: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Output Directory",
           description:
             "The directory, relative to the root of your project, where your site is output to when previewing.",
         },
         mount_path: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Mount Path",
           description:
             "The directory inside the docker container where your site should be mounted.",
         },
         working_dir: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Working Directory",
           description:
             "Override the default working directory of the docker image",
         },
         instant_preview_command: {
-          type: "string",
+          type: gql.TYPES.String,
           title: "Build Command",
           description:
             "The command that starts your static site generator's dev server.",
@@ -130,7 +130,7 @@ export const ForestrySettingsSchema = {
         type: "object",
         properties: {
           type: {
-            type: "string",
+            type: gql.TYPES.String,
             enum: ["directory", "heading", "document"],
           },
         },
@@ -147,7 +147,7 @@ export const ForestrySettingsSchema = {
                   const: "heading",
                 },
                 label: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
               },
               required: ["type", "label"],
@@ -166,10 +166,10 @@ export const ForestrySettingsSchema = {
                   const: "document",
                 },
                 label: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
                 path: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
                 read_only: {
                   type: "boolean",
@@ -191,28 +191,28 @@ export const ForestrySettingsSchema = {
                   const: "directory",
                 },
                 label: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
                 create: {
-                  type: "string",
+                  type: gql.TYPES.String,
                   title: "Create",
                   description: "",
                 },
                 path: {
-                  type: "string",
+                  type: gql.TYPES.String,
                 },
                 match: {
-                  type: "string",
+                  type: gql.TYPES.String,
                   title: "Match",
                   description: "",
                 },
                 exclude: {
-                  type: "string",
+                  type: gql.TYPES.String,
                   title: "",
                   description: "",
                 },
                 new_doc_ext: {
-                  type: "string",
+                  type: gql.TYPES.String,
                   title: "New doc",
                   description: "",
                   enum: ["md", "html"],
@@ -223,7 +223,7 @@ export const ForestrySettingsSchema = {
                   description:
                     "Forestry can send events to a webhook (ie. post_import, post_publish)",
                   items: {
-                    type: "string",
+                    type: gql.TYPES.String,
                     title: "Webhook URL",
                     description:
                       "Forestry can send events to a webhook (ie. post_import, post_publish)",

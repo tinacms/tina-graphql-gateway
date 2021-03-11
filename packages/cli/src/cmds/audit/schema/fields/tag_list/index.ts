@@ -27,7 +27,7 @@ export const TagField = {
     default: {
       type: "array",
       items: {
-        type: "string",
+        type: gql.TYPES.String,
       },
     },
     config: {

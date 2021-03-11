@@ -24,7 +24,7 @@ export const IncludeField = {
       const: "include",
     },
     template: {
-      type: "string",
+      type: gql.TYPES.String,
       label: "Template",
       description: "The template you'd like to include",
     },

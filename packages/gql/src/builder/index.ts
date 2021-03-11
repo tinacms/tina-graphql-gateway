@@ -131,9 +131,9 @@ const interfaceDefinitions = [
   gql.InterfaceTypeDefinition({
     name: "FormField",
     fields: [
-      gql.FieldDefinition({ name: "label", type: "String" }),
-      gql.FieldDefinition({ name: "name", type: "String" }),
-      gql.FieldDefinition({ name: "component", type: "String" }),
+      gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: "name", type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: "component", type: gql.TYPES.String }),
     ],
   }),
 ];
@@ -156,17 +156,17 @@ const scalarDefinitions = [
 const systemInfoDefinition = gql.ObjectTypeDefinition({
   name: "SystemInfo",
   fields: [
-    gql.FieldDefinition({ name: "filename", type: "String" }),
-    gql.FieldDefinition({ name: "basename", type: "String" }),
+    gql.FieldDefinition({ name: "filename", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "basename", type: gql.TYPES.String }),
     gql.fieldList({
       name: "breadcrumbs",
-      type: "String",
+      type: gql.TYPES.String,
       args: [gql.inputBoolean("excludeExtension")],
     }),
-    gql.FieldDefinition({ name: "path", type: "String" }),
-    gql.FieldDefinition({ name: "relativePath", type: "String" }),
-    gql.FieldDefinition({ name: "extension", type: "String" }),
-    gql.FieldDefinition({ name: "template", type: "String" }),
+    gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "relativePath", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "extension", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "template", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "section", type: "Section" }),
   ],
 });
@@ -174,14 +174,14 @@ const systemInfoDefinition = gql.ObjectTypeDefinition({
 const sectionDefinition = gql.ObjectTypeDefinition({
   name: "Section",
   fields: [
-    gql.FieldDefinition({ name: "type", type: "String" }),
-    gql.FieldDefinition({ name: "path", type: "String" }),
-    gql.FieldDefinition({ name: "label", type: "String" }),
-    gql.FieldDefinition({ name: "create", type: "String" }),
-    gql.FieldDefinition({ name: "match", type: "String" }),
-    gql.FieldDefinition({ name: "new_doc_ext", type: "String" }),
-    gql.fieldList({ name: "templates", type: "String" }),
-    gql.FieldDefinition({ name: "slug", type: "String" }),
+    gql.FieldDefinition({ name: "type", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "create", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "match", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "new_doc_ext", type: gql.TYPES.String }),
+    gql.fieldList({ name: "templates", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "slug", type: gql.TYPES.String }),
     gql.fieldList({ name: "documents", type: "Document" }),
   ],
 });
@@ -277,7 +277,7 @@ const queryDefinition = (sectionMap: sectionMap) => {
     fields: [
       gql.FieldDefinition({
         name: "_queryString",
-        type: "String",
+        type: gql.TYPES.String,
       }),
       gql.FieldDefinition({
         name: "node",

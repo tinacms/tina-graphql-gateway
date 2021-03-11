@@ -25,15 +25,15 @@ export const DateField = {
     },
     ...base,
     default: {
-      type: "string",
+      type: gql.TYPES.String,
       // removeIfFails: true,
       anyOf: [
         {
-          type: "string",
+          type: gql.TYPES.String,
           const: "now",
         },
         {
-          type: "string",
+          type: gql.TYPES.String,
           format: "date-time",
         },
       ],
@@ -42,9 +42,9 @@ export const DateField = {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        date_format: { type: "string" },
-        time_format: { type: "string" },
-        export_format: { type: "string" },
+        date_format: { type: gql.TYPES.String },
+        time_format: { type: gql.TYPES.String },
+        export_format: { type: gql.TYPES.String },
         display_utc: { type: "boolean" },
       },
       additionalProperties: false,
