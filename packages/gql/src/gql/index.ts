@@ -298,7 +298,7 @@ export const gql = {
       arguments: args,
     };
   },
-  interface: ({
+  InterfaceTypeDefinition: ({
     name,
     fields,
   }: {

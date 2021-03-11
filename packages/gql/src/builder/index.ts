@@ -117,15 +117,18 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
  * for any schema, ex. Node
  */
 const interfaceDefinitions = [
-  gql.interface({ name: "Node", fields: [gql.fieldID({ name: "id" })] }),
-  gql.interface({
+  gql.InterfaceTypeDefinition({
+    name: "Node",
+    fields: [gql.fieldID({ name: "id" })],
+  }),
+  gql.InterfaceTypeDefinition({
     name: "Document",
     fields: [
       gql.FieldDefinition({ name: "sys", type: "SystemInfo" }),
       gql.fieldID({ name: "id" }),
     ],
   }),
-  gql.interface({
+  gql.InterfaceTypeDefinition({
     name: "FormField",
     fields: [
       gql.FieldDefinition({ name: "label", type: "String" }),
