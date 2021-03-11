@@ -6,18 +6,17 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --exclude forestry-schema --exclude test -pt -i --verbose run build",
-    "watch": "yarn workspaces foreach --exclude forestry-schema --exclude test -p -i --verbose run watch",
-    "watch:no-demo": "yarn workspaces foreach --exclude sc --exclude demo --exclude test --exclude forestry-schema  -p -i --verbose run watch",
+    "build": "yarn ci:build",
+    "watch": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",
     "license:add": "$PWD/scripts/add-license.sh",
     "license:delete": "$PWD/scripts/delete-license.sh",
-    "ci:build": "yarn workspaces foreach -pt --exclude demo run build",
     "ci:version-check": "yarn version check",
-    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish",
-    "ci:test": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --verbose run test"
+    "ci:build": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo -pt run build",
+    "ci:test": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --verbose run test",
+    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
