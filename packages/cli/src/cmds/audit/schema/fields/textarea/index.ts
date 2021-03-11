@@ -24,7 +24,7 @@ export const TextAreaField = {
       const: "textarea",
     },
     ...base,
-    default: { type: gql.TYPES.String },
+    default: { type: "string" },
     config: {
       type: "object",
       properties: {
@@ -41,7 +41,7 @@ export const TextAreaField = {
         schema: {
           type: "object",
           properties: {
-            format: { type: gql.TYPES.String, enum: ["html", "markdown"] },
+            format: { type: "string", enum: ["html", "markdown"] },
           },
         },
       },

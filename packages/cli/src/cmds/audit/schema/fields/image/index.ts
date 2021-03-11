@@ -25,7 +25,7 @@ export const ImageField = {
     },
     ...base,
     default: {
-      type: gql.TYPES.String,
+      type: "string",
       minLength: 1,
       removeIfFails: true,
     },

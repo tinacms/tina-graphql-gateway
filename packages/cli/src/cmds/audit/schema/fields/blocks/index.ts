@@ -28,7 +28,7 @@ export const BlocksField = {
       type: "array",
       minItems: 1,
       items: {
-        type: gql.TYPES.String,
+        type: "string",
       },
     },
     config: {

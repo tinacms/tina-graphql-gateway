@@ -58,9 +58,12 @@ export const blocks: Blocks = {
       );
 
       accumulator.push(
-        gql.formField(typename, [
-          gql.FieldDefinition({ name: "templates", type: templateName }),
-        ])
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({ name: "templates", type: templateName }),
+          ],
+        })
       );
 
       return gql.FieldDefinition({

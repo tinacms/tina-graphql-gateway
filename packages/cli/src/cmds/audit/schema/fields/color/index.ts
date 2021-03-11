@@ -27,7 +27,7 @@ export const ColorField = {
       type: "object",
       properties: {
         required: { type: "boolean" },
-        color_format: { type: gql.TYPES.String, enum: ["RGB", "Hex"] },
+        color_format: { type: "string", enum: ["RGB", "Hex"] },
       },
       additionalProperties: false,
       required: ["color_format"],

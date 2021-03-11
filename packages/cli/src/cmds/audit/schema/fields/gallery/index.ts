@@ -28,7 +28,7 @@ export const GalleryField = {
       type: "array",
       minItems: 1,
       items: {
-        type: gql.TYPES.String,
+        type: "string",
         minLength: 1,
       },
     },

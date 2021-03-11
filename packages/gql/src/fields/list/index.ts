@@ -71,10 +71,16 @@ export const list = {
       );
 
       accumulator.push(
-        gql.formField(typename, [
-          gql.FieldDefinition({ name: "defaultItem", type: gql.TYPES.String }),
-          gql.FieldDefinition({ name: "field", type: unionName }),
-        ])
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({
+              name: "defaultItem",
+              type: gql.TYPES.String,
+            }),
+            gql.FieldDefinition({ name: "field", type: unionName }),
+          ],
+        })
       );
       return gql.FieldDefinition({
         name: field.name,

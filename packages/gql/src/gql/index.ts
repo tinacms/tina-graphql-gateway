@@ -27,12 +27,20 @@ export const gql = {
     Reference: "Reference",
     Section: "Section",
     ID: "ID",
+    SystemInfo: "SystemInfo",
     SectionParams: "SectionParams",
     Boolean: "Boolean",
     Number: "Int",
     Document: "Document",
+    JSONObject: "JSONObject",
   },
-  formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
+  FormFieldBuilder: ({
+    name,
+    additionalFields,
+  }: {
+    name: string;
+    additionalFields?: FieldDefinitionNode[];
+  }) => {
     return gql.ObjectTypeDefinition({
       name: name,
       interfaces: [gql.NamedType({ name: "FormField" })],

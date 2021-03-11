@@ -20,7 +20,7 @@ const typename = "NumberField";
 export const number = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<NumberField>) => {
-      accumulator.push(gql.formField(typename));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
