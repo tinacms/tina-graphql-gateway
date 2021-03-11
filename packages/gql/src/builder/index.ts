@@ -162,13 +162,18 @@ const systemInfoDefinition = gql.ObjectTypeDefinition({
       name: "breadcrumbs",
       type: gql.TYPES.String,
       list: true,
-      args: [gql.inputBoolean("excludeExtension")],
+      args: [
+        gql.InputValueDefinition({
+          name: "excludeExtension",
+          type: gql.TYPES.Boolean,
+        }),
+      ],
     }),
     gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "relativePath", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "extension", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "template", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "section", type: "Section" }),
+    gql.FieldDefinition({ name: "section", type: gql.TYPES.Section }),
   ],
 });
 

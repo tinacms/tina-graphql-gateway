@@ -26,6 +26,8 @@ export const gql = {
   TYPES: {
     String: "String",
     Reference: "Reference",
+    Section: "Section",
+    Boolean: "Boolean",
     Number: "Int",
     Document: "Document",
   },
@@ -86,48 +88,6 @@ export const gql = {
       name: {
         kind: "Name" as const,
         value: "String",
-      },
-    },
-  }),
-  inputNumber: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Int",
-      },
-    },
-  }),
-  inputBoolean: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Boolean",
-      },
-    },
-  }),
-  inputInt: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Int",
       },
     },
   }),
