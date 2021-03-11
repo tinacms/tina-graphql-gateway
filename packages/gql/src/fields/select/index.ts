@@ -49,7 +49,7 @@ export const select = {
             type: friendlyName(name, { suffix: "Document" }),
           });
         case "simple":
-          return gql.string(field.name);
+          return gql.FieldDefinition({ name: field.name, type: "String" });
       }
     },
     input: async ({ field }: BuildArgs<SelectField>) => {
