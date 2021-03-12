@@ -13,13 +13,21 @@ limitations under the License.
 
 import React from "react";
 import { useCMS } from "tinacms";
-import type { TinaCMS, Form } from "tinacms";
+import type { TinaCMS, Form, FormOptions } from "tinacms";
 import { createFormMachine } from "./form-service";
 import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
 import * as yup from "yup";
+
+export interface FormifyArgs {
+  formConfig: FormOptions<any>;
+  createForm: (formConfig: FormOptions<any>) => Form;
+  skip?: () => void;
+}
+
+export type formifyCallback = (args: FormifyArgs) => Form | void;
 
 interface FormsMachineSchemaType extends StateSchema {
   states: {
@@ -57,6 +65,7 @@ interface FormsContext {
   cms: TinaCMS;
   queryString: string;
   onSubmit?: (args: { mutationString: string; variables: object }) => void;
+  formify: formifyCallback;
 }
 
 const filterForValidFormNodes = async (payload: object) => {
@@ -154,6 +163,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
                     onSubmit: context.onSubmit,
                     queryFieldName: keys[index],
                     queryString: context.queryString,
+                    formify: context.formify,
                   }),
                   `form-${keys[index]}`
                 );
@@ -249,9 +259,11 @@ const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => {
 function useRegisterFormsAndSyncPayload<T extends object>({
   payload,
   onSubmit,
+  formify,
 }: {
   payload: T;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
+  formify?: formifyCallback;
 }) {
   const cms = useCMS();
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
@@ -264,6 +276,7 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       formRefs: {},
       cms,
       queryString,
+      formify,
       onSubmit: (values) => {
         cms.api.tina.prepareVariables(values).then((variables) => {
           onSubmit
@@ -321,10 +334,12 @@ export function useForm<T extends object>({
   payload,
   onSubmit,
   onNewDocument,
+  formify = null,
 }: {
   payload: T;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   onNewDocument?: OnNewDocument;
+  formify?: formifyCallback;
 }): [T, Form[]] {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
@@ -334,7 +349,11 @@ export function useForm<T extends object>({
   // optionally be called.
   useAddSectionDocumentPlugin(onNewDocument);
 
-  const { data, retry } = useRegisterFormsAndSyncPayload({ payload, onSubmit });
+  const { data, retry } = useRegisterFormsAndSyncPayload({
+    payload,
+    onSubmit,
+    formify,
+  });
 
   React.useEffect(() => {
     retry();

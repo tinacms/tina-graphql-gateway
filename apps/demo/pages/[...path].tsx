@@ -58,7 +58,13 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 const Home = (props: any) => {
   const [{ getDocument }] = useForm<{
     getDocument: Tina.SectionDocumentUnion;
-  }>({ payload: props });
+  }>({
+    payload: props,
+    formify: ({ formConfig, createForm, skip }) => {
+      //skip();
+      return createForm(formConfig);
+    },
+  });
   const { form, sys, ...rest } = getDocument;
 
   return (
