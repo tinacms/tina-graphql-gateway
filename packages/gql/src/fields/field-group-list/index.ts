@@ -60,11 +60,18 @@ export const fieldGroupList = {
         includeBody: false,
       });
       accumulator.push(
-        gql.formField(typename, [
-          gql.fieldList({ name: "fields", type: fieldsUnionName }),
-        ])
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({
+              name: "fields",
+              type: fieldsUnionName,
+              list: true,
+            }),
+          ],
+        })
       );
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -82,7 +89,11 @@ export const fieldGroupList = {
         includeTemplate: false,
       });
 
-      return gql.fieldList({ name: field.name, type: initialValueName });
+      return gql.FieldDefinition({
+        name: field.name,
+        type: initialValueName,
+        list: true,
+      });
     },
     value: async ({
       cache,
@@ -95,9 +106,10 @@ export const fieldGroupList = {
         accumulator,
         includeBody: false,
       });
-      return gql.fieldList({
+      return gql.FieldDefinition({
         name: field.name,
         type: name,
+        list: true,
       });
     },
     input: async ({
@@ -111,7 +123,11 @@ export const fieldGroupList = {
         accumulator,
         includeBody: false,
       });
-      return gql.inputValueList(field.name, name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: name,
+        list: true,
+      });
     },
   },
   resolve: {

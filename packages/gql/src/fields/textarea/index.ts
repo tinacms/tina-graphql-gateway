@@ -34,8 +34,8 @@ export const textarea = {
   },
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
-      accumulator.push(gql.formField(typename));
-      return gql.field({
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -43,20 +43,20 @@ export const textarea = {
     initialValue: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextInitialValue";
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name,
           fields: [
-            gql.field({ name: "raw", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
             // TODO: Not sure how to support custom scalars, might be better to
             // force this into a recursive GraphQLObject which matches the
             // remark AST shape
-            // gql.field({ name: "markdownAst", type: "JSONObject" }),
-            // gql.field({ name: "html", type: "String" }),
+            // gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
+            // gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
           ],
         })
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: name,
       });
@@ -64,17 +64,20 @@ export const textarea = {
     value: ({ field, accumulator }: BuildArgs<TextareaField>) => {
       const name = "LongTextValue";
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name,
           fields: [
-            gql.field({ name: "raw", type: "String" }),
-            gql.field({ name: "markdownAst", type: "JSONObject" }),
-            gql.field({ name: "html", type: "String" }),
+            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
+            gql.FieldDefinition({
+              name: "markdownAst",
+              type: gql.TYPES.JSONObject,
+            }),
+            gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
           ],
         })
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: name,
       });
@@ -82,13 +85,18 @@ export const textarea = {
     input: async ({ field, cache, accumulator }: BuildArgs<TextareaField>) => {
       const name = friendlyName(field, { suffix: "LongTextInput" });
       accumulator.push(
-        gql.input({
+        gql.InputObjectTypeDefinition({
           name,
-          fields: [gql.inputString("raw")],
+          fields: [
+            gql.InputValueDefinition({
+              name: "raw",
+              type: gql.TYPES.String,
+            }),
+          ],
         })
       );
 
-      return gql.inputValue(field.name, name);
+      return gql.InputValueDefinition({ name: field.name, type: name });
     },
   },
   resolve: {

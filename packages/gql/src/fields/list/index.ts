@@ -64,22 +64,35 @@ export const list = {
 
       const unionName = "List_FormFieldsUnion";
       accumulator.push(
-        gql.union({ name: unionName, types: ["TextField", "SelectField"] })
+        gql.UnionTypeDefinition({
+          name: unionName,
+          types: ["TextField", "SelectField"],
+        })
       );
 
       accumulator.push(
-        gql.formField(typename, [
-          gql.string("defaultItem"),
-          gql.field({ name: "field", type: unionName }),
-        ])
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({
+              name: "defaultItem",
+              type: gql.TYPES.String,
+            }),
+            gql.FieldDefinition({ name: "field", type: unionName }),
+          ],
+        })
       );
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
     },
     initialValue: async ({ field }: BuildArgs<ListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
     value: async ({ cache, field, accumulator }: BuildArgs<ListField>) => {
       let listTypeIdentifier: "simple" | "pages" | "documents" = "simple";
@@ -100,17 +113,26 @@ export const list = {
           const section = await cache.datasource.getSettingsForSection(
             list.config.source.section
           );
-          return gql.fieldList({
+          return gql.FieldDefinition({
             name: field.name,
             type: friendlyName(section.slug, { suffix: "Document" }),
+            list: true,
           });
         case "simple":
           list = field as SimpleList;
-          return gql.stringList(field.name);
+          return gql.FieldDefinition({
+            name: list.name,
+            type: gql.TYPES.String,
+            list: true,
+          });
       }
     },
     input: async ({ field }: BuildArgs<ListField>) => {
-      return gql.inputValueList(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
   },
   resolve: {

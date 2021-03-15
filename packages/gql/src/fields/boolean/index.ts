@@ -20,20 +20,23 @@ const typename = "BooleanField";
 export const boolean = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<BooleanField>) => {
-      accumulator.push(gql.formField(typename));
-      return gql.field({
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     value: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.inputString(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

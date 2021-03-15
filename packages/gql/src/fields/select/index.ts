@@ -22,14 +22,28 @@ export const select = {
   build: {
     /** Returns one of 3 possible types of select options */
     field: async ({ field, accumulator }: BuildArgs<SelectField>) => {
-      accumulator.push(gql.formField(typename, [gql.stringList("options")]));
-      return gql.field({
+      accumulator.push(
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({
+              name: "options",
+              type: gql.TYPES.String,
+              list: true,
+            }),
+          ],
+        })
+      );
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
     },
     initialValue: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.reference(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.Reference,
+      });
     },
     value: async ({ cache, field, accumulator }: BuildArgs<SelectField>) => {
       let select;
@@ -44,16 +58,22 @@ export const select = {
           );
           const name = friendlyName(section.slug);
 
-          return gql.field({
+          return gql.FieldDefinition({
             name: field.name,
             type: friendlyName(name, { suffix: "Document" }),
           });
         case "simple":
-          return gql.string(field.name);
+          return gql.FieldDefinition({
+            name: field.name,
+            type: gql.TYPES.String,
+          });
       }
     },
     input: async ({ field }: BuildArgs<SelectField>) => {
-      return gql.inputValue(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

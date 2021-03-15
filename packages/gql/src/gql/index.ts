@@ -21,20 +21,46 @@ import {
   UnionTypeDefinitionNode,
 } from "graphql";
 
+/**
+ * the `gql` module provides functions and types which can be
+ * used to build up the GraphQL AST. The primary reason for us using
+ * this instead of the [builders provided by the graphql package](https://graphql.org/graphql-js/type/#examples)
+ * is due to the dynamic and asynchronous nature of our needs.
+ *
+ * The tradeoff is a low-level API that's often more verbose, and it's
+ * not a complete match of the GraphQL spec, so additional properties will likely
+ * be needed as our needs grow.
+ */
 export const gql = {
-  formField: (name: string, additionalFields?: FieldDefinitionNode[]) => {
-    return gql.object({
+  /**
+   * `FormFieldBuilder` acts as a shortcut to building an entire `ObjectTypeDefinition`, we use this
+   * because all Tina field objects share a common set of fields ('name', 'label', 'component')
+   */
+  FormFieldBuilder: ({
+    name,
+    additionalFields,
+  }: {
+    name: string;
+    additionalFields?: FieldDefinitionNode[];
+  }) => {
+    return gql.ObjectTypeDefinition({
       name: name,
-      interfaces: [gql.namedType({ name: "FormField" })],
+      interfaces: [gql.NamedType({ name: "FormField" })],
       fields: [
-        gql.string("name"),
-        gql.string("label"),
-        gql.string("component"),
+        gql.FieldDefinition({ name: "name", type: gql.TYPES.String }),
+        gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
+        gql.FieldDefinition({ name: "component", type: gql.TYPES.String }),
         ...(additionalFields || []),
       ],
     });
   },
-  scalar: (name: string, description?: string): ScalarTypeDefinitionNode => {
+  ScalarTypeDefinition: ({
+    name,
+    description,
+  }: {
+    name: string;
+    description?: string;
+  }): ScalarTypeDefinitionNode => {
     return {
       kind: "ScalarTypeDefinition",
       name: {
@@ -48,257 +74,142 @@ export const gql = {
       directives: [],
     };
   },
-  reference: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "Reference" as const,
-        },
-      },
-      directives: [],
-    };
-  },
-  string: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "String" as const,
-        },
-      },
-      directives: [],
-    };
-  },
-  number: (name: string) => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      arguments: [],
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "Int",
-        },
-      },
-      directives: [],
-    };
-  },
-  stringList: (name: string) => ({
-    kind: "FieldDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    arguments: [],
-    type: {
-      kind: "ListType" as const,
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "String",
-        },
-      },
-    },
-  }),
-  inputID: (name: string): InputValueDefinitionNode => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NonNullType",
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "ID",
-        },
-      },
-    },
-  }),
-  inputString: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "String",
-      },
-    },
-  }),
-  inputNumber: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Int",
-      },
-    },
-  }),
-  inputBoolean: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Boolean",
-      },
-    },
-  }),
-  inputInt: (name: string) => ({
-    kind: "InputValueDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NamedType" as const,
-      name: {
-        kind: "Name" as const,
-        value: "Int",
-      },
-    },
-  }),
-  inputValue: (name: string, type: string) => {
-    return {
-      kind: "InputValueDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: type,
-        },
-      },
-    };
-  },
-  inputValueList: (name: string, type: string) => {
-    return {
-      kind: "InputValueDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "ListType" as const,
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
-          },
-        },
-      },
-    };
-  },
-  fieldID: ({ name }: { name: string }) => ({
-    kind: "FieldDefinition" as const,
-    name: {
-      kind: "Name" as const,
-      value: name,
-    },
-    type: {
-      kind: "NonNullType" as const,
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: "ID",
-        },
-      },
-    },
-  }),
-  field: ({
+  InputValueDefinition: ({
     name,
     type,
-    args = [],
+    list,
+    required,
   }: {
     name: string;
     type: string;
+    list?: boolean;
+    required?: boolean;
+  }) => {
+    let res = {};
+    const namedType = {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: type,
+      },
+    };
+    const def = {
+      kind: "InputValueDefinition" as const,
+      name: {
+        kind: "Name" as const,
+        value: name,
+      },
+    };
+    if (list) {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: {
+              kind: "NonNullType",
+              type: namedType,
+            },
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: namedType,
+          },
+        };
+      }
+    } else {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "NonNullType",
+            type: namedType,
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: namedType,
+        };
+      }
+    }
+
+    return res as InputValueDefinitionNode;
+  },
+  FieldDefinition: ({
+    name,
+    type,
+    args = [],
+    list,
+    required,
+  }: {
+    name: string;
+    type: string;
+    required?: boolean;
+    list?: boolean;
     args?: InputValueDefinitionNode[];
   }) => {
-    return {
+    let res = {};
+    let namedType = {
+      kind: "NamedType" as const,
+      name: {
+        kind: "Name" as const,
+        value: type,
+      },
+    };
+    let def = {
       kind: "FieldDefinition" as const,
       name: {
         kind: "Name" as const,
         value: name,
-      },
-      type: {
-        kind: "NamedType" as const,
-        name: {
-          kind: "Name" as const,
-          value: type,
-        },
       },
       arguments: args,
     };
-  },
-  fieldRequired: ({
-    name,
-    type,
-    args = [],
-  }: {
-    name: string;
-    type: string;
-    args?: InputValueDefinitionNode[];
-  }): FieldDefinitionNode => {
-    return {
-      kind: "FieldDefinition" as const,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "NonNullType",
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
+    if (list) {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: {
+              kind: "NonNullType",
+              type: namedType,
+            },
           },
-        },
-      },
-      arguments: args,
-    };
+        };
+      } else {
+        res = {
+          ...def,
+          type: {
+            kind: "ListType" as const,
+            type: namedType,
+          },
+        };
+      }
+    } else {
+      if (required) {
+        res = {
+          ...def,
+          type: {
+            kind: "NonNullType" as const,
+            type: namedType,
+          },
+        };
+      } else {
+        res = {
+          ...def,
+          type: namedType,
+        };
+      }
+    }
+
+    return res as FieldDefinitionNode;
   },
-  interface: ({
+  InterfaceTypeDefinition: ({
     name,
     fields,
   }: {
@@ -316,35 +227,7 @@ export const gql = {
       fields: fields,
     };
   },
-  fieldList: ({
-    name,
-    type,
-    args = [],
-  }: {
-    name: string;
-    type: string;
-    args?: InputValueDefinitionNode[];
-  }): FieldDefinitionNode => {
-    return {
-      kind: "FieldDefinition" as const,
-      arguments: args,
-      name: {
-        kind: "Name" as const,
-        value: name,
-      },
-      type: {
-        kind: "ListType" as const,
-        type: {
-          kind: "NamedType" as const,
-          name: {
-            kind: "Name" as const,
-            value: type,
-          },
-        },
-      },
-    };
-  },
-  input: ({
+  InputObjectTypeDefinition: ({
     name,
     fields,
   }: {
@@ -358,7 +241,7 @@ export const gql = {
     },
     fields,
   }),
-  union: ({
+  UnionTypeDefinition: ({
     name,
     types,
   }: {
@@ -379,7 +262,7 @@ export const gql = {
       },
     })),
   }),
-  namedType: ({ name }: { name: string }): NamedTypeNode => {
+  NamedType: ({ name }: { name: string }): NamedTypeNode => {
     return {
       kind: "NamedType",
       name: {
@@ -388,7 +271,7 @@ export const gql = {
       },
     };
   },
-  object: ({
+  ObjectTypeDefinition: ({
     name,
     fields,
     interfaces = [],
@@ -407,4 +290,18 @@ export const gql = {
     },
     fields,
   }),
+  TYPES: {
+    SectionDocumentUnion: "SectionDocumentUnion",
+    String: "String",
+    Reference: "Reference",
+    Section: "Section",
+    ID: "ID",
+    SystemInfo: "SystemInfo",
+    SectionParams: "SectionParams",
+    Boolean: "Boolean",
+    Node: "Node",
+    Number: "Int",
+    Document: "Document",
+    JSONObject: "JSONObject",
+  },
 };

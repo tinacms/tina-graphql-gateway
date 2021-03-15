@@ -71,7 +71,7 @@ export const buildTemplateOrFieldData = async ({
   }
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields,
     })
@@ -106,11 +106,13 @@ export const buildTemplateOrFieldValues = async ({
   }
 
   if (includeTemplate) {
-    fields.push(gql.field({ name: "_template", type: "String" }));
+    fields.push(
+      gql.FieldDefinition({ name: "_template", type: gql.TYPES.String })
+    );
   }
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields,
     })
@@ -139,7 +141,7 @@ export const buildTemplateOrFieldFormFields = async ({
 
   const fieldsUnionName = `${name}FieldsUnion`;
   accumulator.push(
-    gql.union({
+    gql.UnionTypeDefinition({
       name: fieldsUnionName,
       types: _.uniq(
         fields.map((field) => {
@@ -185,7 +187,7 @@ export const buildTemplateOrFieldInput = async ({
   }
 
   accumulator.push(
-    gql.input({
+    gql.InputObjectTypeDefinition({
       name,
       fields,
     })
@@ -214,12 +216,16 @@ export const buildTemplateOrFieldForm = async ({
   });
 
   accumulator.push(
-    gql.object({
+    gql.ObjectTypeDefinition({
       name,
       fields: [
-        gql.field({ name: "label", type: `String` }),
-        gql.field({ name: "name", type: `String` }),
-        gql.fieldList({ name: "fields", type: fieldsUnionName }),
+        gql.FieldDefinition({ name: "label", type: `String` }),
+        gql.FieldDefinition({ name: "name", type: `String` }),
+        gql.FieldDefinition({
+          name: "fields",
+          type: fieldsUnionName,
+          list: true,
+        }),
       ],
     })
   );
