@@ -25,6 +25,7 @@ import { print } from "graphql";
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
 import { fixMutators } from "./temporary-fix-mutators";
+import { formifyCallback } from "./use-form";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
@@ -33,6 +34,7 @@ export const createFormMachine = (initialContext: {
   client: Client;
   cms: TinaCMS;
   onSubmit: (args: any) => void;
+  formify?: formifyCallback;
 }) => {
   const id = initialContext.queryFieldName + "_FormService";
   return createMachine<NodeFormContext, NodeFormEvent, NodeFormState>({
@@ -90,6 +92,7 @@ export const createFormMachine = (initialContext: {
       error: null,
       formRef: null,
       onSubmit: initialContext.onSubmit,
+      formify: initialContext.formify,
     },
   });
 };
@@ -111,6 +114,7 @@ export type NodeFormContext = {
   fragments: { name: string; fragment: string }[];
   error: null | string;
   onSubmit: (args: any) => void;
+  formify: formifyCallback;
 };
 
 export type NodeFormEvent = {
@@ -269,7 +273,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     callback,
   });
 
-  const form = new Form({
+  const formConfig = {
     id: context.queryFieldName,
     label: context.node._internalSys.basename,
     fields,
@@ -300,7 +304,30 @@ ${mutation}
         context.cms.alerts.info(e.message);
       }
     },
-  });
+  };
+
+  const createForm = (formConfig) => {
+    const form = new Form(formConfig);
+    context.cms.plugins.add(form);
+    return form;
+  };
+
+  let form;
+  let skipped = false;
+  const skip = () => {
+    skipped = true;
+  };
+  if (context.formify) {
+    form = context.formify({ formConfig, createForm, skip });
+  } else {
+    form = createForm(formConfig);
+  }
+
+  if (skipped) return;
+
+  if (!(form instanceof Form)) {
+    throw new Error("formify must return a form or skip()");
+  }
 
   /**
    *
@@ -323,8 +350,6 @@ ${mutation}
     },
     { values: true }
   );
-
-  context.cms.plugins.add(form);
 
   return () => context.cms.plugins.remove(form);
 };
