@@ -189,13 +189,11 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => 
-{
+const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => {
   const cms = useCMS();
 
   React.useEffect(() => {
     const run = async () => {
-
       const getSectionOptions = async () => {
         const res = await cms.api.tina.request(
           (gql) => gql`
@@ -216,7 +214,8 @@ const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) =>
             options.push({ value: optionValue, label: optionLabel });
           });
         });
-      }
+        return options;
+      };
 
       cms.plugins.add(
         new ContentCreatorPlugin({
@@ -227,7 +226,7 @@ const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) =>
               name: "sectionTemplate",
               label: "Template",
               description: "Select the section & template",
-              options: (await getSectionOptions()),
+              options: await getSectionOptions(),
             },
             {
               component: "text",
@@ -245,15 +244,16 @@ const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) =>
 
     run();
   }, [cms]);
-}
+};
 
-function useRegisterFormsAndSyncPayload<T extends object>(  {
+function useRegisterFormsAndSyncPayload<T extends object>({
   payload,
   onSubmit,
 }: {
   payload: T;
-  onSubmit?: (args: { queryString: string; variables: object }) => void; }) {
-  const cms = useCMS()
+  onSubmit?: (args: { queryString: string; variables: object }) => void;
+}) {
+  const cms = useCMS();
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
   const [tinaForms, setTinaForms] = React.useState([]);
@@ -272,13 +272,13 @@ function useRegisterFormsAndSyncPayload<T extends object>(  {
                 variables,
               })
             : cms.api.tina
-              .request(values.mutationString, { variables })
-              .then((res) => {
-                if (res.errors) {
-                  console.error(res);
-                  cms.alerts.error("Unable to update document");
-                }
-              });
+                .request(values.mutationString, { variables })
+                .then((res) => {
+                  if (res.errors) {
+                    console.error(res);
+                    cms.alerts.error("Unable to update document");
+                  }
+                });
         });
       },
     },
@@ -305,16 +305,16 @@ function useRegisterFormsAndSyncPayload<T extends object>(  {
 
     return subscription.unsubscribe;
   }, [service, setTinaForms]); // note: service should never change
-  
-  return { 
-      data: { 
-        payload: machineState.context.payload, 
-        tinaForms 
-      }, 
-      retry: () => {
-        send({ type: "RETRY", value: { payload, queryString } })
-      },  
-  }
+
+  return {
+    data: {
+      payload: machineState.context.payload,
+      tinaForms,
+    },
+    retry: () => {
+      send({ type: "RETRY", value: { payload, queryString } });
+    },
+  };
 }
 
 export function useForm<T extends object>({
@@ -329,15 +329,15 @@ export function useForm<T extends object>({
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
 
-  // TODO - Should we pull this out of this file. 
-  // Or return it as a factory function which can 
+  // TODO - Should we pull this out of this file.
+  // Or return it as a factory function which can
   // optionally be called.
-  useAddSectionDocumentPlugin(onNewDocument)
+  useAddSectionDocumentPlugin(onNewDocument);
 
-  const { data, retry } = useRegisterFormsAndSyncPayload({payload,onSubmit})
+  const { data, retry } = useRegisterFormsAndSyncPayload({ payload, onSubmit });
 
   React.useEffect(() => {
-    retry()
+    retry();
   }, [JSON.stringify(payload), queryString]);
 
   // @ts-ignore

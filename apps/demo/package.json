@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "yarn watch",
     "watch": "yarn tina-gql server:start -c \"yarn next-dev\"",
     "next-dev": "next dev --port 2999",
     "build": "next build",
@@ -20,7 +21,7 @@
     "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "@tailwindcss/ui": "^0.3.0",
     "@tinacms/core": "^0.31.0",
-    "@tinacms/forms": "^0.3",
+    "@tinacms/forms": "^0.38.0",
     "@tinacms/icons": "^0.7",
     "@tinacms/react-core": "^0.2",
     "@tinacms/react-forms": "^0.32.0",
