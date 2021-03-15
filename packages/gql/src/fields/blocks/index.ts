@@ -36,7 +36,7 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.object({
+        gql.ObjectTypeDefinition({
           name: templateName,
           fields: await sequential(
             field.template_types,
@@ -48,7 +48,7 @@ export const blocks: Blocks = {
                 accumulator,
                 includeBody: false,
               });
-              return gql.field({
+              return gql.FieldDefinition({
                 name: friendlyName(t, { lowerCase: true }),
                 type: friendlyName(t, { suffix: "Form" }),
               });
@@ -58,12 +58,15 @@ export const blocks: Blocks = {
       );
 
       accumulator.push(
-        gql.formField(typename, [
-          gql.field({ name: "templates", type: templateName }),
-        ])
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({ name: "templates", type: templateName }),
+          ],
+        })
       );
 
-      return gql.field({
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
@@ -82,7 +85,7 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.union({
+        gql.UnionTypeDefinition({
           name: name,
           types: field.template_types.map((t) =>
             friendlyName(t, { suffix: "Values" })
@@ -90,7 +93,7 @@ export const blocks: Blocks = {
         })
       );
 
-      return gql.fieldList({ name: field.name, type: name });
+      return gql.FieldDefinition({ name: field.name, type: name, list: true });
     },
     value: async ({ cache, field, accumulator }) => {
       const fieldUnionName = friendlyName(field, { suffix: "Data" });
@@ -104,14 +107,18 @@ export const blocks: Blocks = {
         });
       });
       accumulator.push(
-        gql.union({
+        gql.UnionTypeDefinition({
           name: fieldUnionName,
           types: field.template_types.map((t) =>
             friendlyName(t, { suffix: "Data" })
           ),
         })
       );
-      return gql.fieldList({ name: field.name, type: fieldUnionName });
+      return gql.FieldDefinition({
+        name: field.name,
+        type: fieldUnionName,
+        list: true,
+      });
     },
     input: async ({ cache, field, accumulator }) => {
       await sequential(field.template_types, async (templateSlug) => {
@@ -125,21 +132,22 @@ export const blocks: Blocks = {
       });
 
       accumulator.push(
-        gql.input({
+        gql.InputObjectTypeDefinition({
           name: friendlyName(field.name, { suffix: "Input" }),
           fields: field.template_types.map((template) =>
-            gql.inputValue(
-              friendlyName(template, { lowerCase: true }),
-              templateTypeName(template, "Input", false)
-            )
+            gql.InputValueDefinition({
+              name: friendlyName(template, { lowerCase: true }),
+              type: templateTypeName(template, "Input", false),
+            })
           ),
         })
       );
 
-      return gql.inputValueList(
-        field.name,
-        friendlyName(field.name, { suffix: "Input" })
-      );
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: friendlyName(field.name, { suffix: "Input" }),
+        list: true,
+      });
     },
   },
   resolve: {

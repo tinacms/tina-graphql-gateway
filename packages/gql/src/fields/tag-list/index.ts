@@ -20,20 +20,32 @@ const typename = "TagListField";
 export const tag_list = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TagListField>) => {
-      accumulator.push(gql.formField(typename));
-      return gql.field({
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
     },
     initialValue: ({ field }: BuildArgs<TagListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
     value: ({ field }: BuildArgs<TagListField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
     input: ({ field }: BuildArgs<TagListField>) => {
-      return gql.inputValueList(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
   },
   resolve: {

@@ -19,20 +19,23 @@ const typename = "TextField";
 export const text = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextField>) => {
-      accumulator.push(gql.formField(typename));
-      return gql.field({
+      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      return gql.FieldDefinition({
         name: field.name,
         type: typename,
       });
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     value: ({ field }: BuildArgs<TextField>) => {
-      return gql.string(field.name);
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
     input: ({ field }: BuildArgs<TextField>) => {
-      return gql.inputString(field.name);
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {

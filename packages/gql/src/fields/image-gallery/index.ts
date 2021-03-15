@@ -30,13 +30,25 @@ export const imageGallery = {
       });
     },
     initialValue: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
     value: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.stringList(field.name);
+      return gql.FieldDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
     input: ({ field }: BuildArgs<ImageGalleryField>) => {
-      return gql.inputValueList(field.name, "String");
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+        list: true,
+      });
     },
   },
   resolve: {
