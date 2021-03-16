@@ -199,7 +199,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-const useAddSectionDocumentPlugin = (onNewDocument?: OnNewDocument) => {
+export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
   const cms = useCMS();
 
   React.useEffect(() => {
@@ -333,21 +333,14 @@ function useRegisterFormsAndSyncPayload<T extends object>({
 export function useForm<T extends object>({
   payload,
   onSubmit,
-  onNewDocument,
   formify = null,
 }: {
   payload: T;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
-  onNewDocument?: OnNewDocument;
   formify?: formifyCallback;
 }): [T, Form[]] {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
-
-  // TODO - Should we pull this out of this file.
-  // Or return it as a factory function which can
-  // optionally be called.
-  useAddSectionDocumentPlugin(onNewDocument);
 
   const { data, retry } = useRegisterFormsAndSyncPayload({
     payload,
