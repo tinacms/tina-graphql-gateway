@@ -455,9 +455,17 @@ We hope to offer the best of both options, using Tina forms while still having a
 So to continue on with the code samples from above, passing the payload into the `useForm` hook will initialize a form for each node in the query:
 
 ```ts
+import { useForm, useDocumentCreatorPlugin } from "tina-graphql-gateway";
+
+//...
+
 const result = useForm({
   // pass the payload from your request
   payload: payload,
+});
+
+// adds a document creator plugin for adding new documents based on your section configuration
+useDocumentCreatorPlugin({
   // When creating a new document, you'll likely want to redirect the user to it.
   // `args` provides information about the file you've created and the section it belongs to.
   onNewDocument: (args) => {
