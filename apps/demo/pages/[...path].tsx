@@ -65,7 +65,7 @@ const Home = (props: any) => {
       return createForm(formConfig);
     },
   });
-  const { form, sys, ...rest } = getDocument;
+  const { ...rest } = getDocument;
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">

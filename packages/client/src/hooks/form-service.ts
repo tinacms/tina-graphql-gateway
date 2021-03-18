@@ -307,6 +307,7 @@ ${mutation}
   };
 
   const createForm = (formConfig) => {
+    console.log(formConfig)
     const form = new Form(formConfig);
     context.cms.plugins.add(form);
     return form;
