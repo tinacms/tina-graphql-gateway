@@ -274,7 +274,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
   });
 
   const formConfig = {
-    id: context.queryFieldName,
+    id: context.node._internalSys.path,
     label: context.node._internalSys.basename,
     fields,
     initialValues: context.node.values,
