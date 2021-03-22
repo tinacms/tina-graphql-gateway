@@ -7827,6 +7827,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@xstate/inspect", [
+        ["npm:0.4.1", {
+          "packageLocation": "./.yarn/cache/@xstate-inspect-npm-0.4.1-c5b3556c1e-9cff5f7801.zip/node_modules/@xstate/inspect/",
+          "packageDependencies": [
+            ["@xstate/inspect", "npm:0.4.1"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:0.4.1", {
+          "packageLocation": "./.yarn/$$virtual/@xstate-inspect-virtual-5964a0ae64/0/cache/@xstate-inspect-npm-0.4.1-c5b3556c1e-9cff5f7801.zip/node_modules/@xstate/inspect/",
+          "packageDependencies": [
+            ["@xstate/inspect", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:0.4.1"],
+            ["@types/ws", null],
+            ["@types/xstate", null],
+            ["fast-safe-stringify", "npm:2.0.7"],
+            ["ws", "virtual:6a57145ae363bb2f8a80076838317f779b911b58a6fdc784436689f4fc9a322b39f6f7e8a3aef742ffc5f8f7155890a4bb43ad7ac6c86073071726501001d707#npm:7.4.4"],
+            ["xstate", "npm:4.15.1"]
+          ],
+          "packagePeers": [
+            "@types/ws",
+            "@types/xstate",
+            "ws",
+            "xstate"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@xstate/react", [
         ["npm:1.0.1", {
           "packageLocation": "./.yarn/cache/@xstate-react-npm-1.0.1-4fe3645829-cf3312e9bd.zip/node_modules/@xstate/react/",
@@ -13816,6 +13843,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/fast-plist-npm-0.1.2-878e056b29-9273df2225.zip/node_modules/fast-plist/",
           "packageDependencies": [
             ["fast-plist", "npm:0.1.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["fast-safe-stringify", [
+        ["npm:2.0.7", {
+          "packageLocation": "./.yarn/cache/fast-safe-stringify-npm-2.0.7-4c71091538-7bd2254326.zip/node_modules/fast-safe-stringify/",
+          "packageDependencies": [
+            ["fast-safe-stringify", "npm:2.0.7"]
           ],
           "linkType": "HARD",
         }]
@@ -26972,6 +27008,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/tinacms__react-modals", null],
             ["@types/tinacms__styles", null],
             ["@types/yup", "npm:0.29.10"],
+            ["@xstate/inspect", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:0.4.1"],
             ["@xstate/react", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:1.1.0"],
             ["codemirror", "npm:5.56.0"],
             ["cors", "npm:2.8.5"],
@@ -26995,6 +27032,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tinacms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.31.0"],
             ["tsup", "npm:3.7.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=a45b0e"],
+            ["ws", "virtual:6a57145ae363bb2f8a80076838317f779b911b58a6fdc784436689f4fc9a322b39f6f7e8a3aef742ffc5f8f7155890a4bb43ad7ac6c86073071726501001d707#npm:7.4.4"],
             ["xstate", "npm:4.15.1"],
             ["yup", "npm:0.32.0"]
           ],
@@ -27046,6 +27084,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
             ["@types/yup", "npm:0.29.10"],
+            ["@xstate/inspect", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:0.4.1"],
             ["@xstate/react", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:1.1.0"],
             ["codemirror", "npm:5.56.0"],
             ["cors", "npm:2.8.5"],
@@ -27068,6 +27107,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tinacms", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.31.0"],
             ["tsup", "npm:3.7.0"],
             ["typescript", "patch:typescript@npm%3A3.9.7#builtin<compat/typescript>::version=3.9.7&hash=a45b0e"],
+            ["ws", "virtual:6a57145ae363bb2f8a80076838317f779b911b58a6fdc784436689f4fc9a322b39f6f7e8a3aef742ffc5f8f7155890a4bb43ad7ac6c86073071726501001d707#npm:7.4.4"],
             ["xstate", "npm:4.15.1"],
             ["yup", "npm:0.32.0"]
           ],

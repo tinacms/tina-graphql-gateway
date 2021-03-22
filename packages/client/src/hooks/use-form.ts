@@ -20,6 +20,7 @@ import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
 import * as yup from "yup";
+import { inspect } from "@xstate/inspect";
 
 export interface FormifyArgs {
   formConfig: FormOptions<any>;
@@ -271,6 +272,7 @@ function useRegisterFormsAndSyncPayload<T extends object>({
   const [tinaForms, setTinaForms] = React.useState([]);
 
   const [machineState, send, service] = useMachine(formsMachine, {
+    devTools: true,
     context: {
       payload,
       formRefs: {},
@@ -341,6 +343,12 @@ export function useForm<T extends object>({
 }): [T, Form[]] {
   // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
   const queryString = payload._queryString;
+
+  React.useEffect(() => {
+    inspect({
+      iframe: false,
+    });
+  }, []);
 
   const { data, retry } = useRegisterFormsAndSyncPayload({
     payload,
