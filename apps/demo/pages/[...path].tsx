@@ -17,61 +17,64 @@ import { Sidebar } from "../components/sidebar";
 
 const client = new LocalClient();
 
+const query = (gql) => gql`
+  query ContentQuery($section: String!, $relativePath: String!) {
+    getDocument(section: $section, relativePath: $relativePath) {
+      ... on Posts_Document {
+        id
+        data {
+          ... on Post_Doc_Data {
+            title
+          }
+        }
+      }
+      ... on Authors_Document {
+        id
+        data {
+          ... on Author_Doc_Data {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   if (typeof params.path === "string") {
     throw new Error("Expected an array of strings for path slugs");
   }
-
-  const content = await client.requestWithForm(
-    (gql) => gql`
-      query ContentQuery($section: String!, $relativePath: String!) {
-        getDocument(section: $section, relativePath: $relativePath) {
-          ... on Posts_Document {
-            id
-            data {
-              ... on Post_Doc_Data {
-                title
-              }
-            }
-          }
-          ... on Authors_Document {
-            id
-            data {
-              ... on Author_Doc_Data {
-                name
-              }
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: {
+  return {
+    props: {
+      queryVars: {
         section: params.path[0],
         relativePath: params.path.slice(1).join("/"),
       },
-    }
-  );
-  return { props: content };
+    },
+  };
 };
 
 const Home = (props: any) => {
-  const [{ getDocument }] = useForm<{
+  const [payload, isLoading] = useForm<{
     getDocument: Tina.SectionDocumentUnion;
   }>({
-    payload: props,
+    query,
+    variables: props.queryVars,
     formify: ({ formConfig, createForm, skip }) => {
-      //skip();
+      // return skip();
       return createForm(formConfig);
     },
   });
-  const { form, sys, ...rest } = getDocument;
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
       <Sidebar relativePath="" />
       <pre>
-        <code>{JSON.stringify(rest, null, 2)}</code>
+        {isLoading ? (
+          <span>Loading...</span>
+        ) : (
+          <code>{JSON.stringify(payload.getDocument.data, null, 2)}</code>
+        )}
       </pre>
     </div>
   );
