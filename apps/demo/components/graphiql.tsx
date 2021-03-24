@@ -235,7 +235,8 @@ export const Explorer = ({
   );
 
   const [res] = useForm({
-    payload: current.context.result,
+    query: (gql) => gql(current.context.queryString),
+    variables: current.context.variables,
     onSubmit: (args: { queryString: string; variables: object }) => {
       send({ type: "SETUP_MUTATION", value: args });
     },
