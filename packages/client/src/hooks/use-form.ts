@@ -141,9 +141,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             const accum = {};
             const keys = Object.keys(context.payload);
             Object.values(context.payload).forEach((item, index) => {
-              if (keys[index].startsWith("_")) {
-                return;
-              }
+              if (!item.form) return;
               accum[keys[index]] = spawn(
                 createFormMachine({
                   client: context.cms.api.tina,
