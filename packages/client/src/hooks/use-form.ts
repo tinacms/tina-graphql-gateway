@@ -241,17 +241,16 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
 };
 
 function useRegisterFormsAndSyncPayload<T extends object>({
-  query,
+  queryString,
   onSubmit,
   formify,
 }: {
-  query: (gqlTag: typeof gql) => GqlDocumentNode;
+  queryString: string;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   formify?: formifyCallback;
 }) {
   const cms = useCMS();
   const [tinaForms, setTinaForms] = React.useState([]);
-  const queryString = print(query(gql));
 
   const [machineState, send, service] = useMachine(formsMachine, {
     context: {
@@ -326,13 +325,13 @@ export function useForm<T extends object>({
 }): [T, Boolean] {
   const cms = useCMS();
 
+  const queryString = print(query(gql));
+
   const { data, retry, ready } = useRegisterFormsAndSyncPayload({
-    query,
+    queryString,
     onSubmit,
     formify,
   });
-
-  const queryString = print(query(gql));
 
   React.useEffect(() => {
     // TODO don't send form metadata to user
