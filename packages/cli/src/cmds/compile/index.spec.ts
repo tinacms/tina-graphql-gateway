@@ -15,23 +15,23 @@ import _ from "lodash";
 
 type Case = Parameters<typeof defineSchema>[0];
 
-const validFieldPartial: Case["sections"][0]["templates"][0]["fields"][0] = {
+const validFieldPartial: Case["collections"][0]["templates"][0]["fields"][0] = {
   type: "text",
   label: "Title",
   name: "title",
 };
-const validTemplatePartial: Case["sections"][0]["templates"][0] = {
+const validTemplatePartial: Case["collections"][0]["templates"][0] = {
   label: "Posts",
   name: "posts",
   fields: [validFieldPartial],
 };
-const validSectionPartial: Case["sections"][0] = {
+const validSectionPartial: Case["collections"][0] = {
   label: "Posts",
   path: "content/posts",
   name: "posts",
   templates: [validTemplatePartial],
 };
-const validSchema = { sections: [validSectionPartial] };
+const validSchema = { collections: [validSectionPartial] };
 const safeReplaceAt = <T extends object>(
   object: T,
   path: string,
@@ -47,23 +47,23 @@ const safeReplaceAt = <T extends object>(
 
 const invalidCases: { [key: string]: Case } = {
   //@ts-ignore
-  "misspelled section": { sectionz: [{}] },
+  "misspelled collection": { sectionz: [{}] },
   // @ts-ignore
-  "no section defiend": {},
-  "section with missing name": {
-    sections: [{ ...validSectionPartial, name: undefined }],
+  "no collection defiend": {},
+  "collection with missing name": {
+    collections: [{ ...validSectionPartial, name: undefined }],
   },
-  "section with missing label": {
-    sections: [{ ...validSectionPartial, label: undefined }],
+  "collection with missing label": {
+    collections: [{ ...validSectionPartial, label: undefined }],
   },
-  "section with missing path": {
-    sections: [{ ...validSectionPartial, path: undefined }],
+  "collection with missing path": {
+    collections: [{ ...validSectionPartial, path: undefined }],
   },
   "no template defined": {
-    sections: [{ ...validSectionPartial, templates: undefined }],
+    collections: [{ ...validSectionPartial, templates: undefined }],
   },
   "template with missing name": {
-    sections: [
+    collections: [
       {
         ...validSectionPartial,
         templates: [{ ...validTemplatePartial, name: undefined }],
@@ -71,7 +71,7 @@ const invalidCases: { [key: string]: Case } = {
     ],
   },
   "template with missing label": {
-    sections: [
+    collections: [
       {
         ...validSectionPartial,
         templates: [{ ...validTemplatePartial, label: undefined }],
@@ -79,7 +79,7 @@ const invalidCases: { [key: string]: Case } = {
     ],
   },
   "template with no fields defined": {
-    sections: [
+    collections: [
       {
         ...validSectionPartial,
         templates: [{ ...validTemplatePartial, fields: undefined }],
@@ -87,7 +87,7 @@ const invalidCases: { [key: string]: Case } = {
     ],
   },
   "template with empty fields": {
-    sections: [
+    collections: [
       {
         ...validSectionPartial,
         // @ts-ignore
@@ -96,7 +96,7 @@ const invalidCases: { [key: string]: Case } = {
     ],
   },
   "template with a field of an invalid type": {
-    sections: [
+    collections: [
       {
         ...validSectionPartial,
         templates: [
@@ -110,21 +110,21 @@ const invalidCases: { [key: string]: Case } = {
     ],
   },
   "group field with no sub-fields": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "group",
       fields: [],
     }),
   },
   "group field with invalid sub-field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "group",
       fields: [{ ...validFieldPartial, type: "some-field-type" }],
     }),
   },
   "block field with invalid template": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "blocks",
       templates: [
@@ -142,52 +142,52 @@ const invalidCases: { [key: string]: Case } = {
       ],
     }),
   },
-  "reference field with a section that does not exist": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+  "reference field with a collection that does not exist": {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "reference",
-      section: "abc",
+      collection: "abc",
     }),
   },
 };
 
 const validCases: { [key: string]: Case } = {
-  "valid config": { sections: [validSectionPartial] },
-  "text field": { sections: [validSectionPartial] },
+  "valid config": { collections: [validSectionPartial] },
+  "text field": { collections: [validSectionPartial] },
   "textarea field": safeReplaceAt(
     validSchema,
-    "sections[0].templates[0].fields[0].type",
+    "collections[0].templates[0].fields[0].type",
     "textarea"
   ),
   "select field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "select",
       options: ["some-option"],
     }),
   },
   "list field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "list",
     }),
   },
   "group field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "group",
       fields: [validFieldPartial],
     }),
   },
   "group-list field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "group-list",
       fields: [validFieldPartial],
     }),
   },
   "block field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "blocks",
       templates: [
@@ -206,41 +206,41 @@ const validCases: { [key: string]: Case } = {
     }),
   },
   "toggle field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "toggle",
     }),
   },
   "tags field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "tags",
     }),
   },
   "image field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "image",
     }),
   },
   "number field": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "number",
     }),
   },
-  "reference field with a section that exists": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+  "reference field with a collection that exists": {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "reference",
-      section: "posts",
+      collection: "posts",
     }),
   },
-  "reference-list field with a section that exists": {
-    ...safeReplaceAt(validSchema, "sections[0].templates[0].fields[0]", {
+  "reference-list field with a collection that exists": {
+    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
       ...validFieldPartial,
       type: "reference-list",
-      section: "posts",
+      collection: "posts",
     }),
   },
 };
