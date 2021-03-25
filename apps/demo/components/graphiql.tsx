@@ -209,6 +209,14 @@ export const graphiqlMachine = createMachine<
   },
 });
 
+const defaultQuery = `
+query {
+  getSections {
+    slug
+  }
+}
+`;
+
 export const Explorer = ({
   section,
   relativePath,
@@ -223,7 +231,7 @@ export const Explorer = ({
     {
       context: {
         cms,
-        queryString: "",
+        queryString: defaultQuery,
         result: {},
         variables: {
           relativePath,
@@ -235,7 +243,8 @@ export const Explorer = ({
   );
 
   const [res] = useForm({
-    payload: current.context.result,
+    query: (gql) => gql(current.context.queryString),
+    variables: current.context.variables,
     onSubmit: (args: { queryString: string; variables: object }) => {
       send({ type: "SETUP_MUTATION", value: args });
     },

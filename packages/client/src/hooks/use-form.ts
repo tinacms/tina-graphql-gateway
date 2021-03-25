@@ -20,6 +20,9 @@ import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
 import * as yup from "yup";
+import gql from "graphql-tag";
+import { print } from "graphql";
+import type { DocumentNode as GqlDocumentNode } from "graphql";
 
 export interface FormifyArgs {
   formConfig: FormOptions<any>;
@@ -113,7 +116,7 @@ const isPayloadPresent = async (context: FormsContext) => {
 
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   id: "forms",
-  initial: "initializing",
+  initial: "inactive",
   states: {
     inactive: {
       on: {
@@ -131,50 +134,31 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
       },
     },
     initializing: {
-      invoke: {
-        src: async (context, event) => {
-          if (!(await isPayloadPresent(context))) {
-            return null; // data may not be fetched yet so don't throw error
-          }
-
-          // TODO maybe a bit of a code smell here
-          // Should we instead only pass in relevant info
-          // into this function? (instead of implictly filtering them out)
-          const result = await filterForValidFormNodes(context.payload);
-          if (Object.keys(result).length === 0) {
-            throw new Error("No queries could be used as a Tina form");
-          }
-
-          return result;
-        },
-        onDone: {
-          target: "active",
-          actions: assign({
-            formRefs: (context, event) => {
-              const accum = {};
-              const keys = Object.keys(event.data);
-              Object.values(event.data).forEach((item, index) => {
-                accum[keys[index]] = spawn(
-                  createFormMachine({
-                    client: context.cms.api.tina,
-                    cms: context.cms,
-                    // @ts-ignore
-                    node: item,
-                    onSubmit: context.onSubmit,
-                    queryFieldName: keys[index],
-                    queryString: context.queryString,
-                    formify: context.formify,
-                  }),
-                  `form-${keys[index]}`
-                );
-              });
-              return accum;
-            },
-          }),
-        },
-        onError: {
-          target: "inactive",
-        },
+      always: {
+        target: "active",
+        actions: assign({
+          formRefs: (context, event) => {
+            const accum = {};
+            const keys = Object.keys(context.payload);
+            Object.values(context.payload).forEach((item, index) => {
+              if (!item.form) return;
+              accum[keys[index]] = spawn(
+                createFormMachine({
+                  client: context.cms.api.tina,
+                  cms: context.cms,
+                  // @ts-ignore
+                  node: item,
+                  onSubmit: context.onSubmit,
+                  queryFieldName: keys[index],
+                  queryString: context.queryString,
+                  formify: context.formify,
+                }),
+                `form-${keys[index]}`
+              );
+            });
+            return accum;
+          },
+        }),
       },
     },
     active: {
@@ -191,6 +175,17 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
               // which should be populated
               set(temp, event.pathAndValue.path, event.pathAndValue.value);
               return temp;
+            },
+          }),
+        },
+        RETRY: {
+          target: "initializing",
+          actions: assign({
+            payload: (context, event) => {
+              return event.value.payload;
+            },
+            queryString: (context, event) => {
+              return event.value.queryString;
             },
           }),
         },
@@ -257,22 +252,19 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
 };
 
 function useRegisterFormsAndSyncPayload<T extends object>({
-  payload,
+  queryString,
   onSubmit,
   formify,
 }: {
-  payload: T;
+  queryString: string;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   formify?: formifyCallback;
 }) {
   const cms = useCMS();
-  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
-  const queryString = payload._queryString;
   const [tinaForms, setTinaForms] = React.useState([]);
 
   const [machineState, send, service] = useMachine(formsMachine, {
     context: {
-      payload,
       formRefs: {},
       cms,
       queryString,
@@ -324,36 +316,47 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       payload: machineState.context.payload,
       tinaForms,
     },
-    retry: () => {
+    retry: (payload, queryString) => {
       send({ type: "RETRY", value: { payload, queryString } });
     },
+    ready: machineState.matches("active"),
   };
 }
 
 export function useForm<T extends object>({
-  payload,
+  query,
+  variables,
   onSubmit,
   formify = null,
 }: {
-  payload: T;
+  query: (gqlTag: typeof gql) => GqlDocumentNode;
+  variables: object;
   onSubmit?: (args: { queryString: string; variables: object }) => void;
   formify?: formifyCallback;
-}): [T, Form[]] {
-  // @ts-ignore FIXME: need to ensure the payload has been hydrated with Tina-specific stuff
-  const queryString = payload._queryString;
+}): [T, Boolean] {
+  const cms = useCMS();
 
-  const { data, retry } = useRegisterFormsAndSyncPayload({
-    payload,
+  const queryString = print(query(gql));
+
+  const { data, retry, ready } = useRegisterFormsAndSyncPayload({
+    queryString,
     onSubmit,
     formify,
   });
 
   React.useEffect(() => {
-    retry();
-  }, [JSON.stringify(payload), queryString]);
+    cms.api.tina
+      .requestWithForm(query, { variables })
+      .then((payload) => {
+        retry(payload, queryString);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, [queryString]);
 
   // @ts-ignore
-  return [data.payload, data.tinaForms];
+  return [data.payload, !ready];
 }
 
 type Field = {
