@@ -137,7 +137,8 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          // slug is now an alias to `name` - can probably remove it but it's being used in a lot of places
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -156,7 +157,8 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          // slug is now an alias to `name` - can probably remove it but it's being used in a lot of places
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -174,10 +176,8 @@ export class FileSystemManager implements DataSource {
     const sections = data.sections.map((section) => {
       return {
         ...section,
-        // Pretty sure this is how we define 'section' values in list/select fields
-        // probably needs to be tested thoroughly to ensure the slugify function works
-        // as it does in Forestry
-        slug: slugify(section.label),
+        // slug is now an alias to `name` - can probably remove it but it's being used in a lot of places
+        slug: section.name,
       };
     });
 
