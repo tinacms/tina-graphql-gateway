@@ -55,15 +55,28 @@ export const templateName = (string: string) => {
   return kebabcase(string);
 };
 
+/**
+ * This generates the typename for the given template, which isn't as straightforward
+ * is it would ideally be, the reason for this is because templates are used for documents
+ * and blocks within documents, and when used for a document they autmotically have a _body
+ * field, so the types are different. We're appending "Template" to block-level ones.
+ */
 export const templateTypeName = (
   template: FriendlyType,
   suffix: string,
   includeBody: boolean
 ) => {
-  const suffixName = (includeBody ? "Doc_" : "") + suffix;
+  let suffixName = "";
+  if (suffix === "Data") {
+    suffixName = includeBody ? "" : "Template";
+  } else {
+    suffixName = (includeBody ? "" : "Template_") + suffix;
+  }
   return friendlyName(template, { suffix: suffixName });
 };
 
 export const slugify = (string: string) => {
-  return kebabcase(string);
+  // FIXME: Just remove this. We're forcing values to be in the valid format by default,
+  // coercing them like this leads to other inconsistencies
+  return string;
 };

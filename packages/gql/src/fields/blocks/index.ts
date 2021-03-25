@@ -88,7 +88,7 @@ export const blocks: Blocks = {
         gql.UnionTypeDefinition({
           name: name,
           types: field.template_types.map((t) =>
-            friendlyName(t, { suffix: "Values" })
+            templateTypeName(t, "Values", false)
           ),
         })
       );
@@ -110,7 +110,7 @@ export const blocks: Blocks = {
         gql.UnionTypeDefinition({
           name: fieldUnionName,
           types: field.template_types.map((t) =>
-            friendlyName(t, { suffix: "Data" })
+            templateTypeName(t, "Data", false)
           ),
         })
       );

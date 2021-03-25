@@ -15,7 +15,7 @@ import { snakeCase, toLower } from "lodash";
 import * as yup from "yup";
 
 export const slugify = (string: string) => {
-  return toLower(snakeCase(string));
+  return string;
 };
 
 /**
