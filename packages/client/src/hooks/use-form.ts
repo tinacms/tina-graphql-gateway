@@ -178,6 +178,17 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             },
           }),
         },
+        RETRY: {
+          target: "initializing",
+          actions: assign({
+            payload: (context, event) => {
+              return event.value.payload;
+            },
+            queryString: (context, event) => {
+              return event.value.queryString;
+            },
+          }),
+        },
       },
     },
   },
@@ -334,7 +345,6 @@ export function useForm<T extends object>({
   });
 
   React.useEffect(() => {
-    // TODO don't send form metadata to user
     cms.api.tina
       .requestWithForm(query, { variables })
       .then((payload) => {
