@@ -16,7 +16,7 @@ import GraphiQL from "graphiql";
 import { formify, queryGenerator } from "@forestryio/graphql-helpers";
 import { useMachine } from "@xstate/react";
 import { Machine, assign, createMachine, StateSchema } from "xstate";
-import { useForm } from "tina-graphql-gateway";
+import { useGraphqlForms } from "tina-graphql-gateway";
 import { Form, useCMS, TinaCMS } from "tinacms";
 import { Sidebar } from "./sidebar";
 import {
@@ -242,7 +242,7 @@ export const Explorer = ({
     }
   );
 
-  const [res] = useForm({
+  const [res] = useGraphqlForms({
     query: (gql) => gql(current.context.queryString),
     variables: current.context.variables,
     onSubmit: (args: { queryString: string; variables: object }) => {

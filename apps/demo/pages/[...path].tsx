@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LocalClient, useForm } from "tina-graphql-gateway";
+import { LocalClient, useGraphqlForms } from "tina-graphql-gateway";
 import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
 
@@ -55,7 +55,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
 };
 
 const Home = (props: any) => {
-  const [payload, isLoading] = useForm<{
+  const [payload, isLoading] = useGraphqlForms<{
     getDocument: Tina.SectionDocumentUnion;
   }>({
     query,
