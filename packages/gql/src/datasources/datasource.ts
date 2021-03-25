@@ -69,11 +69,6 @@ export interface DataSource {
   getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
   getTemplate: (slug: string) => Promise<TemplateData>;
   /**
-   * `getTemplateWithoutName` the name is a synthetic value, so
-   * sometimes you don't want it (ex. when writing back to the data source)
-   */
-  getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>;
-  /**
    * `getTemplatesForSection`
    *
    * Returns the parsed templates for a given section. If no section is provided

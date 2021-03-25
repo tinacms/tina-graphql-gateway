@@ -262,39 +262,13 @@ export class FileSystemManager implements DataSource {
 
     return namespaceFields({ name: slug, ...data });
   };
-  getTemplateWithoutName = async (
-    slug: string,
-    options: { namespace: boolean } = { namespace: true }
-  ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
-    const templates = await readDir(fullPath, this.dirLoader);
-    const template = templates.find((templateBasename) => {
-      return templateBasename === `${slug}.yml`;
-    });
-    if (!template) {
-      throw new Error(`No template found for slug ${slug}`);
-    }
-    const { data } = await readFile<RawTemplate>(
-      p.join(fullPath, template),
-      this.loader
-    );
-
-    return data;
-  };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    // const templateData = await this.getTemplateWithoutName(template, {
-    //   namespace: false,
-    // });
     if (!sectionData) {
       throw new Error(`No section found for ${section}`);
     }
     const path = p.join(sectionData.path, relativePath);
-    // const updatedTemplateData = {
-    //   ...templateData,
-    //   pages: [...(templateData.pages ? templateData.pages : []), path],
-    // };
 
     const fullFilePath = p.join(this.rootPath, path);
     const fullTemplatePath = p.join(fullPath, `${template}.yml`);
@@ -304,9 +278,6 @@ export class FileSystemManager implements DataSource {
 
     const documentString = "---\n" + jsyaml.dump({ _template: template });
     await writeFile(fullFilePath, documentString);
-
-    // const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
-    // await writeFile(fullTemplatePath, templateString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
@@ -369,7 +340,16 @@ const readDir = async (
   return (await loader.load(path)) as string[];
 };
 const internalReadDir = async (path: string) => {
-  return await fs.readdirSync(path);
+  try {
+    return await fs.readdirSync(path);
+  } catch (e) {
+    // The folder may not exist, that's ok
+    if (e.message.includes("ENOENT: no such file or directory")) {
+      return [];
+    } else {
+      throw e;
+    }
+  }
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";

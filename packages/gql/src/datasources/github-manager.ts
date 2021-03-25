@@ -405,28 +405,10 @@ export class GithubManager implements DataSource {
 
     return namespaceFields({ name: slug, ...data });
   };
-  getTemplateWithoutName = async (
-    slug: string,
-    options: { namespace: boolean } = { namespace: true }
-  ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
-    const templates = await this.readDir(fullPath, this.dirLoader);
-    const template = templates.find((templateBasename) => {
-      return templateBasename === `${slug}.yml`;
-    });
-    if (!template) {
-      throw new Error(`No template found for slug ${slug}`);
-    }
-    const { data } = await this.readFile<RawTemplate>(
-      p.join(fullPath, template),
-      this.loader
-    );
-    return data;
-  };
   addDocument = async ({ relativePath, section, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForSection(section);
-    const templateData = await this.getTemplateWithoutName(template, {
+    const templateData = await this.getTemplate(template, {
       namespace: false,
     });
     if (!sectionData) {
