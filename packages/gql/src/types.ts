@@ -17,6 +17,7 @@ export type DirectorySection = {
   type: "directory";
   label: string;
   slug: string;
+  name: string;
   path: string;
   create: "documents" | "all";
   match: string;
@@ -27,12 +28,14 @@ export type DirectorySection = {
 export type HeadingSection = {
   type: "heading";
   label: string;
+  name: string;
   slug: string;
 };
 
 export type DocumentSection = {
   type: "document";
   label: string;
+  name: string;
   path: string;
   slug: string;
 };

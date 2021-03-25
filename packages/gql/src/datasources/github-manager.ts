@@ -265,7 +265,8 @@ export class GithubManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          // slug is now an alias to `name` - can probably remove it but it's being used in a lot of places
+          slug: section.name,
         } as DirectorySection;
       });
 

@@ -11,6 +11,7 @@
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",
+    "import:starter": "rm -rf apps/tina-cloud-starter && cp -r ../tina-cloud-starter apps && rm apps/tina-cloud-starter/yarn.lock && rm -rf apps/tina-cloud-starter/.git",
     "license:add": "$PWD/scripts/add-license.sh",
     "license:delete": "$PWD/scripts/delete-license.sh",
     "ci:version-check": "yarn version check",

@@ -282,6 +282,23 @@ export const defineSchema = (config: TinaCloudSchema) => {
     return yup.object({
       collections: yup
         .array()
+        .of(
+          yup.object({
+            label: yup.string().required(),
+            name: yup
+              .string()
+              .required()
+              .matches(/^[_a-zA-Z][_a-zA-Z0-9]*$/, {
+                message: (message) =>
+                  `${message.path} must match ${message.regex}. For example - "my-blogs" is invalid, use "myBlogs" instead`,
+              }),
+            path: yup.string().required(),
+            templates: yup
+              .array()
+              .min(1, (message) => `${message.path} must have at least 1 item`)
+              .required(),
+          })
+        )
         .min(1, (message) => `${message.path} must have at least 1 item`)
         .required(),
     });

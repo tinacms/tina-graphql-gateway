@@ -77,7 +77,7 @@ export class FileSystemManager implements DataSource {
 
     // FIXME: replace with fast-glob
     const documents = await readDir(fullPath, this.dirLoader);
-    return documents.map(relativePath => p.join(section.path, relativePath));
+    return documents.map((relativePath) => p.join(section.path, relativePath));
   };
   getAllTemplates = async () => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
@@ -122,10 +122,8 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          // Pretty sure this is how we define 'section' values in list/select fields
-          // probably needs to be tested thoroughly to ensure the slugify function works
-          // as it does in Forestry
-          slug: slugify(section.label),
+          // slug is now an alias to `name` - can probably remove it but it's being used in a lot of places
+          slug: section.name,
         };
       });
 

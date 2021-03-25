@@ -286,6 +286,7 @@ export const Explorer = ({
             {/* @ts-ignore */}
             <GraphiQL
               ref={_graphiql}
+              // @ts-ignore
               fetcher={async () => {
                 return fetcher();
               }}
