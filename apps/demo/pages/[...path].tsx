@@ -11,11 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LocalClient, useForm } from "tina-graphql-gateway";
+import { useForm } from "tina-graphql-gateway";
 import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
-
-const client = new LocalClient();
 
 const query = (gql) => gql`
   query ContentQuery($section: String!, $relativePath: String!) {

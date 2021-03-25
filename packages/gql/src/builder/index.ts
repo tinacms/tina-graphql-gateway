@@ -309,10 +309,6 @@ const queryDefinition = (sectionMap: sectionMap) => {
     name: "Query",
     fields: [
       gql.FieldDefinition({
-        name: "_queryString",
-        type: gql.TYPES.String,
-      }),
-      gql.FieldDefinition({
         name: "node",
         type: gql.TYPES.Node,
         args: [

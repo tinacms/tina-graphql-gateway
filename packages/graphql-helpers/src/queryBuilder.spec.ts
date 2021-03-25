@@ -139,7 +139,6 @@ describe("formify", () => {
             }
           }
         }
-        _queryString
       }
     `);
   });

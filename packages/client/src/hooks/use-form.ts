@@ -71,49 +71,6 @@ interface FormsContext {
   formify: formifyCallback;
 }
 
-const filterForValidFormNodes = async (payload: object) => {
-  const keys = Object.keys(payload);
-  const accum = {} as object;
-  await Promise.all(
-    Object.values(payload).map(async (payloadItem, index) => {
-      const containsValidForm = async () => {
-        // validate payload
-        let dataSchema = yup.object().shape({
-          // @ts-ignore
-          form: yup.object().required().shape({
-            // @ts-ignore
-            label: yup.string().required(),
-            // @ts-ignore
-            name: yup.string().required(),
-          }),
-        });
-        try {
-          await dataSchema.validate(payloadItem);
-        } catch (e) {
-          return false;
-        }
-        return true;
-      };
-
-      if (await containsValidForm()) {
-        accum[keys[index]] = payloadItem;
-      }
-    })
-  );
-
-  return accum;
-};
-
-const isPayloadPresent = async (context: FormsContext) => {
-  const payloadSchema = yup.object().required();
-  try {
-    await payloadSchema.validate(context.payload);
-  } catch {
-    return false;
-  }
-  return true;
-};
-
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   id: "forms",
   initial: "inactive",
@@ -167,8 +124,6 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
           actions: assign({
             payload: (context, event) => {
               const temp = { ...context.payload };
-              // FIXME: this breaks when adding a block and then populating it, we don't get an event
-              // for when a sortable item is added or changed, need this fix to come from OSS
               // TODO: If we didn't query for it, don't populate it.
               // for now this will populate values which we may not have asked for in the data
               // key. But to do this properly we'll need to traverse the query and store the paths

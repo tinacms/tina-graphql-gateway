@@ -104,7 +104,6 @@ export type MutationUpdatePostsDocumentArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  _queryString?: Maybe<Scalars['String']>;
   node?: Maybe<Node>;
   getDocument?: Maybe<SectionDocumentUnion>;
   getSections?: Maybe<Array<Maybe<Section>>>;
