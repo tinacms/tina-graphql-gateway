@@ -23,8 +23,8 @@ import {
   getIntrospectionQuery,
   print,
 } from "graphql";
-import { formify } from "@forestryio/graphql-helpers";
 
+import { formify } from "@forestryio/graphql-helpers";
 import gql from "graphql-tag";
 import { transformPayload } from "./transform-payload";
 
@@ -38,8 +38,10 @@ interface ServerOptions {
 }
 
 const BASE_TINA_URL = process.env.BASE_TINA_URL || `tinajs.io`;
-const IDENTITY_API_URL = `https://identity.${BASE_TINA_URL}`;
-const CONTENT_API_URL = `https://content.${BASE_TINA_URL}`;
+const IDENTITY_API_URL =
+  process.env.IDENTITY_API_OVERRIDE || `https://identity.${BASE_TINA_URL}`;
+const CONTENT_API_URL =
+  process.env.CONTENT_API_OVERRIDE || `https://content.${BASE_TINA_URL}`;
 
 export class Client {
   contentApiUrl: string;
