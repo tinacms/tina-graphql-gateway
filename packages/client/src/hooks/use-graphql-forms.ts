@@ -323,7 +323,7 @@ function useRegisterFormsAndSyncPayload<T extends object>({
   };
 }
 
-export function useForm<T extends object>({
+export function useGraphqlForms<T extends object>({
   query,
   variables,
   onSubmit,
