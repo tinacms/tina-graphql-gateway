@@ -77,7 +77,7 @@ export class FileSystemManager implements DataSource {
 
     // FIXME: replace with fast-glob
     const documents = await readDir(fullPath, this.dirLoader);
-    return documents;
+    return documents.map(relativePath => p.join(section.path, relativePath));
   };
   getAllTemplates = async () => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
