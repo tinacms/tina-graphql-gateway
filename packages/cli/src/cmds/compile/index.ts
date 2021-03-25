@@ -85,9 +85,9 @@ const transformField = async (
   if (field.type === "reference") {
     yup
       .object({
-        section: yup
+        collection: yup
           .string()
-          .oneOf(schema.sections.map((section) => section.name)),
+          .oneOf(schema.collections.map((collection) => collection.name)),
       })
       .validate(field);
     return {
@@ -97,7 +97,7 @@ const transformField = async (
       config: {
         source: {
           type: "pages",
-          section: field.section,
+          section: field.collection,
         },
       },
     };
@@ -110,7 +110,7 @@ const transformField = async (
       config: {
         source: {
           type: "pages",
-          section: field.section,
+          collection: field.collection,
         },
       },
     };
@@ -209,15 +209,15 @@ export const compile = async () => {
 };
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const sectionOutput = {
-    ...schemaObject,
-    sections: schemaObject.sections.map((section) => {
+    // ...schemaObject,
+    sections: schemaObject.collections.map((collection) => {
       return {
-        ...section,
+        ...collection,
         type: "directory",
         create: "documents",
         match: "**/*.md",
         new_doc_ext: "md",
-        templates: section.templates.map((template) => template.name),
+        templates: collection.templates.map((template) => template.name),
       };
     }),
   };
@@ -227,10 +227,10 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
     schemaString
   );
   await Promise.all(
-    schemaObject.sections.map(
-      async (section) =>
+    schemaObject.collections.map(
+      async (collection) =>
         await Promise.all(
-          section.templates.map(async (definition) => {
+          collection.templates.map(async (definition) => {
             return buildTemplate(definition, schemaObject);
           })
         )
@@ -278,6 +278,15 @@ class ValidationError extends Error {
 }
 
 export const defineSchema = (config: TinaCloudSchema) => {
+  assertShape<TinaCloudSettings>(config, (yup) => {
+    return yup.object({
+      collections: yup
+        .array()
+        .min(1, (message) => `${message.path} must have at least 1 item`)
+        .required(),
+    });
+  });
+
   yup.addMethod(yup.array, "oneOfSchemas", function (schemas) {
     return this.test("one-of-schemas", function (items, context) {
       if (typeof items === "undefined") {
@@ -429,9 +438,9 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .string()
       .matches(/^reference$/)
       .required(),
-    section: yup
+    collection: yup
       .string()
-      .oneOf(config.sections.map((section) => section.name))
+      .oneOf(config.collections.map((collection) => collection.name))
       .required(),
   });
   const ReferenceListSchema = baseSchema.label("reference-list").shape({
@@ -439,10 +448,10 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .string()
       .matches(/^reference-list$/)
       .required(),
-    section: yup
+    collection: yup
       .string()
       .oneOf(
-        config.sections.map((section) => section.name),
+        config.collections.map((collection) => collection.name),
         (message) =>
           `${message.path} must be one of the following values: ${message.values}, but instead received: ${message.value}`
       )
@@ -502,7 +511,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
   });
   assertShape<TinaCloudSettings>(config, (yup) =>
     yup.object({
-      sections: yup
+      collections: yup
         .array()
         .min(1, (message) => `${message.path} must have at least 1 item`)
         .of(
@@ -517,7 +526,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
               .required("templates is a required field"),
           })
         )
-        .required("sections is a required field"),
+        .required("collections is a required field"),
     })
   );
   return { _definitionType: "schema", config };
@@ -540,10 +549,10 @@ export function assertShape<T extends object>(
 }
 
 export interface TinaCloudSchema {
-  sections: TinaCloudSection[];
+  collections: TinaCloudSection[];
 }
 export interface TinaCloudSettings {
-  sections: TinaCloudSection[];
+  collections: TinaCloudSection[];
 }
 interface TinaCloudSection {
   path: string;
@@ -631,10 +640,10 @@ interface BlocksField extends TinaBaseField {
 
 interface Reference extends TinaBaseField {
   type: "reference";
-  section: string;
+  collection: string;
 }
 
 interface ReferenceList extends TinaBaseField {
   type: "reference-list";
-  section: string;
+  collection: string;
 }

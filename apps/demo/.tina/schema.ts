@@ -14,7 +14,7 @@ limitations under the License.
 import { defineSchema } from "tina-graphql-gateway-cli";
 
 export default defineSchema({
-  sections: [
+  collections: [
     {
       label: "Authors",
       name: "authors",
@@ -78,7 +78,7 @@ export default defineSchema({
               name: "author",
               label: "Author",
               type: "reference",
-              section: "authors",
+              collection: "authors",
             },
           ],
         },
