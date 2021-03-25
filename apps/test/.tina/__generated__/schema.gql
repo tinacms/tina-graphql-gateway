@@ -61,7 +61,6 @@ type Mutation {
 }
 
 type Query {
-  _queryString: String
   node(id: ID!): Node
   getDocument(section: String, relativePath: String): SectionDocumentUnion
   getSections: [Section]
