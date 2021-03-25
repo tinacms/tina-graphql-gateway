@@ -209,6 +209,14 @@ export const graphiqlMachine = createMachine<
   },
 });
 
+const defaultQuery = `
+query {
+  getSections {
+    slug
+  }
+}
+`;
+
 export const Explorer = ({
   section,
   relativePath,
@@ -223,7 +231,7 @@ export const Explorer = ({
     {
       context: {
         cms,
-        queryString: "",
+        queryString: defaultQuery,
         result: {},
         variables: {
           relativePath,
