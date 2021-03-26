@@ -15,8 +15,6 @@ import { LocalClient, useGraphqlForms } from "tina-graphql-gateway";
 import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
 
-const client = new LocalClient();
-
 const query = (gql) => gql`
   query ContentQuery($section: String!, $relativePath: String!) {
     getDocument(section: $section, relativePath: $relativePath) {
