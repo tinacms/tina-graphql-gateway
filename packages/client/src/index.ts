@@ -13,7 +13,7 @@ limitations under the License.
 
 export * from "./client";
 export * from "./auth";
-export * from "./hooks/use-form";
+export * from "./hooks/use-graphql-forms";
 
 /**
  * A passthru function which allows editors
