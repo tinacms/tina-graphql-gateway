@@ -207,6 +207,10 @@ export const compile = async () => {
   await compileInner(schemaObject);
   compiledTemplates = [];
 };
+
+const regexMessageFunc = (message) =>
+  `Field "${message.path}" with value "${message.value}" must match ${message.regex}. For example - "my-title" is invalid, use "myTitle" or "my_title instead`;
+
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const sectionOutput = {
     // ...schemaObject,
@@ -282,6 +286,18 @@ export const defineSchema = (config: TinaCloudSchema) => {
     return yup.object({
       collections: yup
         .array()
+        .of(
+          yup.object({
+            label: yup.string().required(),
+            path: yup.string().required(),
+            name: yup
+              .string()
+              .required()
+              .matches(/^[_a-zA-Z][_a-zA-Z0-9]*$/, {
+                message: regexMessageFunc,
+              }),
+          })
+        )
         .min(1, (message) => `${message.path} must have at least 1 item`)
         .required(),
     });
@@ -349,7 +365,12 @@ export const defineSchema = (config: TinaCloudSchema) => {
 
   const baseSchema = yup.object({
     label: yup.string().required(),
-    name: yup.string().required(),
+    name: yup
+      .string()
+      .required()
+      .matches(/^[_a-zA-Z][_a-zA-Z0-9]*$/, {
+        message: regexMessageFunc,
+      }),
     description: yup.string(),
   });
 
@@ -501,7 +522,12 @@ export const defineSchema = (config: TinaCloudSchema) => {
 
   const TemplateSchema = yup.object({
     label: yup.string().required(),
-    name: yup.string().required(),
+    name: yup
+      .string()
+      .required()
+      .matches(/^[_a-zA-Z][_a-zA-Z0-9]*$/, {
+        message: regexMessageFunc,
+      }),
     fields: yup
       .array()
       .min(1, (message) => `${message.path} must have at least 1 item`)

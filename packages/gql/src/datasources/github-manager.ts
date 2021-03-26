@@ -15,7 +15,6 @@ import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
-import { slugify } from "../util";
 import DataLoader from "dataloader";
 import LRU from "lru-cache";
 
@@ -265,7 +264,7 @@ export class GithubManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -284,7 +283,7 @@ export class GithubManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -304,10 +303,7 @@ export class GithubManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          // Pretty sure this is how we define 'section' values in list/select fields
-          // probably needs to be tested thoroughly to ensure the slugify function works
-          // as it does in Forestry
-          slug: slugify(section.label),
+          slug: section.name,
         };
       });
 
@@ -319,10 +315,7 @@ export class GithubManager implements DataSource {
     const sections = data.sections.map((section) => {
       return {
         ...section,
-        // Pretty sure this is how we define 'section' values in list/select fields
-        // probably needs to be tested thoroughly to ensure the slugify function works
-        // as it does in Forestry
-        slug: slugify(section.label),
+        slug: section.name,
       };
     });
 

@@ -12,11 +12,7 @@ limitations under the License.
 */
 
 import _ from "lodash";
-import {
-  friendlyName,
-  slugify,
-  templateTypeName,
-} from "@forestryio/graphql-helpers";
+import { friendlyName, templateTypeName } from "@forestryio/graphql-helpers";
 
 import { gql } from "../../gql";
 import { template } from "../templates";
@@ -218,12 +214,12 @@ export const blocks: Blocks = {
 
             const resolvedData = await template.resolve.input({
               data,
-              template: await datasource.getTemplate(slugify(key)),
+              template: await datasource.getTemplate(key),
               datasource,
             });
 
             return {
-              template: slugify(key),
+              template: key,
               ...resolvedData,
             };
           } catch (e) {
