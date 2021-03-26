@@ -28,7 +28,7 @@ This package provides you with:
 
 - A `Client` class (which you can use as a TinaCMS API Plugin), that takes care of all interaction with the GraphQL server.
 - A `LocalClient` class - which talks to the local server if you've got one. Ideal for static builds and developement testing.
-- A `useForm` hook, that you can use to hook into the Tina forms that let you edit your content.
+- A `useGraphqlForms` hook, that you can use to hook into the Tina forms that let you edit your content.
 
 ```bash
 npm install --save tina-graphql-gateway
@@ -280,47 +280,66 @@ yarn tina-gql server:start
 **pages/welcome.tsx**
 
 ```tsx
-import {
-  useForm,
-  LocalClient,
-} from "tina-graphql-gateway";
+import { useGraphqlForms, LocalClient } from "tina-graphql-gateway";
 // These are your generated types from CLI
 import type * as Tina from "../.tina/types";
 
-export async function getServerProps({ params }) {
+interface ContentQueryResponse {
+  getDocument: Tina.SectionDocumentUnion;
+}
+
+interface QueryVars {
+  relativePath: string;
+  section: string;
+}
+
+const query = (gql) => gql`
+  query ContentQuery($section: String!, $relativePath: String!) {
+    getDocument(section: $section, relativePath: $relativePath) {
+      __typename
+      ... on Pages_Document {
+        data {
+          ... on Page_Doc_Data {
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getServerSideProps({ params }) {
   const client = new LocalClient();
 
   export const request = async (
-  client: Client,
-  variables: { section: string; relativePath: string }
-) => {
-  const content = await client.requestWithForm(
-    (gql) => gql`
-      query ContentQuery($section: String!, $relativePath: String!) {
-        getDocument(section: $section, relativePath: $relativePath) {
-          __typename
-          ... on Pages_Document {
-            data {
-              ...on Page_Doc_Data {
-                name
-              }
-            }
-          }
-        }
-      }`,
-      {
-        variables: {
-          relativePath: 'welcome.md',
-          section: 'pages'
-        }
-      })
+    client: Client,
+    variables: { section: string; relativePath: string }
+  ) => {
+    const queryVars = {
+      relativePath: "welcome.md",
+      section: "pages",
+    };
+    const content = await client.requestWithForm(query, {
+      variables: queryVars,
+    });
 
-  return { props: content };
+    return { props: { content, queryVars } };
+  };
 }
 
-export default function Page(props: { getDocument: Tina.SectionDocumentUnion }) {
-  const result = useForm({payload: props})
-  return <MyComponent {...result.getDocument} />;
+export default function Page(props: {
+  content: ContentQueryResponse;
+  queryVars: QueryVars;
+}) {
+  const [response, isLoading] = useGraphqlForms<ContentQueryResponse>({
+    query,
+    variables: props.queryVars,
+  });
+
+  // initialize with production content & hydrate with development content once loaded
+  const docData = isLoading ? props.content.getDocument : response.getDocument;
+
+  return <MyComponent {...docData} />;
 }
 ```
 
@@ -392,26 +411,28 @@ The goal of this package is to give developers the ability to automatically buil
 ## Data-fetching:
 
 ```ts
-const payload = await client.requestWithForm(
-  (gql) => gql`
-    query ContentQuery($section: String!, $relativePath: String!) {
-      getDocument(section: $section, relativePath: $relativePath) {
-        __typename
-        ... on Authors_Document {
-          data {
-            __typename
-            ... on Author_Doc_Data {
-              name
-            }
+const query = (gql) => gql`
+  query ContentQuery($section: String!, $relativePath: String!) {
+    getDocument(section: $section, relativePath: $relativePath) {
+      __typename
+      ... on Authors_Document {
+        data {
+          __typename
+          ... on Author_Doc_Data {
+            name
           }
         }
       }
     }
-  `,
-  {
-    variables,
   }
-);
+`;
+const variables = {
+  relativePath: "welcome.md",
+  section: "pages",
+};
+const payload = await client.requestWithForm(query, {
+  variables,
+});
 ```
 
 Note the function name `requestWithForm` - this will take your query and "hydrate" it with additional fields needed by Tina. We also expose a `request` function, which won't add any Tina form fields.
@@ -452,16 +473,19 @@ Cons:
 
 We hope to offer the best of both options, using Tina forms while still having a single source of truth and the full power of a proper CMS all wrapped up under an expressive GraphQL API.
 
-So to continue on with the code samples from above, passing the payload into the `useForm` hook will initialize a form for each node in the query:
+So to continue on with the code samples from above, passing the query and variables into the `useGraphqlForms` hook will initialize a form for each node in the query:
 
 ```ts
-import { useForm, useDocumentCreatorPlugin } from "tina-graphql-gateway";
+import {
+  useGraphqlForms,
+  useDocumentCreatorPlugin,
+} from "tina-graphql-gateway";
 
 //...
 
-const result = useForm({
-  // pass the payload from your request
-  payload: payload,
+const [result, isLoading] = useGraphqlForms({
+  query: query,
+  variables: variables,
 });
 
 // adds a document creator plugin for adding new documents based on your section configuration
@@ -490,9 +514,8 @@ With the TinaCMS hook:
 
 With the `tina-graphql-gateway` hook:
 
-- We don't need to set any form configuration (this is already done in your template definitions), instead we passed our query result.
+- We don't need to set any form configuration (this is already done in your template definitions), instead we passed our query.
 - The sidebar is automatically registered
-- The values we get back are from the query result, however their values are updated when form values change.
 
 The key benefit here is you'll receive the data you queried for, meaning you don't need to do anything special for your content to work with Tina.
 
