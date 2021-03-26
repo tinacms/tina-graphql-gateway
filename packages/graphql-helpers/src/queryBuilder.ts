@@ -113,25 +113,6 @@ export const formify = (query: DocumentNode, schema: GraphQLSchema) => {
       const type = typeInfo.getType();
       if (type) {
         const namedType = getNamedType(type);
-        if (namedType.toString() === "Query") {
-          if (node.kind === "SelectionSet") {
-            if (
-              !node.selections.find(
-                // @ts-ignore
-                (item) => item.name.value === "_queryString"
-              )
-            ) {
-              // @ts-ignore FIXME: should be readonly
-              node.selections.push({
-                kind: "Field",
-                name: {
-                  kind: "Name",
-                  value: "_queryString",
-                },
-              });
-            }
-          }
-        }
 
         if (namedType instanceof GraphQLObjectType) {
           const hasNodeInterface = !!namedType
