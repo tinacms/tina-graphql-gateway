@@ -16,7 +16,6 @@ import p from "path";
 import _ from "lodash";
 import matter from "gray-matter";
 import * as jsyaml from "js-yaml";
-import { slugify } from "../util";
 import DataLoader from "dataloader";
 
 import { byTypeWorks, Section } from "../types";
@@ -77,7 +76,7 @@ export class FileSystemManager implements DataSource {
 
     // FIXME: replace with fast-glob
     const documents = await readDir(fullPath, this.dirLoader);
-    return documents.map(relativePath => p.join(section.path, relativePath));
+    return documents.map((relativePath) => p.join(section.path, relativePath));
   };
   getAllTemplates = async () => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
@@ -122,10 +121,7 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          // Pretty sure this is how we define 'section' values in list/select fields
-          // probably needs to be tested thoroughly to ensure the slugify function works
-          // as it does in Forestry
-          slug: slugify(section.label),
+          slug: section.name,
         };
       });
 
@@ -139,7 +135,7 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -158,7 +154,7 @@ export class FileSystemManager implements DataSource {
       .map((section) => {
         return {
           ...section,
-          slug: slugify(section.label),
+          slug: section.name,
         } as DirectorySection;
       });
 
@@ -176,10 +172,7 @@ export class FileSystemManager implements DataSource {
     const sections = data.sections.map((section) => {
       return {
         ...section,
-        // Pretty sure this is how we define 'section' values in list/select fields
-        // probably needs to be tested thoroughly to ensure the slugify function works
-        // as it does in Forestry
-        slug: slugify(section.label),
+        slug: section.name,
       };
     });
 

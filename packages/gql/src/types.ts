@@ -16,17 +16,21 @@ import type { Field, TinaField } from "./fields";
 export type DirectorySection = {
   type: "directory";
   label: string;
+  /** An alias for "name", spaces or dashes (-) are not permitted  */
   slug: string;
   path: string;
   create: "documents" | "all";
   match: string;
   new_doc_ext: string;
+  /** The identifier of the collection, spaces or dashes (-) are not permitted  */
+  name: string;
   templates: string[];
 };
 
 export type HeadingSection = {
   type: "heading";
   label: string;
+  name: string;
   slug: string;
 };
 
@@ -34,6 +38,7 @@ export type DocumentSection = {
   type: "document";
   label: string;
   path: string;
+  name: string;
   slug: string;
 };
 

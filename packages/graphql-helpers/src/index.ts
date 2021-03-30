@@ -11,6 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export { friendlyName, templateTypeName, templateName, slugify } from "./util";
+export { friendlyName, templateTypeName, templateName } from "./util";
 export { formify, splitQuery } from "./queryBuilder";
 export { queryGenerator } from "./dummy-generators";
