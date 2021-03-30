@@ -13,7 +13,7 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
-import type { TextareaField } from ".";
+import { TextareaField } from ".";
 
 const field: TextareaField = {
   label: "My Title",
@@ -40,39 +40,25 @@ describe(`Field of type ${field.type} builds`, () => {
       }
     `);
   });
-  test("a value of type LongTextInitialValue", async () => {
+  test("a value of type String", async () => {
     expect(await run("values")).toEqual(gql`
-      type LongTextInitialValue {
-        raw: String
-      }
       type Sample_Values {
-        title: LongTextInitialValue
+        title: String
         _template: String
       }
     `);
   });
-  test("a field of type LongTextData", async () => {
+  test("a field of type String", async () => {
     expect(await run("data")).toEqual(gql`
-      type LongTextValue {
-        raw: String
-        markdownAst: JSONObject
-        html: String
-      }
       type Sample_Data {
-        title: LongTextValue
+        title: String
       }
     `);
   });
-  // FIXME: this should probably not have the "Title_" prefix on it
-  // though it might be becauase we have different validation rules
-  // depending on which field it belongs to?
-  test("an input of type Title_LongTextInput", async () => {
+  test("an input of type String", async () => {
     expect(await run("input")).toEqual(gql`
-      input Title_LongTextInput {
-        raw: String
-      }
       input Sample_Input {
-        title: Title_LongTextInput
+        title: String
       }
     `);
   });
