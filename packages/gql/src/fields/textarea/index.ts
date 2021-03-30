@@ -12,24 +12,15 @@ limitations under the License.
 */
 
 import { gql } from "../../gql";
-import { toAst, toHTML } from "../../remark";
 
 import { assertIsString, BuildArgs, ResolveArgs } from "../";
-import { friendlyName } from "@forestryio/graphql-helpers";
-import { assertShape } from "../../util";
 
 const typename = "TextareaField";
-
 export const textarea = {
   contentField: {
     type: "textarea" as const,
     name: "_body",
     label: "Body",
-    config: {
-      schema: {
-        format: "markdown" as const,
-      },
-    },
     __namespace: "",
   },
   build: {
@@ -40,63 +31,17 @@ export const textarea = {
         type: typename,
       });
     },
-    initialValue: ({ field, accumulator }: BuildArgs<TextareaField>) => {
-      const name = "LongTextInitialValue";
-      accumulator.push(
-        gql.ObjectTypeDefinition({
-          name,
-          fields: [
-            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
-            // TODO: Not sure how to support custom scalars, might be better to
-            // force this into a recursive GraphQLObject which matches the
-            // remark AST shape
-            // gql.FieldDefinition({ name: "markdownAst", type: "JSONObject" }),
-            // gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
-          ],
-        })
-      );
-
-      return gql.FieldDefinition({
-        name: field.name,
-        type: name,
-      });
+    initialValue: ({ field }: BuildArgs<TextareaField>) => {
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
-    value: ({ field, accumulator }: BuildArgs<TextareaField>) => {
-      const name = "LongTextValue";
-      accumulator.push(
-        gql.ObjectTypeDefinition({
-          name,
-          fields: [
-            gql.FieldDefinition({ name: "raw", type: gql.TYPES.String }),
-            gql.FieldDefinition({
-              name: "markdownAst",
-              type: gql.TYPES.JSONObject,
-            }),
-            gql.FieldDefinition({ name: "html", type: gql.TYPES.String }),
-          ],
-        })
-      );
-
-      return gql.FieldDefinition({
-        name: field.name,
-        type: name,
-      });
+    value: ({ field }: BuildArgs<TextareaField>) => {
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
     },
-    input: async ({ field, cache, accumulator }: BuildArgs<TextareaField>) => {
-      const name = friendlyName(field, { suffix: "LongTextInput" });
-      accumulator.push(
-        gql.InputObjectTypeDefinition({
-          name,
-          fields: [
-            gql.InputValueDefinition({
-              name: "raw",
-              type: gql.TYPES.String,
-            }),
-          ],
-        })
-      );
-
-      return gql.InputValueDefinition({ name: field.name, type: name });
+    input: ({ field }: BuildArgs<TextareaField>) => {
+      return gql.InputValueDefinition({
+        name: field.name,
+        type: gql.TYPES.String,
+      });
     },
   },
   resolve: {
@@ -106,43 +51,22 @@ export const textarea = {
       const { type, ...rest } = field;
       return {
         ...rest,
-        name: `${field.name}.raw`,
         component: "textarea",
         config: rest.config || {
           required: false,
         },
-        __typename: typename,
+        __typename: "TextareaField",
       };
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<TextareaField>): Promise<{
-      raw: string;
-    }> => {
+    }: ResolveArgs<TextareaField>): Promise<string> => {
       assertIsString(value, { source: "textarea initial value" });
-      return {
-        raw: value,
-      };
+      return value;
     },
-    value: async ({
-      value,
-    }: ResolveArgs<TextareaField>): Promise<{
-      raw: string;
-      markdownAst: string;
-      html: string;
-    }> => {
-      assertIsString(value, { source: "textarea initial value" });
-      const contents = await toAst({
-        contents: value,
-      });
-      const html = await toHTML({
-        contents: value,
-      });
-      return {
-        raw: value,
-        markdownAst: contents,
-        html: html,
-      };
+    value: async ({ value }: ResolveArgs<TextareaField>): Promise<string> => {
+      assertIsString(value, { source: "textarea value" });
+      return value;
     },
     input: async ({
       field,
@@ -151,10 +75,8 @@ export const textarea = {
       { [key: string]: string } | false
     > => {
       try {
-        assertShape<{ raw: string }>(value, (yup) =>
-          yup.object({ raw: yup.string().required() })
-        );
-        return { [field.name]: value.raw };
+        assertIsString(value, { source: "textarea input" });
+        return { [field.name]: value };
       } catch (e) {
         return false;
       }
@@ -169,9 +91,6 @@ export type TextareaField = {
   default?: string;
   config?: {
     required?: boolean;
-    schema?: {
-      format: "markdown" | "html";
-    };
   };
   __namespace: string;
 };

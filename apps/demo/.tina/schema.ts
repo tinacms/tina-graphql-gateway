@@ -30,6 +30,11 @@ export default defineSchema({
               label: "Name",
             },
             {
+              name: "description",
+              type: "textarea",
+              label: "Description",
+            },
+            {
               name: "image",
               type: "text",
               label: "Image",

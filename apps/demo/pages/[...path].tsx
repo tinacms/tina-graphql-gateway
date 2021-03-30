@@ -31,6 +31,8 @@ const query = (gql) => gql`
         data {
           ... on Author_Doc_Data {
             name
+            description
+            _body
           }
         }
       }
@@ -71,7 +73,9 @@ const Home = (props: any) => {
         {isLoading ? (
           <span>Loading...</span>
         ) : (
-          <code>{JSON.stringify(payload.getDocument.data, null, 2)}</code>
+          <>
+            <code>{JSON.stringify(payload.getDocument.data, null, 2)}</code>
+          </>
         )}
       </pre>
     </div>
