@@ -94,17 +94,12 @@ type Author_Accolades_Data {
   description: String
 }
 
-type LongTextValue {
-  raw: String
-  markdownAst: JSONObject
-  html: String
-}
-
 type Author_Doc_Data {
   name: String
+  description: String
   image: String
   accolades: [Author_Accolades_Data]
-  _body: LongTextValue
+  _body: String
 }
 
 type Author_Accolades_Values {
@@ -112,19 +107,22 @@ type Author_Accolades_Values {
   description: String
 }
 
-type LongTextInitialValue {
-  raw: String
-}
-
 type Author_Doc_Values {
   name: String
+  description: String
   image: String
   accolades: [Author_Accolades_Values]
-  _body: LongTextInitialValue
+  _body: String
   _template: String
 }
 
 type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+type TextareaField implements FormField {
   name: String
   label: String
   component: String
@@ -139,13 +137,7 @@ type Author_Accolades_GroupListField implements FormField {
   fields: [Author_Accolades_FormFieldsUnion]
 }
 
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-union Author_Doc_FormFieldsUnion = TextField | Author_Accolades_GroupListField | TextareaField
+union Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField
 
 type Author_Doc_Form {
   label: String
@@ -158,15 +150,12 @@ input Author_Accolades_Input {
   description: String
 }
 
-input Body_LongTextInput {
-  raw: String
-}
-
 input Author_Doc_Input {
   name: String
+  description: String
   image: String
   accolades: [Author_Accolades_Input]
-  _body: Body_LongTextInput
+  _body: String
 }
 
 union Posts_Data = Post_Doc_Data
@@ -191,14 +180,14 @@ type Post_Doc_Data {
   title: String
   image: String
   author: Authors_Document
-  _body: LongTextValue
+  _body: String
 }
 
 type Post_Doc_Values {
   title: String
   image: String
   author: Reference
-  _body: LongTextInitialValue
+  _body: String
   _template: String
 }
 
@@ -221,7 +210,7 @@ input Post_Doc_Input {
   title: String
   image: String
   author: String
-  _body: Body_LongTextInput
+  _body: String
 }
 
   
