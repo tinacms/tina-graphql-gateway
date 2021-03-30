@@ -24,7 +24,7 @@ export const textarea = {
     __namespace: "",
   },
   build: {
-    field: async ({ field, accumulator }: BuildArgs<TinaTextareaField>) => {
+    field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
       accumulator.push(gql.FormFieldBuilder({ name: typename }));
       return gql.FieldDefinition({
         name: field.name,

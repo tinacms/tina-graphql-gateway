@@ -13,7 +13,7 @@ limitations under the License.
 
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { setupRunner } from "../test-util";
-import { TextareaField } from ".";
+import type { TextareaField } from ".";
 
 const field: TextareaField = {
   label: "My Title",
