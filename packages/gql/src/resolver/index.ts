@@ -12,17 +12,16 @@ limitations under the License.
 */
 
 import _ from "lodash";
-import { print, graphql } from "graphql";
+import { graphql } from "graphql";
 import path from "path";
 import { assertShape, sequential } from "../util";
-import { friendlyName, slugify } from "@forestryio/graphql-helpers";
+import { friendlyName } from "@forestryio/graphql-helpers";
 
 import { resolve } from "../fields/templates/resolver";
 
 import type { DataSource } from "../datasources/datasource";
 import type { GraphQLSchema, GraphQLResolveInfo, Source } from "graphql";
 import type { DirectorySection } from "../types";
-import type { Field } from "../fields";
 import type { sectionMap } from "../builder";
 
 export const graphqlInit = async (a: {
@@ -135,7 +134,7 @@ const schemaResolver = async (
 
       const section = await context.datasource.getSection(sectionSlug);
 
-      const key = slugify(Object.keys(params)[0]);
+      const key = Object.keys(params)[0];
       const values = Object.values(params)[0];
 
       const templates = await context.datasource.getTemplatesForSection(
@@ -213,7 +212,7 @@ const schemaResolver = async (
           })
       );
 
-      const key = slugify(Object.keys(args.params)[0]);
+      const key = Object.keys(args.params)[0];
       const values = Object.values(args.params)[0];
 
       const templates = await context.datasource.getTemplatesForSection(
