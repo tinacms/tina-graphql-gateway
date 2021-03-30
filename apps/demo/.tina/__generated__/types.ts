@@ -165,19 +165,13 @@ export type Author_Accolades_Data = {
   description?: Maybe<Scalars['String']>;
 };
 
-export type LongTextValue = {
-  __typename?: 'LongTextValue';
-  raw?: Maybe<Scalars['String']>;
-  markdownAst?: Maybe<Scalars['JSONObject']>;
-  html?: Maybe<Scalars['String']>;
-};
-
 export type Author_Doc_Data = {
   __typename?: 'Author_Doc_Data';
   name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Data>>>;
-  _body?: Maybe<LongTextValue>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Author_Accolades_Values = {
@@ -186,22 +180,25 @@ export type Author_Accolades_Values = {
   description?: Maybe<Scalars['String']>;
 };
 
-export type LongTextInitialValue = {
-  __typename?: 'LongTextInitialValue';
-  raw?: Maybe<Scalars['String']>;
-};
-
 export type Author_Doc_Values = {
   __typename?: 'Author_Doc_Values';
   name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Values>>>;
-  _body?: Maybe<LongTextInitialValue>;
+  _body?: Maybe<Scalars['String']>;
   _template?: Maybe<Scalars['String']>;
 };
 
 export type TextField = FormField & {
   __typename?: 'TextField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+};
+
+export type TextareaField = FormField & {
+  __typename?: 'TextareaField';
   name?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
@@ -217,14 +214,7 @@ export type Author_Accolades_GroupListField = FormField & {
   fields?: Maybe<Array<Maybe<Author_Accolades_FormFieldsUnion>>>;
 };
 
-export type TextareaField = FormField & {
-  __typename?: 'TextareaField';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
-};
-
-export type Author_Doc_FormFieldsUnion = TextField | Author_Accolades_GroupListField | TextareaField;
+export type Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField;
 
 export type Author_Doc_Form = {
   __typename?: 'Author_Doc_Form';
@@ -238,15 +228,12 @@ export type Author_Accolades_Input = {
   description?: Maybe<Scalars['String']>;
 };
 
-export type Body_LongTextInput = {
-  raw?: Maybe<Scalars['String']>;
-};
-
 export type Author_Doc_Input = {
   name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Input>>>;
-  _body?: Maybe<Body_LongTextInput>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Posts_Data = Post_Doc_Data;
@@ -273,7 +260,7 @@ export type Post_Doc_Data = {
   title?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   author?: Maybe<Authors_Document>;
-  _body?: Maybe<LongTextValue>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Post_Doc_Values = {
@@ -281,7 +268,7 @@ export type Post_Doc_Values = {
   title?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['Reference']>;
-  _body?: Maybe<LongTextInitialValue>;
+  _body?: Maybe<Scalars['String']>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -306,7 +293,7 @@ export type Post_Doc_Input = {
   title?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
-  _body?: Maybe<Body_LongTextInput>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 
