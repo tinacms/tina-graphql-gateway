@@ -1,5 +1,5 @@
 /**
-Copyright 2021 Forestry.io Inc
+Copyright 2021 Forestry.io Holdings, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -16,7 +16,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const LICENSE_HEADER: string[] = [
-  `Copyright 2021 Forestry.io Inc`,
+  `Copyright 2021 Forestry.io Holdings, Inc.`,
   `Licensed under the Apache License, Version 2.0 (the "License");`,
   `you may not use this file except in compliance with the License.`,
   `You may obtain a copy of the License at`,
