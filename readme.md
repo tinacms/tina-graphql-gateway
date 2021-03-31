@@ -32,51 +32,6 @@ See the [contributor docs](./CONTRIBUTING.md) for guidance on how to install and
 
 To use this with your local Tina repo look in the `demo/next.config.js` file, ensure the paths resolve to your local Tina install and you've built all the necessary Tina packages.
 
-### Using this repo with the Forestry.io app
-
-For demonstation purposes I've put the demos in the `apps` folder. But the Forestry app needs the `.forestry` files to be in the repo root so you can't hook this repo up to the app as it stands. We have another repo [here](https://github.com/forestryio/demo-tina-blocks-graphql) which utilizes the same `.forestry` config
-
-## Using these packages externally
-
-These packages are currently published to NPM under the `forestryio` scope so you'll need to be sure you have access.
-
-```
-//npm.pkg.github.com/:_authToken=<My-NPM-Auth-Access-Token-Here>
-@forestryio:registry=https://npm.pkg.github.com/
-always-auth=true
-registry=http://registry.npmjs.org/ # All other packages
-```
-
-### Yarn v2 repos ignore .npmrc
-
-If you're setting up a new repo with yarn v2, note that it [won't respect any settings](https://yarnpkg.com/advanced/migration/#dont-use-npmrc-files) in your `.npmrc` - instead you can configure your settings in the .yarnrc.yml` file.
-
-### Authentication
-
-The demo project uses the Tina Teams authentication wrapper. To allow logging-in, you will need to add the following to your **.env**
-
-```
-SITE_CLIENT_ID=YOUR-CLIENT-ID-GOES-HERE
-```
-
-The `SITE_CLIENT_ID` can be retrieved by creating a client within Hydra:
-
-Your request may look like:
-
-```
-POST http://localhost:4445/clients
-
-{
-  "client_name": "myapp5",
-  "redirect_uris": [
-    "http://localhost:3002/api/callback"
-  ],
-  "token_endpoint_auth_method": "none"
-}
-```
-
-This should give a response with a `client_id` property.
-
 ## Managing License Headers
 
 All _.js, _.ts, and \*.tsx files require a license header to be present.
