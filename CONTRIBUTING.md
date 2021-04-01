@@ -12,7 +12,7 @@ yarn install
 # build all the packages
 yarn run build
 # watch all packages
-yarn run watch # NOTE: this isn't running the apps/demo for me so I've been running it from the `apps/demo` repo directly in a separate tab
+yarn run watch
 # cd to apps/demo
 # start the local filesystem GraphQL server
 yarn dev
