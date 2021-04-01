@@ -60,7 +60,7 @@ This CLI performs a few functions:
 - Auditing your content's schema and checking for errors.
 - Running a GraphQL server using the built-in filesystem adapter.
 
-For full documentation of the CLI, see [here].(https://github.com/tinacms/tina-graphql-gateway/tree/client-documentation/packages/cli)
+For full documentation of the CLI, see [here].(https://github.com/tinacms/tina-graphql-gateway/tree/main/packages/cli)
 
 ## Implementation
 
@@ -80,53 +80,46 @@ title: This is my post
 
 ### Configuration
 
-Before we can define the schema of our content, we need set up some configuration. Create a `.tina` directory and then create the following files.
+Before we can define the schema of our content, we need set up some configuration. Create a `.tina/` directory in your repository root, and then create a `schema.ts` file inside of this directory.
 
-**.tina/settings.yml**
+**.tina/schema.ts**
 
-```yml
----
-new_page_extension: md
-auto_deploy: false
-admin_path:
-webhook_url:
-sections:
-  - type: directory
-    path: _posts # replace this with the relative path to your content section
-    label: Posts
-    create: documents
-    match: "**/*.md"
-    new_doc_ext: md
-    templates:
-      - post # replace this with your template filename name
-upload_dir: public/uploads
-public_path: "/uploads"
-front_matter_path: ""
-use_front_matter_path: false
-file_template: ":filename:"
-```
+```ts
+import { defineSchema } from "tina-graphql-gateway-cli";
 
-These files will create a map to our content to content models. In the above file, we declare that any markdown files in our project should be a "post" type (we'll define this post type next).
+export default defineSchema({
+  collections: [
+    {
+      /*
+      Each collection references a list of files 
+      matching the pattern in `path`. In this case, 
+      all files in the `_posts` directory will be 
+      included in this collection.
+      */
+      path: "_posts",
+      label: "Posts",
+      name: "posts",
 
-### Define Content Schema
-
-Templates define the shape of different content models.
-
-**.tina/front_matter/templates/post.yml**
-
-```yml
----
-label: Post
-hide_body: false
-display_field: title
-fields:
-  - name: title
-    type: text
-    config:
-      required: false
-    label: Title
-pages:
-  - _posts/welcome.md # This keeps reference to all the pages using this template
+      templates: [
+        {
+          /*
+          A collection will have one or more templates
+          that define the shape of its entities' data.
+          */
+          label: "Post",
+          name: "post",
+          fields: [
+            {
+              name: "title",
+              label: "Title",
+              type: "text",
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
 ```
 
 ### Sourcing your content
