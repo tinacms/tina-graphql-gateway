@@ -15,7 +15,7 @@ yarn run build
 yarn run watch # NOTE: this isn't running the apps/demo for me so I've been running it from the `apps/demo` repo directly in a separate tab
 # cd to apps/demo
 # start the local filesystem GraphQL server
-yarn forestry:start
+yarn dev
 ```
 
 That should allow you to see 2 things: The GraphiQL playground at `http:localhost:4001/graphql` and the NextJS demo app at `http:localhost:3000/home`. Tina form changes should result in `content/pages/home.md` being changed.
