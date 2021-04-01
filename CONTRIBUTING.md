@@ -11,7 +11,7 @@ yarn -v
 yarn install
 # build all the packages
 yarn run build
-# watch all packages, (including the NextJS demo app?)
+# watch all packages
 yarn run watch # NOTE: this isn't running the apps/demo for me so I've been running it from the `apps/demo` repo directly in a separate tab
 # cd to apps/demo
 # start the local filesystem GraphQL server
