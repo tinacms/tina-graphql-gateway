@@ -206,7 +206,7 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
               label: "Collection",
               description: "Select the collection.",
               options: await getSectionOptions(),
-              validate: async (value: any, allValues: any) => {
+              validate: async (value: any) => {
                 if (!value) {
                   return "Required";
                 }
@@ -248,16 +248,21 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
               component: "text",
               name: "relativePath",
               label: "Name",
-              description: `A unique name for the content. Example: "newPost" or "newPost.md"`,
+              description: `A unique name for the content. Example: "newPost" or "blog_022021`,
               placeholder: "newPost",
-              validate: (value) => {
+              validate: (value: any) => {
                 if (!value) {
                   return "Required";
                 }
 
-                /** name cannot have dashes */
-                if (value && value.includes("-")) {
-                  return "Please avoid using dashes (-)";
+                /**
+                 * Check for valid `name` based on
+                 * https://github.com/tinacms/tina-graphql-gateway/blob/682e2ed54c51520d1a87fac2887950839892f465/packages/cli/src/cmds/compile/index.ts#L296
+                 * */
+
+                const isValid = /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value);
+                if (value && !isValid) {
+                  return "Must begin with a-z, A-Z, or _ and contain only a-z, A-Z, 0-9, or _";
                 }
               },
             },
