@@ -341,7 +341,7 @@ const resolveDocument = async ({
   const relativePath = args.fullPath
     ? args.fullPath
         .replace(sectionData.path, "")
-        .replace(/^[^a-z\d]*|[^a-z\d]*$/gi, "")
+        .replace(/^[^_a-z\d]*|[^_a-z\d]*$/gi, "")
     : args.relativePath?.startsWith(sectionData.path)
     ? args.relativePath.replace(sectionData.path, "")
     : args.relativePath;
