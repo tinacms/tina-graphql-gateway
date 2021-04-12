@@ -158,6 +158,7 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           (gql) => gql`
             {
               getSections {
+                label
                 slug
               }
             }
@@ -167,7 +168,7 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
         const options = [{ value: "", label: "Choose Collection" }];
         res.getSections.forEach((section) => {
           const value = section.slug;
-          const label = `${section.slug}`;
+          const label = `${section.label}`;
           options.push({ value, label });
         });
         return options;
