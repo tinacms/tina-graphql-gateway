@@ -19,7 +19,6 @@ import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
-import * as yup from "yup";
 import gql from "graphql-tag";
 import { print } from "graphql";
 import type { DocumentNode as GqlDocumentNode } from "graphql";
@@ -159,20 +158,41 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           (gql) => gql`
             {
               getSections {
+                label
                 slug
-                templates
               }
             }
           `,
           { variables: {} }
         );
-        const options = [];
+        const options = [{ value: "", label: "Choose Collection" }];
         res.getSections.forEach((section) => {
-          section.templates.map((template) => {
-            const optionValue = `${section.slug}.${template}`;
-            const optionLabel = `Section: ${section.slug} - Template: ${template}`;
-            options.push({ value: optionValue, label: optionLabel });
-          });
+          const value = section.slug;
+          const label = `${section.label}`;
+          options.push({ value, label });
+        });
+        return options;
+      };
+
+      const getSectionTemplateOptions = async (section: String) => {
+        if (!section) {
+          return [];
+        }
+        const res = await cms.api.tina.request(
+          (gql) => gql`
+            query SectionQuery($section: String) {
+              getSection(section: $section) {
+                templates
+              }
+            }
+          `,
+          { variables: { section } }
+        );
+        const options = [{ value: "", label: "Choose Template" }];
+        res.getSection?.templates?.forEach((template) => {
+          const value = `${section}.${template}`;
+          const label = `${template}`;
+          options.push({ value, label });
         });
         return options;
       };
@@ -183,18 +203,69 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           fields: [
             {
               component: "select",
+              name: "section",
+              label: "Collection",
+              description: "Select the collection.",
+              options: await getSectionOptions(),
+              validate: async (value: any) => {
+                if (!value) {
+                  return "Required";
+                }
+              },
+            },
+            {
+              component: "select",
               name: "sectionTemplate",
               label: "Template",
-              description: "Select the section & template",
-              options: await getSectionOptions(),
+              description: "Select the template.",
+              options: [],
+              validate: async (
+                value: any,
+                allValues: any,
+                meta: any,
+                field: any
+              ) => {
+                const section = allValues?.section;
+                const previousSection = value ? value.split(".")[0] : undefined;
+
+                if (!section) {
+                  field.options = [];
+                  meta.change("");
+                  return "Required";
+                }
+
+                if (section !== previousSection) {
+                  field.options = await getSectionTemplateOptions(section);
+                  meta.change("");
+                  return "Required";
+                }
+
+                if (!value) {
+                  return "Required";
+                }
+              },
             },
             {
               component: "text",
               name: "relativePath",
-              label: "Relative Path",
-              description:
-                'The path relative to the given section. Example: "my-blog-post.md"',
-              placeholder: "...",
+              label: "Name",
+              description: `A unique name for the content. Example: "newPost" or "blog_022021`,
+              placeholder: "newPost",
+              validate: (value: any) => {
+                if (!value) {
+                  return "Required";
+                }
+
+                /**
+                 * Check for valid `name` based on
+                 * https://github.com/tinacms/tina-graphql-gateway/blob/682e2ed54c51520d1a87fac2887950839892f465/packages/cli/src/cmds/compile/index.ts#L296
+                 * */
+
+                const isValid = /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value);
+                if (value && !isValid) {
+                  return "Must begin with a-z, A-Z, or _ and contain only a-z, A-Z, 0-9, or _";
+                }
+              },
             },
           ],
           label: "Add Document",
