@@ -106,7 +106,8 @@ type GithubManagerInit = {
   ref: string;
 };
 
-export class GithubManager {
+import { DataAdaptor } from "./data-adaptor";
+export class GithubManager implements DataAdaptor {
   rootPath: string;
   repoConfig: Pick<GithubManagerInit, "owner" | "ref" | "repo">;
   appOctoKit: Octokit;
@@ -126,15 +127,17 @@ export class GithubManager {
     return this.appOctoKit.repos
       .getContent({
         ...this.repoConfig,
-        path: p.join(this.rootPath, path),
+        path,
       })
-      .then((response) => Buffer.from(response.data.content, "base64"));
+      .then((response) => {
+        return Buffer.from(response.data.content, "base64").toString();
+      });
   };
   readDir = async (path: string) => {
     return this.appOctoKit.repos
       .getContent({
         ...this.repoConfig,
-        path: p.join(this.rootPath, path),
+        path,
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
@@ -152,7 +155,7 @@ export class GithubManager {
     try {
       const fileContent = await this.appOctoKit.repos.getContent({
         ...this.repoConfig,
-        path: p.join(this.rootPath, path),
+        path,
       });
 
       fileSha = fileContent.data.sha;
@@ -163,7 +166,7 @@ export class GithubManager {
     await this.appOctoKit.repos.createOrUpdateFileContents({
       ...this.repoConfig,
       message: "Update from GraphQL client",
-      path: p.join(this.rootPath, path),
+      path,
       content: new Buffer(content).toString("base64"),
       sha: fileSha,
     });

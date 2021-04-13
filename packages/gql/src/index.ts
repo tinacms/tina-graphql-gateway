@@ -16,7 +16,7 @@ import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
 import { createDatasource } from "./datasources/data-manager";
-import { GithubManager, clearCache } from "./datasources/github-manager";
+import { GithubManager } from "./datasources/github-manager";
 import { FileSystemManager } from "./datasources/filesystem-manager";
 
 export const gql = async ({
@@ -28,8 +28,15 @@ export const gql = async ({
   query: string;
   variables: object;
 }) => {
+  const accessToken = "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";
   const datasource = createDatasource(
-    new FileSystemManager({ rootPath: projectRoot })
+    new GithubManager({
+      rootPath: "apps/demo",
+      accessToken,
+      owner: "tinacms",
+      repo: "tina-graphql-gateway",
+      ref: "main",
+    })
   );
   const cache = cacheInit(datasource);
 
@@ -60,7 +67,6 @@ export const buildSchema = async (projectRoot: string) => {
   return buildASTSchema(schema);
 };
 
-export { clearCache };
 export const githubRoute = async ({
   accessToken,
   owner,
