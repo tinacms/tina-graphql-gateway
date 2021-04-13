@@ -235,7 +235,7 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${IDENTITY_API_URL}/currentUser`;
+    const url = `${IDENTITY_API_URL}/realm/${this.realm}/${this.clientId}/currentUser`;
 
     try {
       const res = await fetch(url, {
