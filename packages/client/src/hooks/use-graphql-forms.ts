@@ -224,14 +224,14 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       cms,
       queryString,
       formify,
-      onSubmit: (values) => {
-        cms.api.tina.prepareVariables(values).then((variables) => {
+      onSubmit: async (values) => {
+        return cms.api.tina.prepareVariables(values).then(async (variables) => {
           onSubmit
-            ? onSubmit({
+            ? await onSubmit({
                 queryString: values.mutationString,
                 variables,
               })
-            : cms.api.tina
+            : await cms.api.tina
                 .request(values.mutationString, { variables })
                 .then((res) => {
                   if (res.errors) {
