@@ -11,20 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import fs from "fs-extra";
-import { DataAdaptor } from "./data-adaptor";
-export class FileSystemManager implements DataAdaptor {
-  rootPath: string;
-  constructor({ rootPath }: { rootPath: string }) {
-    this.rootPath = rootPath;
-  }
-  readFile = async (path: string) => {
-    return fs.readFileSync(path).toString();
-  };
-  readDir = async (path: string) => {
-    return fs.readdirSync(path);
-  };
-  writeFile = async (path: string, content: string) => {
-    return fs.outputFile(path, content);
-  };
+export interface DataAdaptor {
+  readFile: (path: string) => Promise<string>;
+  readDir: (path: string) => Promise<string[]>;
+  writeFile: (path: string, content: string) => Promise<void>;
 }
