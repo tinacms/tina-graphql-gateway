@@ -15,8 +15,9 @@ import { schemaBuilder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
-import { FileSystemManager } from "./datasources/filesystem-manager";
+import { createDatasource } from "./datasources/data-manager";
 import { GithubManager, clearCache } from "./datasources/github-manager";
+import { FileSystemManager } from "./datasources/filesystem-manager";
 
 export const gql = async ({
   projectRoot,
@@ -27,19 +28,9 @@ export const gql = async ({
   query: string;
   variables: object;
 }) => {
-  const accessToken = "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";
-  const gh = new GithubManager({
-    rootPath: "apps/demo",
-    accessToken,
-    owner: "tinacms",
-    repo: "tina-graphql-gateway",
-    ref: "main",
-  });
-  const datasource = new FileSystemManager("", {
-    readFile: gh.readFile,
-    readDir: gh.readDir,
-    writeFile: gh.writeFile,
-  });
+  const datasource = createDatasource(
+    new FileSystemManager({ rootPath: projectRoot })
+  );
   const cache = cacheInit(datasource);
 
   try {
@@ -60,7 +51,9 @@ export const gql = async ({
 };
 
 export const buildSchema = async (projectRoot: string) => {
-  const datasource = new FileSystemManager(projectRoot);
+  const datasource = createDatasource(
+    new FileSystemManager({ rootPath: projectRoot })
+  );
   const cache = cacheInit(datasource);
 
   const { schema } = await schemaBuilder({ cache });
@@ -85,13 +78,14 @@ export const githubRoute = async ({
   rootPath?: string;
   branch: string;
 }) => {
-  const datasource = new GithubManager({
+  const gh = new GithubManager({
     rootPath: rootPath || "",
     accessToken,
     owner,
     repo,
-    branch,
+    ref: branch,
   });
+  const datasource = createDatasource(gh);
   const cache = cacheInit(datasource);
   const { schema, sectionMap } = await schemaBuilder({ cache });
 
