@@ -46,8 +46,17 @@ export class FileSystemManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
   dirLoader: DataLoader<unknown, unknown, unknown>;
-  constructor(rootPath: string) {
+  writeFile: (path: string, content: string) => Promise<void>;
+  constructor(
+    rootPath: string,
+    options: {
+      writeFile: (path: string, content: string) => Promise<void>;
+      readFile: (path: string) => Promise<Buffer>;
+      readDir: (path: string) => Promise<string[]>;
+    }
+  ) {
     this.rootPath = rootPath;
+
     // This is not an application cache - in-memory batching is its purpose
     // read a good conversation on it here https://github.com/graphql/dataloader/issues/62
 
@@ -57,8 +66,11 @@ export class FileSystemManager implements DataSource {
      * it ourselves is when there's a cached value as part of the mutation process, which then
      * needs to return the new value
      */
-    this.loader = new DataLoader(batchReadFileFunction);
-    this.dirLoader = new DataLoader(batchReadDirFunction);
+    const readFileFunc = createReadFileFunc(options.readFile);
+    const readDirFunc = createReadDirFunc(options.readDir);
+    this.loader = new DataLoader(readFileFunc);
+    this.dirLoader = new DataLoader(readDirFunc);
+    this.writeFile = options.writeFile;
 
     // Pretty bad behavior from gray-matter, without clearing this we'd run the risk
     // of returning cached objects from different projects. This is undocumented behavior
@@ -298,10 +310,7 @@ export class FileSystemManager implements DataSource {
     this.loader.clear(fullTemplatePath);
 
     const documentString = "---\n" + jsyaml.dump({ _template: template });
-    await writeFile(fullFilePath, documentString);
-
-    // const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
-    // await writeFile(fullTemplatePath, templateString);
+    await this.writeFile(fullFilePath, documentString);
   };
   updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForSection(section);
@@ -315,24 +324,34 @@ export class FileSystemManager implements DataSource {
     const { _body, ...data } = params;
     const string = matter.stringify(`\n${_body || ""}`, data);
 
-    await fs.outputFile(fullPath, string);
+    await this.writeFile(fullPath, string);
   };
 }
 
-async function batchReadFileFunction(keys: readonly string[]) {
-  const results: { [key: string]: unknown } = {};
-  await Promise.all(
-    keys.map(async (key) => (results[key] = await internalReadFile(key)))
-  );
-  return keys.map((key) => results[key] || new Error(`No result for ${key}`));
-}
-async function batchReadDirFunction(keys: readonly string[]) {
-  const results: { [key: string]: unknown } = {};
-  await Promise.all(
-    keys.map(async (key) => (results[key] = await internalReadDir(key)))
-  );
-  return keys.map((key) => results[key] || new Error(`No result for ${key}`));
-}
+const createReadFileFunc = (readFileFunc) => {
+  return async function batchReadFileFunction(keys: readonly string[]) {
+    const results: { [key: string]: unknown } = {};
+    await Promise.all(
+      keys.map(
+        async (key) =>
+          (results[key] = await internalReadFile(key, readFileFunc))
+      )
+    );
+    return keys.map((key) => results[key] || new Error(`No result for ${key}`));
+  };
+};
+
+const createReadDirFunc = (readDirFunc) => {
+  return async function batchReadDirFunction(keys: readonly string[]) {
+    const results: { [key: string]: unknown } = {};
+    await Promise.all(
+      keys.map(
+        async (key) => (results[key] = await internalReadDir(key, readDirFunc))
+      )
+    );
+    return keys.map((key) => results[key] || new Error(`No result for ${key}`));
+  };
+};
 
 const readFile = async <T>(
   path: string,
@@ -340,22 +359,20 @@ const readFile = async <T>(
 ): Promise<T> => {
   return (await loader.load(path)) as T;
 };
-const internalReadFile = async <T>(path: string): Promise<T> => {
+const internalReadFile = async <T>(path: string, readFileFunc): Promise<T> => {
   const extension = p.extname(path);
 
   switch (extension) {
     case ".yml":
-      const ymlString = await fs.readFileSync(path);
+      const ymlString = await readFileFunc(path);
       return parseMatter(ymlString);
     case ".md":
-      const markdownString = await fs.readFileSync(path);
+      const markdownString = await readFileFunc(path);
       return parseMatter(markdownString);
     default:
       throw new Error(`Unable to parse file, unknown extension ${extension}`);
   }
 };
-
-const writeFile = fs.outputFile;
 
 const readDir = async (
   path: string,
@@ -363,8 +380,8 @@ const readDir = async (
 ): Promise<string[]> => {
   return (await loader.load(path)) as string[];
 };
-const internalReadDir = async (path: string) => {
-  return await fs.readdirSync(path);
+const internalReadDir = async (path: string, readDirFunc) => {
+  return await readDirFunc(path);
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
