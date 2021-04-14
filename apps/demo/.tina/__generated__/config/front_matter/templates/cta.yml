@@ -1,7 +1,0 @@
----
-name: cta
-label: cta
-fields:
-  - name: title
-    label: Title
-    type: text
