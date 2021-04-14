@@ -11,28 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { AppProps } from "next/app";
-import { withTina } from "tinacms";
-import { LocalClient } from "tina-graphql-gateway";
-import "graphiql/graphiql.css";
-import "codemirror/lib/codemirror.css";
-import "tailwindcss/tailwind.css";
-
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <div>
-      <Component {...pageProps} />
-    </div>
-  );
-}
-
-const client = new LocalClient();
-
-export default withTina(MyApp, {
-  apis: {
-    tina: client,
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
   },
-  sidebar: true,
-  enabled: true,
-});
+}

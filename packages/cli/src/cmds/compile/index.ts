@@ -22,7 +22,7 @@ import { successText, dangerText } from "../../utils/theme";
 
 const tinaPath = path.join(process.cwd(), ".tina");
 const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
-const tinaConfigPath = tinaTempPath.replace("temp", "config");
+const tinaConfigPath = path.join(process.cwd(), ".tina/__generated__/config");
 
 const transformField = async (
   tinaField: TinaField,
@@ -110,7 +110,7 @@ const transformField = async (
       config: {
         source: {
           type: "pages",
-          collection: field.collection,
+          section: field.collection,
         },
       },
     };
@@ -196,6 +196,7 @@ let compiledTemplates = [];
 
 export const compile = async () => {
   await fs.remove(tinaTempPath);
+  await fs.remove(tinaConfigPath);
   await transpile(tinaPath, tinaTempPath);
   Object.keys(require.cache).map((key) => {
     if (key.startsWith(tinaTempPath)) {
