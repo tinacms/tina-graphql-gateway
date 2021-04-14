@@ -19,7 +19,17 @@ interface CreateContentButtonOptions {
   onNewDocument: OnNewDocument;
 }
 
-type FormShape = { sectionTemplate: string; relativePath: string };
+type FormShape = {
+  section: string;
+  sectionTemplate: string;
+  relativePath: string;
+};
+
+type PayloadShape = {
+  section: string;
+  template: string;
+  relativePath: string;
+};
 
 export type OnNewDocument = (args: {
   section: { slug: string };
@@ -40,17 +50,34 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
     this.onNewDocument = options.onNewDocument;
   }
 
-  async onSubmit(form: FormShape, cms: TinaCMS) {
-    const sectionTemplateArray = form.sectionTemplate
-      ? form.sectionTemplate.split(".")
+  async onSubmit({ sectionTemplate, relativePath }: FormShape, cms: TinaCMS) {
+    /**
+     * Split sectionTemplate into `section` and `template`
+     */
+    const [section, template] = sectionTemplate
+      ? sectionTemplate.split(".")
       : this.fields
           .find((field) => field.name === "sectionTemplate")
           // @ts-ignore - FIXME: we need a way to supply an initial value https://github.com/tinacms/tinacms/issues/1715
           .options[0].value.split(".");
-    const payload = {
-      relativePath: form.relativePath,
-      section: sectionTemplateArray[0],
-      template: sectionTemplateArray[1],
+
+    /**
+     * Check for and ensure `.md` is appended to the end of `relativePath`
+     */
+    let relativePathWithExt = relativePath;
+    if (relativePath.slice(-3).toLocaleLowerCase() === ".md") {
+      relativePathWithExt = `${relativePath.slice(0, -3)}.md`;
+    } else {
+      relativePathWithExt = `${relativePath}.md`;
+    }
+
+    /**
+     * Rebuild `payload`
+     */
+    const payload: PayloadShape = {
+      relativePath: relativePathWithExt,
+      section,
+      template,
     };
 
     try {
