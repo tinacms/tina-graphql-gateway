@@ -94,7 +94,7 @@ export async function startServer(
     const s = require("./server");
     state.server = await s.default();
     state.server.listen(port, () => {
-      console.log(`Started on port: ${successText(port.toString())}`);
+      console.log(`Started Filesystem GraphQL server on port: ${port}`);
     });
     state.server.on("connection", (socket) => {
       state.sockets.push(socket);
