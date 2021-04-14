@@ -9,7 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: yarn install
+        # Before merging to main, re-run the install for security purposes
+        # https://yarnpkg.com/features/zero-installs/#does-it-have-security-implications
+        run: yarn install --check-cache
       - name: Build
         run: yarn ci:build
       - name: Test
