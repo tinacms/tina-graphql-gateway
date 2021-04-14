@@ -2,7 +2,7 @@ import _ from "lodash";
 import LRU from "lru-cache";
 
 const cache = new LRU<string, string | string[]>({
-  max: 50,
+  max: 1000,
   length: function (v: string, key) {
     return v.length;
   },
@@ -37,19 +37,23 @@ export const clearCache = ({
   }
 };
 
-export const get = async (
-  keyName: string,
-  setter: () => Promise<string | string[]>
-) => {
-  const value = cache.get(keyName);
+/**
+ * This is just an example of what you can provide for caching
+ * it should be replaced with a scalable solution which shares a cache
+ * across lambda instances (like redis)
+ */
+export const simpleCache = {
+  get: async (keyName: string, setter: () => Promise<any>) => {
+    const value = cache.get(keyName);
 
-  if (value) {
-    console.log("getting from cache", keyName);
-    return value;
-  } else {
-    console.log("item not in cache", keyName);
-    const valueToCache = await setter();
-    cache.set(keyName, valueToCache);
-    return valueToCache;
-  }
+    if (value) {
+      console.log("getting from cache", keyName);
+      return value;
+    } else {
+      const valueToCache = await setter();
+      const isSet = cache.set(keyName, valueToCache);
+      console.log("item not in cache, setting", keyName, isSet);
+      return valueToCache;
+    }
+  },
 };
