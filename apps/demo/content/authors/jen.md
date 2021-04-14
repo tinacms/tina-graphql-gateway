@@ -1,7 +1,7 @@
 ---
 name: Jen Rhines
-description: |-
-  This is a longer description
+isAuthor: true
+description: This is a longer description
 image: /uploads/jen-headshot.jpg
 accolades:
   - figure: 5x

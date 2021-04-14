@@ -96,6 +96,7 @@ type Author_Accolades_Data {
 
 type Author_Doc_Data {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Data]
@@ -109,6 +110,7 @@ type Author_Accolades_Values {
 
 type Author_Doc_Values {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Values]
@@ -117,6 +119,12 @@ type Author_Doc_Values {
 }
 
 type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+type BooleanField implements FormField {
   name: String
   label: String
   component: String
@@ -137,7 +145,7 @@ type Author_Accolades_GroupListField implements FormField {
   fields: [Author_Accolades_FormFieldsUnion]
 }
 
-union Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField
+union Author_Doc_FormFieldsUnion = TextField | BooleanField | TextareaField | Author_Accolades_GroupListField
 
 type Author_Doc_Form {
   label: String
@@ -152,6 +160,7 @@ input Author_Accolades_Input {
 
 input Author_Doc_Input {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Input]
