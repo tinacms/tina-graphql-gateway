@@ -39,15 +39,15 @@ import type { Cache } from "../cache";
  * printed and cached for use as well as a mapping object which adds some information to
  * query fields which will be passed through the resolver functions.
  *
- * For example, given a `Posts` section, it's possibe for the user to query
+ * For example, given a `Posts` collection, it's possibe for the user to query
  * `getPostsDocument` - however when we receive that query it's not clear to us
- * that the resolver should only resolve documents for the `Posts` section, the
+ * that the resolver should only resolve documents for the `Posts` collection, the
  * sectionMap helps with that:
  *
  * ```json
  *  {
  *    "getPostsDocument": {
- *      "section": {
+ *      "collection": {
  *        "slug": "posts"
  *        ...
  *      },
@@ -62,7 +62,7 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   const sectionMap: sectionMap = {};
   const mutationsArray: mutationsArray = [];
 
-  const sections = await cache.datasource.getSectionsSettings();
+  const sections = await cache.datasource.getCollectionsSettings();
 
   sections.forEach((section) => {
     buildSectionMap(section, mutationsArray, sectionMap);
@@ -174,7 +174,7 @@ const systemInfoDefinition = gql.ObjectTypeDefinition({
     gql.FieldDefinition({ name: "relativePath", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "extension", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "template", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "section", type: gql.TYPES.Section }),
+    gql.FieldDefinition({ name: "collection", type: gql.TYPES.Section }),
   ],
 });
 
@@ -260,7 +260,7 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
               type: gql.TYPES.String,
             }),
             gql.InputValueDefinition({
-              name: "section",
+              name: "collection",
               type: gql.TYPES.String,
             }),
             gql.InputValueDefinition({
@@ -324,7 +324,7 @@ const queryDefinition = (sectionMap: sectionMap) => {
         type: gql.TYPES.SectionDocumentUnion,
         args: [
           gql.InputValueDefinition({
-            name: "section",
+            name: "collection",
             type: gql.TYPES.String,
           }),
           gql.InputValueDefinition({
@@ -334,16 +334,16 @@ const queryDefinition = (sectionMap: sectionMap) => {
         ],
       }),
       gql.FieldDefinition({
-        name: "getSections",
+        name: "getCollections",
         type: gql.TYPES.Section,
         list: true,
       }),
       gql.FieldDefinition({
-        name: "getSection",
+        name: "getCollection",
         type: gql.TYPES.Section,
         args: [
           gql.InputValueDefinition({
-            name: "section",
+            name: "collection",
             type: gql.TYPES.String,
           }),
         ],

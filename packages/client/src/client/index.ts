@@ -108,13 +108,13 @@ export class Client {
   }
 
   addPendingContent = async (props) => {
-    const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $section: String!) {
-      addPendingDocument(relativePath: $relativePath, template: $template, section: $section) {
+    const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $collection: String!) {
+      addPendingDocument(relativePath: $relativePath, template: $template, collection: $collection) {
         sys {
           relativePath
           path
           breadcrumbs(excludeExtension: true)
-          section {
+          collection {
             slug
           }
         }
@@ -151,7 +151,7 @@ export class Client {
     values: object;
     sys: {
       template: string;
-      section: {
+      collection: {
         slug: string;
       };
     };

@@ -20,19 +20,19 @@ interface CreateContentButtonOptions {
 }
 
 type FormShape = {
-  section: string;
-  sectionTemplate: string;
+  collection: string;
+  collectionTemplate: string;
   relativePath: string;
 };
 
 type PayloadShape = {
-  section: string;
+  collection: string;
   template: string;
   relativePath: string;
 };
 
 export type OnNewDocument = (args: {
-  section: { slug: string };
+  collection: { slug: string };
   relativePath: string;
   breadcrumbs: string[];
   path: string;
@@ -50,14 +50,17 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
     this.onNewDocument = options.onNewDocument;
   }
 
-  async onSubmit({ sectionTemplate, relativePath }: FormShape, cms: TinaCMS) {
+  async onSubmit(
+    { collectionTemplate, relativePath }: FormShape,
+    cms: TinaCMS
+  ) {
     /**
-     * Split sectionTemplate into `section` and `template`
+     * Split collectionTemplate into `collection` and `template`
      */
-    const [section, template] = sectionTemplate
-      ? sectionTemplate.split(".")
+    const [collection, template] = collectionTemplate
+      ? collectionTemplate.split(".")
       : this.fields
-          .find((field) => field.name === "sectionTemplate")
+          .find((field) => field.name === "collectionTemplate")
           // @ts-ignore - FIXME: we need a way to supply an initial value https://github.com/tinacms/tinacms/issues/1715
           .options[0].value.split(".");
 
@@ -76,7 +79,7 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
      */
     const payload: PayloadShape = {
       relativePath: relativePathWithExt,
-      section,
+      collection,
       template,
     };
 
