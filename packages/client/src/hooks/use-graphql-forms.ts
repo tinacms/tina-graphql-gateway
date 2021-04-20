@@ -153,11 +153,11 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
 
   React.useEffect(() => {
     const run = async () => {
-      const getSectionOptions = async () => {
+      const getCollectionOptions = async () => {
         const res = await cms.api.tina.request(
           (gql) => gql`
             {
-              getSections {
+              getCollections {
                 label
                 slug
               }
@@ -166,31 +166,31 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           { variables: {} }
         );
         const options = [{ value: "", label: "Choose Collection" }];
-        res.getSections.forEach((section) => {
-          const value = section.slug;
-          const label = `${section.label}`;
+        res.getCollections.forEach((collection) => {
+          const value = collection.slug;
+          const label = `${collection.label}`;
           options.push({ value, label });
         });
         return options;
       };
 
-      const getSectionTemplateOptions = async (section: String) => {
-        if (!section) {
+      const getCollectionTemplateOptions = async (collection: String) => {
+        if (!collection) {
           return [];
         }
         const res = await cms.api.tina.request(
           (gql) => gql`
-            query SectionQuery($section: String) {
-              getSection(section: $section) {
+            query CollectionQuery($collection: String) {
+              getCollection(collection: $collection) {
                 templates
               }
             }
           `,
-          { variables: { section } }
+          { variables: { collection } }
         );
         const options = [{ value: "", label: "Choose Template" }];
-        res.getSection?.templates?.forEach((template) => {
-          const value = `${section}.${template}`;
+        res.getCollection?.templates?.forEach((template) => {
+          const value = `${collection}.${template}`;
           const label = `${template}`;
           options.push({ value, label });
         });
@@ -203,10 +203,10 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           fields: [
             {
               component: "select",
-              name: "section",
+              name: "collection",
               label: "Collection",
               description: "Select the collection.",
-              options: await getSectionOptions(),
+              options: await getCollectionOptions(),
               validate: async (value: any) => {
                 if (!value) {
                   return "Required";
@@ -215,7 +215,7 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
             },
             {
               component: "select",
-              name: "sectionTemplate",
+              name: "collectionTemplate",
               label: "Template",
               description: "Select the template.",
               options: [],
@@ -225,17 +225,21 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
                 meta: any,
                 field: any
               ) => {
-                const section = allValues?.section;
-                const previousSection = value ? value.split(".")[0] : undefined;
+                const collection = allValues?.collection;
+                const previousCollection = value
+                  ? value.split(".")[0]
+                  : undefined;
 
-                if (!section) {
+                if (!collection) {
                   field.options = [];
                   meta.change("");
                   return "Required";
                 }
 
-                if (section !== previousSection) {
-                  field.options = await getSectionTemplateOptions(section);
+                if (collection !== previousCollection) {
+                  field.options = await getCollectionTemplateOptions(
+                    collection
+                  );
                   meta.change("");
                   return "Required";
                 }

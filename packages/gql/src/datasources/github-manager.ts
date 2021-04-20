@@ -216,8 +216,8 @@ export class GithubManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (sectionSlug: string) => {
-    const templates = await this.getTemplatesForSection(sectionSlug);
+  getDocumentsForCollection = async (sectionSlug: string) => {
+    const templates = await this.getTemplatesForCollection(sectionSlug);
     const pages = templates.map((template) => template.pages || []);
     return _.flatten(pages);
   };
@@ -243,8 +243,8 @@ export class GithubManager implements DataSource {
 
     return data;
   };
-  getSettingsForSection = async (section?: string) => {
-    const sectionsSettings = await this.getSectionsSettings();
+  getSettingsForCollection = async (section?: string) => {
+    const sectionsSettings = await this.getCollectionsSettings();
     if (!section) {
       throw new Error(`No directory sections found`);
     }
@@ -256,7 +256,7 @@ export class GithubManager implements DataSource {
 
     return result;
   };
-  getSection = async (slug: string) => {
+  getCollection = async (slug: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -275,7 +275,7 @@ export class GithubManager implements DataSource {
     }
     return section;
   };
-  getSectionByPath = async (path: string) => {
+  getCollectionByPath = async (path: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -295,7 +295,7 @@ export class GithubManager implements DataSource {
     }
     return section;
   };
-  getSectionsSettings = async () => {
+  getCollectionsSettings = async () => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -309,7 +309,7 @@ export class GithubManager implements DataSource {
 
     return sections as DirectorySection[];
   };
-  getTemplatesForSection = async (section?: string) => {
+  getTemplatesForCollection = async (section?: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections.map((section) => {
@@ -343,20 +343,20 @@ export class GithubManager implements DataSource {
     const extension = p.extname(fullPath);
     return { basename, filename: basename.replace(extension, ""), extension };
   };
-  getData = async ({ relativePath, section }: DocumentArgs) => {
-    const sectionData = await this.getSettingsForSection(section);
+  getData = async ({ relativePath, collection }: DocumentArgs) => {
+    const sectionData = await this.getSettingsForCollection(collection);
 
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No collection found for ${collection}`);
     }
 
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
     return await this.readFile<TinaDocument>(fullPath, this.loader);
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
-    const sectionData = await this.getSettingsForSection(args.section);
+    const sectionData = await this.getSettingsForCollection(args.collection);
     if (!sectionData) {
-      throw new Error(`No section found for ${args.section}`);
+      throw new Error(`No collection found for ${args.collection}`);
     }
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await this.readDir(fullPath, this.dirLoader);
@@ -418,14 +418,14 @@ export class GithubManager implements DataSource {
     );
     return data;
   };
-  addDocument = async ({ relativePath, section, template }: AddArgs) => {
+  addDocument = async ({ relativePath, collection, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
-    const sectionData = await this.getSettingsForSection(section);
+    const sectionData = await this.getSettingsForCollection(collection);
     const templateData = await this.getTemplateWithoutName(template, {
       namespace: false,
     });
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No collection found for ${collection}`);
     }
     const path = p.join(sectionData.path, relativePath);
     const updatedTemplateData = {
@@ -456,10 +456,10 @@ export class GithubManager implements DataSource {
     const templateString = "---\n" + jsyaml.dump(updatedTemplateData);
     await this.writeFile(fullTemplatePath, templateString);
   };
-  updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
-    const sectionData = await this.getSettingsForSection(section);
+  updateDocument = async ({ relativePath, collection, params }: UpdateArgs) => {
+    const sectionData = await this.getSettingsForCollection(collection);
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No section found for ${collection}`);
     }
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
     // FIXME: provide a test-case for this, might not be necessary
