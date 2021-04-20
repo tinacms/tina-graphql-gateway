@@ -53,7 +53,7 @@ export const select = {
         case "pages":
           select = field as SectionSelect;
 
-          const section = await cache.datasource.getSettingsForSection(
+          const section = await cache.datasource.getSettingsForCollection(
             select.config.source.section
           );
           const name = friendlyName(section.slug);
@@ -97,7 +97,7 @@ export const select = {
             ...f,
             options: [
               "",
-              ...(await datasource.getDocumentsForSection(
+              ...(await datasource.getDocumentsForCollection(
                 select.config.source.section
               )),
             ],
@@ -121,7 +121,7 @@ export const select = {
           return {
             _resolver: "_resource",
             _resolver_kind: "_nested_source",
-            _args: { fullPath: value, section: field.config.source.section },
+            _args: { fullPath: value, collection: field.config.source.section },
           };
         case "simple":
           return value;

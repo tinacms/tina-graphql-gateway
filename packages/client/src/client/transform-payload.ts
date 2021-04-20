@@ -33,7 +33,7 @@ export const transformPayload = ({
   schema: GraphQLSchema;
   sys: {
     template: string;
-    section: {
+    collection: {
       slug: string;
     };
   };
@@ -70,7 +70,7 @@ export const transformPayload = ({
       // and template as the 2 highest keys in the payload
       if (inputType.name === "SectionParams") {
         const section = Object.values(inputType.getFields()).find((field) => {
-          return field.name === sys.section.slug;
+          return field.name === sys.collection.slug;
         });
         if (section.type instanceof GraphQLInputObjectType) {
           const template = Object.values(section.type.getFields()).find(
@@ -93,7 +93,7 @@ export const transformPayload = ({
             return payload;
           } else {
             throw new Error(
-              `Unable to find matching template for ${sys.template} in section ${sys.section.slug}`
+              `Unable to find matching template for ${sys.template} in collection ${sys.collection.slug}`
             );
           }
         }
