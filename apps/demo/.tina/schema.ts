@@ -30,6 +30,11 @@ export default defineSchema({
               label: "Name",
             },
             {
+              name: "isAuthor",
+              type: "toggle",
+              label: "is Author",
+            },
+            {
               name: "description",
               type: "textarea",
               label: "Description",
