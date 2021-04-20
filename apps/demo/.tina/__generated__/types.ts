@@ -41,7 +41,7 @@ export type SystemInfo = {
   relativePath?: Maybe<Scalars['String']>;
   extension?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
-  section?: Maybe<Section>;
+  collection?: Maybe<Section>;
 };
 
 
@@ -80,7 +80,7 @@ export type Mutation = {
 
 export type MutationAddPendingDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
 };
 
@@ -106,8 +106,8 @@ export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
   getDocument?: Maybe<SectionDocumentUnion>;
-  getSections?: Maybe<Array<Maybe<Section>>>;
-  getSection?: Maybe<Section>;
+  getCollections?: Maybe<Array<Maybe<Section>>>;
+  getCollection?: Maybe<Section>;
   getAuthorsDocument?: Maybe<Authors_Document>;
   getAuthorsList?: Maybe<Array<Maybe<Authors_Document>>>;
   getPostsDocument?: Maybe<Posts_Document>;
@@ -121,13 +121,13 @@ export type QueryNodeArgs = {
 
 
 export type QueryGetDocumentArgs = {
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   relativePath?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryGetSectionArgs = {
-  section?: Maybe<Scalars['String']>;
+export type QueryGetCollectionArgs = {
+  collection?: Maybe<Scalars['String']>;
 };
 
 

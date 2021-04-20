@@ -50,12 +50,12 @@ type GraphiQLEvent =
   | { type: "EDIT_RESULT"; value: object }
   | {
       type: "CHANGE_RELATIVE_PATH";
-      value: { variables: { relativePath: string }; section: string };
+      value: { variables: { relativePath: string }; collection: string };
     }
   | { type: "EDIT_VARIABLES"; value: object }
   | { type: "SETUP_MUTATION"; value: object }
   | {
-      type: "CHANGE_SECTION";
+      type: "CHANGE_COLLECTION";
       value: string;
     };
 
@@ -65,7 +65,7 @@ interface GraphiQLContext {
   schema: null | GraphQLSchema;
   result: object;
   queryString: string;
-  section: string;
+  collection: string;
   relativePath: string;
 }
 type GraphiQLState = { value: "project"; context: GraphiQLContext };
@@ -114,7 +114,7 @@ export const graphiqlMachine = createMachine<
               const variables = {
                 // @ts-ignore
                 relativePath: context.variables.relativePath,
-                section: context.section,
+                collection: context.collection,
               };
               const query = queryGenerator(variables, context.schema);
               return {
@@ -193,7 +193,7 @@ export const graphiqlMachine = createMachine<
               target: "initializing",
               actions: assign({
                 variables: (context, event) => event.value.variables,
-                section: (context, event) => event.value.section,
+                collection: (context, event) => event.value.collection,
               }),
             },
             EDIT_VARIABLES: {
@@ -211,17 +211,17 @@ export const graphiqlMachine = createMachine<
 
 const defaultQuery = `
 query {
-  getSections {
+  getCollections {
     slug
   }
 }
 `;
 
 export const Explorer = ({
-  section,
+  collection,
   relativePath,
 }: {
-  section: string;
+  collection: string;
   relativePath: string;
 }) => {
   const cms = useCMS();
@@ -236,7 +236,7 @@ export const Explorer = ({
         variables: {
           relativePath,
         },
-        section,
+        collection,
         schema: null,
       },
     }
@@ -257,7 +257,7 @@ export const Explorer = ({
   React.useEffect(() => {
     send({
       type: "CHANGE_RELATIVE_PATH",
-      value: { variables: { relativePath }, section },
+      value: { variables: { relativePath }, collection },
     });
   }, [relativePath]);
 
