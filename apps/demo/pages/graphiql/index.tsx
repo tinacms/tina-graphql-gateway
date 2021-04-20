@@ -19,8 +19,8 @@ const client = new LocalClient();
 export const getServerSideProps = async () => {
   const result = await client.request(
     (gql) => gql`
-      query SectionsQuery {
-        getSections {
+      query CollectionsQuery {
+        getCollections {
           slug
           path
           documents {
@@ -37,7 +37,9 @@ export const getServerSideProps = async () => {
 };
 
 const Home = (props: any) => {
-  return <Explorer section={props.getSections[0].slug} relativePath={""} />;
+  return (
+    <Explorer collection={props.getCollections[0].slug} relativePath={""} />
+  );
 };
 
 export default Home;
