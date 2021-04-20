@@ -27,15 +27,15 @@ export const boolean = {
       });
     },
     initialValue: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.Boolean });
     },
     value: ({ field }: BuildArgs<BooleanField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.Boolean });
     },
     input: ({ field }: BuildArgs<BooleanField>) => {
       return gql.InputValueDefinition({
         name: field.name,
-        type: gql.TYPES.String,
+        type: gql.TYPES.Boolean,
       });
     },
   },
@@ -56,12 +56,12 @@ export const boolean = {
     },
     initialValue: async ({
       value,
-    }: ResolveArgs<BooleanField>): Promise<string> => {
-      assertIsString(value, { source: "boolean initial value" });
+    }: ResolveArgs<BooleanField>): Promise<boolean> => {
+      assertIsBoolean(value, { source: "boolean initial value" });
       return value;
     },
-    value: async ({ value }: ResolveArgs<BooleanField>): Promise<string> => {
-      assertIsString(value, { source: "boolean value" });
+    value: async ({ value }: ResolveArgs<BooleanField>): Promise<boolean> => {
+      assertIsBoolean(value, { source: "boolean value" });
       return value;
     },
     input: async ({

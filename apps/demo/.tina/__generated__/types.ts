@@ -168,6 +168,7 @@ export type Author_Accolades_Data = {
 export type Author_Doc_Data = {
   __typename?: 'Author_Doc_Data';
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Data>>>;
@@ -183,6 +184,7 @@ export type Author_Accolades_Values = {
 export type Author_Doc_Values = {
   __typename?: 'Author_Doc_Values';
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Values>>>;
@@ -192,6 +194,13 @@ export type Author_Doc_Values = {
 
 export type TextField = FormField & {
   __typename?: 'TextField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+};
+
+export type BooleanField = FormField & {
+  __typename?: 'BooleanField';
   name?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
@@ -214,7 +223,7 @@ export type Author_Accolades_GroupListField = FormField & {
   fields?: Maybe<Array<Maybe<Author_Accolades_FormFieldsUnion>>>;
 };
 
-export type Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField;
+export type Author_Doc_FormFieldsUnion = TextField | BooleanField | TextareaField | Author_Accolades_GroupListField;
 
 export type Author_Doc_Form = {
   __typename?: 'Author_Doc_Form';
@@ -230,6 +239,7 @@ export type Author_Accolades_Input = {
 
 export type Author_Doc_Input = {
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Input>>>;
