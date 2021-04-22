@@ -20,7 +20,6 @@ import {
 } from "xstate";
 import { splitQuery } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
-import { print } from "graphql";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
@@ -231,6 +230,10 @@ const buildParseFunction = ({
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
       });
+      // Setting back to empty string should not trigger a fetch
+      if (!value) {
+        return;
+      }
       context.client
         .request(
           `${frags.join("\n")}
