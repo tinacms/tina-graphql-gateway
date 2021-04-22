@@ -26,6 +26,7 @@ import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
 import { fixMutators } from "./temporary-fix-mutators";
 import { formifyCallback } from "./use-form";
+import { CMS } from "@tinacms/core";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
@@ -231,6 +232,10 @@ const buildParseFunction = ({
           context.fragments.find((fr) => fr.name === fragment).fragment
         );
       });
+      // Setting back to empty string should not trigger a fetch
+      if (!value) {
+        return;
+      }
       context.client
         .request(
           `${frags.join("\n")}
