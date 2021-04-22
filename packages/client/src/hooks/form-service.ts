@@ -20,13 +20,11 @@ import {
 } from "xstate";
 import { splitQuery } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
-import { print } from "graphql";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-form";
 import { fixMutators } from "./temporary-fix-mutators";
 import { formifyCallback } from "./use-form";
-import { CMS } from "@tinacms/core";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;
