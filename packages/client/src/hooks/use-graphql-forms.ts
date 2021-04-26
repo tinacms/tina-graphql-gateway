@@ -148,7 +148,17 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
   },
 });
 
-export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
+export type FilterCollections = (
+  options: {
+    label: string;
+    value: string;
+  }[]
+) => { label: string; value: string }[];
+
+export const useDocumentCreatorPlugin = (
+  onNewDocument?: OnNewDocument,
+  filterCollections?: FilterCollections
+) => {
   const cms = useCMS();
 
   React.useEffect(() => {
@@ -165,13 +175,20 @@ export const useDocumentCreatorPlugin = (onNewDocument?: OnNewDocument) => {
           `,
           { variables: {} }
         );
-        const options = [{ value: "", label: "Choose Collection" }];
+        const emptyOption = { value: "", label: "Choose Collection" };
+        const options: { label: string; value: string }[] = [];
         res.getCollections.forEach((collection) => {
           const value = collection.slug;
           const label = `${collection.label}`;
           options.push({ value, label });
         });
-        return options;
+
+        if (filterCollections && typeof filterCollections === "function") {
+          const filtered = filterCollections(options);
+          return [emptyOption, ...filtered];
+        }
+
+        return [emptyOption, ...options];
       };
 
       const getCollectionTemplateOptions = async (collection: String) => {
