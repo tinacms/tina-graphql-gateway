@@ -29,7 +29,7 @@ import gql from "graphql-tag";
 import { transformPayload } from "./transform-payload";
 
 interface ServerOptions {
-  realm: string;
+  organizationId: string;
   clientId: string;
   branch: string;
   customContentApiUrl?: string;
@@ -45,7 +45,7 @@ const CONTENT_API_URL =
 
 export class Client {
   contentApiUrl: string;
-  realm: string;
+  organizationId: string;
   schema: GraphQLSchema;
   clientId: string;
   query: string;
@@ -57,10 +57,10 @@ export class Client {
     const _this = this;
     (this.contentApiUrl =
       options.customContentApiUrl ||
-      `${CONTENT_API_URL}/content/${options.realm}/${options.clientId}/github/${options.branch}`),
-      // `https://content.tinajs.dev/content/${options.realm}/${options.clientId}/github/${options.branch}`),
+      `${CONTENT_API_URL}/content/${options.organizationId}/${options.clientId}/github/${options.branch}`),
+      // `https://content.tinajs.dev/content/${options.organizationId}/${options.clientId}/github/${options.branch}`),
       (this.clientId = options.clientId);
-    this.realm = options.realm;
+    this.organizationId = options.organizationId;
 
     switch (tokenStorage) {
       case "LOCAL_STORAGE":
@@ -229,13 +229,13 @@ export class Client {
   }
 
   async authenticate() {
-    const token = await authenticate(this.clientId, this.realm);
+    const token = await authenticate(this.clientId, this.organizationId);
     this.setToken(token);
     return token;
   }
 
   async getUser() {
-    const url = `${IDENTITY_API_URL}/realm/${this.realm}/${this.clientId}/currentUser`;
+    const url = `${IDENTITY_API_URL}/organizationId/${this.organizationId}/${this.clientId}/currentUser`;
 
     try {
       const res = await fetch(url, {
@@ -266,7 +266,7 @@ export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL =
 export class LocalClient extends Client {
   constructor(props?: { customContentApiUrl?: string }) {
     const clientProps = {
-      realm: "",
+      organizationId: "",
       clientId: "",
       branch: "",
       customContentApiUrl:
