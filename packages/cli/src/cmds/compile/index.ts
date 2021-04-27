@@ -145,7 +145,7 @@ const buildTemplate = async (
   const outputYmlPath = path.resolve(
     path.join(
       tinaTempPath.replace("temp", "config").replace(".js", ""),
-      `front_matter/templates/${definition.name}.yml`
+      path.join("front_matter/templates", `${definition.name}.yml`)
     )
   );
   const output: { pages?: string[] } & typeof definition = { ...definition };
@@ -209,7 +209,7 @@ export const compile = async () => {
       delete require.cache[require.resolve(key)];
     }
   });
-  const schemaFunc = require(`${tinaTempPath}/schema.js`);
+  const schemaFunc = require(path.join(tinaTempPath, "schema.js"));
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
   await compileInner(schemaObject);
   compiledTemplates = [];
@@ -254,8 +254,8 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 const transpile = async (projectDir, tempDir) => {
   return Promise.all(
     glob
-      .sync(`${projectDir}/**/*.ts`, {
-        ignore: [`${projectDir}/__generated__/**/*.ts`],
+      .sync(path.join(projectDir, "/**/*.ts"), {
+        ignore: [path.join(projectDir, "__generated__/**/*.ts")],
       })
       .map(async function (file) {
         const fullPath = path.resolve(file);
