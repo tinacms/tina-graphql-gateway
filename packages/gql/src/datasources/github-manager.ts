@@ -217,9 +217,12 @@ export class GithubManager implements DataSource {
   }
 
   getDocumentsForCollection = async (sectionSlug: string) => {
-    const templates = await this.getTemplatesForCollection(sectionSlug);
-    const pages = templates.map((template) => template.pages || []);
-    return _.flatten(pages);
+    const section = await this.getCollection(sectionSlug);
+    const fullPath = p.join(this.rootPath, section.path);
+
+    // FIXME: replace with fast-glob
+    const documents = await this.readDir(fullPath, this.dirLoader);
+    return documents.map((relativePath) => p.join(section.path, relativePath));
   };
   getAllTemplates = async () => {
     const fullPath = p.join(this.rootPath, tinaPath, `front_matter/templates`);
