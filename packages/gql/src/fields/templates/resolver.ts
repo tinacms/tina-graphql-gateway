@@ -31,8 +31,7 @@ import { tag_list } from "../tag-list";
 
 import type { DataSource } from "../../datasources/datasource";
 import type { Field } from "../../fields";
-import type { TemplateData, DirectorySection } from "../../types";
-import { string } from "yup";
+import type { TemplateData } from "../../types";
 
 export const resolve = {
   data: async ({ datasource, template, data, content }: any) => {

@@ -1737,6 +1737,7 @@ __metadata:
     body-parser: ^1.19.0
     cors: ^2.8.5
     dataloader: ^2.0.0
+    date-fns: ^2.21.1
     express: ^4.17.1
     fast-glob: ^3.2.5
     fs-extra: ^9.0.1
@@ -8120,6 +8121,13 @@ __metadata:
   version: 2.18.0
   resolution: "date-fns@npm:2.18.0"
   checksum: 58320ad5122bb2ae2f5aa23e2c432529d3390222bbec49339f8c360c2c07e5db8c26b40fe2cb2c947b4507732b9e1f9c195ec39572e14014291788ca07a5de6f
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.21.1":
+  version: 2.21.1
+  resolution: "date-fns@npm:2.21.1"
+  checksum: 00a2ddea1047c4ce6eaadda76a0ee0782d1cfe65061641bbff94f7a70d2d6ab12dac89e027b39d49710bdb2cf264bc1a4e096b0324c7de79699296a4c19f4a40
   languageName: node
   linkType: hard
 
