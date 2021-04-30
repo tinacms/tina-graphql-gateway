@@ -22,9 +22,9 @@ import { splitQuery } from "@forestryio/graphql-helpers";
 import { Form, TinaCMS } from "tinacms";
 
 import type { Client } from "../client";
-import type { DocumentNode } from "./use-form";
+import type { DocumentNode } from "./use-graphql-forms";
 import { fixMutators } from "./temporary-fix-mutators";
-import { formifyCallback } from "./use-form";
+import { formifyCallback } from "./use-graphql-forms";
 
 export const createFormMachine = (initialContext: {
   queryFieldName: string;

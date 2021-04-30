@@ -12,15 +12,33 @@ limitations under the License.
 */
 
 import { gql } from "../../gql";
+import isValid from "date-fns/isValid";
+import parseISO from "date-fns/parseISO";
+import format from "date-fns/format";
 
 import { BuildArgs, ResolveArgs, assertIsString } from "../";
 
 const typename = "DatetimeField";
+const DEFAULT_DATE_FORMAT = "MMM dd, yyyy";
 
 export const datetime = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<DatetimeField>) => {
-      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      accumulator.push(
+        gql.FormFieldBuilder({
+          name: typename,
+          additionalFields: [
+            gql.FieldDefinition({
+              name: "dateFormat",
+              type: gql.TYPES.String,
+            }),
+            gql.FieldDefinition({
+              name: "timeFormat",
+              type: gql.TYPES.String,
+            }),
+          ],
+        })
+      );
 
       return gql.FieldDefinition({
         name: field.name,
@@ -73,7 +91,47 @@ export const datetime = {
     > => {
       try {
         assertIsString(value, { source: "datetime" });
-        return { [field.name]: value };
+
+        /**
+         * Convert string to `new Date()`
+         */
+        const date = parseISO(value);
+        if (!isValid(date)) {
+          throw "Invalid Date";
+        }
+
+        /**
+         * Remove any local timezone offset (putting the date back in UTC)
+         * https://stackoverflow.com/questions/48172772/time-zone-issue-involving-date-fns-format
+         */
+        const dateUTC = new Date(
+          date.valueOf() + date.getTimezoneOffset() * 60 * 1000
+        );
+
+        /**
+         * Determine dateFormat
+         * This involves fixing inconsistencies between `moment.js` (that Tina uses to format dates)
+         * and `date-fns` (that Gateway uses to format dates).
+         * They are explained here:
+         * https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+         */
+        const dateFormat = field.dateFormat || DEFAULT_DATE_FORMAT;
+        const fixedDateFormat = dateFormat
+          .replace(/D/g, "d")
+          .replace(/Y/g, "y");
+
+        /**
+         * Determine timeFormat, if any
+         */
+        const timeFormat = field.timeFormat || false;
+
+        /**
+         * Format `date` and `time` parts
+         */
+        const datePart = format(dateUTC, fixedDateFormat);
+        const timePart = timeFormat ? ` ${format(dateUTC, timeFormat)}` : "";
+
+        return { [field.name]: `${datePart}${timePart}` };
       } catch (e) {
         return false;
       }
@@ -86,6 +144,8 @@ export type DatetimeField = {
   name: string;
   type: "datetime";
   default?: string;
+  dateFormat?: string;
+  timeFormat?: string;
   config?: {
     required?: boolean;
   };
@@ -97,6 +157,8 @@ export type TinaDatetimeField = {
   name: string;
   component: "date";
   default?: string;
+  dateFormat?: string;
+  timeFormat?: string;
   config?: {
     required?: boolean;
   };

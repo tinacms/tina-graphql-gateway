@@ -184,6 +184,7 @@ const buildTemplate = async (
 };
 let types = [
   "text",
+  "datetime",
   "number",
   "textarea",
   "tags",
@@ -388,6 +389,15 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .required(),
   });
 
+  const DateTimeSchema = baseSchema.label("datetime").shape({
+    type: yup
+      .string()
+      .matches(/^datetime$/)
+      .required(),
+    dateFormat: yup.string(),
+    timeFormat: yup.string(),
+  });
+
   const ToggleSchema = baseSchema.label("toggle").shape({
     type: yup
       .string()
@@ -501,6 +511,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
   });
   let schemaMap = {
     text: TextSchema,
+    datetime: DateTimeSchema,
     textarea: TextAreaSchema,
     select: SelectSchema,
     list: ListSchema,
@@ -512,6 +523,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
   };
   var FieldSchemas = [
     TextSchema,
+    DateTimeSchema,
     TextAreaSchema,
     SelectSchema,
     ListSchema,
@@ -602,6 +614,7 @@ export interface TinaCloudTemplate {
 
 export type TinaField =
   | TextField
+  | DateTimeField
   | NumberField
   | TextareaField
   | SelectField
@@ -622,6 +635,12 @@ interface TinaBaseField {
 
 interface TextField extends TinaBaseField {
   type: "text";
+}
+
+interface DateTimeField extends TinaBaseField {
+  type: "datetime";
+  dateFormat?: string;
+  timeFormat?: string;
 }
 
 interface NumberField extends TinaBaseField {
