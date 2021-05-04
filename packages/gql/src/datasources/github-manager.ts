@@ -505,6 +505,7 @@ export class GithubManager implements DataSource {
 
     const response = await this.appOctoKit.repos.createOrUpdateFileContents({
       ...this.repoConfig,
+      branch: this.repoConfig.ref,
       path: path,
       message: "Update from GraphQL client",
       content: new Buffer(content).toString("base64"),
