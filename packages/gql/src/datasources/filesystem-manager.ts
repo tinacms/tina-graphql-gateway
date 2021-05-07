@@ -351,7 +351,9 @@ const internalReadFile = async <T>(path: string): Promise<T> => {
       const markdownString = await fs.readFileSync(path);
       return parseMatter(markdownString);
     default:
-      throw new Error(`Unable to parse file, unknown extension ${extension}`);
+      throw new Error(
+        `Unable to parse file, unknown extension ${extension} for file ${path}`
+      );
   }
 };
 
@@ -364,7 +366,21 @@ const readDir = async (
   return (await loader.load(path)) as string[];
 };
 const internalReadDir = async (path: string) => {
-  return await fs.readdirSync(path);
+  const contents = await fs.readdirSync(path);
+  const meh = _.flatten(
+    await Promise.all(
+      contents.map(async (item) => {
+        const dirPath = p.join(path, item);
+        if (fs.lstatSync(dirPath).isDirectory()) {
+          const innerContents: string[] = await internalReadDir(dirPath);
+          return innerContents.map((ic) => p.join(item, ic));
+        }
+        return item;
+      })
+    )
+  );
+  console.log(meh);
+  return meh;
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";

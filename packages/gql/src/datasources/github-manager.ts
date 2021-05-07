@@ -98,15 +98,16 @@ const getAndSetFromCache = async (
   }
 };
 
+type RepoConfig = {
+  owner: string;
+  repo: string;
+  ref: string;
+};
 export class GithubManager implements DataSource {
   rootPath: string;
   loader: DataLoader<unknown, unknown, unknown>;
   dirLoader: DataLoader<unknown, unknown, unknown>;
-  repoConfig: {
-    owner: string;
-    repo: string;
-    ref: string;
-  };
+  repoConfig: RepoConfig;
   appOctoKit: Octokit;
   constructor({
     rootPath,
@@ -180,22 +181,13 @@ export class GithubManager implements DataSource {
       const results: { [key: string]: unknown } = {};
       await Promise.all(
         keys.map(async (path) => {
-          results[path] = await getAndSetFromCache(repoConfig, path, () => {
-            return appOctoKit.repos
-              .getContent({
-                ...repoConfig,
-                path,
-              })
-              .then((dirContents) => {
-                if (Array.isArray(dirContents.data)) {
-                  return dirContents.data.map((t) => t.name);
-                } else {
-                  throw new Error(
-                    "Expected directory request to return an array of strings"
-                  );
-                }
-              });
-          });
+          results[path] = await getAndSetFromCache(
+            repoConfig,
+            path,
+            async () => {
+              return await getDirRecursive({ appOctoKit, repoConfig, path });
+            }
+          );
 
           // TODO: An error I suppose
           return [];
@@ -534,6 +526,47 @@ export class GithubManager implements DataSource {
     return [];
   }
 }
+
+const getDirRecursive = async ({
+  appOctoKit,
+  repoConfig,
+  path,
+}: {
+  appOctoKit: Octokit;
+  repoConfig: RepoConfig;
+  path: string;
+}): Promise<string[]> => {
+  return appOctoKit.repos
+    .getContent({
+      ...repoConfig,
+      path,
+    })
+    .then(async (dirContents) => {
+      if (Array.isArray(dirContents.data)) {
+        return _.flatten(
+          await Promise.all(
+            dirContents.data.map(async (t) => {
+              if (t.type === "dir") {
+                const innerContents = await getDirRecursive({
+                  appOctoKit,
+                  repoConfig,
+                  path: p.join(path, t.name),
+                });
+                return innerContents.map((item) => {
+                  return p.join(t.name, item);
+                });
+              }
+              return t.name;
+            })
+          )
+        );
+      } else {
+        throw new Error(
+          "Expected directory request to return an array of strings"
+        );
+      }
+    });
+};
 
 export const FMT_BASE = ".forestry/front_matter/templates";
 export const parseMatter = async <T>(data: Buffer): Promise<T> => {
