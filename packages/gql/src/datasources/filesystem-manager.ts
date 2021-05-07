@@ -367,7 +367,7 @@ const readDir = async (
 };
 const internalReadDir = async (path: string) => {
   const contents = await fs.readdirSync(path);
-  const meh = _.flatten(
+  return _.flatten(
     await Promise.all(
       contents.map(async (item) => {
         const dirPath = p.join(path, item);
@@ -379,8 +379,6 @@ const internalReadDir = async (path: string) => {
       })
     )
   );
-  console.log(meh);
-  return meh;
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
