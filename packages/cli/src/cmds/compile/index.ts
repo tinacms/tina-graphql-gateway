@@ -220,9 +220,23 @@ const regexMessageFunc = (message) =>
   `Field "${message.path}" with value "${message.value}" must match ${message.regex}. For example - "my-title" is invalid, use "myTitle" or "my_title instead`;
 
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
+  const collections = await Promise.all(
+    schemaObject.collections.map(async (collection) => {
+      const isValidPath = await fs.exists(collection.path);
+      if (!isValidPath) {
+        console.log(
+          dangerText(
+            `Collection '${collection.name}', path '${collection.path}' not found, check that path exists on your filesystem`
+          )
+        );
+      }
+      return collection;
+    })
+  );
+
   const sectionOutput = {
     // ...schemaObject,
-    sections: schemaObject.collections.map((collection) => {
+    sections: collections.map((collection) => {
       return {
         ...collection,
         type: "directory",
@@ -239,7 +253,7 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
     schemaString
   );
   await Promise.all(
-    schemaObject.collections.map(
+    collections.map(
       async (collection) =>
         await Promise.all(
           collection.templates.map(async (definition) => {
@@ -394,7 +408,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .string()
       .matches(/^datetime$/)
       .required(),
-    dateFormat: yup.string(),
+    dateFormat: yup.string().required(),
     timeFormat: yup.string(),
   });
 
@@ -639,7 +653,7 @@ interface TextField extends TinaBaseField {
 
 interface DateTimeField extends TinaBaseField {
   type: "datetime";
-  dateFormat?: string;
+  dateFormat: string;
   timeFormat?: string;
 }
 
