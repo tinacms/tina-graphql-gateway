@@ -32,15 +32,7 @@ export const gql = async ({
   variables: object;
 }) => {
   const datasource = createDatasource(
-    // new FileSystemManager({ rootPath: projectRoot })
-    new GithubManager({
-      rootPath: "apps/demo",
-      accessToken: "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",
-      owner: "tinacms",
-      repo: "tina-graphql-gateway",
-      ref: "abstract-data-manager",
-      cache: simpleCache,
-    })
+    new FileSystemManager({ rootPath: projectRoot })
   );
 
   const cache = cacheInit(datasource);
