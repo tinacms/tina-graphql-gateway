@@ -16,8 +16,8 @@ import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
 
 const query = (gql) => gql`
-  query ContentQuery($section: String!, $relativePath: String!) {
-    getDocument(section: $section, relativePath: $relativePath) {
+  query ContentQuery($collection: String!, $relativePath: String!) {
+    getDocument(collection: $collection, relativePath: $relativePath) {
       ... on Posts_Document {
         id
         data {
@@ -47,7 +47,7 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   return {
     props: {
       queryVars: {
-        section: params.path[0],
+        collection: params.path[0],
         relativePath: params.path.slice(1).join("/"),
       },
     },

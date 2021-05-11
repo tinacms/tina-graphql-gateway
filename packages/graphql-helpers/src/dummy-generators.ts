@@ -22,17 +22,17 @@ import { buildSelectionsFields } from "./queryBuilder";
 
 /**
  *
- * This generates a query to a "reasonable" depth for the data key of a given section
+ * This generates a query to a "reasonable" depth for the data key of a given collection
  * It's not meant for production use
  */
 export const queryGenerator = (
-  variables: { relativePath: string; section: string },
+  variables: { relativePath: string; collection: string },
   schema: GraphQLSchema
 ): DocumentNode => {
   const t = schema.getQueryType();
   const queryFields = t?.getFields();
   if (queryFields) {
-    const queryName = `get${friendlyName(variables.section)}Document`;
+    const queryName = `get${friendlyName(variables.collection)}Document`;
     const queryField = queryFields[queryName];
 
     const returnType = getNamedType(queryField.type);

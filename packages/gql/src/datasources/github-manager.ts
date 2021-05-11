@@ -99,8 +99,9 @@ export class GithubManager implements DataAdaptor {
 
     await this.appOctoKit.repos.createOrUpdateFileContents({
       ...this.repoConfig,
+      branch: this.repoConfig.ref,
+      path: path,
       message: "Update from GraphQL client",
-      path,
       content: new Buffer(content).toString("base64"),
       sha: fileSha,
     });

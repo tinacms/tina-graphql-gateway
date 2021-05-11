@@ -3298,6 +3298,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["body-parser", "npm:1.19.0"],
             ["cors", "npm:2.8.5"],
             ["dataloader", "npm:2.0.0"],
+            ["date-fns", "npm:2.21.1"],
             ["express", "npm:4.17.1"],
             ["fast-glob", "npm:3.2.5"],
             ["fs-extra", "npm:9.0.1"],
@@ -11973,6 +11974,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/date-fns-npm-2.18.0-5edf1f6623-58320ad512.zip/node_modules/date-fns/",
           "packageDependencies": [
             ["date-fns", "npm:2.18.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:2.21.1", {
+          "packageLocation": "./.yarn/cache/date-fns-npm-2.21.1-a333d4fe93-00a2ddea10.zip/node_modules/date-fns/",
+          "packageDependencies": [
+            ["date-fns", "npm:2.21.1"]
           ],
           "linkType": "HARD",
         }]

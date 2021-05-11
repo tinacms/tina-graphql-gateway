@@ -31,7 +31,7 @@ type SystemInfo {
   relativePath: String
   extension: String
   template: String
-  section: Section
+  collection: Section
 }
 
 type Section {
@@ -54,7 +54,7 @@ input SectionParams {
 }
 
 type Mutation {
-  addPendingDocument(relativePath: String, section: String, template: String): Document
+  addPendingDocument(relativePath: String, collection: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
   updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
@@ -62,9 +62,9 @@ type Mutation {
 
 type Query {
   node(id: ID!): Node
-  getDocument(section: String, relativePath: String): SectionDocumentUnion
-  getSections: [Section]
-  getSection(section: String): Section
+  getDocument(collection: String, relativePath: String): SectionDocumentUnion
+  getCollections: [Section]
+  getCollection(collection: String): Section
   getAuthorsDocument(relativePath: String): Authors_Document
   getAuthorsList: [Authors_Document]
   getPostsDocument(relativePath: String): Posts_Document
@@ -96,6 +96,7 @@ type Author_Accolades_Data {
 
 type Author_Doc_Data {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Data]
@@ -109,6 +110,7 @@ type Author_Accolades_Values {
 
 type Author_Doc_Values {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Values]
@@ -117,6 +119,12 @@ type Author_Doc_Values {
 }
 
 type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+}
+
+type BooleanField implements FormField {
   name: String
   label: String
   component: String
@@ -137,7 +145,7 @@ type Author_Accolades_GroupListField implements FormField {
   fields: [Author_Accolades_FormFieldsUnion]
 }
 
-union Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField
+union Author_Doc_FormFieldsUnion = TextField | BooleanField | TextareaField | Author_Accolades_GroupListField
 
 type Author_Doc_Form {
   label: String
@@ -152,6 +160,7 @@ input Author_Accolades_Input {
 
 input Author_Doc_Input {
   name: String
+  isAuthor: Boolean
   description: String
   image: String
   accolades: [Author_Accolades_Input]
