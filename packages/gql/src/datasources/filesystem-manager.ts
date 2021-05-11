@@ -12,7 +12,9 @@ limitations under the License.
 */
 
 import fs from "fs-extra";
+import p from "path";
 import { DataAdaptor } from "./data-adaptor";
+import _ from "lodash";
 export class FileSystemManager implements DataAdaptor {
   rootPath: string;
   constructor({ rootPath }: { rootPath: string }) {
@@ -21,8 +23,22 @@ export class FileSystemManager implements DataAdaptor {
   readFile = async (path: string) => {
     return fs.readFileSync(path).toString();
   };
-  readDir = async (path: string) => {
-    return fs.readdirSync(path);
+  readDir = async (path: string): Promise<string[]> => {
+    const result = fs.readdirSync(path);
+    return _.flatten(
+      await Promise.all(
+        result.map(async (item) => {
+          const fullPath = p.join(path, item);
+          if (fs.lstatSync(fullPath).isDirectory()) {
+            const nestedItems = await this.readDir(fullPath);
+            return nestedItems.map((nestedItem) => {
+              return p.join(item, nestedItem);
+            });
+          }
+          return item;
+        })
+      )
+    );
   };
   writeFile = async (path: string, content: string) => {
     return fs.outputFile(path, content);

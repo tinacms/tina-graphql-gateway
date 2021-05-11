@@ -11,7 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LocalClient, useGraphqlForms } from "tina-graphql-gateway";
+import {
+  LocalClient,
+  useGraphqlForms,
+  useDocumentCreatorPlugin,
+} from "tina-graphql-gateway";
 import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
 
@@ -65,6 +69,7 @@ const Home = (props: any) => {
       return createForm(formConfig);
     },
   });
+  useDocumentCreatorPlugin((args) => console.log("got it", args));
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
