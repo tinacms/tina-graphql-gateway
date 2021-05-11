@@ -16,7 +16,7 @@
     "ci:version-check": "yarn version check",
     "ci:build": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo -pt run build",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --verbose run test",
-    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish"
+    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo --exclude=forestry-schema --verbose npm publish --tolerate-republish --access public"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

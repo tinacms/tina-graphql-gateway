@@ -41,7 +41,7 @@ export type SystemInfo = {
   relativePath?: Maybe<Scalars['String']>;
   extension?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
-  section?: Maybe<Section>;
+  collection?: Maybe<Section>;
 };
 
 
@@ -80,7 +80,7 @@ export type Mutation = {
 
 export type MutationAddPendingDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
 };
 
@@ -106,8 +106,8 @@ export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
   getDocument?: Maybe<SectionDocumentUnion>;
-  getSections?: Maybe<Array<Maybe<Section>>>;
-  getSection?: Maybe<Section>;
+  getCollections?: Maybe<Array<Maybe<Section>>>;
+  getCollection?: Maybe<Section>;
   getAuthorsDocument?: Maybe<Authors_Document>;
   getAuthorsList?: Maybe<Array<Maybe<Authors_Document>>>;
   getPostsDocument?: Maybe<Posts_Document>;
@@ -121,13 +121,13 @@ export type QueryNodeArgs = {
 
 
 export type QueryGetDocumentArgs = {
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   relativePath?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryGetSectionArgs = {
-  section?: Maybe<Scalars['String']>;
+export type QueryGetCollectionArgs = {
+  collection?: Maybe<Scalars['String']>;
 };
 
 
@@ -159,28 +159,16 @@ export type Authors_Document = Node & Document & {
   form?: Maybe<Authors_Form>;
 };
 
-export type LongTextValue = {
-  __typename?: 'LongTextValue';
-  raw?: Maybe<Scalars['String']>;
-  markdownAst?: Maybe<Scalars['JSONObject']>;
-  html?: Maybe<Scalars['String']>;
-};
-
 export type Author_Doc_Data = {
   __typename?: 'Author_Doc_Data';
   name?: Maybe<Scalars['String']>;
-  _body?: Maybe<LongTextValue>;
-};
-
-export type LongTextInitialValue = {
-  __typename?: 'LongTextInitialValue';
-  raw?: Maybe<Scalars['String']>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Author_Doc_Values = {
   __typename?: 'Author_Doc_Values';
   name?: Maybe<Scalars['String']>;
-  _body?: Maybe<LongTextInitialValue>;
+  _body?: Maybe<Scalars['String']>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -207,13 +195,9 @@ export type Author_Doc_Form = {
   fields?: Maybe<Array<Maybe<Author_Doc_FormFieldsUnion>>>;
 };
 
-export type Body_LongTextInput = {
-  raw?: Maybe<Scalars['String']>;
-};
-
 export type Author_Doc_Input = {
   name?: Maybe<Scalars['String']>;
-  _body?: Maybe<Body_LongTextInput>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Posts_Data = Post_Doc_Data;
@@ -245,7 +229,7 @@ export type Post_Doc_Data = {
   title?: Maybe<Scalars['String']>;
   details?: Maybe<Post_Details_Data>;
   author?: Maybe<Authors_Document>;
-  _body?: Maybe<LongTextValue>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 export type Post_Details_Values = {
@@ -258,7 +242,7 @@ export type Post_Doc_Values = {
   title?: Maybe<Scalars['String']>;
   details?: Maybe<Post_Details_Values>;
   author?: Maybe<Scalars['Reference']>;
-  _body?: Maybe<LongTextInitialValue>;
+  _body?: Maybe<Scalars['String']>;
   _template?: Maybe<Scalars['String']>;
 };
 
@@ -297,7 +281,7 @@ export type Post_Doc_Input = {
   title?: Maybe<Scalars['String']>;
   details?: Maybe<Post_Details_Input>;
   author?: Maybe<Scalars['String']>;
-  _body?: Maybe<Body_LongTextInput>;
+  _body?: Maybe<Scalars['String']>;
 };
 
 

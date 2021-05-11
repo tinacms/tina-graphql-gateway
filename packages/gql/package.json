@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/gql",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -9,8 +9,8 @@
   ],
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.ts src/server.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts src/server.ts --watch --format cjs --dts",
+    "build": "yarn tsup src/index.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/server.js",
     "test": "jest --passWithNoTests"

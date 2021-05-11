@@ -77,9 +77,7 @@ describe("formify", () => {
                 reading_time
               }
               author
-              _body {
-                raw
-              }
+              _body
               _template
             }
           }
@@ -127,7 +125,7 @@ describe("formify", () => {
             relativePath
             extension
             template
-            section {
+            collection {
               type
               path
               label
