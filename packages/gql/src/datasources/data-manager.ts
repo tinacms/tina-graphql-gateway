@@ -362,10 +362,10 @@ const readFile = async <T>(
 ): Promise<T> => {
   return (await loader.load(path)) as T;
 };
-const internalReadFile = async <T>(
+const internalReadFile = async (
   path: string,
   readFileFunc: (path: string) => Promise<Buffer>
-): Promise<T> => {
+): Promise<unknown> => {
   const extension = p.extname(path);
 
   switch (extension) {
@@ -394,15 +394,14 @@ const internalReadDir = async (
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
-export const parseMatter = async <T>(data: Buffer): Promise<T> => {
+export const parseMatter = (data: Buffer) => {
   const res = matter(data, {
     excerpt_separator: "<!-- excerpt -->",
   }) as unknown & { content: string };
   // Remove line break at top of _body
   res.content = res.content.replace(/^\n|\n$/g, "");
 
-  // @ts-ignore
-  return res as T;
+  return res;
 };
 
 function isWithFields(t: object): t is WithFields {
@@ -448,7 +447,7 @@ const namespaceSubFields = (
   };
 };
 
-export const createDatasource = (gh: {
+export const createDatasource = (dataAdaptor: {
   // FIXME: this should just specify that any DataManager interface
   // can be passed, having trouble with 'fs' return types though
   rootPath: any;
@@ -456,9 +455,9 @@ export const createDatasource = (gh: {
   readDir: any;
   writeFile: any;
 }) => {
-  return new DataManager(gh.rootPath, {
-    readFile: gh.readFile,
-    readDir: gh.readDir,
-    writeFile: gh.writeFile,
+  return new DataManager(dataAdaptor.rootPath, {
+    readFile: dataAdaptor.readFile,
+    readDir: dataAdaptor.readDir,
+    writeFile: dataAdaptor.writeFile,
   });
 };

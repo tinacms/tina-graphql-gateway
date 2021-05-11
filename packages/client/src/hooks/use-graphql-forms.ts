@@ -296,21 +296,20 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       queryString,
       formify,
       onSubmit: async (values) => {
-        return cms.api.tina.prepareVariables(values).then(async (variables) => {
-          return onSubmit
-            ? await onSubmit({
-                queryString: values.mutationString,
-                variables,
-              })
-            : await cms.api.tina
-                .request(values.mutationString, { variables })
-                .then((res) => {
-                  if (res.errors) {
-                    console.error(res);
-                    cms.alerts.error("Unable to update document");
-                  }
-                });
-        });
+        const variables = await cms.api.tina.prepareVariables(values);
+        return onSubmit
+          ? onSubmit({
+              queryString: values.mutationString,
+              variables,
+            })
+          : cms.api.tina
+              .request(values.mutationString, { variables })
+              .then((res) => {
+                if (res.errors) {
+                  console.error(res);
+                  cms.alerts.error("Unable to update document");
+                }
+              });
       },
     },
   });
