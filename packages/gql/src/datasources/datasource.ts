@@ -74,7 +74,7 @@ export interface DataSource {
    */
   getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>;
   /**
-   * `getTemplatesForSection`
+   * `getTemplatesForCollection`
    *
    * Returns the parsed templates for a given section. If no section is provided
    * it returns a flattened array of all possible section templates

@@ -81,8 +81,8 @@ export class DataManager implements DataSource {
     matter.clearCache();
   }
 
-  getDocumentsForSection = async (sectionSlug: string) => {
-    const section = await this.getSection(sectionSlug);
+  getDocumentsForCollection = async (sectionSlug: string) => {
+    const section = await this.getCollection(sectionSlug);
     const fullPath = p.join(this.rootPath, section.path);
 
     // FIXME: replace with fast-glob
@@ -111,8 +111,8 @@ export class DataManager implements DataSource {
 
     return data;
   };
-  getSettingsForSection = async (section?: string) => {
-    const sectionsSettings = await this.getSectionsSettings();
+  getSettingsForCollection = async (section?: string) => {
+    const sectionsSettings = await this.getCollectionsSettings();
     if (!section) {
       throw new Error(`No directory sections found`);
     }
@@ -124,7 +124,7 @@ export class DataManager implements DataSource {
 
     return result;
   };
-  getSectionsSettings = async () => {
+  getCollectionsSettings = async () => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -138,7 +138,7 @@ export class DataManager implements DataSource {
 
     return sections as DirectorySection[];
   };
-  getSection = async (slug: string) => {
+  getCollection = async (slug: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -157,7 +157,7 @@ export class DataManager implements DataSource {
     }
     return section;
   };
-  getSectionByPath = async (path: string) => {
+  getCollectionByPath = async (path: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections
@@ -177,7 +177,7 @@ export class DataManager implements DataSource {
     }
     return section;
   };
-  getTemplatesForSection = async (section?: string) => {
+  getTemplatesForCollection = async (section?: string) => {
     const data = await this.getSettingsData();
 
     const sections = data.sections.map((section) => {
@@ -211,20 +211,20 @@ export class DataManager implements DataSource {
     const extension = p.extname(fullPath);
     return { basename, filename: basename.replace(extension, ""), extension };
   };
-  getData = async ({ relativePath, section }: DocumentArgs) => {
-    const sectionData = await this.getSettingsForSection(section);
+  getData = async ({ relativePath, collection }: DocumentArgs) => {
+    const sectionData = await this.getSettingsForCollection(collection);
 
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No section found for ${collection}`);
     }
 
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
     return readFile<TinaDocument>(fullPath, this.loader);
   };
   getTemplateForDocument = async (args: DocumentArgs) => {
-    const sectionData = await this.getSettingsForSection(args.section);
+    const sectionData = await this.getSettingsForCollection(args.collection);
     if (!sectionData) {
-      throw new Error(`No section found for ${args.section}`);
+      throw new Error(`No section found for ${args.collection}`);
     }
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const templates = await readDir(fullPath, this.dirLoader);
@@ -287,14 +287,14 @@ export class DataManager implements DataSource {
 
     return data;
   };
-  addDocument = async ({ relativePath, section, template }: AddArgs) => {
+  addDocument = async ({ relativePath, collection, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
-    const sectionData = await this.getSettingsForSection(section);
+    const sectionData = await this.getSettingsForCollection(collection);
     // const templateData = await this.getTemplateWithoutName(template, {
     //   namespace: false,
     // });
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No section found for ${collection}`);
     }
     const path = p.join(sectionData.path, relativePath);
     // const updatedTemplateData = {
@@ -311,10 +311,10 @@ export class DataManager implements DataSource {
     const documentString = "---\n" + jsyaml.dump({ _template: template });
     await this.writeFile(fullFilePath, documentString);
   };
-  updateDocument = async ({ relativePath, section, params }: UpdateArgs) => {
-    const sectionData = await this.getSettingsForSection(section);
+  updateDocument = async ({ relativePath, collection, params }: UpdateArgs) => {
+    const sectionData = await this.getSettingsForCollection(collection);
     if (!sectionData) {
-      throw new Error(`No section found for ${section}`);
+      throw new Error(`No section found for ${collection}`);
     }
     const fullPath = p.join(this.rootPath, sectionData.path, relativePath);
     // FIXME: provide a test-case for this, might not be necessary
@@ -376,7 +376,9 @@ const internalReadFile = async (
       const markdownString = await readFileFunc(path);
       return parseMatter(markdownString);
     default:
-      throw new Error(`Unable to parse file, unknown extension ${extension}`);
+      throw new Error(
+        `Unable to parse file, unknown extension ${extension} for path ${path}`
+      );
   }
 };
 
@@ -390,7 +392,7 @@ const internalReadDir = async (
   path: string,
   readDirFunc: (path: string) => Promise<string[]>
 ) => {
-  return await readDirFunc(path);
+  return readDirFunc(path);
 };
 
 export const FMT_BASE = ".forestry/front_matter/templates";
