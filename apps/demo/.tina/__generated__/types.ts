@@ -41,7 +41,7 @@ export type SystemInfo = {
   relativePath?: Maybe<Scalars['String']>;
   extension?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
-  section?: Maybe<Section>;
+  collection?: Maybe<Section>;
 };
 
 
@@ -80,7 +80,7 @@ export type Mutation = {
 
 export type MutationAddPendingDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   template?: Maybe<Scalars['String']>;
 };
 
@@ -106,8 +106,8 @@ export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
   getDocument?: Maybe<SectionDocumentUnion>;
-  getSections?: Maybe<Array<Maybe<Section>>>;
-  getSection?: Maybe<Section>;
+  getCollections?: Maybe<Array<Maybe<Section>>>;
+  getCollection?: Maybe<Section>;
   getAuthorsDocument?: Maybe<Authors_Document>;
   getAuthorsList?: Maybe<Array<Maybe<Authors_Document>>>;
   getPostsDocument?: Maybe<Posts_Document>;
@@ -121,13 +121,13 @@ export type QueryNodeArgs = {
 
 
 export type QueryGetDocumentArgs = {
-  section?: Maybe<Scalars['String']>;
+  collection?: Maybe<Scalars['String']>;
   relativePath?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryGetSectionArgs = {
-  section?: Maybe<Scalars['String']>;
+export type QueryGetCollectionArgs = {
+  collection?: Maybe<Scalars['String']>;
 };
 
 
@@ -168,6 +168,7 @@ export type Author_Accolades_Data = {
 export type Author_Doc_Data = {
   __typename?: 'Author_Doc_Data';
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Data>>>;
@@ -183,6 +184,7 @@ export type Author_Accolades_Values = {
 export type Author_Doc_Values = {
   __typename?: 'Author_Doc_Values';
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Values>>>;
@@ -192,6 +194,13 @@ export type Author_Doc_Values = {
 
 export type TextField = FormField & {
   __typename?: 'TextField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+};
+
+export type BooleanField = FormField & {
+  __typename?: 'BooleanField';
   name?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
@@ -214,7 +223,7 @@ export type Author_Accolades_GroupListField = FormField & {
   fields?: Maybe<Array<Maybe<Author_Accolades_FormFieldsUnion>>>;
 };
 
-export type Author_Doc_FormFieldsUnion = TextField | TextareaField | Author_Accolades_GroupListField;
+export type Author_Doc_FormFieldsUnion = TextField | BooleanField | TextareaField | Author_Accolades_GroupListField;
 
 export type Author_Doc_Form = {
   __typename?: 'Author_Doc_Form';
@@ -230,6 +239,7 @@ export type Author_Accolades_Input = {
 
 export type Author_Doc_Input = {
   name?: Maybe<Scalars['String']>;
+  isAuthor?: Maybe<Scalars['Boolean']>;
   description?: Maybe<Scalars['String']>;
   image?: Maybe<Scalars['String']>;
   accolades?: Maybe<Array<Maybe<Author_Accolades_Input>>>;

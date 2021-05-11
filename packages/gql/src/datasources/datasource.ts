@@ -28,17 +28,17 @@ export type TinaDocument = {
 
 export type UpdateArgs = {
   relativePath: string;
-  section: string;
+  collection: string;
   params: { _body?: string } & object;
 };
 export type DocumentArgs = {
   relativePath: string;
-  section: string;
+  collection: string;
 };
 
 export type AddArgs = {
   relativePath: string;
-  section: string;
+  collection: string;
   template: string;
 };
 export interface DataSource {
@@ -98,12 +98,12 @@ export interface DataSource {
    * ]
    * ```
    */
-  getTemplatesForSection: (section?: string) => Promise<TemplateData[]>;
-  getDocumentsForSection: (section: string) => Promise<string[]>;
-  getSettingsForSection: (section?: string) => Promise<DirectorySection>;
-  getSectionsSettings: () => Promise<DirectorySection[]>;
-  getSection: (section: string) => Promise<DirectorySection>;
-  getSectionByPath: (path: string) => Promise<DirectorySection>;
+  getTemplatesForCollection: (collection?: string) => Promise<TemplateData[]>;
+  getDocumentsForCollection: (collection: string) => Promise<string[]>;
+  getSettingsForCollection: (collection?: string) => Promise<DirectorySection>;
+  getCollectionsSettings: () => Promise<DirectorySection[]>;
+  getCollection: (collection: string) => Promise<DirectorySection>;
+  getCollectionByPath: (path: string) => Promise<DirectorySection>;
   addDocument: (args: AddArgs) => Promise<void>;
   updateDocument: (param: UpdateArgs) => Promise<void>;
 }

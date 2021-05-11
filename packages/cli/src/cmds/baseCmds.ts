@@ -24,7 +24,7 @@ export const CMD_DUMP = "schema:dump";
 export const CMD_MIGRATE = "schema:migrate";
 export const CMD_START_SERVER = "server:start";
 export const CMD_START_PLAYGROUND = "server:playground";
-export const CMD_COMPILE_MODELS = "models:compile";
+export const CMD_COMPILE_MODELS = "schema:compile";
 
 const startServerPortOption = {
   name: "--port <port>",
@@ -54,38 +54,41 @@ const pathOption = {
 
 export const baseCmds: Command[] = [
   {
-    command: CMD_GEN_TYPES,
-    description:
-      "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
-    action: (options) => chain([attachSchema, genTypes], options),
-  },
-  {
-    command: CMD_AUDIT,
-    description: "Audit .tina schema",
-    options: [auditFixOption],
-    action: (options) => chain([audit], options),
-  },
-  {
-    command: CMD_MIGRATE,
-    description: "Migrate .forestry to .tina",
-    options: [migrateDryRunOption],
-    action: (options) => chain([migrate], options),
-  },
-  {
-    command: CMD_DUMP,
-    description: "Dump JSON schema into specified path",
-    options: [schemaDumpOption],
-    action: (options) => chain([dump], options),
-  },
-  {
-    command: CMD_COMPILE_MODELS,
-    description: "Compile models into static files for the server",
-    action: (options) => chain([compile], options),
-  },
-  {
     command: CMD_START_SERVER,
     description: "Start Filesystem Graphql Server",
     options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
   },
+  {
+    command: CMD_COMPILE_MODELS,
+    description: "Compile schema into static files for the server",
+    action: (options) => chain([compile], options),
+  },
+  {
+    command: CMD_GEN_TYPES,
+    description:
+      "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
+    action: (options) => chain([attachSchema, genTypes], options),
+  },
+  /**
+   * These have become outdated and it's not clear if we'll bring them forward.
+   */
+  // {
+  //   command: CMD_AUDIT,
+  //   description: "Audit .tina schema",
+  //   options: [auditFixOption],
+  //   action: (options) => chain([audit], options),
+  // },
+  // {
+  //   command: CMD_MIGRATE,
+  //   description: "Migrate .forestry to .tina",
+  //   options: [migrateDryRunOption],
+  //   action: (options) => chain([migrate], options),
+  // },
+  // {
+  //   command: CMD_DUMP,
+  //   description: "Dump JSON schema into specified path",
+  //   options: [schemaDumpOption],
+  //   action: (options) => chain([dump], options),
+  // },
 ];

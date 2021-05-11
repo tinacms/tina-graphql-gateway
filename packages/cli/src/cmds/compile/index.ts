@@ -82,6 +82,12 @@ const transformField = async (
       type: "tag_list",
     };
   }
+  // if (field.type === "image") {
+  //   return {
+  //     ...field,
+  //     type: "file",
+  //   };
+  // }
   if (field.type === "reference") {
     yup
       .object({
@@ -139,7 +145,7 @@ const buildTemplate = async (
   const outputYmlPath = path.resolve(
     path.join(
       tinaTempPath.replace("temp", "config").replace(".js", ""),
-      `front_matter/templates/${definition.name}.yml`
+      path.join("front_matter/templates", `${definition.name}.yml`)
     )
   );
   const output: { pages?: string[] } & typeof definition = { ...definition };
@@ -178,6 +184,7 @@ const buildTemplate = async (
 };
 let types = [
   "text",
+  "datetime",
   "number",
   "textarea",
   "tags",
@@ -203,7 +210,7 @@ export const compile = async () => {
       delete require.cache[require.resolve(key)];
     }
   });
-  const schemaFunc = require(`${tinaTempPath}/schema.js`);
+  const schemaFunc = require(path.join(tinaTempPath, "schema.js"));
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
   await compileInner(schemaObject);
   compiledTemplates = [];
@@ -248,8 +255,8 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 const transpile = async (projectDir, tempDir) => {
   return Promise.all(
     glob
-      .sync(`${projectDir}/**/*.ts`, {
-        ignore: [`${projectDir}/__generated__/**/*.ts`],
+      .sync(path.join(projectDir, "/**/*.ts"), {
+        ignore: [path.join(projectDir, "__generated__/**/*.ts")],
       })
       .map(async function (file) {
         const fullPath = path.resolve(file);
@@ -382,6 +389,15 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .required(),
   });
 
+  const DateTimeSchema = baseSchema.label("datetime").shape({
+    type: yup
+      .string()
+      .matches(/^datetime$/)
+      .required(),
+    dateFormat: yup.string(),
+    timeFormat: yup.string(),
+  });
+
   const ToggleSchema = baseSchema.label("toggle").shape({
     type: yup
       .string()
@@ -495,6 +511,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
   });
   let schemaMap = {
     text: TextSchema,
+    datetime: DateTimeSchema,
     textarea: TextAreaSchema,
     select: SelectSchema,
     list: ListSchema,
@@ -506,13 +523,14 @@ export const defineSchema = (config: TinaCloudSchema) => {
   };
   var FieldSchemas = [
     TextSchema,
+    DateTimeSchema,
     TextAreaSchema,
     SelectSchema,
     ListSchema,
     NumberSchema,
     TagsSchema,
     ToggleSchema,
-    ImageSchema,
+    // ImageSchema,
     BlocksSchema,
     // FIXME: for some reason these mess up the blocks test if they're listed before it
     GroupSchema,
@@ -596,10 +614,10 @@ export interface TinaCloudTemplate {
 
 export type TinaField =
   | TextField
+  | DateTimeField
   | NumberField
   | TextareaField
   | SelectField
-  | ImageField
   | GroupField
   | GroupListField
   | ListField
@@ -617,6 +635,12 @@ interface TinaBaseField {
 
 interface TextField extends TinaBaseField {
   type: "text";
+}
+
+interface DateTimeField extends TinaBaseField {
+  type: "datetime";
+  dateFormat?: string;
+  timeFormat?: string;
 }
 
 interface NumberField extends TinaBaseField {

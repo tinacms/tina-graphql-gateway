@@ -1,6 +1,6 @@
 {
   "name": "@forestryio/gql",
-  "version": "0.1.2",
+  "version": "0.1.7",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -23,6 +23,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
+    "date-fns": "^2.21.1",
     "express": "^4.17.1",
     "fast-glob": "^3.2.5",
     "fs-extra": "^9.0.1",

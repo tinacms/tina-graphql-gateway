@@ -110,10 +110,10 @@ const schemaResolver = async (
       return resolveDocument({ args, context });
     case "breadcrumbs":
       return resolveBreadcrumbs(value, args, context);
-    case "getSection":
-      return resolveSection(args, context);
-    case "getSections":
-      return resolveSections(context);
+    case "getCollection":
+      return resolveCollection(args, context);
+    case "getCollections":
+      return resolveCollections(context);
 
     case "addPendingDocument":
       await addPendingDocument(args, context);
@@ -132,12 +132,12 @@ const schemaResolver = async (
       const sectionSlug = Object.keys(args.params)[0];
       const params = Object.values(args.params)[0];
 
-      const section = await context.datasource.getSection(sectionSlug);
+      const section = await context.datasource.getCollection(sectionSlug);
 
       const key = Object.keys(params)[0];
       const values = Object.values(params)[0];
 
-      const templates = await context.datasource.getTemplatesForSection(
+      const templates = await context.datasource.getTemplatesForCollection(
         section.slug
       );
       const template = templates.find((template) => template.name === key);
@@ -160,18 +160,18 @@ const schemaResolver = async (
 
       const payload = {
         relativePath,
-        section: section.slug,
+        collection: section.slug,
         params: realParams,
       };
 
       assertShape<{
         relativePath: string;
-        section: string;
+        collection: string;
         params: { _body?: string } & object;
       }>(payload, (yup) => {
         return yup.object({
           relativePath: yup.string().required(),
-          section: yup.string().required(),
+          collection: yup.string().required(),
           params: yup.object({
             _body: yup.string(),
           }),
@@ -182,7 +182,7 @@ const schemaResolver = async (
       return resolveDocument({
         args: {
           relativePath: relativePath,
-          section: section.slug,
+          collection: section.slug,
         },
         context,
       });
@@ -193,12 +193,15 @@ const schemaResolver = async (
   const sectionItem = sectionMap[info.fieldName];
   if (sectionItem) {
     if (sectionItem.plural) {
-      const documents = await context.datasource.getDocumentsForSection(
+      const documents = await context.datasource.getDocumentsForCollection(
         sectionItem.section.slug
       );
       return sequential(documents, async (documentPath) =>
         resolveDocument({
-          args: { fullPath: documentPath, section: sectionItem.section.slug },
+          args: {
+            fullPath: documentPath,
+            collection: sectionItem.section.slug,
+          },
           context: context,
         })
       );
@@ -215,7 +218,7 @@ const schemaResolver = async (
       const key = Object.keys(args.params)[0];
       const values = Object.values(args.params)[0];
 
-      const templates = await context.datasource.getTemplatesForSection(
+      const templates = await context.datasource.getTemplatesForCollection(
         sectionItem.section.slug
       );
       const template = templates.find((template) => template.name === key);
@@ -237,18 +240,18 @@ const schemaResolver = async (
 
       const payload = {
         relativePath: args.relativePath,
-        section: sectionItem.section.slug,
+        collection: sectionItem.section.slug,
         params,
       };
 
       assertShape<{
         relativePath: string;
-        section: string;
+        collection: string;
         params: { _body?: string } & object;
       }>(payload, (yup) => {
         return yup.object({
           relativePath: yup.string().required(),
-          section: yup.string().required(),
+          collection: yup.string().required(),
           params: yup.object({
             _body: yup.string(),
           }),
@@ -258,7 +261,7 @@ const schemaResolver = async (
       return resolveDocument({
         args: {
           relativePath: args.relativePath,
-          section: sectionItem.section.slug,
+          collection: sectionItem.section.slug,
         },
         context,
       });
@@ -266,7 +269,7 @@ const schemaResolver = async (
       return resolveDocument({
         args: {
           relativePath: args.relativePath,
-          section: sectionItem.section.slug,
+          collection: sectionItem.section.slug,
         },
         context,
       });
@@ -296,7 +299,7 @@ const schemaResolver = async (
       case "_nested_sources":
         return sequential(value._args.fullPaths, async (p) => {
           return resolveDocument({
-            args: { fullPath: p, section: value._args.section, ...args },
+            args: { fullPath: p, collection: value._args.collection, ...args },
             context,
           });
         });
@@ -324,16 +327,18 @@ const resolveDocument = async ({
   assertShape<{
     relativePath?: string;
     fullPath?: string;
-    section: string;
+    collection: string;
   }>(args, (yup) =>
     yup.object({
       relativePath: yup.string(),
       fullPath: yup.string(),
-      section: yup.string().required(),
+      collection: yup.string().required(),
     })
   );
 
-  const sectionData = await datasource.getSettingsForSection(args.section);
+  const sectionData = await datasource.getSettingsForCollection(
+    args.collection
+  );
 
   // FIXME: we're supporting both full path and relative path args, when we use this from the hook we only have
   // access to the documents full id, not the relative path, this should support both kinds of calls, but
@@ -350,7 +355,7 @@ const resolveDocument = async ({
     throw new Error(`Expected either relativePath or fullPath arguments`);
   }
 
-  const realArgs = { relativePath, section: args.section };
+  const realArgs = { relativePath, collection: args.collection };
   const { data, content } = await datasource.getData(realArgs);
   assertShape<{ _template: string }>(data, (yup) =>
     yup.object({
@@ -369,7 +374,7 @@ const resolveDocument = async ({
     sys: {
       path: path.join(sectionData.path, realArgs.relativePath),
       relativePath,
-      section: sectionData,
+      collection: sectionData,
       template: template.name,
       breadcrumbs: relativePath.split("/").filter(Boolean),
       basename,
@@ -396,9 +401,9 @@ const resolveNode = async (args: FieldResolverArgs, context: ContextT) => {
   if (typeof args.id !== "string") {
     throw new Error("Expected argument ID for node query");
   }
-  const section = await context.datasource.getSectionByPath(args.id);
+  const section = await context.datasource.getCollectionByPath(args.id);
   return await resolveDocument({
-    args: { fullPath: args.id, section: section.slug },
+    args: { fullPath: args.id, collection: section.slug },
     context,
   });
 };
@@ -411,14 +416,14 @@ const resolveDocuments = async (
   assertShape<{ _section: string }>(value, (yup) =>
     yup.object({ _section: yup.string().required() })
   );
-  assertShape<{ section: string }>(args, (yup) =>
-    yup.object({ section: yup.string() })
+  assertShape<{ collection: string }>(args, (yup) =>
+    yup.object({ collection: yup.string() })
   );
 
-  let sections = await context.datasource.getSectionsSettings();
+  let sections = await context.datasource.getCollectionsSettings();
 
-  if (args.section) {
-    sections = sections.filter((section) => section.slug === args.section);
+  if (args.collection) {
+    sections = sections.filter((section) => section.slug === args.collection);
   }
   if (value && value._section) {
     sections = sections.filter((section) => section.slug === value._section);
@@ -426,10 +431,10 @@ const resolveDocuments = async (
 
   const sectionDocs = _.flatten(
     await sequential(sections, async (s) => {
-      const paths = await context.datasource.getDocumentsForSection(s.slug);
+      const paths = await context.datasource.getDocumentsForCollection(s.slug);
       return await sequential(paths, async (documentPath) => {
         const document = await resolveDocument({
-          args: { fullPath: documentPath, section: s.slug },
+          args: { fullPath: documentPath, collection: s.slug },
           context,
         });
 
@@ -460,12 +465,17 @@ const resolveBreadcrumbs = async (
   }
 };
 
-const resolveSection = async (args: FieldResolverArgs, context: ContextT) => {
-  assertShape<{ section: string }>(args, (yup) =>
-    yup.object({ section: yup.string().required() })
+const resolveCollection = async (
+  args: FieldResolverArgs,
+  context: ContextT
+) => {
+  assertShape<{ collection: string }>(args, (yup) =>
+    yup.object({ collection: yup.string().required() })
   );
 
-  let section = await context.datasource.getSettingsForSection(args.section);
+  let section = await context.datasource.getSettingsForCollection(
+    args.collection
+  );
   return {
     ...section,
     documents: {
@@ -474,10 +484,10 @@ const resolveSection = async (args: FieldResolverArgs, context: ContextT) => {
   };
 };
 
-const resolveSections = async (context: ContextT) => {
-  let sections = await context.datasource.getSectionsSettings();
+const resolveCollections = async (context: ContextT) => {
+  let sections = await context.datasource.getCollectionsSettings();
   return sequential(sections, async (section) => {
-    return resolveSection({ section: section.slug }, context);
+    return resolveCollection({ collection: section.slug }, context);
   });
 };
 
@@ -485,12 +495,12 @@ const addPendingDocument = async (
   args: FieldResolverArgs,
   context: ContextT
 ) => {
-  assertShape<{ relativePath: string; section: string; template: string }>(
+  assertShape<{ relativePath: string; collection: string; template: string }>(
     args,
     (yup) =>
       yup.object({
         relativePath: yup.string(),
-        section: yup.string(),
+        collection: yup.string(),
         template: yup.string(),
       })
   );
@@ -537,12 +547,12 @@ export type ReferenceSource =
   | {
       _resolver: "_resource";
       _resolver_kind: "_nested_source";
-      _args: { fullPath: string; section: string };
+      _args: { fullPath: string; collection: string };
     }
   | {
       _resolver: "_resource";
       _resolver_kind: "_nested_sources";
-      _args: { fullPaths: string[]; section: string };
+      _args: { fullPaths: string[]; collection: string };
     };
 
 type FieldResolverSource = {

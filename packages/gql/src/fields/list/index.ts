@@ -110,7 +110,7 @@ export const list = {
           throw new Error(`document select not implemented`);
         case "pages":
           list = field as SectionList;
-          const section = await cache.datasource.getSettingsForSection(
+          const section = await cache.datasource.getSettingsForCollection(
             list.config.source.section
           );
           return gql.FieldDefinition({
@@ -214,7 +214,7 @@ export const list = {
       | {
           _resolver: "_resource";
           _resolver_kind: "_nested_sources";
-          _args: { fullPaths: string[]; section: string };
+          _args: { fullPaths: string[]; collection: string };
         }
       | string[]
     > => {
@@ -239,7 +239,7 @@ export const list = {
             _resolver_kind: "_nested_sources",
             _args: {
               fullPaths: value,
-              section: list.config.source.section,
+              collection: list.config.source.section,
             },
           };
         case "simple":
