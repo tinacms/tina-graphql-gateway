@@ -17,6 +17,7 @@ import {
 } from "tina-graphql-gateway";
 import type * as Tina from "../.tina/__generated__/types";
 import { Sidebar } from "../components/sidebar";
+import { useForm, usePlugin, useCMS } from "tinacms";
 
 const query = (gql) => gql`
   query ContentQuery($collection: String!, $relativePath: String!) {
@@ -65,6 +66,7 @@ const Home = (props: any) => {
     variables: props.queryVars,
     formify: ({ formConfig, createForm, skip }) => {
       // return skip();
+      const form = createForm(formConfig)
       return createForm(formConfig);
     },
   });

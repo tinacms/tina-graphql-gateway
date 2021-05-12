@@ -98,12 +98,13 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
             const keys = Object.keys(context.payload);
             Object.values(context.payload).forEach((item, index) => {
               if (!item.form) return;
+              console.log('---------------------------a new machine is being created', {...item.data})
               accum[keys[index]] = spawn(
                 createFormMachine({
                   client: context.cms.api.tina,
                   cms: context.cms,
                   // @ts-ignore
-                  node: item,
+                  node: {...item, initialData: {...item.data} },
                   onSubmit: context.onSubmit,
                   queryFieldName: keys[index],
                   queryString: context.queryString,
@@ -123,6 +124,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
           actions: assign({
             payload: (context, event) => {
               const temp = { ...context.payload };
+              console.log('setting machine state', temp)
               // TODO: If we didn't query for it, don't populate it.
               // for now this will populate values which we may not have asked for in the data
               // key. But to do this properly we'll need to traverse the query and store the paths
@@ -401,6 +403,7 @@ export function useGraphqlForms<T extends object>({
       });
   }, [queryString]);
 
+  console.log('payload',data.payload)
   // @ts-ignore
   return [data.payload, !ready];
 }
@@ -425,6 +428,9 @@ export type DocumentNode = {
     fields: Field[];
     label: string;
     name: string;
+  };
+  initialData:  {
+    [key: string]: string | string[] | object | object[];
   };
   values: {
     [key: string]: string | string[] | object | object[];

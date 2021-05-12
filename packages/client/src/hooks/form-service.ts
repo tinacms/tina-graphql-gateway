@@ -19,7 +19,7 @@ import {
   sendParent,
 } from "xstate";
 import { splitQuery } from "@forestryio/graphql-helpers";
-import { Form, TinaCMS } from "tinacms";
+import { Form, TinaCMS, useForm, FormOptions } from "tinacms";
 
 import type { Client } from "../client";
 import type { DocumentNode } from "./use-graphql-forms";
@@ -275,8 +275,17 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     form: context.node.form,
     callback,
   });
-
-  const formConfig = {
+  const formConfig: FormOptions<any> = {
+    reset: ()=>{
+      console.log('our reset is being called', context.node.initialData)
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "data"],
+          value: context.node.initialData,
+        },
+      });
+    },
     id: context.queryFieldName,
     label: context.node._internalSys.basename,
     fields,
@@ -310,7 +319,9 @@ ${mutation}
   };
 
   const createForm = (formConfig) => {
+    // const [_, form] = useForm(formConfig)
     const form = new Form(formConfig);
+    
     context.cms.plugins.add(form);
     return form;
   };
@@ -340,8 +351,12 @@ ${mutation}
    */
   fixMutators({ context, form, callback });
 
+
   form.subscribe(
     (all) => {
+      // console.log('current')
+      // console.log(all.values)
+      // console.log(context.queryFieldName)
       // Sync form value changes to value key
       callback({
         type: "ON_FIELD_CHANGE",
