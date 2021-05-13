@@ -18,11 +18,10 @@ import { createFormMachine } from "./form-service";
 import { createMachine, spawn, StateSchema, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
-import set from "lodash.set";
 import gql from "graphql-tag";
 import { print } from "graphql";
-import _ from "lodash";
 import type { DocumentNode as GqlDocumentNode } from "graphql";
+import { setIn } from "final-form";
 
 export interface FormifyArgs {
   formConfig: FormOptions<any>;
@@ -126,13 +125,15 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
-              const temp = _.cloneDeep(context.payload);
               // TODO: If we didn't query for it, don't populate it.
               // for now this will populate values which we may not have asked for in the data
               // key. But to do this properly we'll need to traverse the query and store the paths
               // which should be populated
-              set(temp, event.pathAndValue.path, event.pathAndValue.value);
-              return temp;
+              return setIn(
+                context.payload,
+                event.pathAndValue.path.join("."),
+                event.pathAndValue.value
+              );
             },
           }),
         },
