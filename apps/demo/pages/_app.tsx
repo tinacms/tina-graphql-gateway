@@ -13,21 +13,29 @@ limitations under the License.
 
 import React from "react";
 import { AppProps } from "next/app";
-import { withTina } from "tinacms";
-import { LocalClient } from "tina-graphql-gateway";
+import { withTina, useCMS } from "tinacms";
+import { LocalClient, Client, TinaCloudAuthWall } from "tina-graphql-gateway";
 import "graphiql/graphiql.css";
 import "codemirror/lib/codemirror.css";
 import "tailwindcss/tailwind.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const cms = useCMS();
   return (
     <div>
-      <Component {...pageProps} />
+      <TinaCloudAuthWall cms={cms}>
+        <Component {...pageProps} />
+      </TinaCloudAuthWall>
     </div>
   );
 }
 
-const client = new LocalClient();
+// const client = new LocalClient();
+const client = new Client({
+  clientId: "some-id",
+  organizationId: "gctc",
+  branch: "main",
+});
 
 export default withTina(MyApp, {
   apis: {
