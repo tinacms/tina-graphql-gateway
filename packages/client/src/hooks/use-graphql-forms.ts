@@ -21,6 +21,7 @@ import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
 import set from "lodash.set";
 import gql from "graphql-tag";
 import { print } from "graphql";
+import _ from "lodash";
 import type { DocumentNode as GqlDocumentNode } from "graphql";
 
 export interface FormifyArgs {
@@ -103,7 +104,10 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
                   client: context.cms.api.tina,
                   cms: context.cms,
                   // @ts-ignore
-                  node: item,
+                  node: {
+                    ...item,
+                    initialData: item.data,
+                  },
                   onSubmit: context.onSubmit,
                   queryFieldName: keys[index],
                   queryString: context.queryString,
@@ -122,7 +126,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
         FORM_VALUE_CHANGE: {
           actions: assign({
             payload: (context, event) => {
-              const temp = { ...context.payload };
+              const temp = _.cloneDeep(context.payload);
               // TODO: If we didn't query for it, don't populate it.
               // for now this will populate values which we may not have asked for in the data
               // key. But to do this properly we'll need to traverse the query and store the paths
@@ -431,6 +435,9 @@ export type DocumentNode = {
     [key: string]: string | string[] | object | object[];
   };
   data: {
+    [key: string]: string | string[] | object | object[];
+  };
+  initialData: {
     [key: string]: string | string[] | object | object[];
   };
 };
