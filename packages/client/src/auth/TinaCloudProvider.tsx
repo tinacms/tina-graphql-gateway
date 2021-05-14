@@ -29,13 +29,13 @@ export interface TinaCloudAuthWallProps {
   cms: TinaCMS;
   children: React.ReactNode;
   loginScreen?: React.ReactNode;
-  getModelActions?:(args: {closeModel:()=>void})=> {name: string, action: () => Promise<void>, primary: boolean}[]
+  getModalActions?:(args: {closeModal:()=>void})=> {name: string, action: () => Promise<void>, primary: boolean}[]
 }
 export const AuthWallInner = ({
   children,
   cms,
   loginScreen,
-  getModelActions
+  getModalActions
 }: TinaCloudAuthWallProps) => {
   const client: Client = cms.api.tina;
 
@@ -65,7 +65,7 @@ export const AuthWallInner = ({
     }
   };
 
-  const otherModelActions = getModelActions ? getModelActions({closeModel: ()=>{setActiveModal(null)}}) : []
+  const otherModalActions = getModalActions ? getModalActions({closeModal: ()=>{setActiveModal(null)}}) : []
 
   return (
     <>
@@ -75,7 +75,7 @@ export const AuthWallInner = ({
           message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
           close={close}
           actions={[
-            ...otherModelActions,
+            ...otherModalActions,
             {
               name: "Continue to Tina Cloud",
               action: async () => {
