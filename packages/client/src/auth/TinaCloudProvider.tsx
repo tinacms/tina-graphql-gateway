@@ -25,15 +25,18 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export interface TinaCloudAuthWallProps {
+  cms: TinaCMS;
+  children: React.ReactNode;
+  loginScreen?: React.ReactNode;
+  getModalActions?:(args: {closeModal:()=>void})=> {name: string, action: () => Promise<void>, primary: boolean}[]
+}
 export const AuthWallInner = ({
   children,
   cms,
   loginScreen,
-}: {
-  cms: TinaCMS;
-  children: React.ReactNode;
-  loginScreen?: React.ReactNode;
-}) => {
+  getModalActions
+}: TinaCloudAuthWallProps) => {
   const client: Client = cms.api.tina;
 
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
@@ -62,6 +65,8 @@ export const AuthWallInner = ({
     }
   };
 
+  const otherModalActions = getModalActions ? getModalActions({closeModal: ()=>{setActiveModal(null)}}) : []
+
   return (
     <>
       {activeModal === "authenticate" && (
@@ -70,6 +75,7 @@ export const AuthWallInner = ({
           message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
           close={close}
           actions={[
+            ...otherModalActions,
             {
               name: "Continue to Tina Cloud",
               action: async () => {
@@ -91,11 +97,7 @@ export const AuthWallInner = ({
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (props: {
-  cms: TinaCMS;
-  children: React.ReactNode;
-  loginScreen?: React.ReactNode;
-}) => {
+export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps ) => {
   useTinaAuthRedirect();
 
   return (
