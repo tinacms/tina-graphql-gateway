@@ -23,10 +23,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   const cms = useCMS();
   return (
     <div>
-      <TinaCloudAuthWall cms={cms} getModelActions={({closeModel})=>{
+      <TinaCloudAuthWall cms={cms} getModalActions={({closeModal})=>{
         return [{
            action: async ()=>{
-             closeModel()
+             closeModal()
            },
            name: 'close',
            primary: false,
