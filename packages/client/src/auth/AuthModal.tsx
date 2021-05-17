@@ -12,7 +12,6 @@ limitations under the License.
 */
 
 import {
-  useCMS,
   Modal,
   ModalPopup,
   ModalHeader,
@@ -20,42 +19,10 @@ import {
   ModalActions,
 } from "tinacms";
 import { StyleReset } from "@tinacms/styles";
-import { AsyncButton } from "./AsyncButton";
-import React from "react";
+import React, { useCallback, useState } from "react";
+import { LoadingDots } from "@tinacms/react-forms";
+import { Button } from "@tinacms/styles";
 import styled from "styled-components";
-// import "./auth.css"; // TODO - can't import css with current rollup config
-export interface TinaCloudAuthenticationModalProps {
-  onAuthSuccess(token: string): void;
-  close(): void;
-}
-
-export function TinaCloudAuthenticationModal({
-  onAuthSuccess,
-  close,
-}: TinaCloudAuthenticationModalProps) {
-  const cms = useCMS();
-  return (
-    <ModalBuilder
-      title="Tina Cloud Authorization"
-      message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
-      close={close}
-      actions={[
-        {
-          name: "Cancel",
-          action: close,
-        },
-        {
-          name: "Continue to Tina Cloud",
-          action: async () => {
-            const token = await cms.api.tina.authenticate();
-            onAuthSuccess(token);
-          },
-          primary: true,
-        },
-      ]}
-    />
-  );
-}
 
 interface ModalBuilderProps {
   title: string;
@@ -70,7 +37,7 @@ export function ModalBuilder(modalProps: ModalBuilderProps) {
     <StyleReset>
       <Modal>
         <ModalPopup>
-          <ModalHeader close={modalProps.close}>{modalProps.title}</ModalHeader>
+          <ModalHeader>{modalProps.title}</ModalHeader>
           <ModalBody padded>
             <p>{modalProps.message}</p>
             {modalProps.error && <ErrorLabel>{modalProps.error}</ErrorLabel>}
@@ -89,3 +56,36 @@ export function ModalBuilder(modalProps: ModalBuilderProps) {
 export const ErrorLabel = styled.p`
   color: var(--tina-color-error) !important;
 `;
+
+interface ButtonProps {
+  name: string;
+  action(): Promise<void>;
+  primary: boolean;
+}
+
+export const AsyncButton = ({ name, primary, action }: ButtonProps) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onClick = useCallback(async () => {
+    setSubmitting(true);
+    try {
+      await action();
+      setSubmitting(false);
+    } catch (e) {
+      setSubmitting(false);
+      throw e;
+    }
+  }, [action, setSubmitting]);
+
+  return (
+    <Button
+      primary={primary}
+      onClick={onClick}
+      busy={submitting}
+      disabled={submitting}
+    >
+      {submitting && <LoadingDots />}
+      {!submitting && name}
+    </Button>
+  );
+};
