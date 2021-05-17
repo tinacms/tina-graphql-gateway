@@ -11,92 +11,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ModalBuilder, TinaCloudAuthenticationModal } from "./AuthModal";
-import React, { useEffect, useState } from "react";
-import { TinaCMS, TinaProvider, useCMS } from "tinacms";
+import { ModalBuilder } from "./AuthModal";
+import React, { useState } from "react";
+import { TinaCMS, TinaProvider } from "tinacms";
 
 import { Client } from "../client";
 import type { TokenObject } from "./authenticate";
 import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
 
-interface ProviderProps {
-  children: any;
-  onLogin: (token: string) => string; // returns token
-  onLogout: () => void;
-  error?: any;
-}
-
 type ModalNames = null | "authenticate";
-
-export const TinaCloudProvider = ({
-  children,
-  onLogin,
-  onLogout,
-}: ProviderProps) => {
-  const cms = useCMS();
-  const client: Client = cms.api.tina;
-  const [activeModal, setActiveModal] = useState<ModalNames>(null);
-
-  const onClose = async () => {
-    setActiveModal(null);
-    if (!(await client.isAuthorized())) {
-      cms.disable();
-    }
-  };
-
-  const beginAuth = async () => {
-    setActiveModal("authenticate");
-  };
-
-  const onAuthSuccess = async (token: string) => {
-    if (await client.isAuthorized()) {
-      onLogin(token);
-      setActiveModal(null);
-    } else {
-      throw new Error("No access to repo"); // TODO - display modal here
-    }
-  };
-
-  useCMSEvent("cms:enable", beginAuth, []);
-  useCMSEvent("cms:disable", onLogout, []);
-
-  return (
-    <div>
-      {activeModal === "authenticate" && (
-        <TinaCloudAuthenticationModal
-          close={onClose}
-          onAuthSuccess={onAuthSuccess}
-        />
-      )}
-      {children}
-    </div>
-  );
-};
-
-function useCMSEvent(event: string, callback: any, deps: React.DependencyList) {
-  const cms = useCMS();
-  useEffect(function () {
-    return cms.events.subscribe(event, callback);
-  }, deps);
-}
-
-const LoginScreen = () => {
-  return <div>Please wait while we log you in</div>;
-};
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export interface TinaCloudAuthWallProps {
+  cms: TinaCMS;
+  children: React.ReactNode;
+  loginScreen?: React.ReactNode;
+  getModalActions?:(args: {closeModal:()=>void})=> {name: string, action: () => Promise<void>, primary: boolean}[]
+}
 export const AuthWallInner = ({
   children,
   cms,
   loginScreen,
-}: {
-  cms: TinaCMS;
-  children: React.ReactNode;
-  loginScreen?: React.ReactNode;
-}) => {
+  getModalActions
+}: TinaCloudAuthWallProps) => {
   const client: Client = cms.api.tina;
 
   const [activeModal, setActiveModal] = useState<ModalNames>(null);
@@ -125,6 +65,8 @@ export const AuthWallInner = ({
     }
   };
 
+  const otherModalActions = getModalActions ? getModalActions({closeModal: ()=>{setActiveModal(null)}}) : []
+
   return (
     <>
       {activeModal === "authenticate" && (
@@ -133,10 +75,7 @@ export const AuthWallInner = ({
           message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
           close={close}
           actions={[
-            {
-              name: "Cancel",
-              action: close,
-            },
+            ...otherModalActions,
             {
               name: "Continue to Tina Cloud",
               action: async () => {
@@ -148,7 +87,7 @@ export const AuthWallInner = ({
           ]}
         />
       )}
-      {showChildren ? children : loginScreen ? loginScreen : <LoginScreen />}
+      {showChildren ? children : loginScreen ? loginScreen : null}
     </>
   );
 };
@@ -158,11 +97,7 @@ export const AuthWallInner = ({
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (props: {
-  cms: TinaCMS;
-  children: React.ReactNode;
-  loginScreen?: React.ReactNode;
-}) => {
+export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps ) => {
   useTinaAuthRedirect();
 
   return (
