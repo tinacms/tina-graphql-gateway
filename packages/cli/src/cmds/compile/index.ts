@@ -21,8 +21,10 @@ import * as _ from "lodash";
 import { successText, dangerText } from "../../utils/theme";
 
 const tinaPath = path.join(process.cwd(), ".tina");
-const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
-const tinaConfigPath = path.join(process.cwd(), ".tina/__generated__/config");
+// const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
+const tinaTempPath = path.join(process.cwd(), ".tina", "__generated__", "temp")
+// const tinaConfigPath = path.join(process.cwd(), ".tina/__generated__/config");
+const tinaConfigPath = path.join(process.cwd(), ".tina", "__generated__", "config")
 
 const transformField = async (
   tinaField: TinaField,
@@ -204,15 +206,23 @@ let compiledTemplates = [];
 export const compile = async () => {
   await fs.remove(tinaTempPath);
   await fs.remove(tinaConfigPath);
+  console.log({tinaTempPath})
   await transpile(tinaPath, tinaTempPath);
   Object.keys(require.cache).map((key) => {
     if (key.startsWith(tinaTempPath)) {
       delete require.cache[require.resolve(key)];
     }
   });
+  console.log('this will run')
+  console.log(path.join(tinaTempPath, "schema.js"))
+  console.log(fs.readdirSync(tinaTempPath))
+
   const schemaFunc = require(path.join(tinaTempPath, "schema.js"));
+  console.log('but this wont')
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
+  console.log("Test 1")
   await compileInner(schemaObject);
+  console.log("Test 2")
   compiledTemplates = [];
 };
 
@@ -267,19 +277,29 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 };
 
 const transpile = async (projectDir, tempDir) => {
+  console.log({projectDir})
+  console.log({tempDir})
+
   return Promise.all(
     glob
-      .sync(path.join(projectDir, "/**/*.ts"), {
-        ignore: [path.join(projectDir, "__generated__/**/*.ts")],
+      .sync(path.join(projectDir, '**', "*.ts").replace(/\\/g, '/'), {
+        ignore: [path.join(projectDir, "__generated__","**","*.ts").replace(/\\/g, '/')],
       })
       .map(async function (file) {
+        console.log({file})
         const fullPath = path.resolve(file);
+       
         const contents = await fs.readFileSync(fullPath).toString();
         const newContent = ts.transpile(contents);
+        const newPath =  file.replace(/\//g, '\\').replace(projectDir, tempDir).replace(".ts", ".js")
         await fs.outputFile(
-          file.replace(projectDir, tempDir).replace(".ts", ".js"),
+          newPath,
           newContent
         );
+        console.log({newPath})
+        // const data = await fs.readFile(newPath, 'utf8')
+
+        // console.log({data}) // => hello!
         return true;
       })
   );
