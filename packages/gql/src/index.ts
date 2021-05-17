@@ -15,8 +15,12 @@ import { schemaBuilder } from "./builder";
 import { cacheInit } from "./cache";
 import { graphqlInit } from "./resolver";
 import { buildASTSchema } from "graphql";
+import { createDatasource } from "./datasources/data-manager";
+import { GithubManager } from "./datasources/github-manager";
 import { FileSystemManager } from "./datasources/filesystem-manager";
-import { GithubManager, clearCache } from "./datasources/github-manager";
+import { simpleCache, clearCache } from "./lru";
+
+export { clearCache };
 
 export const gql = async ({
   projectRoot,
@@ -27,7 +31,10 @@ export const gql = async ({
   query: string;
   variables: object;
 }) => {
-  const datasource = new FileSystemManager(projectRoot);
+  const datasource = createDatasource(
+    new FileSystemManager({ rootPath: projectRoot })
+  );
+
   const cache = cacheInit(datasource);
 
   try {
@@ -48,14 +55,15 @@ export const gql = async ({
 };
 
 export const buildSchema = async (projectRoot: string) => {
-  const datasource = new FileSystemManager(projectRoot);
+  const datasource = createDatasource(
+    new FileSystemManager({ rootPath: projectRoot })
+  );
   const cache = cacheInit(datasource);
 
   const { schema } = await schemaBuilder({ cache });
   return buildASTSchema(schema);
 };
 
-export { clearCache };
 export const githubRoute = async ({
   accessToken,
   owner,
@@ -73,13 +81,15 @@ export const githubRoute = async ({
   rootPath?: string;
   branch: string;
 }) => {
-  const datasource = new GithubManager({
+  const gh = new GithubManager({
     rootPath: rootPath || "",
     accessToken,
     owner,
     repo,
-    branch,
+    ref: branch,
+    cache: simpleCache,
   });
+  const datasource = createDatasource(gh);
   const cache = cacheInit(datasource);
   const { schema, sectionMap } = await schemaBuilder({ cache });
 

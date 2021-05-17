@@ -7030,6 +7030,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.165"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:4.14.169", {
+          "packageLocation": "./.yarn/cache/@types-lodash-npm-4.14.169-64630f427b-a6032afed6.zip/node_modules/@types/lodash/",
+          "packageDependencies": [
+            ["@types/lodash", "npm:4.14.169"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["@types/lodash.camelcase", [
@@ -26966,6 +26973,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.1.12"],
             ["@tinacms/styles", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
+            ["@types/lodash", "npm:4.14.169"],
             ["@types/node", "npm:14.0.27"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
@@ -26992,7 +27000,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
             ["lodash.merge", "npm:4.6.2"],
-            ["lodash.set", "npm:4.3.2"],
             ["next", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:9.4.2"],
             ["node-fetch", "npm:2.6.0"],
             ["prop-types", "npm:15.7.2"],
@@ -27050,6 +27057,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.1.12"],
             ["@tinacms/styles", "virtual:54909820ccc866113f7baa21f224110eb319471b0d75a7208b0e574b65dd49b7fa220789843a528c6c44d5331c8f0a60a467edf7247200b60f2f9ab83eb34482#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
+            ["@types/lodash", "npm:4.14.169"],
             ["@types/node", "npm:14.0.27"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -27066,7 +27074,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
             ["lodash.merge", "npm:4.6.2"],
-            ["lodash.set", "npm:4.3.2"],
             ["next", "virtual:89360ac25a07d9bd4e93bb37d0cbb4e3a6adeaecb343c8ba1012845200daf3d142709d24e3fdb02262842777a56ef9d6ff4497314425aeebad88fe42afff3f43#npm:9.4.2"],
             ["node-fetch", "npm:2.6.0"],
             ["prop-types", "npm:15.7.2"],

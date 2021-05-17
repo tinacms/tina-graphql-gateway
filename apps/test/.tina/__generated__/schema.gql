@@ -31,7 +31,7 @@ type SystemInfo {
   relativePath: String
   extension: String
   template: String
-  section: Section
+  collection: Section
 }
 
 type Section {
@@ -54,7 +54,7 @@ input SectionParams {
 }
 
 type Mutation {
-  addPendingDocument(relativePath: String, section: String, template: String): Document
+  addPendingDocument(relativePath: String, collection: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
   updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
@@ -62,9 +62,9 @@ type Mutation {
 
 type Query {
   node(id: ID!): Node
-  getDocument(section: String, relativePath: String): SectionDocumentUnion
-  getSections: [Section]
-  getSection(section: String): Section
+  getDocument(collection: String, relativePath: String): SectionDocumentUnion
+  getCollections: [Section]
+  getCollection(collection: String): Section
   getAuthorsDocument(relativePath: String): Authors_Document
   getAuthorsList: [Authors_Document]
   getPostsDocument(relativePath: String): Posts_Document
@@ -89,24 +89,14 @@ type Authors_Document implements Node & Document {
   form: Authors_Form
 }
 
-type LongTextValue {
-  raw: String
-  markdownAst: JSONObject
-  html: String
-}
-
 type Author_Doc_Data {
   name: String
-  _body: LongTextValue
-}
-
-type LongTextInitialValue {
-  raw: String
+  _body: String
 }
 
 type Author_Doc_Values {
   name: String
-  _body: LongTextInitialValue
+  _body: String
   _template: String
 }
 
@@ -130,13 +120,9 @@ type Author_Doc_Form {
   fields: [Author_Doc_FormFieldsUnion]
 }
 
-input Body_LongTextInput {
-  raw: String
-}
-
 input Author_Doc_Input {
   name: String
-  _body: Body_LongTextInput
+  _body: String
 }
 
 union Posts_Data = Post_Doc_Data
@@ -165,7 +151,7 @@ type Post_Doc_Data {
   title: String
   details: Post_Details_Data
   author: Authors_Document
-  _body: LongTextValue
+  _body: String
 }
 
 type Post_Details_Values {
@@ -176,7 +162,7 @@ type Post_Doc_Values {
   title: String
   details: Post_Details_Values
   author: Reference
-  _body: LongTextInitialValue
+  _body: String
   _template: String
 }
 
@@ -212,7 +198,7 @@ input Post_Doc_Input {
   title: String
   details: Post_Details_Input
   author: String
-  _body: Body_LongTextInput
+  _body: String
 }
 
   

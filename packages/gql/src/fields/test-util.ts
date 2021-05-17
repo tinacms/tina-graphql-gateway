@@ -21,6 +21,7 @@ import {
   buildSchema,
   print,
 } from "graphql";
+import { createDatasource } from "../datasources/data-manager";
 import { FileSystemManager } from "../datasources/filesystem-manager";
 import { gql } from "@forestryio/graphql-helpers/dist/test-util";
 import { template } from "../fields/templates";
@@ -33,7 +34,9 @@ import type { Field } from ".";
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
   const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
-  const filesystemDataSource = new FileSystemManager(projectRoot);
+  const filesystemDataSource = createDatasource(
+    new FileSystemManager({ rootPath: projectRoot })
+  );
   if (mockGetTemplate) {
     filesystemDataSource.getTemplate = mockGetTemplate;
   }
@@ -92,7 +95,9 @@ const PATH_TO_TEST_APP = path.join(
   "apps/test"
 );
 
-const datasource = new FileSystemManager(PATH_TO_TEST_APP);
+const datasource = createDatasource(
+  new FileSystemManager({ rootPath: PATH_TO_TEST_APP })
+);
 const cache = cacheInit(datasource);
 
 export const setupRunner = (field: Field) => {

@@ -11,12 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 import { cacheInit } from "../cache";
 import { schemaBuilder } from ".";
-import { FileSystemManager } from "../datasources/filesystem-manager";
+import { createDatasource } from "../datasources/data-manager";
 import { parse } from "graphql";
+import { FileSystemManager } from "../datasources/filesystem-manager";
 
 const PATH_TO_TEST_APP = path.join(
   path.resolve(__dirname, "../../../../"),
@@ -30,7 +31,9 @@ const PATH_TO_TEST_SCHEMA = path.join(
 describe("Schema builder", () => {
   // This is kind of a bad test, just rewrite it when primitives re-work starts
   test.skip("matches schema snapshot", async () => {
-    const datasource = new FileSystemManager(PATH_TO_TEST_APP);
+    const datasource = createDatasource(
+      new FileSystemManager({ rootPath: PATH_TO_TEST_APP })
+    );
     const cache = cacheInit(datasource);
     const { schema } = await schemaBuilder({ cache });
 
