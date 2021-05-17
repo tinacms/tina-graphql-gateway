@@ -295,7 +295,7 @@ const transpile = async (projectDir, tempDir) => {
         if(process.platform === "win32"){
           realFile = file.replace(/\//g, '\\')
         }
-        const newPath =  file.replace(projectDir, tempDir).replace(".ts", ".js")
+        const newPath =  realFile.replace(projectDir, tempDir).replace(".ts", ".js")
         await fs.outputFile(
           newPath,
           newContent
