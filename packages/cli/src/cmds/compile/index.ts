@@ -206,23 +206,16 @@ let compiledTemplates = [];
 export const compile = async () => {
   await fs.remove(tinaTempPath);
   await fs.remove(tinaConfigPath);
-  console.log({tinaTempPath})
   await transpile(tinaPath, tinaTempPath);
   Object.keys(require.cache).map((key) => {
     if (key.startsWith(tinaTempPath)) {
       delete require.cache[require.resolve(key)];
     }
   });
-  console.log('this will run')
-  console.log(path.join(tinaTempPath, "schema.js"))
-  console.log(fs.readdirSync(tinaTempPath))
 
   const schemaFunc = require(path.join(tinaTempPath, "schema.js"));
-  console.log('but this wont')
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
-  console.log("Test 1")
   await compileInner(schemaObject);
-  console.log("Test 2")
   compiledTemplates = [];
 };
 
@@ -277,8 +270,6 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 };
 
 const transpile = async (projectDir, tempDir) => {
-  console.log({projectDir})
-  console.log({tempDir})
 
   return Promise.all(
     glob
@@ -286,7 +277,6 @@ const transpile = async (projectDir, tempDir) => {
         ignore: [path.join(projectDir, "__generated__","**","*.ts").replace(/\\/g, '/')],
       })
       .map(async function (file) {
-        console.log({file})
         const fullPath = path.resolve(file);
        
         const contents = await fs.readFileSync(fullPath).toString();
@@ -300,10 +290,6 @@ const transpile = async (projectDir, tempDir) => {
           newPath,
           newContent
         );
-        console.log({newPath})
-        // const data = await fs.readFile(newPath, 'utf8')
-
-        // console.log({data}) // => hello!
         return true;
       })
   );
