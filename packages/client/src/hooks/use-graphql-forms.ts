@@ -165,36 +165,35 @@ export const useDocumentCreatorPlugin = (
   filterCollections?: FilterCollections
 ) => {
   const cms = useCMS();
-
   React.useEffect(() => {
     const run = async () => {
-      const getCollectionOptions = async () => {
-        const res = await cms.api.tina.request(
-          (gql) => gql`
-            {
-              getCollections {
-                label
-                slug
-              }
+      const res = await cms.api.tina.request(
+        (gql) => gql`
+          {
+            getCollections {
+              label
+              slug
+              format
             }
-          `,
-          { variables: {} }
-        );
-        const emptyOption = { value: "", label: "Choose Collection" };
-        const options: { label: string; value: string }[] = [];
-        res.getCollections.forEach((collection) => {
-          const value = collection.slug;
-          const label = `${collection.label}`;
-          options.push({ value, label });
-        });
+          }
+        `,
+        { variables: {} }
+      );
 
-        if (filterCollections && typeof filterCollections === "function") {
-          const filtered = filterCollections(options);
-          return [emptyOption, ...filtered];
-        }
+      const emptyOption = { value: "", label: "Choose Collection" };
+      const options: { label: string; value: string }[] = [];
+      res.getCollections.forEach((collection) => {
+        const value = collection.slug;
+        const label = `${collection.label}`;
+        options.push({ value, label });
+      });
 
-        return [emptyOption, ...options];
-      };
+      if (filterCollections && typeof filterCollections === "function") {
+        const filtered = filterCollections(options);
+        return [emptyOption, ...filtered];
+      }
+
+      const collectionOptions = [emptyOption, ...options];
 
       const getCollectionTemplateOptions = async (collection: String) => {
         if (!collection) {
@@ -222,13 +221,14 @@ export const useDocumentCreatorPlugin = (
       cms.plugins.add(
         new ContentCreatorPlugin({
           onNewDocument: onNewDocument,
+          collections: res.getCollections,
           fields: [
             {
               component: "select",
               name: "collection",
               label: "Collection",
               description: "Select the collection.",
-              options: await getCollectionOptions(),
+              options: collectionOptions,
               validate: async (value: any) => {
                 if (!value) {
                   return "Required";
