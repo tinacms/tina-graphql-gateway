@@ -20,7 +20,7 @@ Provides React hooks for fetching and building the Tina form. It also exposes a 
 
 Environment: `node`
 
-Provides `buildSchema` function which takes a `DataSource` instance and provides a schema based on the data it finds. It also provides the `FileSystemManager` datasource as well as the `DataSource` interface.
+Provides `buildSchema` function which takes a `DataSource` instance and provides a schema based on the data it finds.
 
 ## How to Run This Project
 

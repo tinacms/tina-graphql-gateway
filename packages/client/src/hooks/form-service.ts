@@ -280,6 +280,15 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     id: context.queryFieldName,
     label: context.node._internalSys.basename,
     fields,
+    reset: () => {
+      callback({
+        type: "ON_FIELD_CHANGE",
+        values: {
+          path: [context.queryFieldName, "data"],
+          value: context.node.initialData,
+        },
+      });
+    },
     initialValues: context.node.values,
     onSubmit: async (values) => {
       const queryForMutation = context.queries[context.queryFieldName];
