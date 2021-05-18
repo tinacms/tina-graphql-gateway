@@ -32,6 +32,7 @@ const licenseIgnoreList = [
   ".pnp.js",
   "apps/demo/.tina/__generated__/types.ts",
   "apps/test/.tina/__generated__/types.ts",
+  "apps/tina-cloud-starter/.tina/__generated__/types.ts",
 ];
 
 runChecksOnPullRequest();
