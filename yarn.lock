@@ -22297,8 +22297,6 @@ fsevents@~2.3.1:
   version: 0.0.0-use.local
   resolution: "tina-cloud-starter@workspace:apps/tina-cloud-starter"
   dependencies:
-    "@forestryio/gql": "workspace:packages/gql"
-    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers"
     "@types/js-cookie": ^2.2.6
     "@types/node": ^13.13.1
     "@types/react": ^16.9.43
