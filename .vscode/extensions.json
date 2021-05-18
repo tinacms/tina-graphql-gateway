@@ -2,7 +2,6 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "arcanis.vscode-zipfs",
-    "jeffsee55.forestry-schema"
+    "arcanis.vscode-zipfs"
   ]
 }

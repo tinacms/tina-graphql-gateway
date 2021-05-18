@@ -35,7 +35,7 @@ This is a [TinaCMS](https://tina.io)-enabled Next.js app, so you can edit your c
 
 ## Fork this repository
 
- ⚠️⚠️ Start by **forking** the repositorty and then pull it down to your computer. ⚠️⚠️
+⚠️⚠️ Start by **forking** the repositorty and then pull it down to your computer. ⚠️⚠️
 
 ## Install
 
@@ -70,6 +70,7 @@ Open [`http://localhost:3000`](http://localhost:3000) in your browser to see you
 We need to define some local environment variables in order to edit content with Tina.
 
 Copy `.env.local.sample` to `.env.local`:
+
 ```sh
 cp .env.local.sample .env.local
 
@@ -181,14 +182,13 @@ Tina Cloud Starter is a [Next.js](https://nextjs.org) application. The file-base
 
 This page can be seen at `http://localhost:3000/`, it loads the content from a markdown file which can be found in this repository at `/content/marketing-pages/index.md`. You can edit this page at by clicking the "enter edit mode" button in the top right hand corner
 
-
-We wrap the site in a small `EditProvider` component, that stores whether or not we are in edit mode in React state and localstorage. When we are in edit mode it triggers authentication when needed, and then one is in edit mode. 
+We wrap the site in a small `EditProvider` component, that stores whether or not we are in edit mode in React state and localstorage. When we are in edit mode it triggers authentication when needed, and then one is in edit mode.
 
 What makes this possible is `getStaticProps`: you can notice that every editable page exports a `query` prop and a data prop from `getStaticProps`. When we are not in `editMode` we use the data prop to render the site. When we are in edit mode we use the query to fetch the latest data from Tina Cloud and create the sidebar form.
 
 ### `pages/posts/[filename].tsx`
 
-The posts are stored in the `content/posts` directory of this repository, and their routes are built with `getStaticPaths` dynamically at build time. To go in edit mode, click the "edit this site" button. This  re-renders your site  by wrapping it when a `TinaProvider` component, this only happens in edit mode to make sure Tina is not added to your production bundle.
+The posts are stored in the `content/posts` directory of this repository, and their routes are built with `getStaticPaths` dynamically at build time. To go in edit mode, click the "edit this site" button. This re-renders your site by wrapping it when a `TinaProvider` component, this only happens in edit mode to make sure Tina is not added to your production bundle.
 
 ### `components`
 
@@ -259,10 +259,6 @@ These are rebuilt when your `.tina` config changes.
 Tina Cloud generates your GraphQL schema automatically. 🪄
 
 [Install GraphQL extension](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) to benefit from type auto-completion.
-
-#### Forestry Schema extension
-
-[Install Forestry extension](https://marketplace.visualstudio.com/items?itemName=jeffsee55.forestry-schema) to lint your YAML-based content models.
 
 ### Explore the GraphQL API
 
