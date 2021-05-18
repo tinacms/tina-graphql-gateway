@@ -28557,8 +28557,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./apps/tina-cloud-starter/",
           "packageDependencies": [
             ["tina-cloud-starter", "workspace:apps/tina-cloud-starter"],
-            ["@forestryio/gql", "workspace:packages/gql"],
-            ["@forestryio/graphql-helpers", "workspace:packages/graphql-helpers"],
             ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:13.13.15"],
             ["@types/react", "npm:16.9.43"],
