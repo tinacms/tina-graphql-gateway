@@ -15,8 +15,6 @@
     "tina-graphql-gateway-cli": "workspace:packages/cli"
   },
   "dependencies": {
-    "@forestryio/gql": "workspace:packages/gql",
-    "@forestryio/graphql-helpers": "workspace:packages/graphql-helpers",
     "next": "10.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
