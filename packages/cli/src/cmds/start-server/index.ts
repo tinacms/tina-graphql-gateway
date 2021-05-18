@@ -53,7 +53,7 @@ export async function startServer(
       .on("ready", async () => {
         try {
           console.log("Generating Tina config");
-          console.log('Compileing...')
+          console.log('Compiling...')
           await compile();
           console.log('Building schema...')
           const schema = await buildSchema(process.cwd());
