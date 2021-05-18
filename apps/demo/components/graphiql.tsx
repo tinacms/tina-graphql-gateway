@@ -13,7 +13,7 @@ limitations under the License.
 
 import React from "react";
 import GraphiQL from "graphiql";
-import { formify, queryGenerator } from "@forestryio/graphql-helpers";
+import { formify, queryGenerator } from "tina-graphql-helpers";
 import { useMachine } from "@xstate/react";
 import { Machine, assign, createMachine, StateSchema } from "xstate";
 import { useGraphqlForms } from "tina-graphql-gateway";
