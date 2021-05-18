@@ -25,8 +25,5 @@
     "tina-graphql-gateway": "workspace:packages/client",
     "tinacms": "0.31.0",
     "typescript": "^3.8.3"
-  },
-  "resolutions": {
-    "final-form": "4.20.1"
   }
 }
