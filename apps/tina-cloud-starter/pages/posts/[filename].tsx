@@ -44,6 +44,7 @@ export const query = `#graphql
               }
             }
           }
+          test
           _body
         }
       }

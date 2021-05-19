@@ -17,6 +17,7 @@ import { gql } from "../../gql";
 import { sequential } from "../../util";
 
 import { text } from "../text";
+import { color } from '../color'
 import { list } from "../list";
 import { select } from "../select";
 import { blocks } from "../blocks";
@@ -265,6 +266,8 @@ const buildTemplateFormField = async (
       return number.build.field({ cache, field, accumulator });
     case "tag_list":
       return tag_list.build.field({ cache, field, accumulator });
+    case "color":
+      return color.build.field({cache, field, accumulator})
     default:
       return text.build.field({ cache, field, accumulator });
   }
@@ -302,6 +305,8 @@ const buildTemplateInitialValueField = async (
       return number.build.initialValue({ cache, field, accumulator });
     case "tag_list":
       return tag_list.build.initialValue({ cache, field, accumulator });
+    case "color":
+      return color.build.initialValue({ cache, field, accumulator });
     default:
       return text.build.initialValue({ cache, field, accumulator });
   }
@@ -339,6 +344,8 @@ const buildTemplateDataField = async (
       return number.build.value({ cache, field, accumulator });
     case "tag_list":
       return tag_list.build.value({ cache, field, accumulator });
+    case "color":
+      return color.build.value({ cache, field, accumulator });
     default:
       return text.build.value({ cache, field, accumulator });
   }
@@ -376,6 +383,8 @@ const buildTemplateInputDataField = async (
       return number.build.input({ cache, field, accumulator });
     case "tag_list":
       return tag_list.build.input({ cache, field, accumulator });
+    case "color":
+      return color.build.input({ cache, field, accumulator });
     default:
       return text.build.input({ cache, field, accumulator });
   }

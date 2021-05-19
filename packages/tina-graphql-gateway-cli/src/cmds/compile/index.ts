@@ -19,6 +19,7 @@ import * as jsyaml from "js-yaml";
 import * as yup from "yup";
 import * as _ from "lodash";
 import { successText, dangerText } from "../../utils/theme";
+import { ColorField } from "../audit/schema/fields/color";
 
 const tinaPath = path.join(process.cwd(), ".tina");
 const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
@@ -197,6 +198,7 @@ let types = [
   "blocks",
   "reference",
   "reference-list",
+  "color",
 ];
 
 let compiledTemplates = [];
@@ -402,6 +404,12 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .matches(/^text$/)
       .required(),
   });
+  const ColorSchema = baseSchema.label("color").shape({
+    type: yup
+      .string()
+      .matches(/^color$/)
+      .required(),
+  });
 
   const DateTimeSchema = baseSchema.label("datetime").shape({
     type: yup
@@ -524,6 +532,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
     ),
   });
   let schemaMap = {
+    color: ColorSchema,
     text: TextSchema,
     datetime: DateTimeSchema,
     textarea: TextAreaSchema,
@@ -551,6 +560,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
     GroupListSchema,
     ReferenceSchema,
     ReferenceListSchema,
+    ColorSchema
   ];
 
   const TemplateSchema = yup.object({
@@ -639,7 +649,8 @@ export type TinaField =
   | TagsField
   | BlocksField
   | Reference
-  | ReferenceList;
+  | ReferenceList
+  | ColorField;
 
 interface TinaBaseField {
   name: string;
@@ -649,6 +660,9 @@ interface TinaBaseField {
 
 interface TextField extends TinaBaseField {
   type: "text";
+}
+interface ColorField extends TinaBaseField {
+  type: "color";
 }
 
 interface DateTimeField extends TinaBaseField {

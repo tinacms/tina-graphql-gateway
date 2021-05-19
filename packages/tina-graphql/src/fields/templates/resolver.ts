@@ -16,6 +16,7 @@ import { sequential, assertShape } from "../../util";
 import { templateTypeName } from "tina-graphql-helpers";
 
 import { text } from "../text";
+import { color } from "../color";
 import { list } from "../list";
 import { select } from "../select";
 import { blocks } from "../blocks";
@@ -195,6 +196,8 @@ const dataInitialValuesField = async (
       return number.resolve.initialValue({ datasource, field, value });
     case "tag_list":
       return tag_list.resolve.initialValue({ datasource, field, value });
+    case "color":
+      return color.resolve.initialValue({ datasource, field, value })
   }
 };
 const dataValue = async (
@@ -233,6 +236,8 @@ const dataValue = async (
       return number.resolve.value({ datasource, field, value });
     case "tag_list":
       return tag_list.resolve.value({ datasource, field, value });
+    case "color":
+      return color.resolve.value({datasource,field, value })
   }
 };
 const dataField = async (datasource: DataSource, field: Field) => {
@@ -266,6 +271,8 @@ const dataField = async (datasource: DataSource, field: Field) => {
       return number.resolve.field({ datasource, field });
     case "tag_list":
       return tag_list.resolve.field({ datasource, field });
+    case "color":
+      return color.resolve.field({datasource, field })
   }
 };
 const inputField = async ({
@@ -304,7 +311,9 @@ const inputField = async ({
       return number.resolve.input({ datasource, field, value });
     case "tag_list":
       return tag_list.resolve.input({ datasource, field, value });
-  }
+    case "color":
+      return color.resolve.field({datasource, field })
+}
 };
 
 const findField = (

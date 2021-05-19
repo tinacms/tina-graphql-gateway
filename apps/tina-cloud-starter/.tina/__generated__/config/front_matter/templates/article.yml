@@ -5,6 +5,9 @@ fields:
   - type: text
     label: Title
     name: title
+  - type: color
+    label: test
+    name: test
   - name: author
     label: Author
     type: select

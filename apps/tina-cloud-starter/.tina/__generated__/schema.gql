@@ -95,12 +95,14 @@ type Posts_Document implements Node & Document {
 
 type Article_Doc_Data {
   title: String
+  test: String
   author: Authors_Document
   _body: String
 }
 
 type Article_Doc_Values {
   title: String
+  test: String
   author: Reference
   _body: String
   _template: String
@@ -135,6 +137,7 @@ type Article_Doc_Form {
 
 input Article_Doc_Input {
   title: String
+  test: String
   author: String
   _body: String
 }

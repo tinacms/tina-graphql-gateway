@@ -28,6 +28,11 @@ export default defineSchema({
               type: "text",
               label: "Title",
               name: "title",
+            },  
+            {
+              type: "color",
+              label: "test", 
+              name: "test"
             },
             {
               type: "reference",

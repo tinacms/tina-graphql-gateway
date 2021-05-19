@@ -14,6 +14,7 @@ limitations under the License.
 import * as yup from "yup";
 
 import type { TextField, TinaTextField } from "./text";
+import type { ColorField, TinaColorField }  from "./color"
 import type { ListField, TinaListField } from "./list";
 import type { SelectField, TinaSelectField } from "./select";
 import type { BlocksField, TinaBlocksField } from "./blocks";
@@ -47,7 +48,8 @@ export type Field =
   | ImageGalleryField
   | NumberField
   | TagListField
-  | BooleanField;
+  | BooleanField
+  | ColorField;
 
 export type TinaField =
   | TinaTextField
@@ -62,7 +64,8 @@ export type TinaField =
   | TinaListField
   | TinaNumberField
   | TinaTagListField
-  | TinaBooleanField;
+  | TinaBooleanField
+  | TinaColorField;
 
 export type BuildArgs<T> = {
   cache: Cache;
