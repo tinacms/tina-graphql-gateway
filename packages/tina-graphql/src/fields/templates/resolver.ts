@@ -312,7 +312,7 @@ const inputField = async ({
     case "tag_list":
       return tag_list.resolve.input({ datasource, field, value });
     case "color":
-      return color.resolve.field({datasource, field })
+      return color.resolve.input({datasource, field, value })
 }
 };
 

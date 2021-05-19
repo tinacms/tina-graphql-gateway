@@ -1,6 +1,6 @@
 ---
 title: Vote For Pedro
-widget: sketch
+heading_color: '#C22525'
 author: content/authors/napolean.md
 _template: article
 ---

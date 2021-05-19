@@ -54,10 +54,6 @@ const Inner = (props) => {
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
-    formify: ({createForm, formConfig})=>{
-      console.log(formConfig.fields)
-      return createForm(formConfig)
-    }
   });
   return (
     <>

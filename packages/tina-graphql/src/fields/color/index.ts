@@ -101,6 +101,7 @@ export const color = {
       value,
     }: ResolveArgs<ColorField>): Promise<{ [key: string]: string } | false> => {
       try {
+        console.log('------Input')
         assertIsString(value, { source: "color input" });
         return { [field.name]: value };
       } catch (e) {
