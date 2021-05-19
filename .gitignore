@@ -19,3 +19,5 @@ builds/*
 !builds/.gitkeep
 
 out
+
+.next
