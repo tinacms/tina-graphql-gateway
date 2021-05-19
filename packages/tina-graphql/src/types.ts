@@ -19,6 +19,7 @@ export type DirectorySection = {
   /** An alias for "name", spaces or dashes (-) are not permitted  */
   slug: string;
   path: string;
+  format: "json" | "md";
   create: "documents" | "all";
   match: string;
   new_doc_ext: string;

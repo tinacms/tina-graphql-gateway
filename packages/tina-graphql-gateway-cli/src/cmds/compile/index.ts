@@ -617,6 +617,7 @@ interface TinaCloudSection {
   path: string;
   name: string;
   label: string;
+  format?: "json" | "md";
   templates: TinaCloudTemplate[];
 }
 
