@@ -22,9 +22,7 @@ import * as _ from "lodash";
 import { successText, dangerText } from "../../utils/theme";
 
 const tinaPath = path.join(process.cwd(), ".tina");
-// const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
 const tinaTempPath = path.join(process.cwd(), ".tina", "__generated__", "temp")
-// const tinaConfigPath = path.join(process.cwd(), ".tina/__generated__/config");
 const tinaConfigPath = path.join(process.cwd(), ".tina", "__generated__", "config")
 
 const transformField = async (
@@ -271,11 +269,14 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 };
 
 const transpile = async (projectDir, tempDir) => {
+
+  // Make sure that post paths are posix (unix paths). This is necessary on windows.
   const posixProjectDir = normalize(projectDir)
   const posixTempDir = normalize(tempDir)
 
   return Promise.all(
     glob
+      // We will replaces \\ with / as required by docs see: https://github.com/mrmlnc/fast-glob#how-to-write-patterns-on-windows  
       .sync(path.join(projectDir, '**', "*.ts").replace(/\\/g, '/'), {
         ignore: [path.join(projectDir, "__generated__","**","*.ts").replace(/\\/g, '/')],
       })
