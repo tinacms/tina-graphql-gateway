@@ -6,8 +6,8 @@ fields:
     label: Title
     name: title
   - type: color
-    label: test
-    name: test
+    label: Heading Color
+    name: heading_color
   - name: author
     label: Author
     type: select

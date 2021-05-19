@@ -95,14 +95,14 @@ type Posts_Document implements Node & Document {
 
 type Article_Doc_Data {
   title: String
-  test: String
+  heading_color: String
   author: Authors_Document
   _body: String
 }
 
 type Article_Doc_Values {
   title: String
-  test: String
+  heading_color: String
   author: Reference
   _body: String
   _template: String
@@ -112,6 +112,15 @@ type TextField implements FormField {
   name: String
   label: String
   component: String
+}
+
+type ColorField implements FormField {
+  name: String
+  label: String
+  component: String
+  colorFormat: String
+  widget: String
+  colors: JSONObject
 }
 
 type SelectField implements FormField {
@@ -127,7 +136,7 @@ type TextareaField implements FormField {
   component: String
 }
 
-union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
+union Article_Doc_FormFieldsUnion = TextField | ColorField | SelectField | TextareaField
 
 type Article_Doc_Form {
   label: String
@@ -137,7 +146,7 @@ type Article_Doc_Form {
 
 input Article_Doc_Input {
   title: String
-  test: String
+  heading_color: String
   author: String
   _body: String
 }

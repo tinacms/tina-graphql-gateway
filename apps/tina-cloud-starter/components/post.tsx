@@ -20,7 +20,9 @@ import type {
 export const BlogPost = (props: Article_Doc_Data) => {
   return (
     <>
-      <h1>{props.title}</h1>
+      <h1 style={{
+        color: props.heading_color || "inherit"
+      }}>{props.title}</h1>
       <AuthorSnippet author={props.author} />
       <ReactMarkdown>{props._body}</ReactMarkdown>
     </>

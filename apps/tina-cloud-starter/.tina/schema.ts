@@ -31,8 +31,12 @@ export default defineSchema({
             },  
             {
               type: "color",
-              label: "test", 
-              name: "test"
+              label: "Heading Color", 
+              name: "heading_color",
+              // widget: "block",
+              // colors: [
+              //   '#81758C'
+              // ]
             },
             {
               type: "reference",

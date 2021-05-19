@@ -663,6 +663,9 @@ interface TextField extends TinaBaseField {
 }
 interface ColorField extends TinaBaseField {
   type: "color";
+  colorFormat?: 'hex' | 'rgb' // Defaults to "hex"
+  colors?: string[]
+  widget?: 'sketch' | 'block' // Defaults to "sketch"
 }
 
 interface DateTimeField extends TinaBaseField {

@@ -44,7 +44,7 @@ export const query = `#graphql
               }
             }
           }
-          test
+          heading_color
           _body
         }
       }

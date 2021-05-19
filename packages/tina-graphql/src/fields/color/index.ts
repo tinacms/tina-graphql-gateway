@@ -20,7 +20,20 @@ const typename = "ColorField";
 export const color = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<ColorField>) => {
-      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      accumulator.push(gql.FormFieldBuilder({ name: typename, additionalFields: [
+        gql.FieldDefinition({
+        name: "colorFormat",
+        type: gql.TYPES.String,
+      }),
+      gql.FieldDefinition({
+        name: "widget",
+        type: gql.TYPES.String,
+      }),
+      gql.FieldDefinition({
+        name: "colors",
+        type: gql.TYPES.JSONObject,
+      }),
+    ]}));
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
@@ -45,6 +58,26 @@ export const color = {
     }: Omit<ResolveArgs<ColorField>, "value">): TinaColorField => {
       const { type, ...rest } = field;
       return {
+        // default values from Tinacms where not working so added them here
+        widget: "sketch",
+        colorFormat: "hex",
+        colors:  [
+          '#D0021B',
+          '#F5A623',
+          '#F8E71C',
+          '#8B572A',
+          '#7ED321',
+          '#417505',
+          '#BD10E0',
+          '#9013FE',
+          '#4A90E2',
+          '#50E3C2',
+          '#B8E986',
+          '#000000',
+          '#4A4A4A',
+          '#9B9B9B',
+          '#FFFFFF',
+        ],
         ...rest,
         component: "color",
         config: rest.config || {
@@ -91,6 +124,9 @@ export type ColorField = {
 export type TinaColorField = {
   label: string;
   name: string;
+  colorFormat?: 'hex' | 'rgb' // Defaults to "hex"
+  colors?: string[]
+  widget?: 'sketch' | 'block' // Defaults to "sketch"
   component: "color";
   default?: string;
   config?: {
