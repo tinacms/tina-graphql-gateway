@@ -122,7 +122,10 @@ export class DataManager implements DataSource {
       throw new Error(`Expected to find section with slug ${section}`);
     }
 
-    return result;
+    return {
+      ...result,
+      format: result.format || "md",
+    };
   };
   getCollectionsSettings = async () => {
     const data = await this.getSettingsData();
@@ -290,26 +293,32 @@ export class DataManager implements DataSource {
   addDocument = async ({ relativePath, collection, template }: AddArgs) => {
     const fullPath = p.join(this.rootPath, tinaPath, "front_matter/templates");
     const sectionData = await this.getSettingsForCollection(collection);
-    // const templateData = await this.getTemplateWithoutName(template, {
-    //   namespace: false,
-    // });
     if (!sectionData) {
       throw new Error(`No section found for ${collection}`);
     }
     const path = p.join(sectionData.path, relativePath);
-    // const updatedTemplateData = {
-    //   ...templateData,
-    //   pages: [...(templateData.pages ? templateData.pages : []), path],
-    // };
 
     const fullFilePath = p.join(this.rootPath, path);
     const fullTemplatePath = p.join(fullPath, `${template}.yml`);
+    const extension = p.extname(fullFilePath);
 
     this.loader.clear(fullFilePath);
     this.loader.clear(fullTemplatePath);
 
-    const documentString = "---\n" + jsyaml.dump({ _template: template });
-    await this.writeFile(fullFilePath, documentString);
+    switch (extension) {
+      case ".md":
+        const markdownString = "---\n" + jsyaml.dump({ _template: template });
+        await this.writeFile(fullFilePath, markdownString);
+        break;
+      case ".json":
+        const jsonString = JSON.stringify({ _template: template }, null, 2);
+        await this.writeFile(fullFilePath, jsonString);
+        break;
+      default:
+        throw new Error(
+          `Unable to parse file, unknown extension ${extension} for path ${fullPath}`
+        );
+    }
   };
   updateDocument = async ({ relativePath, collection, params }: UpdateArgs) => {
     const sectionData = await this.getSettingsForCollection(collection);
@@ -321,9 +330,23 @@ export class DataManager implements DataSource {
     // https://github.com/graphql/dataloader#clearing-cache
     this.loader.clear(fullPath);
     const { _body, ...data } = params;
-    const string = matter.stringify(`\n${_body || ""}`, data);
+    const extension = p.extname(fullPath);
+    switch (extension) {
+      case ".md":
+        const string = matter.stringify(`\n${_body || ""}`, data);
 
-    await this.writeFile(fullPath, string);
+        await this.writeFile(fullPath, string);
+        break;
+      case ".json":
+        const jsonString = JSON.stringify(data, null, 2);
+
+        await this.writeFile(fullPath, jsonString);
+        break;
+      default:
+        throw new Error(
+          `Unable to parse file, unknown extension ${extension} for path ${fullPath}`
+        );
+    }
   };
 }
 
@@ -366,15 +389,17 @@ const internalReadFile = async (
   path: string,
   readFileFunc: (path: string) => Promise<Buffer>
 ): Promise<unknown> => {
-  const extension = p.extname(path);
+  let extension = p.extname(path);
+
+  const string = await readFileFunc(path);
 
   switch (extension) {
     case ".yml":
-      const ymlString = await readFileFunc(path);
-      return parseMatter(ymlString);
+      return parseMatter(string);
     case ".md":
-      const markdownString = await readFileFunc(path);
-      return parseMatter(markdownString);
+      return parseMatter(string);
+    case ".json":
+      return { data: JSON.parse(string.toString()), content: "" };
     default:
       throw new Error(
         `Unable to parse file, unknown extension ${extension} for path ${path}`

@@ -183,6 +183,7 @@ const sectionDefinition = gql.ObjectTypeDefinition({
   fields: [
     gql.FieldDefinition({ name: "type", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: "format", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "create", type: gql.TYPES.String }),
     gql.FieldDefinition({ name: "match", type: gql.TYPES.String }),

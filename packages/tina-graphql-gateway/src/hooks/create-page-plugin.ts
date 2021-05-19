@@ -13,9 +13,16 @@ limitations under the License.
 
 import { AddContentPlugin, Field, TinaCMS } from "tinacms";
 
+type CollectionShape = {
+  label: string;
+  format: string;
+  slug: string;
+};
+
 interface CreateContentButtonOptions {
   label: string;
   fields: any[];
+  collections: CollectionShape[];
   onNewDocument: OnNewDocument;
 }
 
@@ -43,11 +50,13 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
   fields: AddContentPlugin<FormShape>["fields"];
   onNewDocument: OnNewDocument;
   name: string;
+  collections: CollectionShape[];
 
   constructor(options: CreateContentButtonOptions) {
     this.fields = options.fields;
     this.name = options.label;
     this.onNewDocument = options.onNewDocument;
+    this.collections = options.collections;
   }
 
   async onSubmit(
@@ -64,14 +73,23 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
           // @ts-ignore - FIXME: we need a way to supply an initial value https://github.com/tinacms/tinacms/issues/1715
           .options[0].value.split(".");
 
+    const selectedCollection = this.collections.find(
+      (collectionItem) => collectionItem.slug === collection
+    );
+    const collectionFormat = selectedCollection.format;
+
     /**
-     * Check for and ensure `.md` is appended to the end of `relativePath`
+     * Check for and ensure `.md` or `.json` is appended to the end of `relativePath`
      */
+    const extensionLength = -1 * (collectionFormat.length + 1);
     let relativePathWithExt = relativePath;
-    if (relativePath.slice(-3).toLocaleLowerCase() === ".md") {
-      relativePathWithExt = `${relativePath.slice(0, -3)}.md`;
+    if (
+      relativePath.slice(extensionLength).toLocaleLowerCase() ===
+      `.${collectionFormat}`
+    ) {
+      relativePathWithExt = `${relativePath.slice(0, -3)}.${collectionFormat}`;
     } else {
-      relativePathWithExt = `${relativePath}.md`;
+      relativePathWithExt = `${relativePath}.${collectionFormat}`;
     }
 
     /**
@@ -91,7 +109,9 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
         });
       } else {
         cms.alerts.info("Document created!");
-        this.onNewDocument(res.addPendingDocument.sys);
+        if (typeof this.onNewDocument === "function") {
+          this.onNewDocument(res.addPendingDocument.sys);
+        }
       }
     } catch (e) {
       cms.alerts.error(e.message);
