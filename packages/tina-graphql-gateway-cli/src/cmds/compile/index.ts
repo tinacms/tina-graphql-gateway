@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 import glob from "fast-glob";
+import normalize from 'normalize-path'
 import path from "path";
 import fs from "fs-extra";
 import * as ts from "typescript";
@@ -270,6 +271,8 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 };
 
 const transpile = async (projectDir, tempDir) => {
+  const posixProjectDir = normalize(projectDir)
+  const posixTempDir = normalize(tempDir)
 
   return Promise.all(
     glob
@@ -281,11 +284,11 @@ const transpile = async (projectDir, tempDir) => {
        
         const contents = await fs.readFileSync(fullPath).toString();
         const newContent = ts.transpile(contents);
-        let realFile = file
-        if(process.platform === "win32"){
-          realFile = file.replace(/\//g, '\\')
-        }
-        const newPath =  realFile.replace(projectDir, tempDir).replace(".ts", ".js")
+        // let realFile = file
+        // if(process.platform === "win32"){
+        //   realFile = file.replace(/\//g, '\\')
+        // }
+        const newPath =  file.replace(posixProjectDir, posixTempDir).replace(".ts", ".js")
         await fs.outputFile(
           newPath,
           newContent
