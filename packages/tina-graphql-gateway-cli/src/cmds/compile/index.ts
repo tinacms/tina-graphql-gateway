@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 import glob from "fast-glob";
+import normalize from 'normalize-path'
 import path from "path";
 import fs from "fs-extra";
 import * as ts from "typescript";
@@ -21,8 +22,8 @@ import * as _ from "lodash";
 import { successText, dangerText } from "../../utils/theme";
 
 const tinaPath = path.join(process.cwd(), ".tina");
-const tinaTempPath = path.join(process.cwd(), ".tina/__generated__/temp");
-const tinaConfigPath = path.join(process.cwd(), ".tina/__generated__/config");
+const tinaTempPath = path.join(process.cwd(), ".tina", "__generated__", "temp")
+const tinaConfigPath = path.join(process.cwd(), ".tina", "__generated__", "config")
 
 const transformField = async (
   tinaField: TinaField,
@@ -210,6 +211,7 @@ export const compile = async () => {
       delete require.cache[require.resolve(key)];
     }
   });
+
   const schemaFunc = require(path.join(tinaTempPath, "schema.js"));
   const schemaObject: TinaCloudSchema = schemaFunc.default.config;
   await compileInner(schemaObject);
@@ -267,17 +269,25 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
 };
 
 const transpile = async (projectDir, tempDir) => {
+
+  // Make sure that post paths are posix (unix paths). This is necessary on windows.
+  const posixProjectDir = normalize(projectDir)
+  const posixTempDir = normalize(tempDir)
+
   return Promise.all(
     glob
-      .sync(path.join(projectDir, "/**/*.ts"), {
-        ignore: [path.join(projectDir, "__generated__/**/*.ts")],
+      // We will replaces \\ with / as required by docs see: https://github.com/mrmlnc/fast-glob#how-to-write-patterns-on-windows  
+      .sync(path.join(projectDir, '**', "*.ts").replace(/\\/g, '/'), {
+        ignore: [path.join(projectDir, "__generated__","**","*.ts").replace(/\\/g, '/')],
       })
       .map(async function (file) {
         const fullPath = path.resolve(file);
+       
         const contents = await fs.readFileSync(fullPath).toString();
         const newContent = ts.transpile(contents);
+        const newPath =  file.replace(posixProjectDir, posixTempDir).replace(".ts", ".js")
         await fs.outputFile(
-          file.replace(projectDir, tempDir).replace(".ts", ".js"),
+          newPath,
           newContent
         );
         return true;

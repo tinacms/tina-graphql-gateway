@@ -28273,6 +28273,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.19"],
             ["lodash.get", "npm:4.4.2"],
             ["ms", "npm:2.1.2"],
+            ["normalize-path", "npm:3.0.0"],
             ["open", "npm:6.4.0"],
             ["ora", "npm:4.0.5"],
             ["path", "npm:0.12.7"],
