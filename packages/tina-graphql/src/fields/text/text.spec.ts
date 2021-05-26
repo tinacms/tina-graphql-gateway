@@ -31,6 +31,7 @@ describe(`Field of type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
       }
       union Sample_FormFieldsUnion = TextField
       type Sample_Form {
