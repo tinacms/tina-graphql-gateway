@@ -32,23 +32,27 @@ describe(`Type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
       }
       type TextField implements FormField {
         name: String
         label: String
         component: String
+        description: String
       }
       union Post_Details_FormFieldsUnion = TextField
       type Post_Details_GroupField implements FormField {
         name: String
         label: String
         component: String
+        description: String
         fields: [Post_Details_FormFieldsUnion]
       }
       type SelectField implements FormField {
         name: String
         label: String
         component: String
+        description: String
         options: [String]
       }
       union Post_FormFieldsUnion =
@@ -67,6 +71,7 @@ describe(`Type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
         templates: MyBlocks_BlocksFieldTemplates
       }
       union Sample_FormFieldsUnion = MyBlocks_BlocksField
