@@ -37,6 +37,7 @@ type SystemInfo {
 type Section {
   type: String
   path: String
+  format: String
   label: String
   create: String
   match: String
