@@ -63,11 +63,11 @@ export type Section = {
   documents?: Maybe<Array<Maybe<Document>>>;
 };
 
-export type SectionDocumentUnion = Posts_Document | Authors_Document | MarketingPages_Document;
+export type SectionDocumentUnion = Authors_Document | Posts_Document | MarketingPages_Document;
 
 export type SectionParams = {
-  posts?: Maybe<Posts_Input>;
   authors?: Maybe<Authors_Input>;
+  posts?: Maybe<Posts_Input>;
   marketingPages?: Maybe<MarketingPages_Input>;
 };
 
@@ -75,8 +75,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument?: Maybe<Document>;
   updateDocument?: Maybe<SectionDocumentUnion>;
-  updatePostsDocument?: Maybe<Posts_Document>;
   updateAuthorsDocument?: Maybe<Authors_Document>;
+  updatePostsDocument?: Maybe<Posts_Document>;
   updateMarketingPagesDocument?: Maybe<MarketingPages_Document>;
 };
 
@@ -94,15 +94,15 @@ export type MutationUpdateDocumentArgs = {
 };
 
 
-export type MutationUpdatePostsDocumentArgs = {
-  relativePath?: Maybe<Scalars['String']>;
-  params?: Maybe<Posts_Input>;
-};
-
-
 export type MutationUpdateAuthorsDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
   params?: Maybe<Authors_Input>;
+};
+
+
+export type MutationUpdatePostsDocumentArgs = {
+  relativePath?: Maybe<Scalars['String']>;
+  params?: Maybe<Posts_Input>;
 };
 
 
@@ -117,10 +117,10 @@ export type Query = {
   getDocument?: Maybe<SectionDocumentUnion>;
   getCollections?: Maybe<Array<Maybe<Section>>>;
   getCollection?: Maybe<Section>;
-  getPostsDocument?: Maybe<Posts_Document>;
-  getPostsList?: Maybe<Array<Maybe<Posts_Document>>>;
   getAuthorsDocument?: Maybe<Authors_Document>;
   getAuthorsList?: Maybe<Array<Maybe<Authors_Document>>>;
+  getPostsDocument?: Maybe<Posts_Document>;
+  getPostsList?: Maybe<Array<Maybe<Posts_Document>>>;
   getMarketingPagesDocument?: Maybe<MarketingPages_Document>;
   getMarketingPagesList?: Maybe<Array<Maybe<MarketingPages_Document>>>;
 };
@@ -142,89 +142,18 @@ export type QueryGetCollectionArgs = {
 };
 
 
-export type QueryGetPostsDocumentArgs = {
+export type QueryGetAuthorsDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryGetAuthorsDocumentArgs = {
+export type QueryGetPostsDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
 };
 
 
 export type QueryGetMarketingPagesDocumentArgs = {
   relativePath?: Maybe<Scalars['String']>;
-};
-
-export type Posts_Data = Article_Doc_Data;
-
-export type Posts_Input = {
-  article?: Maybe<Article_Doc_Input>;
-};
-
-export type Posts_Values = Article_Doc_Values;
-
-export type Posts_Form = Article_Doc_Form;
-
-export type Posts_Document = Node & Document & {
-  __typename?: 'Posts_Document';
-  id: Scalars['ID'];
-  sys?: Maybe<SystemInfo>;
-  data?: Maybe<Posts_Data>;
-  values?: Maybe<Posts_Values>;
-  form?: Maybe<Posts_Form>;
-};
-
-export type Article_Doc_Data = {
-  __typename?: 'Article_Doc_Data';
-  title?: Maybe<Scalars['String']>;
-  author?: Maybe<Authors_Document>;
-  _body?: Maybe<Scalars['String']>;
-};
-
-export type Article_Doc_Values = {
-  __typename?: 'Article_Doc_Values';
-  title?: Maybe<Scalars['String']>;
-  author?: Maybe<Scalars['Reference']>;
-  _body?: Maybe<Scalars['String']>;
-  _template?: Maybe<Scalars['String']>;
-};
-
-export type TextField = FormField & {
-  __typename?: 'TextField';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
-};
-
-export type SelectField = FormField & {
-  __typename?: 'SelectField';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
-  options?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
-
-export type TextareaField = FormField & {
-  __typename?: 'TextareaField';
-  name?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  component?: Maybe<Scalars['String']>;
-};
-
-export type Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField;
-
-export type Article_Doc_Form = {
-  __typename?: 'Article_Doc_Form';
-  label?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  fields?: Maybe<Array<Maybe<Article_Doc_FormFieldsUnion>>>;
-};
-
-export type Article_Doc_Input = {
-  title?: Maybe<Scalars['String']>;
-  author?: Maybe<Scalars['String']>;
-  _body?: Maybe<Scalars['String']>;
 };
 
 export type Authors_Data = Author_Doc_Data;
@@ -261,6 +190,20 @@ export type Author_Doc_Values = {
   _template?: Maybe<Scalars['String']>;
 };
 
+export type TextField = FormField & {
+  __typename?: 'TextField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+};
+
+export type TextareaField = FormField & {
+  __typename?: 'TextareaField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+};
+
 export type Author_Doc_FormFieldsUnion = TextField | TextareaField;
 
 export type Author_Doc_Form = {
@@ -273,6 +216,63 @@ export type Author_Doc_Form = {
 export type Author_Doc_Input = {
   name?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
+  _body?: Maybe<Scalars['String']>;
+};
+
+export type Posts_Data = Article_Doc_Data;
+
+export type Posts_Input = {
+  article?: Maybe<Article_Doc_Input>;
+};
+
+export type Posts_Values = Article_Doc_Values;
+
+export type Posts_Form = Article_Doc_Form;
+
+export type Posts_Document = Node & Document & {
+  __typename?: 'Posts_Document';
+  id: Scalars['ID'];
+  sys?: Maybe<SystemInfo>;
+  data?: Maybe<Posts_Data>;
+  values?: Maybe<Posts_Values>;
+  form?: Maybe<Posts_Form>;
+};
+
+export type Article_Doc_Data = {
+  __typename?: 'Article_Doc_Data';
+  title?: Maybe<Scalars['String']>;
+  author?: Maybe<Authors_Document>;
+  _body?: Maybe<Scalars['String']>;
+};
+
+export type Article_Doc_Values = {
+  __typename?: 'Article_Doc_Values';
+  title?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['Reference']>;
+  _body?: Maybe<Scalars['String']>;
+  _template?: Maybe<Scalars['String']>;
+};
+
+export type SelectField = FormField & {
+  __typename?: 'SelectField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+  options?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField;
+
+export type Article_Doc_Form = {
+  __typename?: 'Article_Doc_Form';
+  label?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<Maybe<Article_Doc_FormFieldsUnion>>>;
+};
+
+export type Article_Doc_Input = {
+  title?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['String']>;
   _body?: Maybe<Scalars['String']>;
 };
 
