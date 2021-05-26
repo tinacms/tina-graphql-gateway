@@ -36,6 +36,7 @@ describe(`Field of type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
         options: [String]
       }
       union Sample_FormFieldsUnion = SelectField
