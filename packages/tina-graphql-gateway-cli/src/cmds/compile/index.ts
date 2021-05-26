@@ -221,7 +221,9 @@ export const compile = async () => {
       `)
     );
     const file = path.join(tinaPath, "schema.ts");
+    // Ensure there is a .tina/schema.ts file
     await fs.ensureFile(file);
+    // Write a basic schema to it
     await fs.writeFile(file, defaultSchema);
   }
   await fs.remove(tinaTempPath);
