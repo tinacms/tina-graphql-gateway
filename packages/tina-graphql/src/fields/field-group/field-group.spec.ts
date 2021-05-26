@@ -39,12 +39,14 @@ describe(`Field of type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
       }
       union SomeGroup_FormFieldsUnion = TextField
       type SomeGroup_GroupField implements FormField {
         name: String
         label: String
         component: String
+        description: String
         fields: [SomeGroup_FormFieldsUnion]
       }
       union Sample_FormFieldsUnion = SomeGroup_GroupField
