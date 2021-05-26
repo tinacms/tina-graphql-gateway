@@ -53,6 +53,7 @@ export type Section = {
   __typename?: 'Section';
   type?: Maybe<Scalars['String']>;
   path?: Maybe<Scalars['String']>;
+  format?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   create?: Maybe<Scalars['String']>;
   match?: Maybe<Scalars['String']>;
