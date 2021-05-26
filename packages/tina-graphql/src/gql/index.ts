@@ -34,7 +34,7 @@ import {
 export const gql = {
   /**
    * `FormFieldBuilder` acts as a shortcut to building an entire `ObjectTypeDefinition`, we use this
-   * because all Tina field objects share a common set of fields ('name', 'label', 'component')
+   * because all Tina field objects share a common set of fields ('name', 'label', 'component', 'description')
    */
   FormFieldBuilder: ({
     name,
@@ -50,6 +50,7 @@ export const gql = {
         gql.FieldDefinition({ name: "name", type: gql.TYPES.String }),
         gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
         gql.FieldDefinition({ name: "component", type: gql.TYPES.String }),
+        gql.FieldDefinition({ name: "description", type: gql.TYPES.String }),
         ...(additionalFields || []),
       ],
     });
