@@ -51,10 +51,15 @@ export class Client {
 
   constructor({ tokenStorage = 'MEMORY', ...options }: ServerOptions) {
     const _this = this
+    /**
+     * Prevents a CORS-issue when the `branch` has slashes in it.
+     * https://github.com/tinacms/tina-graphql-gateway/issues/219
+     */
+    const encodedBranch = encodeURIComponent(options.branch)
     ;(this.contentApiUrl =
       options.customContentApiUrl ||
-      `${CONTENT_API_URL}/content/${options.organizationId}/${options.clientId}/github/${options.branch}`),
-      // `https://content.tinajs.dev/content/${options.organizationId}/${options.clientId}/github/${options.branch}`),
+      `${CONTENT_API_URL}/content/${options.organizationId}/${options.clientId}/github/${encodedBranch}`),
+      // `https://content.tinajs.dev/content/${options.organizationId}/${options.clientId}/github/${encodedBranch}`),
       (this.clientId = options.clientId)
     this.organizationId = options.organizationId
 
