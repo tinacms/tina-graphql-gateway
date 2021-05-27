@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const path = require("path");
+const path = require('path')
 
-require("dotenv").config();
+require('dotenv').config()
 
 module.exports = {
   env: {
@@ -39,11 +39,11 @@ module.exports = {
     // config.resolve.alias["@tinacms"] = path.resolve(
     //   "../../../tinacms/packages/@tinacms"
     // );
-    config.resolve.alias["tinacms"] = require.resolve("tinacms");
-    config.resolve.alias["react-dom"] = require.resolve("react-dom");
-    config.resolve.alias["react"] = require.resolve("react");
-    config.optimization.minimize = false;
+    config.resolve.alias['tinacms'] = require.resolve('tinacms')
+    config.resolve.alias['react-dom'] = require.resolve('react-dom')
+    config.resolve.alias['react'] = require.resolve('react')
+    config.optimization.minimize = false
 
-    return config;
+    return config
   },
-};
+}

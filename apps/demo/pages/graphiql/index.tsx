@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LocalClient } from "tina-graphql-gateway";
-import { Explorer } from "../../components/graphiql";
+import { LocalClient } from 'tina-graphql-gateway'
+import { Explorer } from '../../components/graphiql'
 
-const client = new LocalClient();
+const client = new LocalClient()
 
 export const getServerSideProps = async () => {
   const result = await client.request(
@@ -32,14 +32,14 @@ export const getServerSideProps = async () => {
       }
     `,
     { variables: {} }
-  );
-  return { props: result };
-};
+  )
+  return { props: result }
+}
 
 const Home = (props: any) => {
   return (
-    <Explorer collection={props.getCollections[0].slug} relativePath={""} />
-  );
-};
+    <Explorer collection={props.getCollections[0].slug} relativePath={''} />
+  )
+}
 
-export default Home;
+export default Home

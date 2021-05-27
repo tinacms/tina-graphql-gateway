@@ -11,31 +11,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import _ from "lodash";
+import _ from 'lodash'
 import {
   ObjectTypeDefinitionNode,
   UnionTypeDefinitionNode,
   FieldDefinitionNode,
   NameNode,
-} from "graphql";
+} from 'graphql'
 
-import type { DataSource } from "../datasources/datasource";
+import type { DataSource } from '../datasources/datasource'
 
 export type Cache = {
   gql: {
     object: (
       name: string,
-      def: Omit<ObjectTypeDefinitionNode, "kind" | "name">
-    ) => ObjectTypeDefinitionNode;
+      def: Omit<ObjectTypeDefinitionNode, 'kind' | 'name'>
+    ) => ObjectTypeDefinitionNode
     union: (
       name: string,
-      def: Omit<UnionTypeDefinitionNode, "kind" | "name">
-    ) => UnionTypeDefinitionNode;
-    name: (name: string) => NameNode;
-    string: (name: string) => FieldDefinitionNode;
-  };
-  datasource: DataSource;
-};
+      def: Omit<UnionTypeDefinitionNode, 'kind' | 'name'>
+    ) => UnionTypeDefinitionNode
+    name: (name: string) => NameNode
+    string: (name: string) => FieldDefinitionNode
+  }
+  datasource: DataSource
+}
 
 /**
  * Initialize the cache and datastore services, which keep in-memory
@@ -46,41 +46,41 @@ export const cacheInit = (datasource: DataSource) => {
     gql: {
       object: (name, def) => {
         return {
-          kind: "ObjectTypeDefinition",
+          kind: 'ObjectTypeDefinition',
           name: cache.gql.name(name),
           ...def,
-        };
+        }
       },
       union: (name, def) => {
         return {
-          kind: "UnionTypeDefinition",
+          kind: 'UnionTypeDefinition',
           name: {
-            kind: "Name",
-            value: "DocumentUnion",
+            kind: 'Name',
+            value: 'DocumentUnion',
           },
-        };
+        }
       },
-      name: (name) => ({ kind: "Name", value: name }),
+      name: (name) => ({ kind: 'Name', value: name }),
       string: (name) => {
         return {
-          kind: "FieldDefinition",
+          kind: 'FieldDefinition',
           name: {
-            kind: "Name",
+            kind: 'Name',
             value: name,
           },
           arguments: [],
           type: {
-            kind: "NamedType",
+            kind: 'NamedType',
             name: {
-              kind: "Name",
-              value: "String",
+              kind: 'Name',
+              value: 'String',
             },
           },
-        };
+        }
       },
     },
     datasource: datasource,
-  };
+  }
 
-  return cache;
-};
+  return cache
+}

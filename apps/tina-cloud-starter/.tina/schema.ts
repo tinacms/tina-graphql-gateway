@@ -11,105 +11,105 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from "tina-graphql-gateway-cli";
+import { defineSchema } from 'tina-graphql-gateway-cli'
 
 export default defineSchema({
   collections: [
     {
-      label: "Blog Posts",
-      name: "posts",
-      path: "content/posts",
+      label: 'Blog Posts',
+      name: 'posts',
+      path: 'content/posts',
       templates: [
         {
-          label: "Article",
-          name: "article",
+          label: 'Article',
+          name: 'article',
           fields: [
             {
-              type: "text",
-              label: "Title",
-              name: "title",
+              type: 'text',
+              label: 'Title',
+              name: 'title',
             },
             {
-              type: "reference",
-              label: "Author",
-              name: "author",
-              collection: "authors",
+              type: 'reference',
+              label: 'Author',
+              name: 'author',
+              collection: 'authors',
             },
           ],
         },
       ],
     },
     {
-      label: "Authors",
-      name: "authors",
-      path: "content/authors",
+      label: 'Authors',
+      name: 'authors',
+      path: 'content/authors',
       templates: [
         {
-          label: "Author",
-          name: "author",
+          label: 'Author',
+          name: 'author',
           fields: [
             {
-              type: "text",
-              label: "Name",
-              name: "name",
+              type: 'text',
+              label: 'Name',
+              name: 'name',
             },
             {
-              type: "text",
-              label: "Avatar",
-              name: "avatar",
+              type: 'text',
+              label: 'Avatar',
+              name: 'avatar',
             },
           ],
         },
       ],
     },
     {
-      label: "Marketing Pages",
-      name: "marketingPages",
-      path: "content/marketing-pages",
+      label: 'Marketing Pages',
+      name: 'marketingPages',
+      path: 'content/marketing-pages',
       templates: [
         {
-          label: "Landing Page",
-          name: "landingPage",
+          label: 'Landing Page',
+          name: 'landingPage',
           fields: [
             {
-              type: "blocks",
-              name: "blocks",
-              label: "Blocks",
+              type: 'blocks',
+              name: 'blocks',
+              label: 'Blocks',
               templates: [
                 {
-                  name: "message",
-                  label: "Message",
+                  name: 'message',
+                  label: 'Message',
                   fields: [
                     {
-                      type: "text",
-                      label: "Message Header",
-                      name: "messageHeader",
+                      type: 'text',
+                      label: 'Message Header',
+                      name: 'messageHeader',
                     },
                     {
-                      type: "textarea",
-                      label: "Message Body",
-                      name: "messageBody",
+                      type: 'textarea',
+                      label: 'Message Body',
+                      name: 'messageBody',
                     },
                   ],
                 },
                 {
-                  name: "diagram",
-                  label: "Diagram",
+                  name: 'diagram',
+                  label: 'Diagram',
                   fields: [
                     {
-                      type: "text",
-                      label: "Diagram Heading",
-                      name: "diagramHeading",
+                      type: 'text',
+                      label: 'Diagram Heading',
+                      name: 'diagramHeading',
                     },
                     {
-                      type: "textarea",
-                      label: "Diagram Description",
-                      name: "diagramDescription",
+                      type: 'textarea',
+                      label: 'Diagram Description',
+                      name: 'diagramDescription',
                     },
                     {
-                      type: "text",
-                      label: "Diagram ID",
-                      name: "diagramID",
+                      type: 'text',
+                      label: 'Diagram ID',
+                      name: 'diagramID',
                     },
                   ],
                 },
@@ -120,4 +120,4 @@ export default defineSchema({
       ],
     },
   ],
-});
+})

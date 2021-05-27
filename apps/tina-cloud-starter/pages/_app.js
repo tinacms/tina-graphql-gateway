@@ -11,18 +11,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic'
 
-import {EditProvider, setEditing, useEditState} from '../utils/editState'
-
+import { EditProvider, setEditing, useEditState } from '../utils/editState'
 
 // InnerApp that handles rendering edit mode or not
 function InnerApp({ Component, pageProps }) {
-  const {edit} = useEditState()
+  const { edit } = useEditState()
   if (edit) {
     // Dynamically load Tina only when in edit mode so it does not affect production
     // see https://nextjs.org/docs/advanced-features/dynamic-import#basic-usage
-    const TinaWrapper = dynamic(() => import("../components/tina-wrapper"));
+    const TinaWrapper = dynamic(() => import('../components/tina-wrapper'))
     return (
       <>
         <TinaWrapper {...pageProps}>
@@ -30,26 +29,27 @@ function InnerApp({ Component, pageProps }) {
         </TinaWrapper>
         <EditToggle isInEditMode={true} />
       </>
-    );
+    )
   }
   return (
     <>
       <Component {...pageProps} />
       <EditToggle isInEditMode={true} />
     </>
-  );
+  )
 }
 
-
 const EditToggle = (isInEditMode) => {
-  const {edit,setEdit} = useEditState()
+  const { edit, setEdit } = useEditState()
   return (
     <>
-      <button onClick={()=>{
-        setEdit(!edit)
-      }}>
+      <button
+        onClick={() => {
+          setEdit(!edit)
+        }}
+      >
         <a className="editLink">
-          {edit ? "Exit edit mode" : "Enter edit mode"}
+          {edit ? 'Exit edit mode' : 'Enter edit mode'}
         </a>
       </button>
       <style jsx>{`
@@ -68,15 +68,16 @@ const EditToggle = (isInEditMode) => {
         }
       `}</style>
     </>
-  );
-};
-
+  )
+}
 
 // Our app is wrapped with edit provider
 function App(props) {
-  return (<EditProvider>
-    <InnerApp {...props}/>
-  </EditProvider>)
+  return (
+    <EditProvider>
+      <InnerApp {...props} />
+    </EditProvider>
+  )
 }
 
 export default App

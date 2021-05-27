@@ -1,0 +1,7 @@
+**/*.mdx
+*.md
+build
+.pnp.js
+.yarn/*
+.next/*
+*.yml

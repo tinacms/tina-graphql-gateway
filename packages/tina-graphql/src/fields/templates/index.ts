@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { builder } from "./build";
-import { resolve } from "./resolver";
+import { builder } from './build'
+import { resolve } from './resolver'
 
 export const template = {
   build: builder,
   resolve: resolve,
-};
+}

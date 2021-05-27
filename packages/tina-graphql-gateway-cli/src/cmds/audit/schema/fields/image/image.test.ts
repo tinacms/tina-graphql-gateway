@@ -11,56 +11,56 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with maxSize set as a string": {
+  'with maxSize set as a string': {
     initial: {
-      label: "Image",
-      name: "image",
-      type: "file",
+      label: 'Image',
+      name: 'image',
+      type: 'file',
       config: {
-        maxSize: "64",
+        maxSize: '64',
       },
     },
     errors: [
       {
-        dataPath: ".config.maxSize",
-        keyword: "type",
+        dataPath: '.config.maxSize',
+        keyword: 'type',
       },
     ],
     fixed: {
-      label: "Image",
-      name: "image",
-      type: "file",
+      label: 'Image',
+      name: 'image',
+      type: 'file',
       config: {
         maxSize: 64,
       },
     },
   },
-  "with an empty string default": {
+  'with an empty string default': {
     initial: {
-      default: "",
-      label: "Image",
-      name: "image",
-      type: "file",
+      default: '',
+      label: 'Image',
+      name: 'image',
+      type: 'file',
       config: {
         maxSize: 64,
       },
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "minLength",
+        dataPath: '.default',
+        keyword: 'minLength',
       },
     ],
     fixed: {
-      label: "Image",
-      name: "image",
-      type: "file",
+      label: 'Image',
+      name: 'image',
+      type: 'file',
       config: {
         maxSize: 64,
       },
     },
   },
-});
+})

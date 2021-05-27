@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import path from "path";
+import path from 'path'
 import {
   GraphQLSchema,
   printSchema,
@@ -20,38 +20,38 @@ import {
   GraphQLUnionType,
   buildSchema,
   print,
-} from "graphql";
-import { createDatasource } from "../datasources/data-manager";
-import { FileSystemManager } from "../datasources/filesystem-manager";
-import { gql } from "tina-graphql-helpers/dist/test-util";
-import { template } from "../fields/templates";
-import { cacheInit } from "../cache";
+} from 'graphql'
+import { createDatasource } from '../datasources/data-manager'
+import { FileSystemManager } from '../datasources/filesystem-manager'
+import { gql } from 'tina-graphql-helpers/dist/test-util'
+import { template } from '../fields/templates'
+import { cacheInit } from '../cache'
 
-const { build } = template;
+const { build } = template
 
-import type { Definitions } from "../fields/templates/build";
-import type { Field } from ".";
+import type { Definitions } from '../fields/templates/build'
+import type { Field } from '.'
 
 export const testCache = ({ mockGetTemplate }: { mockGetTemplate?: any }) => {
-  const projectRoot = path.join(process.cwd(), "src/fixtures/project1");
+  const projectRoot = path.join(process.cwd(), 'src/fixtures/project1')
   const filesystemDataSource = createDatasource(
     new FileSystemManager({ rootPath: projectRoot })
-  );
+  )
   if (mockGetTemplate) {
-    filesystemDataSource.getTemplate = mockGetTemplate;
+    filesystemDataSource.getTemplate = mockGetTemplate
   }
-  return cacheInit(filesystemDataSource);
-};
+  return cacheInit(filesystemDataSource)
+}
 
 export const assertSchema = (schema: GraphQLSchema) => {
   // Useful to grab a snapshot
   // console.log(printSchema(schema));
   return {
     matches: (gqlString: string) => {
-      expect(printSchema(schema)).toEqual(printSchema(buildSchema(gqlString)));
+      expect(printSchema(schema)).toEqual(printSchema(buildSchema(gqlString)))
     },
-  };
-};
+  }
+}
 export const assertType = (type: GraphQLObjectType<any, any>) => {
   // Useful to grab a snapshot
   // console.log(printSchema(new GraphQLSchema({ query: type })));
@@ -61,67 +61,67 @@ export const assertType = (type: GraphQLObjectType<any, any>) => {
   query: ${getNamedType(type)}
 }
 
-${gqlString}`);
+${gqlString}`)
     },
-  };
-};
+  }
+}
 export const assertNoTypeCollisions = (
   types: GraphQLObjectType<any, any>[]
 ) => {
   const union = new GraphQLUnionType({
-    name: "MultitypeUnion",
+    name: 'MultitypeUnion',
     types: types,
-  });
+  })
   const t = new GraphQLObjectType({
-    name: "MultitypeObject",
+    name: 'MultitypeObject',
     fields: { f: { type: union } },
-  });
-  const names = types.map((t) => getNamedType(t).toString());
+  })
+  const names = types.map((t) => getNamedType(t).toString())
   const isArrayUnique = (arr: string[]) =>
-    Array.isArray(arr) && new Set(arr).size === arr.length; // add function to check that array is unique.
+    Array.isArray(arr) && new Set(arr).size === arr.length // add function to check that array is unique.
   try {
-    expect(isArrayUnique(names)).toBeTruthy();
+    expect(isArrayUnique(names)).toBeTruthy()
   } catch (e) {
     // console.error("Types are equal");
-    throw new Error(`Unable to create schema with multiple identical types`);
+    throw new Error(`Unable to create schema with multiple identical types`)
   }
-  const schema = new GraphQLSchema({ query: t });
+  const schema = new GraphQLSchema({ query: t })
   // Useful to grab a snapshot
   // console.log(printSchema(schema));
-};
+}
 
 const PATH_TO_TEST_APP = path.join(
-  path.resolve(__dirname, "../../../../"),
-  "apps/test"
-);
+  path.resolve(__dirname, '../../../../'),
+  'apps/test'
+)
 
 const datasource = createDatasource(
   new FileSystemManager({ rootPath: PATH_TO_TEST_APP })
-);
-const cache = cacheInit(datasource);
+)
+const cache = cacheInit(datasource)
 
 export const setupRunner = (field: Field) => {
   const template = {
-    __namespace: "",
+    __namespace: '',
     fields: [field],
-    label: "Sample",
-    name: "sample",
-  };
+    label: 'Sample',
+    name: 'sample',
+  }
 
   const config = (accumulator: Definitions[]) => ({
     cache,
     template,
     accumulator,
     includeBody: false,
-  });
+  })
 
   const run = async (command: keyof typeof build) => {
-    const accumulator: Definitions[] = [];
-    await build[command](config(accumulator));
-    const accumulatorString = accumulator.map((acc) => print(acc));
-    const string = gql(accumulatorString);
-    return string;
-  };
+    const accumulator: Definitions[] = []
+    await build[command](config(accumulator))
+    const accumulatorString = accumulator.map((acc) => print(acc))
+    const string = gql(accumulatorString)
+    return string
+  }
 
-  return run;
-};
+  return run
+}

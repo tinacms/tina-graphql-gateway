@@ -11,27 +11,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import unified from "unified";
-import remark2rehype from "remark-rehype";
-import htmlStringify from "rehype-stringify";
-import parse from "remark-parse";
-import mdx from "remark-mdx";
-import removePosition from "unist-util-remove-position";
+import unified from 'unified'
+import remark2rehype from 'remark-rehype'
+import htmlStringify from 'rehype-stringify'
+import parse from 'remark-parse'
+import mdx from 'remark-mdx'
+import removePosition from 'unist-util-remove-position'
 
 export const toHTML = async ({ contents: c }: { contents: string }) => {
   // @ts-ignore
-  var compiler = unified().use(parse).use(remark2rehype).use(htmlStringify);
+  var compiler = unified().use(parse).use(remark2rehype).use(htmlStringify)
 
-  const { contents } = compiler.processSync({ contents: c });
+  const { contents } = compiler.processSync({ contents: c })
 
-  return contents as string;
-};
+  return contents as string
+}
 
 export const toAst = async ({ contents }: { contents: string }) => {
   // @ts-ignore
-  var tree = unified().use(parse).use(mdx).parse(contents);
+  var tree = unified().use(parse).use(mdx).parse(contents)
 
-  removePosition(tree, true);
+  removePosition(tree, true)
 
-  return tree;
-};
+  return tree
+}
