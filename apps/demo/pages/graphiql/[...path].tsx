@@ -11,11 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useRouter } from "next/router";
-import { LocalClient } from "tina-graphql-gateway";
-import { Explorer } from "../../components/graphiql";
+import { useRouter } from 'next/router'
+import { LocalClient } from 'tina-graphql-gateway'
+import { Explorer } from '../../components/graphiql'
 
-const client = new LocalClient();
+const client = new LocalClient()
 
 export const getServerSideProps = async () => {
   const result = await client.request(
@@ -33,23 +33,23 @@ export const getServerSideProps = async () => {
       }
     `,
     { variables: {} }
-  );
-  return { props: result };
-};
+  )
+  return { props: result }
+}
 
 const Home = () => {
-  const router = useRouter();
-  const { path } = router.query;
+  const router = useRouter()
+  const { path } = router.query
 
-  if (typeof path === "string") {
+  if (typeof path === 'string') {
     throw new Error(
-      "Path should be an array of strings, ensure your filename is [...path].tsx"
-    );
+      'Path should be an array of strings, ensure your filename is [...path].tsx'
+    )
   }
 
   return (
-    <Explorer collection={path[0]} relativePath={path.slice(1).join("/")} />
-  );
-};
+    <Explorer collection={path[0]} relativePath={path.slice(1).join('/')} />
+  )
+}
 
-export default Home;
+export default Home

@@ -11,28 +11,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const ColorField = {
-  $id: "#colorField",
-  label: "Color Picker Field",
-  description: "",
-  type: "object",
+  $id: '#colorField',
+  label: 'Color Picker Field',
+  description: '',
+  type: 'object',
   properties: {
     type: {
-      const: "color",
+      const: 'color',
     },
     ...base,
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
-        color_format: { type: "string", enum: ["RGB", "Hex"] },
+        required: { type: 'boolean' },
+        color_format: { type: 'string', enum: ['RGB', 'Hex'] },
       },
       additionalProperties: false,
-      required: ["color_format"],
+      required: ['color_format'],
     },
   },
   additionalProperties: false,
-  required: [...baseRequired, "config"],
-};
+  required: [...baseRequired, 'config'],
+}

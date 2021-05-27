@@ -12,32 +12,32 @@ limitations under the License.
 */
 
 export const AllFields = {
-  $id: "#allFields",
-  type: "array",
-  title: "Field List",
-  description: "List of fields for your FMT",
+  $id: '#allFields',
+  type: 'array',
+  title: 'Field List',
+  description: 'List of fields for your FMT',
   items: {
-    type: "object",
-    required: ["type"],
+    type: 'object',
+    required: ['type'],
     properties: {
       type: {
-        type: "string",
+        type: 'string',
         enum: [
-          "text",
-          "textarea",
-          "include",
-          "datetime",
-          "select",
-          "file",
-          "blocks",
-          "color",
-          "boolean",
-          "tag_list",
-          "number",
-          "image_gallery",
-          "list",
-          "field_group",
-          "field_group_list",
+          'text',
+          'textarea',
+          'include',
+          'datetime',
+          'select',
+          'file',
+          'blocks',
+          'color',
+          'boolean',
+          'tag_list',
+          'number',
+          'image_gallery',
+          'list',
+          'field_group',
+          'field_group_list',
         ],
       },
     },
@@ -45,153 +45,153 @@ export const AllFields = {
       {
         if: {
           properties: {
-            type: { const: "text" },
+            type: { const: 'text' },
           },
         },
         then: {
-          $ref: "#/definitions/textField",
+          $ref: '#/definitions/textField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "blocks" },
+            type: { const: 'blocks' },
           },
         },
         then: {
-          $ref: "#/definitions/blocksField",
+          $ref: '#/definitions/blocksField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "number" },
+            type: { const: 'number' },
           },
         },
         then: {
-          $ref: "#/definitions/numberField",
+          $ref: '#/definitions/numberField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "include" },
+            type: { const: 'include' },
           },
         },
         then: {
-          $ref: "#/definitions/includeField",
+          $ref: '#/definitions/includeField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "color" },
+            type: { const: 'color' },
           },
         },
         then: {
-          $ref: "#/definitions/colorField",
+          $ref: '#/definitions/colorField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "tag_list" },
+            type: { const: 'tag_list' },
           },
         },
         then: {
-          $ref: "#/definitions/tagField",
+          $ref: '#/definitions/tagField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "datetime" },
+            type: { const: 'datetime' },
           },
         },
         then: {
-          $ref: "#/definitions/dateField",
+          $ref: '#/definitions/dateField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "textarea" },
+            type: { const: 'textarea' },
           },
         },
         then: {
-          $ref: "#/definitions/textAreaField",
+          $ref: '#/definitions/textAreaField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "select" },
+            type: { const: 'select' },
           },
         },
         then: {
-          $ref: "#/definitions/selectField",
+          $ref: '#/definitions/selectField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "file" },
+            type: { const: 'file' },
           },
         },
         then: {
-          $ref: "#/definitions/imageField",
+          $ref: '#/definitions/imageField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "boolean" },
+            type: { const: 'boolean' },
           },
         },
         then: {
-          $ref: "#/definitions/booleanField",
+          $ref: '#/definitions/booleanField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "image_gallery" },
+            type: { const: 'image_gallery' },
           },
         },
         then: {
-          $ref: "#/definitions/galleryField",
+          $ref: '#/definitions/galleryField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "field_group" },
+            type: { const: 'field_group' },
           },
         },
         then: {
-          $ref: "#/definitions/fieldGroupField",
+          $ref: '#/definitions/fieldGroupField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "field_group_list" },
+            type: { const: 'field_group_list' },
           },
         },
         then: {
-          $ref: "#/definitions/fieldGroupListField",
+          $ref: '#/definitions/fieldGroupListField',
         },
       },
       {
         if: {
           properties: {
-            type: { const: "list" },
+            type: { const: 'list' },
           },
         },
         then: {
-          $ref: "#/definitions/listField",
+          $ref: '#/definitions/listField',
         },
       },
     ],
   },
-};
+}

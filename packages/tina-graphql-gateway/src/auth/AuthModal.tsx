@@ -17,19 +17,19 @@ import {
   ModalHeader,
   ModalBody,
   ModalActions,
-} from "tinacms";
-import { StyleReset } from "@tinacms/styles";
-import React, { useCallback, useState } from "react";
-import { LoadingDots } from "@tinacms/react-forms";
-import { Button } from "@tinacms/styles";
-import styled from "styled-components";
+} from 'tinacms'
+import { StyleReset } from '@tinacms/styles'
+import React, { useCallback, useState } from 'react'
+import { LoadingDots } from '@tinacms/react-forms'
+import { Button } from '@tinacms/styles'
+import styled from 'styled-components'
 
 interface ModalBuilderProps {
-  title: string;
-  message: string;
-  error?: string;
-  actions: any[];
-  close(): void;
+  title: string
+  message: string
+  error?: string
+  actions: any[]
+  close(): void
 }
 
 export function ModalBuilder(modalProps: ModalBuilderProps) {
@@ -50,32 +50,32 @@ export function ModalBuilder(modalProps: ModalBuilderProps) {
         </ModalPopup>
       </Modal>
     </StyleReset>
-  );
+  )
 }
 
 export const ErrorLabel = styled.p`
   color: var(--tina-color-error) !important;
-`;
+`
 
 interface ButtonProps {
-  name: string;
-  action(): Promise<void>;
-  primary: boolean;
+  name: string
+  action(): Promise<void>
+  primary: boolean
 }
 
 export const AsyncButton = ({ name, primary, action }: ButtonProps) => {
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false)
 
   const onClick = useCallback(async () => {
-    setSubmitting(true);
+    setSubmitting(true)
     try {
-      await action();
-      setSubmitting(false);
+      await action()
+      setSubmitting(false)
     } catch (e) {
-      setSubmitting(false);
-      throw e;
+      setSubmitting(false)
+      throw e
     }
-  }, [action, setSubmitting]);
+  }, [action, setSubmitting])
 
   return (
     <Button
@@ -87,5 +87,5 @@ export const AsyncButton = ({ name, primary, action }: ButtonProps) => {
       {submitting && <LoadingDots />}
       {!submitting && name}
     </Button>
-  );
-};
+  )
+}

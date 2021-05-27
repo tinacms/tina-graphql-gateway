@@ -11,25 +11,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import _ from "lodash";
-import p from "path";
-import { Octokit } from "@octokit/rest";
+import _ from 'lodash'
+import p from 'path'
+import { Octokit } from '@octokit/rest'
 
 type GithubManagerInit = {
-  rootPath: string;
-  accessToken: string;
-  owner: string;
-  repo: string;
-  ref: string;
-  cache?: typeof dummyCache;
-};
+  rootPath: string
+  accessToken: string
+  owner: string
+  repo: string
+  ref: string
+  cache?: typeof dummyCache
+}
 
-import { DataAdaptor } from "./data-adaptor";
+import { DataAdaptor } from './data-adaptor'
 export class GithubManager implements DataAdaptor {
-  rootPath: string;
-  repoConfig: Pick<GithubManagerInit, "owner" | "ref" | "repo">;
-  appOctoKit: Octokit;
-  cache: typeof dummyCache;
+  rootPath: string
+  repoConfig: Pick<GithubManagerInit, 'owner' | 'ref' | 'repo'>
+  appOctoKit: Octokit
+  cache: typeof dummyCache
   constructor({
     rootPath,
     accessToken,
@@ -38,21 +38,21 @@ export class GithubManager implements DataAdaptor {
     ref,
     cache,
   }: GithubManagerInit) {
-    this.cache = cache || dummyCache;
-    this.rootPath = rootPath;
+    this.cache = cache || dummyCache
+    this.rootPath = rootPath
     this.repoConfig = {
       owner,
       repo,
       ref,
-    };
+    }
     this.appOctoKit = new Octokit({
       auth: accessToken,
-    });
+    })
   }
 
   private generateKey = (key: string) => {
-    return `${this.repoConfig.owner}:${this.repoConfig.repo}:${this.repoConfig.ref}__${key}`;
-  };
+    return `${this.repoConfig.owner}:${this.repoConfig.repo}:${this.repoConfig.ref}__${key}`
+  }
 
   readFile = async (path: string) => {
     return this.cache.get(this.generateKey(path), async () => {
@@ -62,10 +62,10 @@ export class GithubManager implements DataAdaptor {
           path,
         })
         .then((response) => {
-          return Buffer.from(response.data.content, "base64").toString();
-        });
-    });
-  };
+          return Buffer.from(response.data.content, 'base64').toString()
+        })
+    })
+  }
   readDir = async (path: string): Promise<string[]> => {
     return _.flatten(
       await this.cache.get(this.generateKey(path), async () =>
@@ -78,51 +78,51 @@ export class GithubManager implements DataAdaptor {
             if (Array.isArray(response.data)) {
               return await Promise.all(
                 await response.data.map(async (d) => {
-                  if (d.type === "dir") {
-                    const nestedItems = await this.readDir(d.path);
+                  if (d.type === 'dir') {
+                    const nestedItems = await this.readDir(d.path)
                     return nestedItems.map((nestedItem) => {
-                      return p.join(d.name, nestedItem);
-                    });
+                      return p.join(d.name, nestedItem)
+                    })
                   }
-                  return d.name;
+                  return d.name
                 })
-              );
+              )
             }
 
             throw new Error(
               `Expected to return an array from Github directory ${path}`
-            );
+            )
           })
       )
-    );
-  };
+    )
+  }
   writeFile = async (path: string, content: string) => {
     // check if the file exists
-    let fileSha = undefined;
+    let fileSha = undefined
     try {
       const fileContent = await this.appOctoKit.repos.getContent({
         ...this.repoConfig,
         path,
-      });
+      })
 
-      fileSha = fileContent.data.sha;
+      fileSha = fileContent.data.sha
     } catch (e) {
-      console.log("No file exists, creating new one");
+      console.log('No file exists, creating new one')
     }
 
     await this.appOctoKit.repos.createOrUpdateFileContents({
       ...this.repoConfig,
       branch: this.repoConfig.ref,
       path: path,
-      message: "Update from GraphQL client",
-      content: new Buffer(content).toString("base64"),
+      message: 'Update from GraphQL client',
+      content: new Buffer(content).toString('base64'),
       sha: fileSha,
-    });
-  };
+    })
+  }
 }
 
 const dummyCache = {
   get: <T extends string | string[]>(key: string, setter: () => Promise<T>) => {
-    return setter();
+    return setter()
   },
-};
+}

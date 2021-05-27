@@ -11,89 +11,89 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { gql } from "../../gql";
+import { gql } from '../../gql'
 
-import { assertIsString, BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from '../'
 
-const typename = "TextField";
+const typename = 'TextField'
 export const text = {
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextField>) => {
-      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }))
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
-      });
+      })
     },
     initialValue: ({ field }: BuildArgs<TextField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     value: ({ field }: BuildArgs<TextField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     input: ({ field }: BuildArgs<TextField>) => {
       return gql.InputValueDefinition({
         name: field.name,
         type: gql.TYPES.String,
-      });
+      })
     },
   },
   resolve: {
     field: ({
       field,
-    }: Omit<ResolveArgs<TextField>, "value">): TinaTextField => {
-      const { type, ...rest } = field;
+    }: Omit<ResolveArgs<TextField>, 'value'>): TinaTextField => {
+      const { type, ...rest } = field
       return {
         ...rest,
-        component: "text",
+        component: 'text',
         config: rest.config || {
           required: false,
         },
-        __typename: "TextField",
-      };
+        __typename: 'TextField',
+      }
     },
     initialValue: async ({
       value,
     }: ResolveArgs<TextField>): Promise<string> => {
-      assertIsString(value, { source: "text initial value" });
-      return value;
+      assertIsString(value, { source: 'text initial value' })
+      return value
     },
     value: async ({ value }: ResolveArgs<TextField>): Promise<string> => {
-      assertIsString(value, { source: "text value" });
-      return value;
+      assertIsString(value, { source: 'text value' })
+      return value
     },
     input: async ({
       field,
       value,
     }: ResolveArgs<TextField>): Promise<{ [key: string]: string } | false> => {
       try {
-        assertIsString(value, { source: "text input" });
-        return { [field.name]: value };
+        assertIsString(value, { source: 'text input' })
+        return { [field.name]: value }
       } catch (e) {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
 export type TextField = {
-  label: string;
-  name: string;
-  type: "text";
-  default?: string;
+  label: string
+  name: string
+  type: 'text'
+  default?: string
   config?: {
-    required?: boolean;
-  };
-  __namespace: string;
-};
+    required?: boolean
+  }
+  __namespace: string
+}
 
 export type TinaTextField = {
-  label: string;
-  name: string;
-  component: "text";
-  default?: string;
+  label: string
+  name: string
+  component: 'text'
+  default?: string
   config?: {
-    required?: boolean;
-  };
-  __typename: typeof typename;
-};
+    required?: boolean
+  }
+  __typename: typeof typename
+}

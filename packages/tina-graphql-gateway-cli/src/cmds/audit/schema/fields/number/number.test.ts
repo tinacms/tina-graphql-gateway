@@ -11,25 +11,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 const base = {
-  type: "number",
-  name: "weight",
-  label: "Weight",
-  description: "Used to handle sorting order, menu order, etc.",
-};
+  type: 'number',
+  name: 'weight',
+  label: 'Weight',
+  description: 'Used to handle sorting order, menu order, etc.',
+}
 
 setupTests({
-  "with an invalid default type": {
+  'with an invalid default type': {
     initial: {
       ...base,
-      default: "2",
+      default: '2',
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "type",
+        dataPath: '.default',
+        keyword: 'type',
       },
     ],
     fixed: {
@@ -37,7 +37,7 @@ setupTests({
       default: 2,
     },
   },
-  "with 0 as the default": {
+  'with 0 as the default': {
     initial: {
       ...base,
       default: 0,
@@ -55,8 +55,8 @@ setupTests({
     },
     errors: [
       {
-        dataPath: "",
-        keyword: "additionalProperties",
+        dataPath: '',
+        keyword: 'additionalProperties',
       },
     ],
     fixed: {
@@ -66,7 +66,7 @@ setupTests({
       },
     },
   },
-  "when the default is not a multiple of the step config": {
+  'when the default is not a multiple of the step config': {
     initial: {
       ...base,
       default: 3,
@@ -74,9 +74,9 @@ setupTests({
         step: 2,
       },
     },
-    errors: [{ dataPath: ".default", keyword: "multipleOf" }],
+    errors: [{ dataPath: '.default', keyword: 'multipleOf' }],
   },
-  "when the default is greather than the max": {
+  'when the default is greather than the max': {
     initial: {
       ...base,
       default: 4,
@@ -84,9 +84,9 @@ setupTests({
         max: 2,
       },
     },
-    errors: [{ dataPath: ".default", keyword: "maximum" }],
+    errors: [{ dataPath: '.default', keyword: 'maximum' }],
   },
-  "when the default is less than the min": {
+  'when the default is less than the min': {
     initial: {
       ...base,
       default: 4,
@@ -94,6 +94,6 @@ setupTests({
         min: 6,
       },
     },
-    errors: [{ dataPath: ".default", keyword: "minimum" }],
+    errors: [{ dataPath: '.default', keyword: 'minimum' }],
   },
-});
+})

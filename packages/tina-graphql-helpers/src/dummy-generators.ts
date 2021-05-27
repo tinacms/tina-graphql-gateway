@@ -16,9 +16,9 @@ import {
   DocumentNode,
   getNamedType,
   GraphQLObjectType,
-} from "graphql";
-import { friendlyName } from "./util";
-import { buildSelectionsFields } from "./queryBuilder";
+} from 'graphql'
+import { friendlyName } from './util'
+import { buildSelectionsFields } from './queryBuilder'
 
 /**
  *
@@ -29,98 +29,98 @@ export const queryGenerator = (
   variables: { relativePath: string; collection: string },
   schema: GraphQLSchema
 ): DocumentNode => {
-  const t = schema.getQueryType();
-  const queryFields = t?.getFields();
+  const t = schema.getQueryType()
+  const queryFields = t?.getFields()
   if (queryFields) {
-    const queryName = `get${friendlyName(variables.collection)}Document`;
-    const queryField = queryFields[queryName];
+    const queryName = `get${friendlyName(variables.collection)}Document`
+    const queryField = queryFields[queryName]
 
-    const returnType = getNamedType(queryField.type);
+    const returnType = getNamedType(queryField.type)
     if (returnType instanceof GraphQLObjectType) {
-      let depth = 0;
+      let depth = 0
       const fields = buildSelectionsFields(
         Object.values(returnType.getFields()).filter(
-          (field) => field.name === "data"
+          (field) => field.name === 'data'
         ),
         (fields) => {
           const filteredFieldsList = [
-            "sys",
-            "__typename",
-            "template",
-            "html",
-            "form",
-            "values",
-            "markdownAst",
-          ];
-          depth = depth + 1;
+            'sys',
+            '__typename',
+            'template',
+            'html',
+            'form',
+            'values',
+            'markdownAst',
+          ]
+          depth = depth + 1
           const filteredFields = fields.filter((field) => {
-            return !filteredFieldsList.includes(field.name);
-          });
+            return !filteredFieldsList.includes(field.name)
+          })
 
-          return { continue: depth < 5, filteredFields };
+          return { continue: depth < 5, filteredFields }
         }
-      );
+      )
 
       return {
-        kind: "Document" as const,
+        kind: 'Document' as const,
         definitions: [
           {
-            kind: "OperationDefinition" as const,
-            operation: "query",
+            kind: 'OperationDefinition' as const,
+            operation: 'query',
             name: {
-              kind: "Name" as const,
+              kind: 'Name' as const,
               value: queryName,
             },
             variableDefinitions: [
               {
-                kind: "VariableDefinition" as const,
+                kind: 'VariableDefinition' as const,
                 variable: {
-                  kind: "Variable" as const,
+                  kind: 'Variable' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "relativePath",
+                    kind: 'Name' as const,
+                    value: 'relativePath',
                   },
                 },
                 type: {
-                  kind: "NonNullType" as const,
+                  kind: 'NonNullType' as const,
                   type: {
-                    kind: "NamedType" as const,
+                    kind: 'NamedType' as const,
                     name: {
-                      kind: "Name" as const,
-                      value: "String",
+                      kind: 'Name' as const,
+                      value: 'String',
                     },
                   },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
                 {
-                  kind: "Field",
+                  kind: 'Field',
                   name: {
-                    kind: "Name",
+                    kind: 'Name',
                     value: queryName,
                   },
                   arguments: [
                     {
-                      kind: "Argument",
+                      kind: 'Argument',
                       name: {
-                        kind: "Name",
-                        value: "relativePath",
+                        kind: 'Name',
+                        value: 'relativePath',
                       },
                       value: {
-                        kind: "Variable",
+                        kind: 'Variable',
                         name: {
-                          kind: "Name",
-                          value: "relativePath",
+                          kind: 'Name',
+                          value: 'relativePath',
                         },
                       },
                     },
                   ],
                   directives: [],
                   selectionSet: {
-                    kind: "SelectionSet",
+                    kind: 'SelectionSet',
                     selections: fields,
                   },
                 },
@@ -128,13 +128,11 @@ export const queryGenerator = (
             },
           },
         ],
-      };
+      }
     } else {
-      throw new Error(
-        "Expected return type to be an instance of GraphQLObject"
-      );
+      throw new Error('Expected return type to be an instance of GraphQLObject')
     }
   } else {
-    throw new Error("Unable to find query fields for provided schema");
+    throw new Error('Unable to find query fields for provided schema')
   }
-};
+}

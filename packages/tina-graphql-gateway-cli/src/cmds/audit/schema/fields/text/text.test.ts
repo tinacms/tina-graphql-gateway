@@ -11,51 +11,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with a missing label": {
+  'with a missing label': {
     initial: {
-      name: "figure",
-      type: "text",
+      name: 'figure',
+      type: 'text',
       config: {
         required: false,
       },
-      description: "A single number or word to emphasize",
+      description: 'A single number or word to emphasize',
     },
     errors: [
       {
-        dataPath: "",
-        keyword: "required",
+        dataPath: '',
+        keyword: 'required',
       },
     ],
   },
-  "with a missing config": {
+  'with a missing config': {
     initial: {
-      name: "figure",
-      type: "text",
+      name: 'figure',
+      type: 'text',
       default: 2,
       config: {
         required: false,
       },
-      label: "Figure",
-      description: "A single number or word to emphasize",
+      label: 'Figure',
+      description: 'A single number or word to emphasize',
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "type",
+        dataPath: '.default',
+        keyword: 'type',
       },
     ],
     fixed: {
-      name: "figure",
-      type: "text",
-      default: "2",
+      name: 'figure',
+      type: 'text',
+      default: '2',
       config: {
         required: false,
       },
-      label: "Figure",
-      description: "A single number or word to emphasize",
+      label: 'Figure',
+      description: 'A single number or word to emphasize',
     },
   },
-});
+})

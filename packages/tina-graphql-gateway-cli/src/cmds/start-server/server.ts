@@ -11,30 +11,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import path from "path";
-import cors from "cors";
-import http from "http";
-import express from "express";
+import path from 'path'
+import cors from 'cors'
+import http from 'http'
+import express from 'express'
 // @ts-ignore
-import bodyParser from "body-parser";
+import bodyParser from 'body-parser'
 
 const gqlServer = async () => {
   // This is lazily required so we can update the module
   // without having to restart the server
-  const gqlPackage = require("tina-graphql");
-  const app = express();
-  const server = http.createServer(app);
-  app.use(cors());
-  app.use(bodyParser.json());
+  const gqlPackage = require('tina-graphql')
+  const app = express()
+  const server = http.createServer(app)
+  app.use(cors())
+  app.use(bodyParser.json())
 
-  let projectRoot = path.join(process.cwd());
+  let projectRoot = path.join(process.cwd())
 
-  app.post("/graphql", async (req, res) => {
-    const { query, variables } = req.body;
-    const result = await gqlPackage.gql({ projectRoot, query, variables });
-    return res.json(result);
-  });
-  return server;
-};
+  app.post('/graphql', async (req, res) => {
+    const { query, variables } = req.body
+    const result = await gqlPackage.gql({ projectRoot, query, variables })
+    return res.json(result)
+  })
+  return server
+}
 
-export default gqlServer;
+export default gqlServer
