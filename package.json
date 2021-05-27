@@ -17,6 +17,7 @@
     "ci:build": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo -pt run build",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --verbose run test",
     "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --verbose npm publish --tolerate-republish --access public",
+    "format": "prettier --write .",
     "postinstall": "husky install"
   },
   "publishConfig": {
