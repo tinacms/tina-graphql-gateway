@@ -11,20 +11,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const BooleanField = {
-  $id: "#booleanField",
-  label: "Toggle Field",
+  $id: '#booleanField',
+  label: 'Toggle Field',
   description:
-    "A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ",
-  type: "object",
+    'A true or false toggle. Good for components that can be turned on/off on a by-page basis such as page sections. ',
+  type: 'object',
   properties: {
     ...base,
     type: {
-      const: "boolean",
+      const: 'boolean',
     },
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

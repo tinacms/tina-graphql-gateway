@@ -11,45 +11,45 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import popupWindow from "./popupWindow";
+import popupWindow from './popupWindow'
 
-const TINA_LOGIN_EVENT = "tinaCloudLogin";
-export const AUTH_TOKEN_KEY = "tinacms-auth";
+const TINA_LOGIN_EVENT = 'tinaCloudLogin'
+export const AUTH_TOKEN_KEY = 'tinacms-auth'
 
-const BASE_TINA_URL = process.env.BASE_TINA_URL || `tina.io`;
+const BASE_TINA_URL = process.env.BASE_TINA_URL || `tina.io`
 
 export type TokenObject = {
-  id_token: string;
-  access_token: string;
-  refresh_token: string;
-};
+  id_token: string
+  access_token: string
+  refresh_token: string
+}
 export const authenticate = (
   clientId: string,
   organizationId: string
 ): Promise<TokenObject> => {
   return new Promise((resolve) => {
     // @ts-ignore
-    let authTab: Window | undefined;
+    let authTab: Window | undefined
 
     // TODO - Grab this from the URL instead of passing through localstorage
-    window.addEventListener("message", function (e: MessageEvent) {
+    window.addEventListener('message', function (e: MessageEvent) {
       if (e.data.source === TINA_LOGIN_EVENT) {
         if (authTab) {
-          authTab.close();
+          authTab.close()
         }
         resolve({
           id_token: e.data.id_token,
           access_token: e.data.access_token,
           refresh_token: e.data.refresh_token,
-        });
+        })
       }
-    });
+    })
     authTab = popupWindow(
       `https://${organizationId}.${BASE_TINA_URL}/signin?clientId=${clientId}`,
-      "_blank",
+      '_blank',
       window,
       1000,
       700
-    );
-  });
-};
+    )
+  })
+}

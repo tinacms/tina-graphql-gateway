@@ -11,30 +11,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const SelectField = {
-  $id: "#selectField",
-  label: "Select Field",
-  description: "A dropdown to make a single selection from a set of options. ",
-  type: "object",
+  $id: '#selectField',
+  label: 'Select Field',
+  description: 'A dropdown to make a single selection from a set of options. ',
+  type: 'object',
   properties: {
     type: {
-      const: "select",
+      const: 'select',
     },
     ...base,
     default: {
-      type: "string",
+      type: 'string',
       removeIfFails: true, // we put [] as a default value in lots of places
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
         source: {
-          type: "object",
+          type: 'object',
           properties: {
             // FIXME: this doesnt look right
-            type: { enum: ["simple", "pages", "documents"] },
+            type: { enum: ['simple', 'pages', 'documents'] },
           },
         },
       },
@@ -44,27 +44,27 @@ export const SelectField = {
             properties: {
               source: {
                 properties: {
-                  type: { const: "simple" },
+                  type: { const: 'simple' },
                 },
               },
             },
           },
           then: {
             additionalProperties: false,
-            required: ["options", "source"],
+            required: ['options', 'source'],
             properties: {
-              required: { type: "boolean" },
+              required: { type: 'boolean' },
               source: {
                 properties: {
-                  type: { const: "simple" },
+                  type: { const: 'simple' },
                 },
-                required: ["type"],
+                required: ['type'],
                 additionalProperties: false,
               },
               options: {
-                type: "array",
+                type: 'array',
                 items: {
-                  type: "string",
+                  type: 'string',
                 },
               },
             },
@@ -75,20 +75,20 @@ export const SelectField = {
             properties: {
               source: {
                 properties: {
-                  type: { const: "pages" },
+                  type: { const: 'pages' },
                 },
               },
             },
           },
           then: {
             properties: {
-              required: { type: "boolean" },
+              required: { type: 'boolean' },
               source: {
                 properties: {
-                  type: { const: "pages" },
-                  section: { type: "string" },
+                  type: { const: 'pages' },
+                  section: { type: 'string' },
                 },
-                required: ["type", "section"],
+                required: ['type', 'section'],
                 additionalProperties: false,
               },
             },
@@ -100,22 +100,22 @@ export const SelectField = {
             properties: {
               source: {
                 properties: {
-                  type: { const: "documents" },
+                  type: { const: 'documents' },
                 },
               },
             },
           },
           then: {
             properties: {
-              required: { type: "boolean" },
+              required: { type: 'boolean' },
               source: {
                 properties: {
-                  type: { const: "documents" },
-                  section: { type: "string" },
-                  file: { type: "string" },
-                  path: { type: "string" },
+                  type: { const: 'documents' },
+                  section: { type: 'string' },
+                  file: { type: 'string' },
+                  path: { type: 'string' },
                 },
-                required: ["type", "section", "file", "path"],
+                required: ['type', 'section', 'file', 'path'],
                 additionalProperties: false,
               },
             },
@@ -127,4 +127,4 @@ export const SelectField = {
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

@@ -11,39 +11,39 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as yup from "yup";
-import { friendlyName } from "tina-graphql-helpers";
-import { gql } from "../../gql";
+import * as yup from 'yup'
+import { friendlyName } from 'tina-graphql-helpers'
+import { gql } from '../../gql'
 
-import { template } from "../templates";
-import { sequential } from "../../util";
+import { template } from '../templates'
+import { sequential } from '../../util'
 
-import { BuildArgs, ResolveArgs } from "../";
-import type { Field, TinaField } from "../index";
-import { fieldGroup } from "../field-group";
+import { BuildArgs, ResolveArgs } from '../'
+import type { Field, TinaField } from '../index'
+import { fieldGroup } from '../field-group'
 
 export type FieldGroupListField = {
-  label: string;
-  name: string;
-  type: "field_group_list";
-  default?: string;
-  fields: Field[];
-  __namespace: string;
+  label: string
+  name: string
+  type: 'field_group_list'
+  default?: string
+  fields: Field[]
+  __namespace: string
   config?: {
-    required?: boolean;
-  };
-};
+    required?: boolean
+  }
+}
 export type TinaFieldGroupListField = {
-  label: string;
-  name: string;
-  component: "group-list";
-  __typename: string;
-  default?: string;
-  fields: TinaField[];
+  label: string
+  name: string
+  component: 'group-list'
+  __typename: string
+  default?: string
+  fields: TinaField[]
   config?: {
-    required?: boolean;
-  };
-};
+    required?: boolean
+  }
+}
 
 export const fieldGroupList = {
   build: {
@@ -52,29 +52,29 @@ export const fieldGroupList = {
       field,
       accumulator,
     }: BuildArgs<FieldGroupListField>) => {
-      const typename = friendlyName(field, { suffix: "GroupListField" });
+      const typename = friendlyName(field, { suffix: 'GroupListField' })
       const fieldsUnionName = await template.build.fields({
         cache,
         template: field,
         accumulator,
         includeBody: false,
-      });
+      })
       accumulator.push(
         gql.FormFieldBuilder({
           name: typename,
           additionalFields: [
             gql.FieldDefinition({
-              name: "fields",
+              name: 'fields',
               type: fieldsUnionName,
               list: true,
             }),
           ],
         })
-      );
+      )
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
-      });
+      })
     },
     initialValue: async ({
       cache,
@@ -87,13 +87,13 @@ export const fieldGroupList = {
         accumulator,
         includeBody: false,
         includeTemplate: false,
-      });
+      })
 
       return gql.FieldDefinition({
         name: field.name,
         type: initialValueName,
         list: true,
-      });
+      })
     },
     value: async ({
       cache,
@@ -105,12 +105,12 @@ export const fieldGroupList = {
         template: field,
         accumulator,
         includeBody: false,
-      });
+      })
       return gql.FieldDefinition({
         name: field.name,
         type: name,
         list: true,
-      });
+      })
     },
     input: async ({
       cache,
@@ -122,41 +122,42 @@ export const fieldGroupList = {
         template: field,
         accumulator,
         includeBody: false,
-      });
+      })
       return gql.InputValueDefinition({
         name: field.name,
         type: name,
         list: true,
-      });
+      })
     },
   },
   resolve: {
     field: async ({
       datasource,
       field,
-    }: Omit<ResolveArgs<FieldGroupListField>, "value">): Promise<
-      TinaFieldGroupListField
-    > => {
-      const { type, ...rest } = field;
+    }: Omit<
+      ResolveArgs<FieldGroupListField>,
+      'value'
+    >): Promise<TinaFieldGroupListField> => {
+      const { type, ...rest } = field
       const t = await template.resolve.form({
         datasource,
         template: field,
         includeBody: false,
-      });
+      })
 
       return {
         ...rest,
         ...t,
-        component: "group-list",
-        __typename: friendlyName(field, { suffix: "GroupListField" }),
-      };
+        component: 'group-list',
+        __typename: friendlyName(field, { suffix: 'GroupListField' }),
+      }
     },
     initialValue: async ({
       datasource,
       field,
       value,
     }: ResolveArgs<FieldGroupListField>) => {
-      assertIsDataArray(value);
+      assertIsDataArray(value)
       return sequential(
         value,
         async (v: any) =>
@@ -165,14 +166,14 @@ export const fieldGroupList = {
             template: field,
             data: v,
           })
-      );
+      )
     },
     value: async ({
       datasource,
       field,
       value,
     }: ResolveArgs<FieldGroupListField>) => {
-      assertIsDataArray(value);
+      assertIsDataArray(value)
       return await sequential(
         value,
         async (v: any) =>
@@ -181,7 +182,7 @@ export const fieldGroupList = {
             template: field,
             data: v,
           })
-      );
+      )
     },
     input: async ({
       datasource,
@@ -191,36 +192,34 @@ export const fieldGroupList = {
       { [key: string]: unknown } | false
     > => {
       try {
-        assertIsDataArray(value);
+        assertIsDataArray(value)
 
         const values = await sequential(value, async (v) => {
           return await template.resolve.input({
             data: v,
             template: field,
             datasource,
-          });
-        });
+          })
+        })
 
         // Empty arrays are useless
         if (values && values.length > 0) {
           return {
             [field.name]: values,
-          };
+          }
         } else {
-          return false;
+          return false
         }
       } catch (e) {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
-function assertIsDataArray(
-  value: unknown
-): asserts value is {
-  [key: string]: unknown;
+function assertIsDataArray(value: unknown): asserts value is {
+  [key: string]: unknown
 }[] {
-  const schema = yup.array().of(yup.object({}));
-  schema.validateSync(value);
+  const schema = yup.array().of(yup.object({}))
+  schema.validateSync(value)
 }

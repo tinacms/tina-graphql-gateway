@@ -11,15 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { parse, printSchema, GraphQLSchema } from "graphql";
-import { codegen } from "@graphql-codegen/core";
-import { plugin as typescriptPlugin } from "@graphql-codegen/typescript";
-import { plugin as typescriptOperationsPlugin } from "@graphql-codegen/typescript-operations";
+import { parse, printSchema, GraphQLSchema } from 'graphql'
+import { codegen } from '@graphql-codegen/core'
+import { plugin as typescriptPlugin } from '@graphql-codegen/typescript'
+import { plugin as typescriptOperationsPlugin } from '@graphql-codegen/typescript-operations'
 
 export const generateTypes = async (schema: GraphQLSchema) => {
   try {
     const res = await codegen({
-      filename: process.cwd() + "/.forestry/autoschema.gql",
+      filename: process.cwd() + '/.forestry/autoschema.gql',
       schema: parse(printSchema(schema)),
       documents: [],
       config: {},
@@ -32,9 +32,9 @@ export const generateTypes = async (schema: GraphQLSchema) => {
           plugin: typescriptOperationsPlugin,
         },
       },
-    });
-    return res;
+    })
+    return res
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-};
+}

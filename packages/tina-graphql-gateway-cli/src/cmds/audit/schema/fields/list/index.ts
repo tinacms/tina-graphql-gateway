@@ -11,40 +11,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 const additionalListConfig = {
-  use_select: { type: "boolean" },
-  required: { type: "boolean" },
-  min: { type: "number" },
-  max: { type: "number" },
-};
+  use_select: { type: 'boolean' },
+  required: { type: 'boolean' },
+  min: { type: 'number' },
+  max: { type: 'number' },
+}
 
 export const ListField = {
-  $id: "#listField",
-  label: "List Field",
+  $id: '#listField',
+  label: 'List Field',
   description:
-    "A list of strings to make multiple selections. The selection is displayed as a list that can be sorted (e.g. related pages). ",
-  type: "object",
+    'A list of strings to make multiple selections. The selection is displayed as a list that can be sorted (e.g. related pages). ',
+  type: 'object',
   properties: {
     type: {
-      const: "list",
+      const: 'list',
     },
     ...base,
     default: {
-      type: "array",
+      type: 'array',
       items: {
-        type: "string",
+        type: 'string',
       },
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        use_select: { type: "boolean" },
+        use_select: { type: 'boolean' },
         source: {
-          type: "object",
+          type: 'object',
           properties: {
-            type: { enum: ["simple", "pages", "documents"] },
+            type: { enum: ['simple', 'pages', 'documents'] },
           },
         },
       },
@@ -66,27 +66,27 @@ export const ListField = {
                   properties: {
                     source: {
                       properties: {
-                        type: { const: "simple" },
+                        type: { const: 'simple' },
                       },
                     },
                   },
                 },
                 then: {
                   additionalProperties: false,
-                  required: ["source", "options"],
+                  required: ['source', 'options'],
                   properties: {
                     ...additionalListConfig,
                     options: {
-                      type: "array",
+                      type: 'array',
                       items: {
-                        type: "string",
+                        type: 'string',
                       },
                     },
                     source: {
                       properties: {
-                        type: { const: "simple" },
+                        type: { const: 'simple' },
                       },
-                      required: ["type"],
+                      required: ['type'],
                       additionalProperties: false,
                     },
                   },
@@ -97,7 +97,7 @@ export const ListField = {
                   properties: {
                     source: {
                       properties: {
-                        type: { const: "pages" },
+                        type: { const: 'pages' },
                       },
                     },
                   },
@@ -107,14 +107,14 @@ export const ListField = {
                     ...additionalListConfig,
                     source: {
                       properties: {
-                        type: { const: "pages" },
-                        section: { type: "string" },
+                        type: { const: 'pages' },
+                        section: { type: 'string' },
                       },
-                      required: ["type", "section"],
+                      required: ['type', 'section'],
                       additionalProperties: false,
                     },
                   },
-                  required: ["source"],
+                  required: ['source'],
                   additionalProperties: false,
                 },
               },
@@ -123,7 +123,7 @@ export const ListField = {
                   properties: {
                     source: {
                       properties: {
-                        type: { const: "documents" },
+                        type: { const: 'documents' },
                       },
                     },
                   },
@@ -133,16 +133,16 @@ export const ListField = {
                     ...additionalListConfig,
                     source: {
                       properties: {
-                        type: { const: "documents" },
-                        section: { type: "string" },
-                        file: { type: "string" },
-                        path: { type: "string" },
+                        type: { const: 'documents' },
+                        section: { type: 'string' },
+                        file: { type: 'string' },
+                        path: { type: 'string' },
                       },
-                      required: ["type", "section", "file", "path"],
+                      required: ['type', 'section', 'file', 'path'],
                       additionalProperties: false,
                     },
                   },
-                  required: ["source"],
+                  required: ['source'],
                   additionalProperties: false,
                 },
               },
@@ -154,4 +154,4 @@ export const ListField = {
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { css } from "styled-jsx/css";
+import React from 'react'
+import { css } from 'styled-jsx/css'
 import Link from 'next/link'
 import Head from 'next/head'
 /**
@@ -43,8 +43,8 @@ export const Wrapper = (props: { children: React.ReactNode; data: object }) => {
       </style>
       <style jsx>{PageStyles}</style>
     </>
-  );
-};
+  )
+}
 
 export const GlobalStyles = css.global`
   :root {
@@ -62,8 +62,8 @@ export const GlobalStyles = css.global`
   }
 
   html {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+      sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     box-sizing: border-box;
     font-size: 100%;
   }
@@ -77,7 +77,7 @@ export const GlobalStyles = css.global`
     margin: 0;
     background: var(--mint-light);
   }
-`;
+`
 
 export const PageStyles = css`
   .container {
@@ -125,7 +125,7 @@ export const PageStyles = css`
     background: var(--gray);
     padding: 1rem 2rem;
   }
-`;
+`
 
 export const RawRenderer = ({ data }) => {
   return (
@@ -169,37 +169,35 @@ export const RawRenderer = ({ data }) => {
         }
       `}</style>
     </>
-  );
-};
+  )
+}
 
 const Nav = () => {
   // If we're on an admin path, other links should also link to their admin paths
-  const [prefix, setPrefix] = React.useState("");
+  const [prefix, setPrefix] = React.useState('')
 
   React.useEffect(() => {
-    if (window.location.pathname.startsWith("/admin")) {
-      setPrefix("/admin");
+    if (window.location.pathname.startsWith('/admin')) {
+      setPrefix('/admin')
     }
-  });
+  })
 
   return (
     <div className="nav">
       <h4>
         <Link href="/">
-        <a>Tina Cloud Starter</a>
+          <a>Tina Cloud Starter</a>
         </Link>
       </h4>
       <ul className="menu">
         <li>
           <Link href={`${prefix}/`}>
-           <a>Home</a>
+            <a>Home</a>
           </Link>
         </li>
         <li>
-          <Link  href={`${prefix}/posts/voteForPedro`}>
-            <a className="summary">
-              Vote for Pedro
-            </a>
+          <Link href={`${prefix}/posts/voteForPedro`}>
+            <a className="summary">Vote for Pedro</a>
           </Link>
         </li>
       </ul>
@@ -230,8 +228,8 @@ const Nav = () => {
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
 export const SidebarPlaceholder = () => (
   <div className="sidebar-placeholder">
@@ -255,48 +253,48 @@ export const SidebarPlaceholder = () => (
       </a>
     </p>
     <style jsx>{`
-    .sidebar-placeholder {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: var(--tina-padding-big) var(--tina-padding-big) 64px
-        var(--tina-padding-big);
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-    }
+      .sidebar-placeholder {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: var(--tina-padding-big) var(--tina-padding-big) 64px
+          var(--tina-padding-big);
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+      }
 
-    .sidebar-placeholder > .emoji {
-      display: block;
-    }
+      .sidebar-placeholder > .emoji {
+        display: block;
+      }
 
-    .sidebar-placeholder > *:first-child {
-      margin: 0 0 var(--tina-padding-big) 0;
-    }
+      .sidebar-placeholder > *:first-child {
+        margin: 0 0 var(--tina-padding-big) 0;
+      }
 
-    .sidebar-placeholder h3 {
-      font-size: var(--tina-font-size-5);
-      font-weight: normal;
-      color: inherit;
-      display: block;
-      margin: 0 0 var(--tina-padding-big) 0;
-    }
+      .sidebar-placeholder h3 {
+        font-size: var(--tina-font-size-5);
+        font-weight: normal;
+        color: inherit;
+        display: block;
+        margin: 0 0 var(--tina-padding-big) 0;
+      }
 
-    .sidebar-placeholder p {
-      display: block;
-      margin: 0 0 var(--tina-padding-big) 0;
-    }
+      .sidebar-placeholder p {
+        display: block;
+        margin: 0 0 var(--tina-padding-big) 0;
+      }
 
-    .sidebar-placeholder .emoji {
-      font-size: 40px;
-      line-height: 1;
-      display: inline-block;
-    }
+      .sidebar-placeholder .emoji {
+        font-size: 40px;
+        line-height: 1;
+        display: inline-block;
+      }
 
-    .sidebar-placeholder a {
+      .sidebar-placeholder a {
         text-align: center;
         border: 0;
         border-radius: var(--tina-radius-big);
@@ -312,21 +310,21 @@ export const SidebarPlaceholder = () => (
         position: relative;
         text-decoration: none;
         display: inline-block;
-    }
+      }
 
-    .sidebar-placeholder a .emoji {
-      font-size: 24px;
-      position: absolute;
-      left: var(--tina-padding-big);
-      top: 50%;
-      transform-origin: 50% 50%;
-      transform: translate3d(0, -50%, 0);
-      transition: all var(--tina-timing-short) ease-out;
-    }
+      .sidebar-placeholder a .emoji {
+        font-size: 24px;
+        position: absolute;
+        left: var(--tina-padding-big);
+        top: 50%;
+        transform-origin: 50% 50%;
+        transform: translate3d(0, -50%, 0);
+        transition: all var(--tina-timing-short) ease-out;
+      }
 
-    .sidebar-placeholder a:hover {
-      color: var(--tina-color-primary);
-    }
+      .sidebar-placeholder a:hover {
+        color: var(--tina-color-primary);
+      }
     `}</style>
   </div>
-);
+)

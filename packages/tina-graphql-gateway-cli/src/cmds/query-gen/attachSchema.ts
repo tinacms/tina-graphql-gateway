@@ -11,12 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { buildSchema } from "tina-graphql";
+import { buildSchema } from 'tina-graphql'
 
 export async function attachSchema(ctx: any, next: () => void, options) {
-  const rootPath = process.cwd();
-  const schema = await buildSchema(rootPath);
+  const rootPath = process.cwd()
+  const schema = await buildSchema(rootPath)
 
-  ctx.schema = schema;
-  next();
+  ctx.schema = schema
+  next()
 }

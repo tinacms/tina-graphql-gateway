@@ -11,15 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import _ from "lodash";
-import LRU from "lru-cache";
+import _ from 'lodash'
+import LRU from 'lru-cache'
 
 const cache = new LRU<string, string | string[]>({
   max: 1000,
   length: function (v: string, key) {
-    return v.length;
+    return v.length
   },
-});
+})
 
 /*
   ref is used as the the branch for now, so in future we may switch to commits
@@ -30,25 +30,25 @@ export const clearCache = ({
   ref,
   path,
 }: {
-  owner: string;
-  repo: string;
-  ref: string;
-  path?: string;
+  owner: string
+  repo: string
+  ref: string
+  path?: string
 }) => {
-  const repoPrefix = `${owner}:${repo}:${ref}__`;
+  const repoPrefix = `${owner}:${repo}:${ref}__`
   if (path) {
-    const key = `${repoPrefix}${path}`;
-    console.log("[LRU cache]: clearing key ", key);
-    cache.del(key);
+    const key = `${repoPrefix}${path}`
+    console.log('[LRU cache]: clearing key ', key)
+    cache.del(key)
   } else {
-    console.log("[LRU cache]: clearing all keys for repo ", repoPrefix);
+    console.log('[LRU cache]: clearing all keys for repo ', repoPrefix)
     cache.forEach((value, key, cache) => {
       if (key.startsWith(repoPrefix)) {
-        cache.del(key);
+        cache.del(key)
       }
-    });
+    })
   }
-};
+}
 
 /**
  * This is just an example of what you can provide for caching
@@ -57,16 +57,16 @@ export const clearCache = ({
  */
 export const simpleCache = {
   get: async (keyName: string, setter: () => Promise<any>) => {
-    const value = cache.get(keyName);
+    const value = cache.get(keyName)
 
     if (value) {
-      console.log("getting from cache", keyName);
-      return value;
+      console.log('getting from cache', keyName)
+      return value
     } else {
-      const valueToCache = await setter();
-      const isSet = cache.set(keyName, valueToCache);
-      console.log("item not in cache, setting", keyName, isSet);
-      return valueToCache;
+      const valueToCache = await setter()
+      const isSet = cache.set(keyName, valueToCache)
+      console.log('item not in cache, setting', keyName, isSet)
+      return valueToCache
     }
   },
-};
+}

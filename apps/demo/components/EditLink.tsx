@@ -12,14 +12,14 @@ limitations under the License.
 */
 
 //...EditLink.tsx
-import { useCMS } from "tinacms";
+import { useCMS } from 'tinacms'
 
 export const EditLink = () => {
-  const cms = useCMS();
+  const cms = useCMS()
 
   return (
     <button onClick={() => cms.toggle()}>
-      {cms.enabled ? "Exit Edit Mode" : "Edit This Site"}
+      {cms.enabled ? 'Exit Edit Mode' : 'Edit This Site'}
     </button>
-  );
-};
+  )
+}

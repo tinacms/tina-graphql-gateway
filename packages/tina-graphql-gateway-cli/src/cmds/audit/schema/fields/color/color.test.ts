@@ -11,57 +11,57 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with a missing label": {
+  'with a missing label': {
     initial: {
-      name: "color",
-      type: "color",
+      name: 'color',
+      type: 'color',
       config: {
-        color_format: "Hex",
+        color_format: 'Hex',
       },
     },
-    errors: [{ dataPath: "", keyword: "required" }],
+    errors: [{ dataPath: '', keyword: 'required' }],
   },
-  "with a missing config": {
+  'with a missing config': {
     initial: {
-      name: "color",
-      label: "My Color",
-      type: "color",
+      name: 'color',
+      label: 'My Color',
+      type: 'color',
     },
-    errors: [{ dataPath: "", keyword: "required" }],
+    errors: [{ dataPath: '', keyword: 'required' }],
   },
-  "without a color_format": {
+  'without a color_format': {
     initial: {
-      name: "color",
-      label: "My Color",
-      type: "color",
+      name: 'color',
+      label: 'My Color',
+      type: 'color',
       config: {
         required: true,
       },
     },
     errors: [
       {
-        dataPath: ".config",
-        keyword: "required",
+        dataPath: '.config',
+        keyword: 'required',
       },
     ],
   },
-  "with an invalid color_format": {
+  'with an invalid color_format': {
     initial: {
-      name: "color",
-      label: "My Color",
-      type: "color",
+      name: 'color',
+      label: 'My Color',
+      type: 'color',
       config: {
-        color_format: "Whoa!",
+        color_format: 'Whoa!',
       },
     },
     errors: [
       {
-        dataPath: ".config.color_format",
-        keyword: "enum",
+        dataPath: '.config.color_format',
+        keyword: 'enum',
       },
     ],
   },
-});
+})

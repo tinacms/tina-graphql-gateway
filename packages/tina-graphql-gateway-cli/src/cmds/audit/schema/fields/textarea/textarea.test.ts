@@ -11,35 +11,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with a missing config": {
+  'with a missing config': {
     initial: {
-      name: "figure",
-      type: "textarea",
+      name: 'figure',
+      type: 'textarea',
       default: 2,
       config: {
         required: false,
       },
-      label: "Figure",
-      description: "A single number or word to emphasize",
+      label: 'Figure',
+      description: 'A single number or word to emphasize',
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "type",
+        dataPath: '.default',
+        keyword: 'type',
       },
     ],
     fixed: {
-      name: "figure",
-      type: "textarea",
-      default: "2",
+      name: 'figure',
+      type: 'textarea',
+      default: '2',
       config: {
         required: false,
       },
-      label: "Figure",
-      description: "A single number or word to emphasize",
+      label: 'Figure',
+      description: 'A single number or word to emphasize',
     },
   },
-});
+})

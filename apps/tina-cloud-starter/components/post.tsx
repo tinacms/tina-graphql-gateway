@@ -11,11 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from 'react-markdown'
 import type {
   Authors_Document,
   Article_Doc_Data,
-} from "../.tina/__generated__/types";
+} from '../.tina/__generated__/types'
 
 export const BlogPost = (props: Article_Doc_Data) => {
   return (
@@ -24,8 +24,8 @@ export const BlogPost = (props: Article_Doc_Data) => {
       <AuthorSnippet author={props.author} />
       <ReactMarkdown>{props._body}</ReactMarkdown>
     </>
-  );
-};
+  )
+}
 
 const AuthorSnippet = (props: { author: Authors_Document }) => {
   return (
@@ -56,5 +56,5 @@ const AuthorSnippet = (props: { author: Authors_Document }) => {
         }
       `}</style>
     </div>
-  );
-};
+  )
+}

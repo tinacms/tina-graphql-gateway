@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import prettier from "prettier";
+import prettier from 'prettier'
 
 /**
  *
@@ -20,7 +20,7 @@ import prettier from "prettier";
  * side-effect that IDEs often provide graphql syntax highlighting for it
  */
 export function gql(strings: TemplateStringsArray | string[]): string {
-  const string = Array.isArray(strings) ? strings.join("\n") : strings;
+  const string = Array.isArray(strings) ? strings.join('\n') : strings
   // @ts-ignore
-  return prettier.format(string, { parser: "graphql" });
+  return prettier.format(string, { parser: 'graphql' })
 }

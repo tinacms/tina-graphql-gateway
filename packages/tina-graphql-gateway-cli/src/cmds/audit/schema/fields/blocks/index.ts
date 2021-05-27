@@ -11,37 +11,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const BlocksField = {
-  $id: "#blocksField",
-  label: "Blocks",
+  $id: '#blocksField',
+  label: 'Blocks',
   description:
-    "A list of unlike Field Groups. Great for allowing a series of different page sections be assembled in a custom way.",
-  type: "object",
+    'A list of unlike Field Groups. Great for allowing a series of different page sections be assembled in a custom way.',
+  type: 'object',
   properties: {
     ...base,
     type: {
-      const: "blocks",
+      const: 'blocks',
     },
     template_types: {
-      type: "array",
+      type: 'array',
       minItems: 1,
       items: {
-        type: "string",
+        type: 'string',
       },
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
-        min: { type: "number" },
-        max: { type: "number" },
+        required: { type: 'boolean' },
+        min: { type: 'number' },
+        max: { type: 'number' },
       },
       minProperties: 1,
       additionalProperties: false,
     },
   },
   additionalProperties: false,
-  required: [...baseRequired, "template_types"],
-};
+  required: [...baseRequired, 'template_types'],
+}

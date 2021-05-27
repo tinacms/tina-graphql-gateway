@@ -11,13 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LandingPage } from "../components/landing-page";
-import { Wrapper } from "../components/helper-components";
-import type { MarketingPages_Document } from "../.tina/__generated__/types";
-import { createLocalClient, AsyncReturnType } from "../utils";
+import { LandingPage } from '../components/landing-page'
+import { Wrapper } from '../components/helper-components'
+import type { MarketingPages_Document } from '../.tina/__generated__/types'
+import { createLocalClient, AsyncReturnType } from '../utils'
 
 export default function HomePage(
-  props: AsyncReturnType<typeof getStaticProps>["props"]
+  props: AsyncReturnType<typeof getStaticProps>['props']
 ) {
   return (
     <>
@@ -25,7 +25,7 @@ export default function HomePage(
         <LandingPage {...props.data.getMarketingPagesDocument.data} />
       </Wrapper>
     </>
-  );
+  )
 }
 
 export const query = `#graphql
@@ -52,19 +52,19 @@ export const query = `#graphql
       }
     }
   }
-`;
+`
 
 export const getStaticProps = async () => {
-  const client = createLocalClient();
+  const client = createLocalClient()
   return {
     props: {
       data: await client.request<{
-        getMarketingPagesDocument: MarketingPages_Document;
+        getMarketingPagesDocument: MarketingPages_Document
       }>(query, {
         variables: {},
       }),
       query: query,
       variables: {},
     },
-  };
-};
+  }
+}

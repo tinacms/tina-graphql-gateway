@@ -11,79 +11,79 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { useCMS } from "tinacms";
-import type { TinaCMS, Form, FormOptions } from "tinacms";
-import { createFormMachine } from "./form-service";
-import { createMachine, spawn, StateSchema, assign } from "xstate";
-import { useMachine } from "@xstate/react";
-import { ContentCreatorPlugin, OnNewDocument } from "./create-page-plugin";
-import gql from "graphql-tag";
-import { print } from "graphql";
-import type { DocumentNode as GqlDocumentNode } from "graphql";
-import { setIn } from "final-form";
+import React from 'react'
+import { useCMS } from 'tinacms'
+import type { TinaCMS, Form, FormOptions } from 'tinacms'
+import { createFormMachine } from './form-service'
+import { createMachine, spawn, StateSchema, assign } from 'xstate'
+import { useMachine } from '@xstate/react'
+import { ContentCreatorPlugin, OnNewDocument } from './create-page-plugin'
+import gql from 'graphql-tag'
+import { print } from 'graphql'
+import type { DocumentNode as GqlDocumentNode } from 'graphql'
+import { setIn } from 'final-form'
 
 export interface FormifyArgs {
-  formConfig: FormOptions<any>;
-  createForm: (formConfig: FormOptions<any>) => Form;
-  skip?: () => void;
+  formConfig: FormOptions<any>
+  createForm: (formConfig: FormOptions<any>) => Form
+  skip?: () => void
 }
 
-export type formifyCallback = (args: FormifyArgs) => Form | void;
+export type formifyCallback = (args: FormifyArgs) => Form | void
 
 interface FormsMachineSchemaType extends StateSchema {
   states: {
-    initializing;
-    inactive;
-    active;
-  };
+    initializing
+    inactive
+    active
+  }
 }
 
-export type toggleMachineStateValue = keyof FormsMachineSchemaType["states"];
+export type toggleMachineStateValue = keyof FormsMachineSchemaType['states']
 
 type FormsState =
   | {
-      value: "inactive";
-      context: FormsContext;
+      value: 'inactive'
+      context: FormsContext
     }
   | {
-      value: "active";
-      context: FormsContext;
-    };
+      value: 'active'
+      context: FormsContext
+    }
 
 type FormsEvent =
   | {
-      type: "RETRY";
-      value: { payload: object; queryString: string };
+      type: 'RETRY'
+      value: { payload: object; queryString: string }
     }
   | {
-      type: "FORM_VALUE_CHANGE";
-      pathAndValue: any;
-    };
+      type: 'FORM_VALUE_CHANGE'
+      pathAndValue: any
+    }
 
 interface FormsContext {
-  payload: object;
-  formRefs: object;
-  cms: TinaCMS;
-  queryString: string;
-  onSubmit?: (args: { mutationString: string; variables: object }) => void;
-  formify: formifyCallback;
+  payload: object
+  formRefs: object
+  cms: TinaCMS
+  queryString: string
+  onSubmit?: (args: { mutationString: string; variables: object }) => void
+  formify: formifyCallback
 }
 
 const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
-  id: "forms",
-  initial: "inactive",
+  id: 'forms',
+  initial: 'inactive',
   states: {
     inactive: {
       on: {
         RETRY: {
-          target: "initializing",
+          target: 'initializing',
           actions: assign({
             payload: (context, event) => {
-              return event.value.payload;
+              return event.value.payload
             },
             queryString: (context, event) => {
-              return event.value.queryString;
+              return event.value.queryString
             },
           }),
         },
@@ -91,13 +91,13 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
     },
     initializing: {
       always: {
-        target: "active",
+        target: 'active',
         actions: assign({
           formRefs: (context, event) => {
-            const accum = {};
-            const keys = Object.keys(context.payload);
+            const accum = {}
+            const keys = Object.keys(context.payload)
             Object.values(context.payload).forEach((item, index) => {
-              if (!item.form) return;
+              if (!item.form) return
               accum[keys[index]] = spawn(
                 createFormMachine({
                   client: context.cms.api.tina,
@@ -113,9 +113,9 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
                   formify: context.formify,
                 }),
                 `form-${keys[index]}`
-              );
-            });
-            return accum;
+              )
+            })
+            return accum
           },
         }),
       },
@@ -131,40 +131,40 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
               // which should be populated
               return setIn(
                 context.payload,
-                event.pathAndValue.path.join("."),
+                event.pathAndValue.path.join('.'),
                 event.pathAndValue.value
-              );
+              )
             },
           }),
         },
         RETRY: {
-          target: "initializing",
+          target: 'initializing',
           actions: assign({
             payload: (context, event) => {
-              return event.value.payload;
+              return event.value.payload
             },
             queryString: (context, event) => {
-              return event.value.queryString;
+              return event.value.queryString
             },
           }),
         },
       },
     },
   },
-});
+})
 
 export type FilterCollections = (
   options: {
-    label: string;
-    value: string;
+    label: string
+    value: string
   }[]
-) => { label: string; value: string }[];
+) => { label: string; value: string }[]
 
 export const useDocumentCreatorPlugin = (
   onNewDocument?: OnNewDocument,
   filterCollections?: FilterCollections
 ) => {
-  const cms = useCMS();
+  const cms = useCMS()
   React.useEffect(() => {
     const run = async () => {
       const res = await cms.api.tina.request(
@@ -178,26 +178,26 @@ export const useDocumentCreatorPlugin = (
           }
         `,
         { variables: {} }
-      );
+      )
 
-      const emptyOption = { value: "", label: "Choose Collection" };
-      const options: { label: string; value: string }[] = [];
+      const emptyOption = { value: '', label: 'Choose Collection' }
+      const options: { label: string; value: string }[] = []
       res.getCollections.forEach((collection) => {
-        const value = collection.slug;
-        const label = `${collection.label}`;
-        options.push({ value, label });
-      });
+        const value = collection.slug
+        const label = `${collection.label}`
+        options.push({ value, label })
+      })
 
-      if (filterCollections && typeof filterCollections === "function") {
-        const filtered = filterCollections(options);
-        return [emptyOption, ...filtered];
+      if (filterCollections && typeof filterCollections === 'function') {
+        const filtered = filterCollections(options)
+        return [emptyOption, ...filtered]
       }
 
-      const collectionOptions = [emptyOption, ...options];
+      const collectionOptions = [emptyOption, ...options]
 
       const getCollectionTemplateOptions = async (collection: String) => {
         if (!collection) {
-          return [];
+          return []
         }
         const res = await cms.api.tina.request(
           (gql) => gql`
@@ -208,15 +208,15 @@ export const useDocumentCreatorPlugin = (
             }
           `,
           { variables: { collection } }
-        );
-        const options = [{ value: "", label: "Choose Template" }];
+        )
+        const options = [{ value: '', label: 'Choose Template' }]
         res.getCollection?.templates?.forEach((template) => {
-          const value = `${collection}.${template}`;
-          const label = `${template}`;
-          options.push({ value, label });
-        });
-        return options;
-      };
+          const value = `${collection}.${template}`
+          const label = `${template}`
+          options.push({ value, label })
+        })
+        return options
+      }
 
       cms.plugins.add(
         new ContentCreatorPlugin({
@@ -224,22 +224,22 @@ export const useDocumentCreatorPlugin = (
           collections: res.getCollections,
           fields: [
             {
-              component: "select",
-              name: "collection",
-              label: "Collection",
-              description: "Select the collection.",
+              component: 'select',
+              name: 'collection',
+              label: 'Collection',
+              description: 'Select the collection.',
               options: collectionOptions,
               validate: async (value: any) => {
                 if (!value) {
-                  return "Required";
+                  return 'Required'
                 }
               },
             },
             {
-              component: "select",
-              name: "collectionTemplate",
-              label: "Template",
-              description: "Select the template.",
+              component: 'select',
+              name: 'collectionTemplate',
+              label: 'Template',
+              description: 'Select the template.',
               options: [],
               validate: async (
                 value: any,
@@ -247,39 +247,37 @@ export const useDocumentCreatorPlugin = (
                 meta: any,
                 field: any
               ) => {
-                const collection = allValues?.collection;
+                const collection = allValues?.collection
                 const previousCollection = value
-                  ? value.split(".")[0]
-                  : undefined;
+                  ? value.split('.')[0]
+                  : undefined
 
                 if (!collection) {
-                  field.options = [];
-                  meta.change("");
-                  return "Required";
+                  field.options = []
+                  meta.change('')
+                  return 'Required'
                 }
 
                 if (collection !== previousCollection) {
-                  field.options = await getCollectionTemplateOptions(
-                    collection
-                  );
-                  meta.change("");
-                  return "Required";
+                  field.options = await getCollectionTemplateOptions(collection)
+                  meta.change('')
+                  return 'Required'
                 }
 
                 if (!value) {
-                  return "Required";
+                  return 'Required'
                 }
               },
             },
             {
-              component: "text",
-              name: "relativePath",
-              label: "Name",
+              component: 'text',
+              name: 'relativePath',
+              label: 'Name',
               description: `A unique name for the content. Example: "newPost" or "blog_022021`,
-              placeholder: "newPost",
+              placeholder: 'newPost',
               validate: (value: any) => {
                 if (!value) {
-                  return "Required";
+                  return 'Required'
                 }
 
                 /**
@@ -287,33 +285,33 @@ export const useDocumentCreatorPlugin = (
                  * https://github.com/tinacms/tina-graphql-gateway/blob/682e2ed54c51520d1a87fac2887950839892f465/packages/tina-graphql-gateway-cli/src/cmds/compile/index.ts#L296
                  * */
 
-                const isValid = /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value);
+                const isValid = /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value)
                 if (value && !isValid) {
-                  return "Must begin with a-z, A-Z, or _ and contain only a-z, A-Z, 0-9, or _";
+                  return 'Must begin with a-z, A-Z, or _ and contain only a-z, A-Z, 0-9, or _'
                 }
               },
             },
           ],
-          label: "Add Document",
+          label: 'Add Document',
         })
-      );
-    };
+      )
+    }
 
-    run();
-  }, [cms]);
-};
+    run()
+  }, [cms])
+}
 
 function useRegisterFormsAndSyncPayload<T extends object>({
   queryString,
   onSubmit,
   formify,
 }: {
-  queryString: string;
-  onSubmit?: (args: { queryString: string; variables: object }) => void;
-  formify?: formifyCallback;
+  queryString: string
+  onSubmit?: (args: { queryString: string; variables: object }) => void
+  formify?: formifyCallback
 }) {
-  const cms = useCMS();
-  const [tinaForms, setTinaForms] = React.useState([]);
+  const cms = useCMS()
+  const [tinaForms, setTinaForms] = React.useState([])
 
   const [machineState, send, service] = useMachine(formsMachine, {
     context: {
@@ -322,7 +320,7 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       queryString,
       formify,
       onSubmit: async (values) => {
-        const variables = await cms.api.tina.prepareVariables(values);
+        const variables = await cms.api.tina.prepareVariables(values)
         return onSubmit
           ? onSubmit({
               queryString: values.mutationString,
@@ -332,35 +330,35 @@ function useRegisterFormsAndSyncPayload<T extends object>({
               .request(values.mutationString, { variables })
               .then((res) => {
                 if (res.errors) {
-                  console.error(res);
-                  cms.alerts.error("Unable to update document");
+                  console.error(res)
+                  cms.alerts.error('Unable to update document')
                 }
-              });
+              })
       },
     },
-  });
+  })
 
   React.useEffect(() => {
     const subscription = service.subscribe((state) => {
-      if (state.matches("active")) {
-        const formIds = Object.keys(state.context.formRefs);
+      if (state.matches('active')) {
+        const formIds = Object.keys(state.context.formRefs)
         const forms = state.context.cms.plugins
-          .all("form")
+          .all('form')
           .map((formPlugin) => {
             if (formIds.includes(formPlugin.name)) {
-              return formPlugin;
+              return formPlugin
             } else {
-              return false;
+              return false
             }
           })
-          .filter(Boolean);
+          .filter(Boolean)
 
-        setTinaForms(forms);
+        setTinaForms(forms)
       }
-    });
+    })
 
-    return subscription.unsubscribe;
-  }, [service, setTinaForms]); // note: service should never change
+    return subscription.unsubscribe
+  }, [service, setTinaForms]) // note: service should never change
 
   return {
     data: {
@@ -368,10 +366,10 @@ function useRegisterFormsAndSyncPayload<T extends object>({
       tinaForms,
     },
     retry: (payload, queryString) => {
-      send({ type: "RETRY", value: { payload, queryString } });
+      send({ type: 'RETRY', value: { payload, queryString } })
     },
-    ready: machineState.matches("active"),
-  };
+    ready: machineState.matches('active'),
+  }
 }
 
 export function useGraphqlForms<T extends object>({
@@ -380,64 +378,64 @@ export function useGraphqlForms<T extends object>({
   onSubmit,
   formify = null,
 }: {
-  query: (gqlTag: typeof gql) => GqlDocumentNode;
-  variables: object;
-  onSubmit?: (args: { queryString: string; variables: object }) => void;
-  formify?: formifyCallback;
+  query: (gqlTag: typeof gql) => GqlDocumentNode
+  variables: object
+  onSubmit?: (args: { queryString: string; variables: object }) => void
+  formify?: formifyCallback
 }): [T, Boolean] {
-  const cms = useCMS();
+  const cms = useCMS()
 
-  const queryString = print(query(gql));
+  const queryString = print(query(gql))
 
   const { data, retry, ready } = useRegisterFormsAndSyncPayload({
     queryString,
     onSubmit,
     formify,
-  });
+  })
 
   React.useEffect(() => {
     cms.api.tina
       .requestWithForm(query, { variables })
       .then((payload) => {
-        retry(payload, queryString);
+        retry(payload, queryString)
       })
       .catch((e) => {
-        console.error(e);
-      });
-  }, [queryString]);
+        console.error(e)
+      })
+  }, [queryString])
 
   // @ts-ignore
-  return [data.payload, !ready];
+  return [data.payload, !ready]
 }
 
 type Field = {
-  __typename: string;
-  name: string;
-  label: string;
-  component: string;
-};
+  __typename: string
+  name: string
+  label: string
+  component: string
+}
 
 export type DocumentNode = {
   // id: string;
   _internalSys: {
-    filename: string;
-    relativePath: string;
-    basename: string;
-    path: string;
-  };
+    filename: string
+    relativePath: string
+    basename: string
+    path: string
+  }
   form: {
-    __typename: string;
-    fields: Field[];
-    label: string;
-    name: string;
-  };
+    __typename: string
+    fields: Field[]
+    label: string
+    name: string
+  }
   values: {
-    [key: string]: string | string[] | object | object[];
-  };
+    [key: string]: string | string[] | object | object[]
+  }
   data: {
-    [key: string]: string | string[] | object | object[];
-  };
+    [key: string]: string | string[] | object | object[]
+  }
   initialData: {
-    [key: string]: string | string[] | object | object[];
-  };
-};
+    [key: string]: string | string[] | object | object[]
+  }
+}

@@ -11,59 +11,60 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import type { Field, TinaField } from "./fields";
+import type { Field, TinaField } from './fields'
 
 export type DirectorySection = {
-  type: "directory";
-  label: string;
+  type: 'directory'
+  label: string
   /** An alias for "name", spaces or dashes (-) are not permitted  */
-  slug: string;
-  path: string;
-  format: "json" | "md";
-  create: "documents" | "all";
-  match: string;
-  new_doc_ext: string;
+  slug: string
+  path: string
+  format: 'json' | 'md'
+  create: 'documents' | 'all'
+  match: string
+  new_doc_ext: string
   /** The identifier of the collection, spaces or dashes (-) are not permitted  */
-  name: string;
-  templates: string[];
-};
-
-export type HeadingSection = {
-  type: "heading";
-  label: string;
-  name: string;
-  slug: string;
-};
-
-export type DocumentSection = {
-  type: "document";
-  label: string;
-  path: string;
-  name: string;
-  slug: string;
-};
-
-interface SectionMap {
-  directory: DirectorySection;
-  heading: HeadingSection;
-  document: DocumentSection;
+  name: string
+  templates: string[]
 }
 
-export type Section = SectionMap[keyof SectionMap];
+export type HeadingSection = {
+  type: 'heading'
+  label: string
+  name: string
+  slug: string
+}
 
-export const byTypeWorks = <T extends keyof SectionMap>(type: T) => (
-  section: Section
-): section is SectionMap[T] => section.type === type;
+export type DocumentSection = {
+  type: 'document'
+  label: string
+  path: string
+  name: string
+  slug: string
+}
+
+interface SectionMap {
+  directory: DirectorySection
+  heading: HeadingSection
+  document: DocumentSection
+}
+
+export type Section = SectionMap[keyof SectionMap]
+
+export const byTypeWorks =
+  <T extends keyof SectionMap>(type: T) =>
+  (section: Section): section is SectionMap[T] =>
+    section.type === type
 
 export type Settings = {
-  data: { sections: Section[] };
-};
+  data: { sections: Section[] }
+}
 
 export type WithFields = {
-  label: string;
-  fields: Field[];
-  __namespace: string;
-};
+  label: string
+  fields: Field[]
+  __namespace: string
+}
 /**
  * The data portion of the template file. Currently a template
  * is parsed with gray-matter, which returns a "content" and "data"
@@ -80,26 +81,26 @@ export type WithFields = {
  * ```
  */
 export type TemplateData = WithFields & {
-  name: string;
-  hide_body?: boolean;
-  display_field?: string;
-  pages?: string[];
-};
+  name: string
+  hide_body?: boolean
+  display_field?: string
+  pages?: string[]
+}
 
 export type TemplateDataWithNoName = WithFields & {
-  hide_body?: boolean;
-  display_field?: string;
-  pages?: string[];
-};
+  hide_body?: boolean
+  display_field?: string
+  pages?: string[]
+}
 
 export type TinaTemplateData = {
-  label: string;
-  fields: TinaField[];
-};
+  label: string
+  fields: TinaField[]
+}
 
 export type Template = {
-  data: TemplateData;
-};
+  data: TemplateData
+}
 
 /**
  * The 'name' field doesn't exist
@@ -108,5 +109,5 @@ export type Template = {
  * after fetching
  */
 export type RawTemplate = {
-  data: TemplateDataWithNoName;
-};
+  data: TemplateDataWithNoName
+}
