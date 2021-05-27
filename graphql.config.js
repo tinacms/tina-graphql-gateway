@@ -14,8 +14,8 @@ limitations under the License.
 module.exports = {
   projects: {
     demo: {
-      schema: ["./apps/demo/.tina/__generated__/schema.gql"],
-      documents: "./apps/demo/**/*.{graphql,js,ts,jsx,tsx}",
+      schema: ['./apps/demo/.tina/__generated__/schema.gql'],
+      documents: './apps/demo/**/*.{graphql,js,ts,jsx,tsx}',
     },
   },
-};
+}
