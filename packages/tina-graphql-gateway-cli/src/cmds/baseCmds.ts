@@ -11,57 +11,57 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Command } from "../command";
-import { chain } from "../middleware";
-import { genTypes, attachSchema } from "./query-gen";
-import { audit, migrate, dump } from "./audit";
-import { startServer } from "./start-server";
-import { compile } from "./compile";
+import { Command } from '../command'
+import { chain } from '../middleware'
+import { genTypes, attachSchema } from './query-gen'
+import { audit, migrate, dump } from './audit'
+import { startServer } from './start-server'
+import { compile } from './compile'
 
-export const CMD_GEN_TYPES = "schema:types";
-export const CMD_AUDIT = "schema:audit";
-export const CMD_DUMP = "schema:dump";
-export const CMD_MIGRATE = "schema:migrate";
-export const CMD_START_SERVER = "server:start";
-export const CMD_START_PLAYGROUND = "server:playground";
-export const CMD_COMPILE_MODELS = "schema:compile";
+export const CMD_GEN_TYPES = 'schema:types'
+export const CMD_AUDIT = 'schema:audit'
+export const CMD_DUMP = 'schema:dump'
+export const CMD_MIGRATE = 'schema:migrate'
+export const CMD_START_SERVER = 'server:start'
+export const CMD_START_PLAYGROUND = 'server:playground'
+export const CMD_COMPILE_MODELS = 'schema:compile'
 
 const startServerPortOption = {
-  name: "--port <port>",
-  description: "Specify a port to run the server on. (default 4001)",
-};
+  name: '--port <port>',
+  description: 'Specify a port to run the server on. (default 4001)',
+}
 const auditFixOption = {
-  name: "--fix",
-  description: "Fix errors in the .tina folder configuration",
-};
+  name: '--fix',
+  description: 'Fix errors in the .tina folder configuration',
+}
 const schemaDumpOption = {
-  name: "--folder <folder>",
-  description: "Dump the schema into the given path",
-};
+  name: '--folder <folder>',
+  description: 'Dump the schema into the given path',
+}
 const migrateDryRunOption = {
-  name: "--dry-run",
-  description: "Audit the .forestry config without migrating",
-};
+  name: '--dry-run',
+  description: 'Audit the .forestry config without migrating',
+}
 const subCommand = {
-  name: "-c, --command <command>",
-  description: "The sub-command to run",
-};
+  name: '-c, --command <command>',
+  description: 'The sub-command to run',
+}
 const pathOption = {
-  name: "--root",
+  name: '--root',
   description:
-    "Specify to use the .tina folder in the root of your repository for the schema",
-};
+    'Specify to use the .tina folder in the root of your repository for the schema',
+}
 
 export const baseCmds: Command[] = [
   {
     command: CMD_START_SERVER,
-    description: "Start Filesystem Graphql Server",
+    description: 'Start Filesystem Graphql Server',
     options: [startServerPortOption, subCommand],
     action: (options) => chain([startServer], options),
   },
   {
     command: CMD_COMPILE_MODELS,
-    description: "Compile schema into static files for the server",
+    description: 'Compile schema into static files for the server',
     action: (options) => chain([compile], options),
   },
   {
@@ -91,4 +91,4 @@ export const baseCmds: Command[] = [
   //   options: [schemaDumpOption],
   //   action: (options) => chain([dump], options),
   // },
-];
+]

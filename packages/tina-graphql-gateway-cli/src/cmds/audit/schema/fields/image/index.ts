@@ -11,33 +11,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const ImageField = {
-  $id: "#imageField",
-  label: "Image Field",
+  $id: '#imageField',
+  label: 'Image Field',
   description:
-    "A single file input that adds assets to the Media Library. Good for a featured image or a profile picture. ",
-  type: "object",
+    'A single file input that adds assets to the Media Library. Good for a featured image or a profile picture. ',
+  type: 'object',
   properties: {
     type: {
-      const: "file",
+      const: 'file',
     },
     ...base,
     default: {
-      type: "string",
+      type: 'string',
       minLength: 1,
       removeIfFails: true,
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
-        maxSize: { type: "number" },
+        required: { type: 'boolean' },
+        maxSize: { type: 'number' },
       },
       additionalProperties: false,
     },
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

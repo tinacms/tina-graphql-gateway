@@ -11,30 +11,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import Link from "next/link";
-import { useCMS } from "tinacms";
+import React from 'react'
+import Link from 'next/link'
+import { useCMS } from 'tinacms'
 
 export const Sidebar = ({
-  linkPrefix = "",
+  linkPrefix = '',
   relativePath,
 }: {
-  linkPrefix?: string;
-  relativePath: string;
+  linkPrefix?: string
+  relativePath: string
 }) => {
   const [collections, setCollections] = React.useState<
     {
-      slug: string;
-      path: string;
-      documents?: { sys: { relativePath: string; breadcrumbs: string[] } }[];
+      slug: string
+      path: string
+      documents?: { sys: { relativePath: string; breadcrumbs: string[] } }[]
     }[]
-  >([]);
+  >([])
 
-  const [activeCollections, setActiveCollections] = React.useState<string[]>(
-    []
-  );
+  const [activeCollections, setActiveCollections] = React.useState<string[]>([])
 
-  const cms = useCMS();
+  const cms = useCMS()
 
   React.useEffect(() => {
     const listCollections = async () => {
@@ -63,35 +61,35 @@ export const Sidebar = ({
             }
           `,
           {}
-        );
-        setCollections(result.getCollections);
+        )
+        setCollections(result.getCollections)
         setActiveCollections(
           result.getCollections.find((collectionData) =>
             collectionData.documents.find((doc) => {
-              return doc.sys.relativePath === relativePath;
+              return doc.sys.relativePath === relativePath
             })
           ).slug
-        );
+        )
       } catch (e) {
         // console.log("unable to list documents...");
         // console.log(e);
       }
-    };
-    listCollections();
-  }, []);
+    }
+    listCollections()
+  }, [])
 
   return (
     <>
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:flex-shrink-0">
-        <div className="flex flex-col" style={{ width: "21rem" }}>
+        <div className="flex flex-col" style={{ width: '21rem' }}>
           <div className="h-0 flex-1 flex flex-col overflow-y-auto">
             <nav className="flex-1 px-2 bg-gray-800 pt-2">
               <div>
                 {collections.map((collectionData) => {
                   const isActiveCollection = activeCollections.includes(
                     collectionData.slug
-                  );
+                  )
                   return (
                     <React.Fragment key={collectionData.slug}>
                       <button
@@ -105,13 +103,13 @@ export const Sidebar = ({
                             : setActiveCollections([
                                 ...activeCollections,
                                 collectionData.slug,
-                              ]);
+                              ])
                         }}
                         className={`mt-1 group w-full flex items-center pr-2 py-2 text-sm leading-5 font-medium rounded-md text-gray-100 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150`}
                       >
                         <svg
                           className={`mr-2 h-5 w-5 transform group-hover:text-gray-200 group-focus:text-gray-200 transition-colors ease-in-out duration-150 ${
-                            isActiveCollection ? "rotate-90" : ""
+                            isActiveCollection ? 'rotate-90' : ''
                           }`}
                           viewBox="0 0 20 20"
                         >
@@ -121,18 +119,18 @@ export const Sidebar = ({
                       </button>
                       <div
                         className={`mt-1 space-y-1 ${
-                          isActiveCollection ? "" : "hidden"
+                          isActiveCollection ? '' : 'hidden'
                         }`}
                       >
                         {collectionData.documents?.map((document) => {
                           // FIXME: array with null is returned
                           if (!document) {
-                            return null;
+                            return null
                           }
                           const activeStyles =
                             relativePath === document.sys.relativePath
-                              ? "text-gray-200 bg-gray-600"
-                              : "";
+                              ? 'text-gray-200 bg-gray-600'
+                              : ''
                           return (
                             <Link
                               key={`${linkPrefix}/${collectionData.slug}/${document.sys.relativePath}`}
@@ -141,14 +139,14 @@ export const Sidebar = ({
                               <a
                                 className={`mb-1 group w-full flex items-center justify-between pl-10 pr-2 py-2 text-sm leading-5 font-medium text-gray-100 rounded-md hover:text-gray-200 hover:bg-gray-600 focus:outline-none focus:text-gray-200 focus:bg-gray-600 transition ease-in-out duration-150 ${activeStyles}`}
                               >
-                                {document.sys.breadcrumbs.join("/")}
+                                {document.sys.breadcrumbs.join('/')}
                               </a>
                             </Link>
-                          );
+                          )
                         })}
                       </div>
                     </React.Fragment>
-                  );
+                  )
                 })}
               </div>
             </nav>
@@ -156,5 +154,5 @@ export const Sidebar = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}

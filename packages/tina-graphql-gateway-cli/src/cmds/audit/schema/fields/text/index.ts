@@ -11,32 +11,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const TextField = {
-  $id: "#textField",
-  label: "Text Field",
+  $id: '#textField',
+  label: 'Text Field',
   description:
-    "Single line text input. Good for page titles, feature headlines etc.",
-  type: "object",
+    'Single line text input. Good for page titles, feature headlines etc.',
+  type: 'object',
   properties: {
     ...base,
     type: {
-      const: "text",
+      const: 'text',
     },
     default: {
-      type: "string",
+      type: 'string',
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
-        min: { type: "number" },
-        max: { type: "number" },
+        required: { type: 'boolean' },
+        min: { type: 'number' },
+        max: { type: 'number' },
       },
       additionalProperties: false,
     },
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

@@ -11,93 +11,92 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as commander from "commander";
+import * as commander from 'commander'
 //@ts-ignore
-import { version } from "../package.json";
-import { Command } from "./command";
-import { baseCmds as baseCommands } from "./cmds/baseCmds";
-import { logText } from "./utils/theme";
-export { defineSchema } from "./cmds/compile";
-export type { TinaCloudTemplate, TinaCloudSettings } from "./cmds/compile";
+import { version } from '../package.json'
+import { Command } from './command'
+import { baseCmds as baseCommands } from './cmds/baseCmds'
+import { logText } from './utils/theme'
+export { defineSchema } from './cmds/compile'
+export type { TinaCloudTemplate, TinaCloudSettings } from './cmds/compile'
 
-const program = new commander.Command();
+const program = new commander.Command()
 const registerCommands = (commands: Command[], noHelp: boolean = false) => {
   commands.forEach((command, i) => {
     let newCmd = program
       .command(command.command, { noHelp })
       .description(command.description)
       .action((...args) => {
-        console.log("");
-        command.action(...args);
-      });
+        console.log('')
+        command.action(...args)
+      })
 
     if (command.alias) {
-      newCmd = newCmd.alias(command.alias);
+      newCmd = newCmd.alias(command.alias)
     }
 
-    newCmd.on("--help", function () {
+    newCmd.on('--help', function () {
       if (command.examples) {
-        console.log(`\nExamples:\n  ${command.examples}`);
+        console.log(`\nExamples:\n  ${command.examples}`)
       }
       if (command.subCommands) {
-        console.log("\nCommands:");
-        const optionTag = " [options]";
+        console.log('\nCommands:')
+        const optionTag = ' [options]'
         command.subCommands.forEach((subcommand, i) => {
           const commandStr = `${subcommand.command}${
-            (subcommand.options || []).length ? optionTag : ""
-          }`;
+            (subcommand.options || []).length ? optionTag : ''
+          }`
 
           const padLength =
             Math.max(...command.subCommands.map((sub) => sub.command.length)) +
-            optionTag.length;
+            optionTag.length
           console.log(
             `${commandStr.padEnd(padLength)} ${subcommand.description}`
-          );
-        });
+          )
+        })
       }
-      console.log("");
-    });
-
-    (command.options || []).forEach((option) => {
-      newCmd.option(option.name, option.description);
-    });
+      console.log('')
+    })
+    ;(command.options || []).forEach((option) => {
+      newCmd.option(option.name, option.description)
+    })
 
     if (command.subCommands) {
-      registerCommands(command.subCommands, true);
+      registerCommands(command.subCommands, true)
     }
-  });
-};
+  })
+}
 
 export async function init(args: any) {
-  program.version(version);
+  program.version(version)
 
-  const commands: Command[] = [...baseCommands];
+  const commands: Command[] = [...baseCommands]
 
-  registerCommands(commands);
+  registerCommands(commands)
 
-  program.usage("command [options]");
+  program.usage('command [options]')
   // error on unknown commands
-  program.on("command:*", function () {
+  program.on('command:*', function () {
     console.error(
-      "Invalid command: %s\nSee --help for a list of available commands.",
-      args.join(" ")
-    );
-    process.exit(1);
-  });
+      'Invalid command: %s\nSee --help for a list of available commands.',
+      args.join(' ')
+    )
+    process.exit(1)
+  })
 
-  program.on("--help", function () {
+  program.on('--help', function () {
     console.log(
       logText(`
 You can get help on any command with "-h" or "--help".
 e.g: "forestry types:gen --help"
     `)
-    );
-  });
+    )
+  })
 
   if (!process.argv.slice(2).length) {
     // no subcommands
-    program.help();
+    program.help()
   }
 
-  program.parse(args);
+  program.parse(args)
 }

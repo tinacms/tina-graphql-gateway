@@ -11,20 +11,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { formify, splitQuery } from "./queryBuilder";
-import { buildSchema, parse, print } from "graphql";
-import fs from "fs";
-import path from "path";
-import { gql } from "./test-util";
+import { formify, splitQuery } from './queryBuilder'
+import { buildSchema, parse, print } from 'graphql'
+import fs from 'fs'
+import path from 'path'
+import { gql } from './test-util'
 
 const PATH_TO_TEST_APP = path.join(
-  path.resolve(__dirname, "../../.."),
-  "apps/test"
-);
+  path.resolve(__dirname, '../../..'),
+  'apps/test'
+)
 const PATH_TO_TEST_SCHEMA = path.join(
   PATH_TO_TEST_APP,
-  ".tina/__generated__/schema.gql"
-);
+  '.tina/__generated__/schema.gql'
+)
 
 const query = gql`
   fragment PostDetailsFragment on Post_Details_Data {
@@ -46,12 +46,12 @@ const query = gql`
       }
     }
   }
-`;
+`
 
-describe("formify", () => {
-  test("adds Tina form configurations to each node in the query graph", async () => {
-    const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
-    const formifiedQuery = formify(parse(query), buildSchema(schema));
+describe('formify', () => {
+  test('adds Tina form configurations to each node in the query graph', async () => {
+    const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString()
+    const formifiedQuery = formify(parse(query), buildSchema(schema))
     expect(print(formifiedQuery)).toEqual(gql`
       fragment PostDetailsFragment on Post_Details_Data {
         reading_time
@@ -138,23 +138,23 @@ describe("formify", () => {
           }
         }
       }
-    `);
-  });
-});
+    `)
+  })
+})
 
-describe("splitQuery", () => {
-  test("includes fragments and nested fragments\n\tand its mutation matches the shape of the query", async () => {
-    const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString();
+describe('splitQuery', () => {
+  test('includes fragments and nested fragments\n\tand its mutation matches the shape of the query', async () => {
+    const schema = await fs.readFileSync(PATH_TO_TEST_SCHEMA).toString()
     const splitNodes = splitQuery({
       queryString: query,
       schema: buildSchema(schema),
-    });
+    })
 
-    const getPostDocumentQuery = splitNodes.queries["getPostsDocument"];
+    const getPostDocumentQuery = splitNodes.queries['getPostsDocument']
 
     expect(getPostDocumentQuery.fragments).toEqual(
-      expect.arrayContaining(["PostFragment", "PostDetailsFragment"])
-    );
+      expect.arrayContaining(['PostFragment', 'PostDetailsFragment'])
+    )
     expect(getPostDocumentQuery.mutation).toEqual(gql`
       mutation updatePostsDocument(
         $relativePath: String!
@@ -167,6 +167,6 @@ describe("splitQuery", () => {
           }
         }
       }
-    `);
-  });
-});
+    `)
+  })
+})

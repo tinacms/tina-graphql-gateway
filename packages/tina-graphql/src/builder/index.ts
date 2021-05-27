@@ -11,12 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import _ from "lodash";
-import { templateTypeName, friendlyName } from "tina-graphql-helpers";
-import { gql } from "../gql";
-import { sequential } from "../util";
+import _ from 'lodash'
+import { templateTypeName, friendlyName } from 'tina-graphql-helpers'
+import { gql } from '../gql'
+import { sequential } from '../util'
 
-import { template } from "../fields/templates";
+import { template } from '../fields/templates'
 
 import {
   DocumentNode,
@@ -26,9 +26,9 @@ import {
   InputObjectTypeDefinitionNode,
   ScalarTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
-} from "graphql";
-import type { DirectorySection, Section } from "../types";
-import type { Cache } from "../cache";
+} from 'graphql'
+import type { DirectorySection, Section } from '../types'
+import type { Cache } from '../cache'
 
 /**
  *
@@ -59,14 +59,14 @@ import type { Cache } from "../cache";
  * ```
  */
 export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
-  const sectionMap: sectionMap = {};
-  const mutationsArray: mutationsArray = [];
+  const sectionMap: sectionMap = {}
+  const mutationsArray: mutationsArray = []
 
-  const sections = await cache.datasource.getCollectionsSettings();
+  const sections = await cache.datasource.getCollectionsSettings()
 
   sections.forEach((section) => {
-    buildSectionMap(section, mutationsArray, sectionMap);
-  });
+    buildSectionMap(section, mutationsArray, sectionMap)
+  })
 
   const accumulator: Definitions[] = [
     ...interfaceDefinitions,
@@ -74,42 +74,42 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
     systemInfoDefinition,
     sectionDefinition,
     gql.UnionTypeDefinition({
-      name: "SectionDocumentUnion",
+      name: 'SectionDocumentUnion',
       types: sections.map((section) =>
-        friendlyName(section.slug, { suffix: "Document" })
+        friendlyName(section.slug, { suffix: 'Document' })
       ),
     }),
     ...mutationDefinitions(mutationsArray),
     queryDefinition(sectionMap),
-  ];
+  ]
 
   await sequential(
-    sections.filter((section) => section.type === "directory"),
+    sections.filter((section) => section.type === 'directory'),
     async (section) => {
-      buildSectionDefinitions(section, accumulator);
+      buildSectionDefinitions(section, accumulator)
       await sequential(section.templates, async (templateSlug) => {
         const args = {
           cache,
           template: await cache.datasource.getTemplate(templateSlug),
           accumulator,
           includeBody: true,
-        };
+        }
 
-        await template.build.data(args);
-        await template.build.values(args);
-        await template.build.form(args);
-        await template.build.input(args);
-      });
+        await template.build.data(args)
+        await template.build.values(args)
+        await template.build.form(args)
+        await template.build.input(args)
+      })
     }
-  );
+  )
 
   const schema: DocumentNode = {
-    kind: "Document",
+    kind: 'Document',
     definitions: _.uniqBy(accumulator, (field) => field.name.value),
-  };
+  }
 
-  return { schema, sectionMap };
-};
+  return { schema, sectionMap }
+}
 
 /**
  * Definitions for static interfaces which are identical
@@ -117,122 +117,122 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
  */
 const interfaceDefinitions = [
   gql.InterfaceTypeDefinition({
-    name: "Node",
+    name: 'Node',
     fields: [
-      gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
+      gql.FieldDefinition({ name: 'id', type: gql.TYPES.ID, required: true }),
     ],
   }),
   gql.InterfaceTypeDefinition({
-    name: "Document",
+    name: 'Document',
     fields: [
-      gql.FieldDefinition({ name: "sys", type: gql.TYPES.SystemInfo }),
-      gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
+      gql.FieldDefinition({ name: 'sys', type: gql.TYPES.SystemInfo }),
+      gql.FieldDefinition({ name: 'id', type: gql.TYPES.ID, required: true }),
     ],
   }),
   gql.InterfaceTypeDefinition({
-    name: "FormField",
+    name: 'FormField',
     fields: [
-      gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
-      gql.FieldDefinition({ name: "name", type: gql.TYPES.String }),
-      gql.FieldDefinition({ name: "component", type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: 'label', type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: 'name', type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: 'component', type: gql.TYPES.String }),
     ],
   }),
-];
+]
 
 /**
  * Definitions for additional scalars, ex. JSON
  */
 const scalarDefinitions = [
   gql.ScalarTypeDefinition({
-    name: "Reference",
-    description: "References another document, used as a foreign key",
+    name: 'Reference',
+    description: 'References another document, used as a foreign key',
   }),
-  gql.ScalarTypeDefinition({ name: "JSON" }),
-  gql.ScalarTypeDefinition({ name: "JSONObject" }),
-];
+  gql.ScalarTypeDefinition({ name: 'JSON' }),
+  gql.ScalarTypeDefinition({ name: 'JSONObject' }),
+]
 
 /**
  * System info provides information about a given document
  */
 const systemInfoDefinition = gql.ObjectTypeDefinition({
-  name: "SystemInfo",
+  name: 'SystemInfo',
   fields: [
-    gql.FieldDefinition({ name: "filename", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "basename", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'filename', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'basename', type: gql.TYPES.String }),
     gql.FieldDefinition({
-      name: "breadcrumbs",
+      name: 'breadcrumbs',
       type: gql.TYPES.String,
       list: true,
       args: [
         gql.InputValueDefinition({
-          name: "excludeExtension",
+          name: 'excludeExtension',
           type: gql.TYPES.Boolean,
         }),
       ],
     }),
-    gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "relativePath", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "extension", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "template", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "collection", type: gql.TYPES.Section }),
+    gql.FieldDefinition({ name: 'path', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'relativePath', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'extension', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'template', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'collection', type: gql.TYPES.Section }),
   ],
-});
+})
 
 const sectionDefinition = gql.ObjectTypeDefinition({
-  name: "Section",
+  name: 'Section',
   fields: [
-    gql.FieldDefinition({ name: "type", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "path", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "format", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "label", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "create", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "match", type: gql.TYPES.String }),
-    gql.FieldDefinition({ name: "new_doc_ext", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'type', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'path', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'format', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'label', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'create', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'match', type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'new_doc_ext', type: gql.TYPES.String }),
     gql.FieldDefinition({
-      name: "templates",
+      name: 'templates',
       type: gql.TYPES.String,
       list: true,
     }),
-    gql.FieldDefinition({ name: "slug", type: gql.TYPES.String }),
+    gql.FieldDefinition({ name: 'slug', type: gql.TYPES.String }),
     gql.FieldDefinition({
-      name: "documents",
+      name: 'documents',
       type: gql.TYPES.Document,
       list: true,
     }),
   ],
-});
+})
 
 const buildSectionMap = (
   section: DirectorySection,
   mutationsArray: mutationsArray,
   sectionMap: sectionMap
 ) => {
-  const returnType = friendlyName(section.slug, { suffix: "Document" });
+  const returnType = friendlyName(section.slug, { suffix: 'Document' })
   mutationsArray.push({
     section,
     mutationName: `update${friendlyName(section.slug)}Document`,
     returnType,
-  });
+  })
   sectionMap[`update${friendlyName(section.slug)}Document`] = {
     section,
     plural: false,
     mutation: true,
     queryName: `update${friendlyName(section.slug)}Document`,
     returnType,
-  };
+  }
   sectionMap[`get${friendlyName(section.slug)}Document`] = {
     section,
     plural: false,
     queryName: `get${friendlyName(section.slug)}Document`,
     returnType,
-  };
+  }
   sectionMap[`get${friendlyName(section.slug)}List`] = {
     section,
     plural: true,
     queryName: `get${friendlyName(section.slug)}List`,
     returnType,
-  };
-};
+  }
+}
 
 /**
  * Given a list of mutation types, this will generate all possible
@@ -241,45 +241,45 @@ const buildSectionMap = (
 const mutationDefinitions = (mutationsArray: mutationsArray) => {
   return [
     gql.InputObjectTypeDefinition({
-      name: "SectionParams",
+      name: 'SectionParams',
       fields: mutationsArray.map((ma) => {
         return gql.InputValueDefinition({
           name: ma.section.slug,
-          type: friendlyName(ma.section.slug, { suffix: "Input" }),
-        });
+          type: friendlyName(ma.section.slug, { suffix: 'Input' }),
+        })
       }),
     }),
     gql.ObjectTypeDefinition({
-      name: "Mutation",
+      name: 'Mutation',
       fields: [
         gql.FieldDefinition({
-          name: "addPendingDocument",
+          name: 'addPendingDocument',
           type: gql.TYPES.Document,
           args: [
             gql.InputValueDefinition({
-              name: "relativePath",
+              name: 'relativePath',
               type: gql.TYPES.String,
             }),
             gql.InputValueDefinition({
-              name: "collection",
+              name: 'collection',
               type: gql.TYPES.String,
             }),
             gql.InputValueDefinition({
-              name: "template",
+              name: 'template',
               type: gql.TYPES.String,
             }),
           ],
         }),
         gql.FieldDefinition({
-          name: "updateDocument",
+          name: 'updateDocument',
           type: gql.TYPES.SectionDocumentUnion,
           args: [
             gql.InputValueDefinition({
-              name: "relativePath",
+              name: 'relativePath',
               type: gql.TYPES.String,
             }),
             gql.InputValueDefinition({
-              name: "params",
+              name: 'params',
               type: gql.TYPES.SectionParams,
             }),
           ],
@@ -290,61 +290,61 @@ const mutationDefinitions = (mutationsArray: mutationsArray) => {
             type: mutation.returnType,
             args: [
               gql.InputValueDefinition({
-                name: "relativePath",
+                name: 'relativePath',
                 type: gql.TYPES.String,
               }),
               gql.InputValueDefinition({
-                name: "params",
-                type: friendlyName(mutation.section.slug, { suffix: "Input" }),
+                name: 'params',
+                type: friendlyName(mutation.section.slug, { suffix: 'Input' }),
               }),
             ],
-          });
+          })
         }),
       ],
     }),
-  ];
-};
+  ]
+}
 
 const queryDefinition = (sectionMap: sectionMap) => {
   return gql.ObjectTypeDefinition({
-    name: "Query",
+    name: 'Query',
     fields: [
       gql.FieldDefinition({
-        name: "node",
+        name: 'node',
         type: gql.TYPES.Node,
         args: [
           gql.InputValueDefinition({
-            name: "id",
+            name: 'id',
             type: gql.TYPES.ID,
             required: true,
           }),
         ],
       }),
       gql.FieldDefinition({
-        name: "getDocument",
+        name: 'getDocument',
         type: gql.TYPES.SectionDocumentUnion,
         args: [
           gql.InputValueDefinition({
-            name: "collection",
+            name: 'collection',
             type: gql.TYPES.String,
           }),
           gql.InputValueDefinition({
-            name: "relativePath",
+            name: 'relativePath',
             type: gql.TYPES.String,
           }),
         ],
       }),
       gql.FieldDefinition({
-        name: "getCollections",
+        name: 'getCollections',
         type: gql.TYPES.Section,
         list: true,
       }),
       gql.FieldDefinition({
-        name: "getCollection",
+        name: 'getCollection',
         type: gql.TYPES.Section,
         args: [
           gql.InputValueDefinition({
-            name: "collection",
+            name: 'collection',
             type: gql.TYPES.String,
           }),
         ],
@@ -364,82 +364,82 @@ const queryDefinition = (sectionMap: sectionMap) => {
                 type: section.returnType,
                 args: [
                   gql.InputValueDefinition({
-                    name: "relativePath",
+                    name: 'relativePath',
                     type: gql.TYPES.String,
                   }),
                 ],
-              });
+              })
         }),
     ],
-  });
-};
+  })
+}
 
 const buildSectionDefinitions = (
   section: DirectorySection,
   accumulator: Definitions[]
 ) => {
-  const name = friendlyName(section.slug);
+  const name = friendlyName(section.slug)
   accumulator.push(
     gql.UnionTypeDefinition({
-      name: friendlyName(name, { suffix: "Data" }),
+      name: friendlyName(name, { suffix: 'Data' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, "Data", true)
+        templateTypeName(template, 'Data', true)
       ),
     })
-  );
+  )
   accumulator.push(
     gql.InputObjectTypeDefinition({
-      name: friendlyName(name, { suffix: "Input" }),
+      name: friendlyName(name, { suffix: 'Input' }),
       fields: section.templates.map((template) =>
         gql.InputValueDefinition({
           name: friendlyName(template, { lowerCase: true }),
-          type: templateTypeName(template, "Input", true),
+          type: templateTypeName(template, 'Input', true),
         })
       ),
     })
-  );
+  )
   accumulator.push(
     gql.UnionTypeDefinition({
-      name: friendlyName(name, { suffix: "Values" }),
+      name: friendlyName(name, { suffix: 'Values' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, "Values", true)
+        templateTypeName(template, 'Values', true)
       ),
     })
-  );
+  )
   accumulator.push(
     gql.UnionTypeDefinition({
-      name: friendlyName(name, { suffix: "Form" }),
+      name: friendlyName(name, { suffix: 'Form' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, "Form", true)
+        templateTypeName(template, 'Form', true)
       ),
     })
-  );
+  )
   accumulator.push(
     gql.ObjectTypeDefinition({
-      name: friendlyName(name, { suffix: "Document" }),
+      name: friendlyName(name, { suffix: 'Document' }),
       interfaces: [
-        gql.NamedType({ name: "Node" }),
-        gql.NamedType({ name: "Document" }),
+        gql.NamedType({ name: 'Node' }),
+        gql.NamedType({ name: 'Document' }),
       ],
       fields: [
-        gql.FieldDefinition({ name: "id", type: gql.TYPES.ID, required: true }),
-        gql.FieldDefinition({ name: "sys", type: gql.TYPES.SystemInfo }),
+        gql.FieldDefinition({ name: 'id', type: gql.TYPES.ID, required: true }),
+        gql.FieldDefinition({ name: 'sys', type: gql.TYPES.SystemInfo }),
         gql.FieldDefinition({
-          name: "data",
-          type: friendlyName(name, { suffix: "Data" }),
+          name: 'data',
+          type: friendlyName(name, { suffix: 'Data' }),
         }),
         gql.FieldDefinition({
-          name: "values",
-          type: friendlyName(name, { suffix: "Values" }),
+          name: 'values',
+          type: friendlyName(name, { suffix: 'Values' }),
         }),
         gql.FieldDefinition({
-          name: "form",
-          type: friendlyName(name, { suffix: "Form" }),
+          name: 'form',
+          type: friendlyName(name, { suffix: 'Form' }),
         }),
       ],
     })
-  );
-};
+  )
+}
 
 export type Definitions =
   | ObjectTypeDefinitionNode
@@ -447,19 +447,19 @@ export type Definitions =
   | InputObjectTypeDefinitionNode
   | ScalarTypeDefinitionNode
   | InterfaceTypeDefinitionNode
-  | EnumTypeDefinitionNode;
+  | EnumTypeDefinitionNode
 
 export type sectionMap = {
   [key: string]: {
-    section: DirectorySection;
-    plural: boolean;
-    mutation?: boolean;
-    queryName: string;
-    returnType: string;
-  };
-};
+    section: DirectorySection
+    plural: boolean
+    mutation?: boolean
+    queryName: string
+    returnType: string
+  }
+}
 type mutationsArray = {
-  section: Section;
-  mutationName: string;
-  returnType: string;
-}[];
+  section: Section
+  mutationName: string
+  returnType: string
+}[]

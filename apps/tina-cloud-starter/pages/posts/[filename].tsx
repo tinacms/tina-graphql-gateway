@@ -11,14 +11,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { BlogPost } from "../../components/post";
-import type { Posts_Document } from "../../.tina/__generated__/types";
-import { createLocalClient, AsyncReturnType } from "../../utils";
-import { Wrapper } from "../../components/helper-components";
+import { BlogPost } from '../../components/post'
+import type { Posts_Document } from '../../.tina/__generated__/types'
+import { createLocalClient, AsyncReturnType } from '../../utils'
+import { Wrapper } from '../../components/helper-components'
 
 // Use the props returned by get static props
 export default function BlogPostPage(
-  props: AsyncReturnType<typeof getStaticProps>["props"]
+  props: AsyncReturnType<typeof getStaticProps>['props']
 ) {
   return (
     <>
@@ -26,7 +26,7 @@ export default function BlogPostPage(
         <BlogPost {...props.data.getPostsDocument.data} />
       </Wrapper>
     </>
-  );
+  )
 }
 
 export const query = `#graphql
@@ -49,12 +49,12 @@ export const query = `#graphql
       }
     }
   }
-`;
+`
 
-const client = createLocalClient();
+const client = createLocalClient()
 
 export const getStaticProps = async ({ params }) => {
-  const variables = { relativePath: `${params.filename}.md` };
+  const variables = { relativePath: `${params.filename}.md` }
   return {
     props: {
       data: await client.request<{ getPostsDocument: Posts_Document }>(query, {
@@ -63,8 +63,8 @@ export const getStaticProps = async ({ params }) => {
       variables,
       query,
     },
-  };
-};
+  }
+}
 
 /**
  * To build the blog post pages we just iterate through the list of
@@ -75,7 +75,7 @@ export const getStaticProps = async ({ params }) => {
  */
 export const getStaticPaths = async () => {
   const postsListData = await client.request<{
-    getPostsList: Posts_Document[];
+    getPostsList: Posts_Document[]
   }>(
     (gql) => gql`
       {
@@ -87,11 +87,11 @@ export const getStaticPaths = async () => {
       }
     `,
     { variables: {} }
-  );
+  )
   return {
     paths: postsListData.getPostsList.map((post) => ({
       params: { filename: post.sys.filename },
     })),
     fallback: false,
-  };
-};
+  }
+}

@@ -11,102 +11,102 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import fs from "fs-extra";
-import path from "path";
-import { validator } from "./schema/validator";
-import _ from "lodash";
-import type { Ajv } from "ajv";
-import get from "lodash.get";
-import * as jsyaml from "js-yaml";
-import { ForestryFMTSchema } from "./schema/fmt";
-import { ForestrySettingsSchema } from "./schema/settings";
-import { neutralText, successText, dangerText } from "../../utils/theme";
+import fs from 'fs-extra'
+import path from 'path'
+import { validator } from './schema/validator'
+import _ from 'lodash'
+import type { Ajv } from 'ajv'
+import get from 'lodash.get'
+import * as jsyaml from 'js-yaml'
+import { ForestryFMTSchema } from './schema/fmt'
+import { ForestrySettingsSchema } from './schema/settings'
+import { neutralText, successText, dangerText } from '../../utils/theme'
 
 export const audit = async (_ctx, _next, { fix }: { fix: boolean }) => {
   const output = await runValidation({
-    directory: ".tina",
+    directory: '.tina',
     ajv: validator({ fix }),
     fix,
-  });
+  })
 
   if (fix) {
-    writeToDisk(output);
+    writeToDisk(output)
   }
-};
+}
 
 export const migrate = async (_ctx, _next, { dryRun }: { dryRun: boolean }) => {
   const output = await runValidation({
-    directory: ".forestry",
+    directory: '.forestry',
     ajv: validator({ fix: !dryRun }),
     fix: !dryRun,
-  });
+  })
 
   if (!dryRun) {
-    writeToDisk(output);
+    writeToDisk(output)
   }
-};
+}
 
 export const dump = async (_ctx, _next, { folder }) => {
-  const directory = path.join(process.cwd(), folder);
+  const directory = path.join(process.cwd(), folder)
   if (!(await fs.existsSync(directory))) {
-    await fs.mkdirSync(directory);
+    await fs.mkdirSync(directory)
   }
   await fs.writeFileSync(
-    directory + "/settings_schema.json",
+    directory + '/settings_schema.json',
     JSON.stringify(ForestrySettingsSchema, null, 2)
-  );
+  )
   await fs.writeFileSync(
-    directory + "/fmt_schema.json",
+    directory + '/fmt_schema.json',
     JSON.stringify(ForestryFMTSchema, null, 2)
-  );
-};
+  )
+}
 
 const writeToDisk = async (output) => {
   output.map(async ({ path, result }) => {
     if (result.success) {
       await fs.outputFile(
-        path.replace(".forestry", ".tina"),
+        path.replace('.forestry', '.tina'),
         jsyaml.dump(result.fileJSON)
-      );
+      )
     }
-  });
-};
+  })
+}
 
 export const runValidation = async ({
   directory,
   ajv,
   fix,
 }: {
-  directory: string;
-  ajv: Ajv;
-  fix: boolean;
+  directory: string
+  ajv: Ajv
+  fix: boolean
 }) => {
-  const output = [];
-  const configDirPath = path.resolve(process.cwd(), directory);
+  const output = []
+  const configDirPath = path.resolve(process.cwd(), directory)
 
-  const settingsFullPath = path.join(configDirPath, "settings.yml");
+  const settingsFullPath = path.join(configDirPath, 'settings.yml')
   const settingsJSON = jsyaml.safeLoad(
     await fs.readFileSync(settingsFullPath).toString()
-  );
+  )
   output.push({
     path: settingsFullPath,
     result: await validateFile({
-      filePath: "settings.yml",
+      filePath: 'settings.yml',
       payload: settingsJSON,
       schema: ForestrySettingsSchema,
       ajv,
       fix,
     }),
-  });
+  })
 
-  const templateDirPath = path.join(configDirPath, "front_matter", "templates");
-  const templateList = await fs.readdirSync(path.join(templateDirPath));
+  const templateDirPath = path.join(configDirPath, 'front_matter', 'templates')
+  const templateList = await fs.readdirSync(path.join(templateDirPath))
   await Promise.all(
     templateList.map(async (templatePath) => {
-      const templateFullpath = path.join(templateDirPath, templatePath);
+      const templateFullpath = path.join(templateDirPath, templatePath)
       const templateJSON = jsyaml.safeLoad(
         await fs.readFileSync(templateFullpath).toString()
-      );
+      )
 
       output.push({
         path: templateFullpath,
@@ -117,113 +117,113 @@ export const runValidation = async ({
           ajv,
           fix,
         }),
-      });
+      })
     })
-  );
+  )
 
-  return output;
-};
+  return output
+}
 
 export const validateFile = async ({ filePath, payload, schema, ajv, fix }) => {
-  let fileJSON = payload;
+  let fileJSON = payload
   // if (fix) {
   if (fix) {
-    fileJSON = moveRequiredKeys(fileJSON);
-    fileJSON = pruneEmpty(fileJSON);
+    fileJSON = moveRequiredKeys(fileJSON)
+    fileJSON = pruneEmpty(fileJSON)
   }
-  var validate = ajv.compile(schema);
-  var valid = validate(fileJSON);
+  var validate = ajv.compile(schema)
+  var valid = validate(fileJSON)
 
   if (!valid) {
-    console.log(`${filePath} is ${dangerText("invalid")}`);
-    const errorKeys = printErrors(validate.errors, fileJSON);
-    console.log("\n");
-    return { success: false, fileJSON, errors: errorKeys };
+    console.log(`${filePath} is ${dangerText('invalid')}`)
+    const errorKeys = printErrors(validate.errors, fileJSON)
+    console.log('\n')
+    return { success: false, fileJSON, errors: errorKeys }
   } else {
-    return { success: true, fileJSON, errors: [] };
+    return { success: true, fileJSON, errors: [] }
   }
-};
+}
 
 const printErrors = (errors, object) => {
   return errors
     .map((error) => {
-      const handler = keywordError[error.keyword];
+      const handler = keywordError[error.keyword]
       if (!handler) {
-        throw `Unable to find handler for ${error.keyword}`;
+        throw `Unable to find handler for ${error.keyword}`
       } else {
-        return handler(error, object);
+        return handler(error, object)
       }
     })
-    .filter(Boolean);
-};
+    .filter(Boolean)
+}
 
 const keywordError = {
   required: (error, object) => {
-    console.log(`${propertyName(error, object)} ${error.message}`);
+    console.log(`${propertyName(error, object)} ${error.message}`)
 
-    return error;
+    return error
   },
   minItems: (error) => {
     console.log(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
-    );
+    )
 
-    return error;
+    return error
   },
   exclusiveMinimum: (error, object) => {
-    console.log(`${propertyName(error, object)} ${error.message}`);
+    console.log(`${propertyName(error, object)} ${error.message}`)
 
-    return error;
+    return error
   },
   minimum: (error, object) => {
     console.log(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
-    );
+    )
 
-    return error;
+    return error
   },
   maximum: (error, object) => {
     console.log(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
-    );
+    )
 
-    return error;
+    return error
   },
   const: (error) => {
-    if (error.schema === "now") {
+    if (error.schema === 'now') {
       // Ignoring for this case since it's handled better by anyOf
     } else {
-      console.log(`Unanticipated error - ${error.keyword}`);
-      console.log(error);
+      console.log(`Unanticipated error - ${error.keyword}`)
+      console.log(error)
     }
 
-    return false;
+    return false
   },
   format: (error) => {
-    if (error.schema === "date-time") {
+    if (error.schema === 'date-time') {
       // Ignoring for this case since it's handled better by anyOf
     } else {
-      console.log(`Unanticipated error - ${error.keyword}`);
+      console.log(`Unanticipated error - ${error.keyword}`)
     }
-    return false;
+    return false
   },
   anyOf: (error, object) => {
     console.log(`${propertyName(error, object)} should be one of:
     ${anyOfPossibleTypes(error)}
     But got ${dangerText(displayType(error))}
-`);
-    return error;
+`)
+    return error
   },
   oneOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`);
-    console.log(error);
-    return false;
+    console.log(`Unanticipated error - ${error.keyword}`)
+    console.log(error)
+    return false
   },
   datetimeFormat: (error, object) => {
     console.log(
@@ -233,20 +233,20 @@ const keywordError = {
       )} should be either "now" or a valid datetime format (${dangerText(
         error.data
       )})`
-    );
-    return error;
+    )
+    return error
   },
   minLength: (error, object) => {
     console.log(
       `${propertyName(error, object)} should not be shorter than ${dangerText(
         error.params.limit
       )} character`
-    );
-    return error;
+    )
+    return error
   },
   removeIfFails: () => {
     // Do nothing
-    return false;
+    return false
   },
   additionalProperties: (error, object) => {
     console.log(
@@ -256,156 +256,156 @@ const keywordError = {
       )} contains an additional property ${dangerText(
         error.params.additionalProperty
       )}`
-    );
-    return error;
+    )
+    return error
   },
   multipleOf: (error, object) => {
     console.log(
       `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
-    );
-    return error;
+    )
+    return error
   },
   enum: (error, object) => {
     console.log(
       `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}
-        Allowed values: ${successText(error.schema.join(", "))}
+        Allowed values: ${successText(error.schema.join(', '))}
     `
-    );
-    return error;
+    )
+    return error
   },
   type: (error, object) => {
     console.log(
       `${propertyName(error, object)} ${error.message.replace(
-        "should be",
-        "should be of type"
+        'should be',
+        'should be of type'
       )} but got ${dangerText(displayType(error))}`
-    );
-    return error;
+    )
+    return error
   },
   if: () => {
     // an error stating should match "then" schema
     // indicates that the conditional schema isn't matched -
     // we should get a more specific error elsewhere so ignore these
     // unless debugging.
-    return false;
+    return false
   },
-};
+}
 
 const displayType = (error) => {
   if (error.data === null) {
-    return "null";
+    return 'null'
   } else {
-    let value = error.data;
-    if (typeof error.data === "string" && error.data.length === 0) {
-      value = `""`;
+    let value = error.data
+    if (typeof error.data === 'string' && error.data.length === 0) {
+      value = `""`
     }
     if (Array.isArray(error.data)) {
-      return `an array`;
+      return `an array`
     }
-    return `${typeof error.data} (${value})`;
+    return `${typeof error.data} (${value})`
   }
-};
+}
 
 const propertyName = (error, object = null) => {
   if (object) {
     const lastFieldIndex = error.dataPath
-      .split(".")
+      .split('.')
       .reverse()
-      .findIndex((item) => /fields\[[0-9]+\]/.test(item));
-    const steps = error.dataPath.split(".").length;
+      .findIndex((item) => /fields\[[0-9]+\]/.test(item))
+    const steps = error.dataPath.split('.').length
 
     const dataPath = error.dataPath
-      .split(".")
+      .split('.')
       .reverse()
       .slice(lastFieldIndex, steps - 1)
       .reverse()
-      .join(".");
+      .join('.')
 
-    const property = error.dataPath.replace("." + dataPath, "");
+    const property = error.dataPath.replace('.' + dataPath, '')
 
-    const field = get(object, dataPath);
+    const field = get(object, dataPath)
     if (field) {
       return `
 Field with name ${successText(field.name)} of type ${neutralText(
         fieldTypeLabel(field)
       )} has an invalid property ${dangerText(property)}
      at ${dataPath}
-    `;
+    `
     } else {
-      return `${neutralText(error.dataPath)}`;
+      return `${neutralText(error.dataPath)}`
     }
   }
-  return neutralText(error.dataPath);
-};
+  return neutralText(error.dataPath)
+}
 
 const fieldTypeLabel = (field) => {
-  if (field.type === "select" || field.type === "list") {
+  if (field.type === 'select' || field.type === 'list') {
     if (!field.config) {
-      return `${field.type} (text)`;
+      return `${field.type} (text)`
     }
-    return `${field.type} (${field.config?.source?.type})`;
+    return `${field.type} (${field.config?.source?.type})`
   }
 
-  return field.type;
-};
+  return field.type
+}
 
 const anyOfPossibleTypes = (error) => {
   return error.schema
     .map((item) => {
       if (item.const) {
-        return ` - A value equal to ${successText(item.const)}`;
+        return ` - A value equal to ${successText(item.const)}`
       }
 
       if (item.format) {
         return `     - A value which adheres to the ${
           jsonSchemaFormats[item.format]
-        } format`;
+        } format`
       }
 
-      if (item.multipleOf || item.type === "null") {
+      if (item.multipleOf || item.type === 'null') {
         // Ignore, we're handling this better elsewhere
-        return false;
+        return false
       }
-      console.log(`Unrecognized oneOf schema key`, item);
+      console.log(`Unrecognized oneOf schema key`, item)
     })
     .filter(Boolean)
-    .join("\n");
-};
+    .join('\n')
+}
 
 const jsonSchemaFormats = {
-  "date-time": "datetime",
-};
+  'date-time': 'datetime',
+}
 
 // Some fields have the "required" key in the wrong spot. Put them in the config
 const moveRequiredKeys = (json) => {
-  const string = JSON.stringify(json);
+  const string = JSON.stringify(json)
 
   return JSON.parse(string, (key, value) => {
-    if (key === "fields") {
-      const itemWithRequired = value.find((item) => item.required);
+    if (key === 'fields') {
+      const itemWithRequired = value.find((item) => item.required)
       if (itemWithRequired) {
         itemWithRequired.config = {
           required: itemWithRequired.required,
           ...itemWithRequired.config,
-        };
-        delete itemWithRequired.required;
+        }
+        delete itemWithRequired.required
       }
     }
-    return value;
-  });
-};
+    return value
+  })
+}
 
 function pruneEmpty(obj) {
   return (function prune(current) {
     _.forOwn(current, function (value, key) {
       // Empty values in defaults might be valid
       // let the schema decide
-      if (key === "default") {
-        return;
+      if (key === 'default') {
+        return
       }
 
       if (
@@ -415,11 +415,11 @@ function pruneEmpty(obj) {
         (_.isString(value) && _.isEmpty(value)) ||
         (_.isObject(value) && _.isEmpty(prune(value)))
       ) {
-        delete current[key];
+        delete current[key]
       }
-    });
-    if (_.isArray(current)) _.pull(current, undefined);
+    })
+    if (_.isArray(current)) _.pull(current, undefined)
 
-    return current;
-  })(_.cloneDeep(obj));
+    return current
+  })(_.cloneDeep(obj))
 }

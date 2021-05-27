@@ -11,19 +11,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with a missing label": {
+  'with a missing label': {
     initial: {
-      name: "boolean",
-      type: "boolean",
+      name: 'boolean',
+      type: 'boolean',
     },
     errors: [
       {
-        dataPath: "",
-        keyword: "required",
+        dataPath: '',
+        keyword: 'required',
       },
     ],
   },
-});
+})

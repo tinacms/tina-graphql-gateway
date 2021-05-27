@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LocalClient, useForm } from "tina-graphql-gateway";
+import { LocalClient, useForm } from 'tina-graphql-gateway'
 
-const client = new LocalClient();
+const client = new LocalClient()
 
 export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
   // if (typeof params.path === "string") {
@@ -39,17 +39,17 @@ export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
     `,
     {
       variables: {
-        section: "posts",
-        relativePath: "welcome.md",
+        section: 'posts',
+        relativePath: 'welcome.md',
       },
     }
-  );
-  return { props: content };
-};
+  )
+  return { props: content }
+}
 
 const Home = (props: any) => {
-  const [{ getDocument }] = useForm({ payload: props });
-  const { form, sys, ...rest } = getDocument;
+  const [{ getDocument }] = useForm({ payload: props })
+  const { form, sys, ...rest } = getDocument
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -57,7 +57,7 @@ const Home = (props: any) => {
         <code>{JSON.stringify(rest, null, 2)}</code>
       </pre>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
