@@ -16,7 +16,8 @@
     "ci:version-check": "yarn version check",
     "ci:build": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo -pt run build",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --verbose run test",
-    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --verbose npm publish --tolerate-republish --access public"
+    "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --verbose npm publish --tolerate-republish --access public",
+    "postinstall": "husky install"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
@@ -29,7 +30,6 @@
     "@yarnpkg/pnpify": "^2.0.0-rc.20",
     "danger": "^10.6.0",
     "eslint": "^6.8.0",
-    "prettier": "^2.0.4",
     "typescript": "^3.8.3",
     "workspace": "^0.0.1-preview.1"
   },
@@ -40,5 +40,10 @@
     "rmark-mdx": {
       "unplugged": true
     }
+  },
+  "devDependencies": {
+    "husky": "^6.0.0",
+    "prettier": "^2.3.0",
+    "pretty-quick": "^3.1.0"
   }
 }
