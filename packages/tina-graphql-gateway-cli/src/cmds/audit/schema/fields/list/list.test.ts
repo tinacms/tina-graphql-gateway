@@ -11,24 +11,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 const base = {
-  label: "Authors",
-  name: "authors",
-  type: "list",
-};
+  label: 'Authors',
+  name: 'authors',
+  type: 'list',
+}
 
 setupTests({
-  "with an empty default": {
+  'with an empty default': {
     initial: {
       ...base,
       default: [],
       config: {
         use_select: true,
         source: {
-          type: "pages",
-          section: "authors",
+          type: 'pages',
+          section: 'authors',
         },
       },
     },
@@ -38,13 +38,13 @@ setupTests({
       config: {
         use_select: true,
         source: {
-          type: "pages",
-          section: "authors",
+          type: 'pages',
+          section: 'authors',
         },
       },
     },
   },
-  "with null config items": {
+  'with null config items': {
     initial: {
       ...base,
       config: {
@@ -52,19 +52,19 @@ setupTests({
         min: null,
         max: null,
         source: {
-          type: "pages",
-          section: "authors",
+          type: 'pages',
+          section: 'authors',
         },
       },
     },
     errors: [
       {
-        dataPath: ".config.min",
-        keyword: "type",
+        dataPath: '.config.min',
+        keyword: 'type',
       },
       {
-        dataPath: ".config.max",
-        keyword: "type",
+        dataPath: '.config.max',
+        keyword: 'type',
       },
     ],
     fixed: {
@@ -72,49 +72,49 @@ setupTests({
       config: {
         use_select: true,
         source: {
-          type: "pages",
-          section: "authors",
+          type: 'pages',
+          section: 'authors',
         },
       },
     },
   },
-  "with a missing path for documents": {
+  'with a missing path for documents': {
     initial: {
       ...base,
       config: {
         use_select: true,
         source: {
-          type: "documents",
-          file: "hugo/data/authors.yml",
-          section: "authors",
+          type: 'documents',
+          file: 'hugo/data/authors.yml',
+          section: 'authors',
         },
       },
     },
     errors: [
       {
-        dataPath: ".config.source",
-        keyword: "required",
+        dataPath: '.config.source',
+        keyword: 'required',
       },
     ],
   },
-  "with an options array for a documents list": {
+  'with an options array for a documents list': {
     initial: {
       ...base,
       config: {
         use_select: true,
-        options: ["my-options"],
+        options: ['my-options'],
         source: {
-          type: "documents",
-          file: "hugo/data/authors.yml",
-          path: "map",
-          section: "authors",
+          type: 'documents',
+          file: 'hugo/data/authors.yml',
+          path: 'map',
+          section: 'authors',
         },
       },
     },
     errors: [
       {
-        dataPath: ".config",
-        keyword: "additionalProperties",
+        dataPath: '.config',
+        keyword: 'additionalProperties',
       },
     ],
     fixed: {
@@ -122,29 +122,29 @@ setupTests({
       config: {
         use_select: true,
         source: {
-          type: "documents",
-          file: "hugo/data/authors.yml",
-          path: "map",
-          section: "authors",
+          type: 'documents',
+          file: 'hugo/data/authors.yml',
+          path: 'map',
+          section: 'authors',
         },
       },
     },
   },
-  "with a datafile source": {
+  'with a datafile source': {
     initial: {
       ...base,
       config: {
         use_select: true,
         source: {
-          type: "datafiles",
+          type: 'datafiles',
         },
       },
     },
     errors: [
       {
-        dataPath: ".config.source.type",
-        keyword: "enum",
+        dataPath: '.config.source.type',
+        keyword: 'enum',
       },
     ],
   },
-});
+})

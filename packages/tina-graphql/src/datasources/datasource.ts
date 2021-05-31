@@ -11,36 +11,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import type { Field } from "../fields";
+import type { Field } from '../fields'
 import type {
   TemplateData,
   DirectorySection,
   TemplateDataWithNoName,
-} from "../types";
+} from '../types'
 
 export type TinaDocument = {
-  [key: string]: any;
-  content?: string;
+  [key: string]: any
+  content?: string
   data: {
-    [key: string]: object | string[] | string | object[];
-  };
-};
+    [key: string]: object | string[] | string | object[]
+  }
+}
 
 export type UpdateArgs = {
-  relativePath: string;
-  collection: string;
-  params: { _body?: string } & object;
-};
+  relativePath: string
+  collection: string
+  params: { _body?: string } & object
+}
 export type DocumentArgs = {
-  relativePath: string;
-  collection: string;
-};
+  relativePath: string
+  collection: string
+}
 
 export type AddArgs = {
-  relativePath: string;
-  collection: string;
-  template: string;
-};
+  relativePath: string
+  collection: string
+  template: string
+}
 export interface DataSource {
   /**
    * `getData`
@@ -56,23 +56,21 @@ export interface DataSource {
    * }
    * ```
    */
-  getData: (args: DocumentArgs) => Promise<TinaDocument>;
-  getDocumentMeta: (
-    args: DocumentArgs
-  ) => Promise<{
-    basename: string;
-    extension: string;
-    filename: string;
-  }>;
-  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>;
-  getAllTemplates: () => Promise<TemplateData[]>;
-  getTemplates: (slugs: string[]) => Promise<TemplateData[]>;
-  getTemplate: (slug: string) => Promise<TemplateData>;
+  getData: (args: DocumentArgs) => Promise<TinaDocument>
+  getDocumentMeta: (args: DocumentArgs) => Promise<{
+    basename: string
+    extension: string
+    filename: string
+  }>
+  getTemplateForDocument: (args: DocumentArgs) => Promise<TemplateData>
+  getAllTemplates: () => Promise<TemplateData[]>
+  getTemplates: (slugs: string[]) => Promise<TemplateData[]>
+  getTemplate: (slug: string) => Promise<TemplateData>
   /**
    * `getTemplateWithoutName` the name is a synthetic value, so
    * sometimes you don't want it (ex. when writing back to the data source)
    */
-  getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>;
+  getTemplateWithoutName: (slug: string) => Promise<TemplateDataWithNoName>
   /**
    * `getTemplatesForCollection`
    *
@@ -98,20 +96,20 @@ export interface DataSource {
    * ]
    * ```
    */
-  getTemplatesForCollection: (collection?: string) => Promise<TemplateData[]>;
-  getDocumentsForCollection: (collection: string) => Promise<string[]>;
-  getSettingsForCollection: (collection?: string) => Promise<DirectorySection>;
-  getCollectionsSettings: () => Promise<DirectorySection[]>;
-  getCollection: (collection: string) => Promise<DirectorySection>;
-  getCollectionByPath: (path: string) => Promise<DirectorySection>;
-  addDocument: (args: AddArgs) => Promise<void>;
-  updateDocument: (param: UpdateArgs) => Promise<void>;
+  getTemplatesForCollection: (collection?: string) => Promise<TemplateData[]>
+  getDocumentsForCollection: (collection: string) => Promise<string[]>
+  getSettingsForCollection: (collection?: string) => Promise<DirectorySection>
+  getCollectionsSettings: () => Promise<DirectorySection[]>
+  getCollection: (collection: string) => Promise<DirectorySection>
+  getCollectionByPath: (path: string) => Promise<DirectorySection>
+  addDocument: (args: AddArgs) => Promise<void>
+  updateDocument: (param: UpdateArgs) => Promise<void>
 }
 
 export type DocumentSummary = {
-  _template: string;
-} & TinaDocument;
+  _template: string
+} & TinaDocument
 
 export type DocumentPartial = {
-  _fields: { [key: string]: Field | { [key: string]: Field } };
-} & TinaDocument;
+  _fields: { [key: string]: Field | { [key: string]: Field } }
+} & TinaDocument

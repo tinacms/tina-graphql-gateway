@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 export interface DataAdaptor {
-  readFile: (path: string) => Promise<string>;
-  readDir: (path: string) => Promise<string[]>;
-  writeFile: (path: string, content: string) => Promise<void>;
+  readFile: (path: string) => Promise<string>
+  readDir: (path: string) => Promise<string[]>
+  writeFile: (path: string, content: string) => Promise<void>
 }

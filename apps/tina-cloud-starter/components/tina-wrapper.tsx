@@ -11,13 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { TinaCMS } from "tinacms";
-import { TinaCloudAuthWall } from "tina-graphql-gateway";
-import { SidebarPlaceholder } from "./helper-components";
-import { createClient } from "../utils";
-import { useGraphqlForms } from "tina-graphql-gateway";
-import { LoadingPage } from "./Spinner";
+import React from 'react'
+import { TinaCMS } from 'tinacms'
+import { TinaCloudAuthWall } from 'tina-graphql-gateway'
+import { SidebarPlaceholder } from './helper-components'
+import { createClient } from '../utils'
+import { useGraphqlForms } from 'tina-graphql-gateway'
+import { LoadingPage } from './Spinner'
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -33,28 +33,28 @@ const TinaWrapper = (props) => {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
-    });
-  }, []);
+    })
+  }, [])
 
   /** Disables the TinaCMS "Media Manager" */
-  cms.plugins.all("screen").forEach((plugin) => {
-    if (plugin.name === "Media Manager") {
-      cms.plugins.remove(plugin);
+  cms.plugins.all('screen').forEach((plugin) => {
+    if (plugin.name === 'Media Manager') {
+      cms.plugins.remove(plugin)
     }
-  });
+  })
 
   return (
     <TinaCloudAuthWall cms={cms}>
       <Inner {...props} />
     </TinaCloudAuthWall>
-  );
-};
+  )
+}
 
 const Inner = (props) => {
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
-  });
+  })
   return (
     <>
       {isLoading ? (
@@ -62,7 +62,7 @@ const Inner = (props) => {
           <LoadingPage />
           <div
             style={{
-              pointerEvents: "none",
+              pointerEvents: 'none',
             }}
           >
             {props.children(props)}
@@ -73,7 +73,7 @@ const Inner = (props) => {
         props.children({ ...props, data: payload })
       )}
     </>
-  );
-};
+  )
+}
 
-export default TinaWrapper;
+export default TinaWrapper

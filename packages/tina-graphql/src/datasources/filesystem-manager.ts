@@ -11,36 +11,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import fs from "fs-extra";
-import p from "path";
-import { DataAdaptor } from "./data-adaptor";
-import _ from "lodash";
+import fs from 'fs-extra'
+import p from 'path'
+import { DataAdaptor } from './data-adaptor'
+import _ from 'lodash'
 export class FileSystemManager implements DataAdaptor {
-  rootPath: string;
+  rootPath: string
   constructor({ rootPath }: { rootPath: string }) {
-    this.rootPath = rootPath;
+    this.rootPath = rootPath
   }
   readFile = async (path: string) => {
-    return fs.readFileSync(path).toString();
-  };
+    return fs.readFileSync(path).toString()
+  }
   readDir = async (path: string): Promise<string[]> => {
-    const result = fs.readdirSync(path);
+    const result = fs.readdirSync(path)
     return _.flatten(
       await Promise.all(
         result.map(async (item) => {
-          const fullPath = p.join(path, item);
+          const fullPath = p.join(path, item)
           if (fs.lstatSync(fullPath).isDirectory()) {
-            const nestedItems = await this.readDir(fullPath);
+            const nestedItems = await this.readDir(fullPath)
             return nestedItems.map((nestedItem) => {
-              return p.join(item, nestedItem);
-            });
+              return p.join(item, nestedItem)
+            })
           }
-          return item;
+          return item
         })
       )
-    );
-  };
+    )
+  }
   writeFile = async (path: string, content: string) => {
-    return fs.outputFile(path, content);
-  };
+    return fs.outputFile(path, content)
+  }
 }

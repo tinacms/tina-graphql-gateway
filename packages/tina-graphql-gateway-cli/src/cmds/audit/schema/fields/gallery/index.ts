@@ -11,36 +11,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const GalleryField = {
-  $id: "#galleryField",
-  label: "Gallery Field",
+  $id: '#galleryField',
+  label: 'Gallery Field',
   description:
-    "A list input that adds assets to the Media Library. Good for galleries and components that require multiple files. ",
-  type: "object",
+    'A list input that adds assets to the Media Library. Good for galleries and components that require multiple files. ',
+  type: 'object',
   properties: {
     type: {
-      const: "image_gallery",
+      const: 'image_gallery',
     },
     ...base,
     default: {
-      type: "array",
+      type: 'array',
       minItems: 1,
       items: {
-        type: "string",
+        type: 'string',
         minLength: 1,
       },
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
-        maxSize: { type: "number" },
+        required: { type: 'boolean' },
+        maxSize: { type: 'number' },
       },
       additionalProperties: false,
     },
   },
   additionalProperties: false,
   required: baseRequired,
-};
+}

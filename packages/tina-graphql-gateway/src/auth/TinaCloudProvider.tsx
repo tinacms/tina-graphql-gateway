@@ -11,65 +11,73 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ModalBuilder } from "./AuthModal";
-import React, { useState } from "react";
-import { TinaCMS, TinaProvider } from "tinacms";
+import { ModalBuilder } from './AuthModal'
+import React, { useState } from 'react'
+import { TinaCMS, TinaProvider } from 'tinacms'
 
-import { Client } from "../client";
-import type { TokenObject } from "./authenticate";
-import { useTinaAuthRedirect } from "./useTinaAuthRedirect";
+import { Client } from '../client'
+import type { TokenObject } from './authenticate'
+import { useTinaAuthRedirect } from './useTinaAuthRedirect'
 
-type ModalNames = null | "authenticate";
+type ModalNames = null | 'authenticate'
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export interface TinaCloudAuthWallProps {
-  cms: TinaCMS;
-  children: React.ReactNode;
-  loginScreen?: React.ReactNode;
-  getModalActions?:(args: {closeModal:()=>void})=> {name: string, action: () => Promise<void>, primary: boolean}[]
+  cms: TinaCMS
+  children: React.ReactNode
+  loginScreen?: React.ReactNode
+  getModalActions?: (args: {
+    closeModal: () => void
+  }) => { name: string; action: () => Promise<void>; primary: boolean }[]
 }
 export const AuthWallInner = ({
   children,
   cms,
   loginScreen,
-  getModalActions
+  getModalActions,
 }: TinaCloudAuthWallProps) => {
-  const client: Client = cms.api.tina;
+  const client: Client = cms.api.tina
 
-  const [activeModal, setActiveModal] = useState<ModalNames>(null);
-  const [showChildren, setShowChildren] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<ModalNames>(null)
+  const [showChildren, setShowChildren] = useState<boolean>(false)
 
   React.useEffect(() => {
     client.isAuthenticated().then((isAuthenticated) => {
       if (isAuthenticated) {
-        setShowChildren(true);
-        cms.enable();
+        setShowChildren(true)
+        cms.enable()
       } else {
         // FIXME: might be some sort of race-condition when loading styles
         sleep(500).then(() => {
-          setActiveModal("authenticate");
-        });
+          setActiveModal('authenticate')
+        })
       }
-    });
-  }, []);
+    })
+  }, [])
 
   const onAuthSuccess = async (token: TokenObject) => {
     if (await client.isAuthenticated()) {
-      setShowChildren(true);
-      setActiveModal(null);
+      setShowChildren(true)
+      setActiveModal(null)
     } else {
-      throw new Error("No access to repo"); // TODO - display modal here
+      throw new Error('No access to repo') // TODO - display modal here
     }
-  };
+  }
 
-  const otherModalActions = getModalActions ? getModalActions({closeModal: ()=>{setActiveModal(null)}}) : []
+  const otherModalActions = getModalActions
+    ? getModalActions({
+        closeModal: () => {
+          setActiveModal(null)
+        },
+      })
+    : []
 
   return (
     <>
-      {activeModal === "authenticate" && (
+      {activeModal === 'authenticate' && (
         <ModalBuilder
           title="Tina Cloud Authorization"
           message="To save edits, Tina Cloud authorization is required. On save, changes will get commited using your account."
@@ -77,10 +85,10 @@ export const AuthWallInner = ({
           actions={[
             ...otherModalActions,
             {
-              name: "Continue to Tina Cloud",
+              name: 'Continue to Tina Cloud',
               action: async () => {
-                const token = await client.authenticate();
-                onAuthSuccess(token);
+                const token = await client.authenticate()
+                onAuthSuccess(token)
               },
               primary: true,
             },
@@ -89,20 +97,20 @@ export const AuthWallInner = ({
       )}
       {showChildren ? children : loginScreen ? loginScreen : null}
     </>
-  );
-};
+  )
+}
 
 /**
  * Provides an authentication wall so Tina is not enabled without a valid user session.
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps ) => {
-  useTinaAuthRedirect();
+export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps) => {
+  useTinaAuthRedirect()
 
   return (
     <TinaProvider cms={props.cms}>
       <AuthWallInner {...props} />
     </TinaProvider>
-  );
-};
+  )
+}

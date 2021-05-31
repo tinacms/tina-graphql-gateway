@@ -11,35 +11,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "an invalid default date": {
+  'an invalid default date': {
     initial: {
-      name: "expirydate",
-      label: "Expirydate",
-      type: "datetime",
-      default: "20-07-13T19:00:00-03:00",
+      name: 'expirydate',
+      label: 'Expirydate',
+      type: 'datetime',
+      default: '20-07-13T19:00:00-03:00',
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "anyOf",
+        dataPath: '.default',
+        keyword: 'anyOf',
       },
     ],
   },
-  "an empty string as the default": {
+  'an empty string as the default': {
     initial: {
-      name: "expirydate",
-      label: "Expirydate",
-      type: "datetime",
-      default: "",
+      name: 'expirydate',
+      label: 'Expirydate',
+      type: 'datetime',
+      default: '',
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "anyOf",
+        dataPath: '.default',
+        keyword: 'anyOf',
       },
     ],
   },
-});
+})

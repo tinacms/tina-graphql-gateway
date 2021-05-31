@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Link from "next/link";
-import { Wrapper } from "../components/helper-components";
+import Link from 'next/link'
+import { Wrapper } from '../components/helper-components'
 
 export default function FourOhFour() {
   return (
@@ -20,5 +20,5 @@ export default function FourOhFour() {
       <h2>OOPS, NOTHING TO SEE HERE...</h2>
       <Link href="/">Go back home</Link>
     </Wrapper>
-  );
+  )
 }

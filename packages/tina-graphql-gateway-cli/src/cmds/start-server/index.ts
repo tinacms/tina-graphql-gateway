@@ -11,20 +11,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import childProcess from "child_process";
-import path from "path";
-import { buildSchema } from "tina-graphql";
-import { genTypes } from "../query-gen";
-import { compile } from "../compile";
-import chokidar from "chokidar";
-import { successText, dangerText } from "../../utils/theme";
+import childProcess from 'child_process'
+import path from 'path'
+import { buildSchema } from 'tina-graphql'
+import { genTypes } from '../query-gen'
+import { compile } from '../compile'
+import chokidar from 'chokidar'
+import { successText, dangerText } from '../../utils/theme'
 
 interface Options {
-  port?: number;
-  command?: string;
+  port?: number
+  command?: string
 }
 
-const gqlPackageFile = require.resolve("tina-graphql");
+const gqlPackageFile = require.resolve('tina-graphql')
 
 export async function startServer(
   _ctx,
@@ -32,109 +32,109 @@ export async function startServer(
   { port = 4001, command }: Options
 ) {
   const startSubprocess = () => {
-    if (typeof command === "string") {
-      const commands = command.split(" ");
+    if (typeof command === 'string') {
+      const commands = command.split(' ')
       const ps = childProcess.spawn(commands[0], [commands[1]], {
-        stdio: "inherit",
-      });
-      ps.on("close", (code) => {
-        console.log(`child process exited with code ${code}`);
-        process.exit(code);
-      });
+        stdio: 'inherit',
+      })
+      ps.on('close', (code) => {
+        console.log(`child process exited with code ${code}`)
+        process.exit(code)
+      })
     }
-  };
-  let projectRoot = path.join(process.cwd());
-  let ready = false;
+  }
+  let projectRoot = path.join(process.cwd())
+  let ready = false
   if (!process.env.CI) {
     chokidar
       .watch(`${projectRoot}/**/*.ts`, {
         ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
       })
-      .on("ready", async () => {
+      .on('ready', async () => {
         try {
-          console.log("Generating Tina config");
+          console.log('Generating Tina config')
           console.log('Compiling...')
-          await compile();
+          await compile()
           console.log('Building schema...')
-          const schema = await buildSchema(process.cwd());
+          const schema = await buildSchema(process.cwd())
           console.log('Generating types...')
-          await genTypes({ schema }, () => {}, {});
-          ready = true;
-          startSubprocess();
+          await genTypes({ schema }, () => {}, {})
+          ready = true
+          startSubprocess()
         } catch (e) {
-          console.log(dangerText(`${e.message}, exiting...`));
-          console.log(e);
-          process.exit(0);
+          console.log(dangerText(`${e.message}, exiting...`))
+          console.log(e)
+          process.exit(0)
         }
       })
-      .on("all", async (event, path) => {
+      .on('all', async (event, path) => {
         if (ready) {
-          console.log("Tina change detected, regenerating config");
+          console.log('Tina change detected, regenerating config')
           try {
-            await compile();
-            const schema = await buildSchema(process.cwd());
-            await genTypes({ schema }, () => {}, {});
+            await compile()
+            const schema = await buildSchema(process.cwd())
+            await genTypes({ schema }, () => {}, {})
           } catch (e) {
             console.log(
               dangerText(
-                "Compilation failed with errors, server has not been restarted"
+                'Compilation failed with errors, server has not been restarted'
               )
-            );
-            console.log(e.message);
+            )
+            console.log(e.message)
           }
         }
-      });
+      })
   }
 
   const state = {
     server: null,
     sockets: [],
-  };
+  }
 
-  let isReady = false;
+  let isReady = false
 
   const start = async () => {
-    const s = require("./server");
-    state.server = await s.default();
+    const s = require('./server')
+    state.server = await s.default()
     state.server.listen(port, () => {
-      console.log(`Started Filesystem GraphQL server on port: ${port}`);
-    });
-    state.server.on("connection", (socket) => {
-      state.sockets.push(socket);
-    });
-  };
+      console.log(`Started Filesystem GraphQL server on port: ${port}`)
+    })
+    state.server.on('connection', (socket) => {
+      state.sockets.push(socket)
+    })
+  }
 
   const restart = async () => {
-    console.log("Detected change to gql package, restarting...");
-    delete require.cache[gqlPackageFile];
+    console.log('Detected change to gql package, restarting...')
+    delete require.cache[gqlPackageFile]
 
     state.sockets.forEach((socket, index) => {
       if (socket.destroyed === false) {
-        socket.destroy();
+        socket.destroy()
       }
-    });
-    state.sockets = [];
+    })
+    state.sockets = []
     state.server.close(() => {
-      console.log("Server closed");
-      start();
-    });
-  };
+      console.log('Server closed')
+      start()
+    })
+  }
 
   if (!process.env.CI) {
     chokidar
       .watch(gqlPackageFile)
-      .on("ready", async () => {
-        isReady = true;
-        start();
+      .on('ready', async () => {
+        isReady = true
+        start()
       })
-      .on("all", async () => {
+      .on('all', async () => {
         if (isReady) {
-          restart();
+          restart()
         }
-      });
+      })
   } else {
-    console.log("Detected CI environment, omitting watch commands...");
-    start();
-    startSubprocess();
+    console.log('Detected CI environment, omitting watch commands...')
+    start()
+    startSubprocess()
   }
 }

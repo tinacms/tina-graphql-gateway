@@ -11,25 +11,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import _ from "lodash";
-import { friendlyName, templateTypeName } from "tina-graphql-helpers";
+import _ from 'lodash'
+import { friendlyName, templateTypeName } from 'tina-graphql-helpers'
 
-import { gql } from "../../gql";
-import { template } from "../templates";
-import { sequential, assertShape } from "../../util";
-import { assertIsArray, assertIsBlockValueArray } from "../";
+import { gql } from '../../gql'
+import { template } from '../templates'
+import { sequential, assertShape } from '../../util'
+import { assertIsArray, assertIsBlockValueArray } from '../'
 
-import type { FieldDefinitionNode, InputValueDefinitionNode } from "graphql";
-import type { BuildArgs, ResolveArgs } from "../";
-import type { TinaTemplateData } from "../../types";
+import type { FieldDefinitionNode, InputValueDefinitionNode } from 'graphql'
+import type { BuildArgs, ResolveArgs } from '../'
+import type { TinaTemplateData } from '../../types'
 
 export const blocks: Blocks = {
   build: {
     field: async ({ cache, field, accumulator }) => {
-      const typename = friendlyName(field, { suffix: "BlocksField" });
+      const typename = friendlyName(field, { suffix: 'BlocksField' })
       const templateName = friendlyName(field, {
-        suffix: "BlocksFieldTemplates",
-      });
+        suffix: 'BlocksFieldTemplates',
+      })
 
       accumulator.push(
         gql.ObjectTypeDefinition({
@@ -37,229 +37,228 @@ export const blocks: Blocks = {
           fields: await sequential(
             field.template_types,
             async (templateSlug) => {
-              const t = await cache.datasource.getTemplate(templateSlug);
+              const t = await cache.datasource.getTemplate(templateSlug)
               await template.build.form({
                 cache,
                 template: t,
                 accumulator,
                 includeBody: false,
-              });
+              })
               return gql.FieldDefinition({
                 name: friendlyName(t, { lowerCase: true }),
-                type: friendlyName(t, { suffix: "Form" }),
-              });
+                type: friendlyName(t, { suffix: 'Form' }),
+              })
             }
           ),
         })
-      );
+      )
 
       accumulator.push(
         gql.FormFieldBuilder({
           name: typename,
           additionalFields: [
-            gql.FieldDefinition({ name: "templates", type: templateName }),
+            gql.FieldDefinition({ name: 'templates', type: templateName }),
           ],
         })
-      );
+      )
 
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
-      });
+      })
     },
     initialValue: async ({ cache, field, accumulator }) => {
-      const name = friendlyName(field, { suffix: "Values" });
+      const name = friendlyName(field, { suffix: 'Values' })
 
       await sequential(field.template_types, async (templateSlug) => {
-        const t = await cache.datasource.getTemplate(templateSlug);
+        const t = await cache.datasource.getTemplate(templateSlug)
         await template.build.values({
           cache,
           template: t,
           accumulator,
           includeBody: false,
-        });
-      });
+        })
+      })
 
       accumulator.push(
         gql.UnionTypeDefinition({
           name: name,
           types: field.template_types.map((t) =>
-            friendlyName(t, { suffix: "Values" })
+            friendlyName(t, { suffix: 'Values' })
           ),
         })
-      );
+      )
 
-      return gql.FieldDefinition({ name: field.name, type: name, list: true });
+      return gql.FieldDefinition({ name: field.name, type: name, list: true })
     },
     value: async ({ cache, field, accumulator }) => {
-      const fieldUnionName = friendlyName(field, { suffix: "Data" });
+      const fieldUnionName = friendlyName(field, { suffix: 'Data' })
       await sequential(field.template_types, async (templateSlug) => {
-        const t = await cache.datasource.getTemplate(templateSlug);
+        const t = await cache.datasource.getTemplate(templateSlug)
         await template.build.data({
           cache,
           template: t,
           accumulator,
           includeBody: false,
-        });
-      });
+        })
+      })
       accumulator.push(
         gql.UnionTypeDefinition({
           name: fieldUnionName,
           types: field.template_types.map((t) =>
-            friendlyName(t, { suffix: "Data" })
+            friendlyName(t, { suffix: 'Data' })
           ),
         })
-      );
+      )
       return gql.FieldDefinition({
         name: field.name,
         type: fieldUnionName,
         list: true,
-      });
+      })
     },
     input: async ({ cache, field, accumulator }) => {
       await sequential(field.template_types, async (templateSlug) => {
-        const t = await cache.datasource.getTemplate(templateSlug);
+        const t = await cache.datasource.getTemplate(templateSlug)
         await template.build.input({
           cache,
           template: t,
           accumulator,
           includeBody: false,
-        });
-      });
+        })
+      })
 
       accumulator.push(
         gql.InputObjectTypeDefinition({
-          name: friendlyName(field.name, { suffix: "Input" }),
+          name: friendlyName(field.name, { suffix: 'Input' }),
           fields: field.template_types.map((template) =>
             gql.InputValueDefinition({
               name: friendlyName(template, { lowerCase: true }),
-              type: templateTypeName(template, "Input", false),
+              type: templateTypeName(template, 'Input', false),
             })
           ),
         })
-      );
+      )
 
       return gql.InputValueDefinition({
         name: field.name,
-        type: friendlyName(field.name, { suffix: "Input" }),
+        type: friendlyName(field.name, { suffix: 'Input' }),
         list: true,
-      });
+      })
     },
   },
   resolve: {
     field: async ({ datasource, field }): Promise<TinaBlocksField> => {
-      const templates: { [key: string]: TinaTemplateData } = {};
+      const templates: { [key: string]: TinaTemplateData } = {}
       await sequential(field.template_types, async (templateSlug) => {
-        const t = await datasource.getTemplate(templateSlug);
-        templates[
-          friendlyName(templateSlug, { lowerCase: true })
-        ] = await template.resolve.form({
-          datasource,
-          template: t,
-        });
-      });
+        const t = await datasource.getTemplate(templateSlug)
+        templates[friendlyName(templateSlug, { lowerCase: true })] =
+          await template.resolve.form({
+            datasource,
+            template: t,
+          })
+      })
 
       return {
         ...field,
-        component: "blocks" as const,
+        component: 'blocks' as const,
         templates,
-        __typename: friendlyName(field, { suffix: "BlocksField" }),
-      };
+        __typename: friendlyName(field, { suffix: 'BlocksField' }),
+      }
     },
     initialValue: async ({ datasource, value }) => {
-      assertIsBlockValueArray(value);
+      assertIsBlockValueArray(value)
 
       return await sequential(value, async (item) => {
-        const templateData = await datasource.getTemplate(item.template);
+        const templateData = await datasource.getTemplate(item.template)
         const itemValue = await template.resolve.values({
           datasource,
           template: templateData,
           data: item,
-        });
+        })
 
         return {
           ...itemValue,
           _template: friendlyName(itemValue._template, { lowerCase: true }),
-        };
-      });
+        }
+      })
     },
     value: async ({ datasource, value }) => {
-      assertIsBlockValueArray(value);
+      assertIsBlockValueArray(value)
 
       return await sequential(value, async (item) => {
-        const templateData = await datasource.getTemplate(item.template);
+        const templateData = await datasource.getTemplate(item.template)
         const data = await template.resolve.data({
           datasource,
           template: templateData,
           data: item,
-        });
+        })
 
-        return { template: item.template, ...data };
-      });
+        return { template: item.template, ...data }
+      })
     },
     input: async ({ field, datasource, value }) => {
       try {
-        assertIsArray(value);
+        assertIsArray(value)
       } catch (e) {
-        return false;
+        return false
       }
 
       const accum = (
         await sequential(value, async (item) => {
           try {
-            assertShape<object>(item, (yup) => yup.object({}));
+            assertShape<object>(item, (yup) => yup.object({}))
 
-            const key = Object.keys(item)[0];
-            const data = Object.values(item)[0];
+            const key = Object.keys(item)[0]
+            const data = Object.values(item)[0]
 
             const resolvedData = await template.resolve.input({
               data,
               template: await datasource.getTemplate(key),
               datasource,
-            });
+            })
 
             return {
               template: key,
               ...resolvedData,
-            };
+            }
           } catch (e) {
-            console.log(e);
-            return false;
+            console.log(e)
+            return false
           }
         })
-      ).filter(Boolean);
+      ).filter(Boolean)
       if (accum.length > 0) {
-        return { [field.name]: accum };
+        return { [field.name]: accum }
       } else {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
 export type BlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  default?: string;
-  template_types: string[];
-  __namespace: string;
+  label: string
+  name: string
+  type: 'blocks'
+  default?: string
+  template_types: string[]
+  __namespace: string
   config?: {
-    required?: boolean;
-  };
-};
+    required?: boolean
+  }
+}
 export type TinaBlocksField = {
-  label: string;
-  name: string;
-  type: "blocks";
-  default?: string;
-  component: "blocks";
+  label: string
+  name: string
+  type: 'blocks'
+  default?: string
+  component: 'blocks'
   config?: {
-    required?: boolean;
-  };
-  templates: { [key: string]: TinaTemplateData };
-  __typename: string;
-};
+    required?: boolean
+  }
+  templates: { [key: string]: TinaTemplateData }
+  __typename: string
+}
 
 export interface Build {
   /**
@@ -301,22 +300,22 @@ export interface Build {
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>
   initialValue: ({
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>
   value: ({
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<FieldDefinitionNode>
   input: ({
     cache,
     field,
     accumulator,
-  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>;
+  }: BuildArgs<BlocksField>) => Promise<InputValueDefinitionNode>
 }
 
 export interface Resolve {
@@ -356,25 +355,25 @@ export interface Resolve {
   field: ({
     datasource,
     field,
-  }: Omit<ResolveArgs<BlocksField>, "value">) => Promise<TinaBlocksField>;
+  }: Omit<ResolveArgs<BlocksField>, 'value'>) => Promise<TinaBlocksField>
   initialValue: ({
     datasource,
     field,
     value,
   }: ResolveArgs<BlocksField>) => Promise<
     {
-      __typename: string;
+      __typename: string
       // FIXME: this should exist for blocks, but
-      _template: string;
-      [key: string]: unknown;
+      _template: string
+      [key: string]: unknown
     }[]
-  >;
+  >
   value: ({
     datasource,
     field,
     value,
-  }: ResolveArgs<BlocksField>) => Promise<unknown>;
-  input: ({ datasource, field, value }: ResolveArgs<BlocksField>) => unknown;
+  }: ResolveArgs<BlocksField>) => Promise<unknown>
+  input: ({ datasource, field, value }: ResolveArgs<BlocksField>) => unknown
 }
 export interface Blocks {
   /**
@@ -384,6 +383,6 @@ export interface Blocks {
    * The build process is done ahead of time and can be cached as a static GraphQL SDL file
    *
    */
-  build: Build;
-  resolve: Resolve;
+  build: Build
+  resolve: Resolve
 }

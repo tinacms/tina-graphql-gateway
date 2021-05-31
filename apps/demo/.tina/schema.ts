@@ -11,53 +11,53 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from "tina-graphql-gateway-cli";
+import { defineSchema } from 'tina-graphql-gateway-cli'
 
 export default defineSchema({
   collections: [
     {
-      label: "Authors",
-      name: "authors",
-      path: "content/authors",
+      label: 'Authors',
+      name: 'authors',
+      path: 'content/authors',
       templates: [
         {
-          label: "Author",
-          name: "author",
+          label: 'Author',
+          name: 'author',
           fields: [
             {
-              name: "name",
-              type: "text",
-              label: "Name",
+              name: 'name',
+              type: 'text',
+              label: 'Name',
             },
             {
-              name: "isAuthor",
-              type: "toggle",
-              label: "is Author",
+              name: 'isAuthor',
+              type: 'toggle',
+              label: 'is Author',
             },
             {
-              name: "description",
-              type: "textarea",
-              label: "Description",
+              name: 'description',
+              type: 'textarea',
+              label: 'Description',
             },
             {
-              name: "image",
-              type: "text",
-              label: "Image",
+              name: 'image',
+              type: 'text',
+              label: 'Image',
             },
             {
-              name: "accolades",
-              type: "group-list",
-              label: "Accolades",
+              name: 'accolades',
+              type: 'group-list',
+              label: 'Accolades',
               fields: [
                 {
-                  type: "text",
-                  label: "Figure",
-                  name: "figure",
+                  type: 'text',
+                  label: 'Figure',
+                  name: 'figure',
                 },
                 {
-                  type: "text",
-                  label: "Description",
-                  name: "description",
+                  type: 'text',
+                  label: 'Description',
+                  name: 'description',
                 },
               ],
             },
@@ -66,33 +66,33 @@ export default defineSchema({
       ],
     },
     {
-      label: "Posts",
-      name: "posts",
-      path: "content/posts",
+      label: 'Posts',
+      name: 'posts',
+      path: 'content/posts',
       templates: [
         {
-          label: "Post",
-          name: "post",
+          label: 'Post',
+          name: 'post',
           fields: [
             {
-              name: "title",
-              label: "Title",
-              type: "text",
+              name: 'title',
+              label: 'Title',
+              type: 'text',
             },
             {
-              name: "image",
-              label: "Image",
-              type: "text",
+              name: 'image',
+              label: 'Image',
+              type: 'text',
             },
             {
-              name: "author",
-              label: "Author",
-              type: "reference",
-              collection: "authors",
+              name: 'author',
+              label: 'Author',
+              type: 'reference',
+              collection: 'authors',
             },
           ],
         },
       ],
     },
   ],
-});
+})

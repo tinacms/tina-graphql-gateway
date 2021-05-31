@@ -11,43 +11,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const NumberField = {
-  $id: "#numberField",
-  label: "Number Field",
+  $id: '#numberField',
+  label: 'Number Field',
   description:
-    "A number input. Good for integer values such as page weight, amounts, counters etc. ",
-  type: "object",
+    'A number input. Good for integer values such as page weight, amounts, counters etc. ',
+  type: 'object',
   properties: {
     ...base,
     type: {
-      const: "number",
+      const: 'number',
     },
     default: {
-      type: "number",
-      multipleOf: { $data: "1/config/step" },
-      minimum: { $data: "1/config/min" },
-      maximum: { $data: "1/config/max" },
+      type: 'number',
+      multipleOf: { $data: '1/config/step' },
+      minimum: { $data: '1/config/min' },
+      maximum: { $data: '1/config/max' },
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
         required: {
-          type: "boolean",
+          type: 'boolean',
         },
         min: {
-          type: "number",
-          multipleOf: { $data: "1/step" },
-          maximum: { $data: "1/max" },
+          type: 'number',
+          multipleOf: { $data: '1/step' },
+          maximum: { $data: '1/max' },
         },
         max: {
-          type: "number",
-          multipleOf: { $data: "1/step" },
-          minimum: { $data: "1/min" },
+          type: 'number',
+          multipleOf: { $data: '1/step' },
+          minimum: { $data: '1/min' },
         },
         step: {
-          type: "number",
+          type: 'number',
           exclusiveMinimum: 0,
         },
       },
@@ -56,4 +56,4 @@ export const NumberField = {
   },
   required: baseRequired,
   additionalProperties: false,
-};
+}

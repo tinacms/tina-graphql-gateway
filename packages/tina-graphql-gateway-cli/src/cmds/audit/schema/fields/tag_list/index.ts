@@ -11,32 +11,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const TagField = {
-  $id: "#tagField",
-  label: "Tags Field",
+  $id: '#tagField',
+  label: 'Tags Field',
   description:
-    "A list of strings to make multiple selections displayed inline. Good for page categories, page tags etc.",
-  type: "object",
+    'A list of strings to make multiple selections displayed inline. Good for page categories, page tags etc.',
+  type: 'object',
   properties: {
     type: {
-      const: "tag_list",
+      const: 'tag_list',
     },
     ...base,
     default: {
-      type: "array",
+      type: 'array',
       items: {
-        type: "string",
+        type: 'string',
       },
     },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
+        required: { type: 'boolean' },
       },
       additionalProperties: false,
     },
   },
   required: baseRequired,
-};
+}

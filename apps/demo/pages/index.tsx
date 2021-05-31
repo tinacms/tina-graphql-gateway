@@ -11,14 +11,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Sidebar } from "../components/sidebar";
+import { Sidebar } from '../components/sidebar'
 
 const Main = () => {
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
       <Sidebar relativePath="" />
     </div>
-  );
-};
+  )
+}
 
-export default Main;
+export default Main

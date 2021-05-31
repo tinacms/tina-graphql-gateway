@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const createJestConfig = require("./create.jest.config.js");
-const pack = require("./package");
+const createJestConfig = require('./create.jest.config.js')
+const pack = require('./package')
 
-module.exports = createJestConfig(pack);
+module.exports = createJestConfig(pack)
