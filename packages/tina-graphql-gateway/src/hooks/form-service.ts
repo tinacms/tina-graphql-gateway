@@ -281,6 +281,7 @@ const formCallback = (context: NodeFormContext) => (callback, receive) => {
     label: context.node._internalSys.basename,
     fields,
     reset: () => {
+      console.log('reset being called')
       callback({
         type: 'ON_FIELD_CHANGE',
         values: {

@@ -21,7 +21,7 @@ import { ContentCreatorPlugin, OnNewDocument } from './create-page-plugin'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
 import type { DocumentNode as GqlDocumentNode } from 'graphql'
-import { setIn } from 'final-form'
+import set from 'lodash.set'
 
 export interface FormifyArgs {
   formConfig: FormOptions<any>
@@ -129,7 +129,7 @@ const formsMachine = createMachine<FormsContext, FormsEvent, FormsState>({
               // for now this will populate values which we may not have asked for in the data
               // key. But to do this properly we'll need to traverse the query and store the paths
               // which should be populated
-              return setIn(
+              return set(
                 context.payload,
                 event.pathAndValue.path.join('.'),
                 event.pathAndValue.value
