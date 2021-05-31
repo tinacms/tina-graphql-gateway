@@ -133,12 +133,14 @@ type TextField implements FormField {
   name: String
   label: String
   component: String
+  description: String
 }
 
 type TextareaField implements FormField {
   name: String
   label: String
   component: String
+  description: String
 }
 
 union Author_Doc_FormFieldsUnion = TextField | TextareaField
@@ -190,6 +192,7 @@ type SelectField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   options: [String]
 }
 
@@ -289,6 +292,7 @@ type LandingPage_Blocks_BlocksField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   templates: LandingPage_Blocks_BlocksFieldTemplates
 }
 
