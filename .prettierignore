@@ -1,6 +1,8 @@
 **/*.mdx
 *.md
 build
+**/.pnp.js
+**/__generated__/**
 .pnp.js
 .yarn/*
 .next/*
