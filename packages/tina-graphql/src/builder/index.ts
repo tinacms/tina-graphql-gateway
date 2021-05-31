@@ -62,7 +62,17 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
   const sectionMap: sectionMap = {}
   const mutationsArray: mutationsArray = []
 
-  const sections = await cache.datasource.getCollectionsSettings()
+  let sections: DirectorySection[]
+
+  try {
+    sections = await cache.datasource.getCollectionsSettings()
+  } catch (e) {
+    // This error will happen if the schema.ts is not on github
+    console.log(
+      '.tina/schema.ts not found or is malformed, please create this file and commit it to Github. Documentation; https://tina.io/docs/tina-cloud/cli/#getting-started'
+    )
+    throw e
+  }
 
   sections.forEach((section) => {
     buildSectionMap(section, mutationsArray, sectionMap)
