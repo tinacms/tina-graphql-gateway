@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { snakeCase, toLower } from "lodash";
-import * as yup from "yup";
+import { snakeCase, toLower } from 'lodash'
+import * as yup from 'yup'
 
 /**
  * Iterate through an array of promises sequentially, ensuring the order
@@ -28,27 +28,27 @@ export const sequential = async <A, B>(
   items: A[],
   callback: (args: A) => Promise<B>
 ) => {
-  const accum: B[] = [];
+  const accum: B[] = []
 
   const reducePromises = async (previous: Promise<B>, endpoint: A) => {
-    const prev = await previous;
+    const prev = await previous
     // initial value will be undefined
     if (prev) {
-      accum.push(prev);
+      accum.push(prev)
     }
 
-    return callback(endpoint);
-  };
-
-  // @ts-ignore FIXME: this can be properly typed
-  const result = await items.reduce(reducePromises, Promise.resolve());
-  if (result) {
-    // @ts-ignore FIXME: this can be properly typed
-    accum.push(result);
+    return callback(endpoint)
   }
 
-  return accum;
-};
+  // @ts-ignore FIXME: this can be properly typed
+  const result = await items.reduce(reducePromises, Promise.resolve())
+  if (result) {
+    // @ts-ignore FIXME: this can be properly typed
+    accum.push(result)
+  }
+
+  return accum
+}
 
 /**
  * Asserts the generic type provided matches the runtime value of the `value`. These assertions
@@ -74,10 +74,10 @@ export function assertShape<T extends object>(
   value: unknown,
   yupSchema: (args: typeof yup) => yup.Schema<unknown, unknown>
 ): asserts value is T {
-  const shape = yupSchema(yup);
+  const shape = yupSchema(yup)
   try {
-    shape.validateSync(value);
+    shape.validateSync(value)
   } catch (e) {
-    throw new Error(`Failed to assertShape - ${e.message}`);
+    throw new Error(`Failed to assertShape - ${e.message}`)
   }
 }

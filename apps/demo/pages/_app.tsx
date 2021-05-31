@@ -11,39 +11,44 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { AppProps } from "next/app";
-import { withTina, useCMS } from "tinacms";
-import { LocalClient, Client, TinaCloudAuthWall } from "tina-graphql-gateway";
-import "graphiql/graphiql.css";
-import "codemirror/lib/codemirror.css";
-import "tailwindcss/tailwind.css";
+import React from 'react'
+import { AppProps } from 'next/app'
+import { withTina, useCMS } from 'tinacms'
+import { LocalClient, Client, TinaCloudAuthWall } from 'tina-graphql-gateway'
+import 'graphiql/graphiql.css'
+import 'codemirror/lib/codemirror.css'
+import 'tailwindcss/tailwind.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const cms = useCMS();
+  const cms = useCMS()
   return (
     <div>
-      <TinaCloudAuthWall cms={cms} getModalActions={({closeModal})=>{
-        return [{
-           action: async ()=>{
-             closeModal()
-           },
-           name: 'close',
-           primary: false,
-        }]
-      }}>
+      <TinaCloudAuthWall
+        cms={cms}
+        getModalActions={({ closeModal }) => {
+          return [
+            {
+              action: async () => {
+                closeModal()
+              },
+              name: 'close',
+              primary: false,
+            },
+          ]
+        }}
+      >
         <Component {...pageProps} />
       </TinaCloudAuthWall>
     </div>
-  );
+  )
 }
 
 // const client = new LocalClient();
 const client = new Client({
-  clientId: "some-id",
-  organizationId: "gctc",
-  branch: "main",
-});
+  clientId: 'some-id',
+  organizationId: 'gctc',
+  branch: 'main',
+})
 
 export default withTina(MyApp, {
   apis: {
@@ -51,4 +56,4 @@ export default withTina(MyApp, {
   },
   sidebar: true,
   enabled: true,
-});
+})

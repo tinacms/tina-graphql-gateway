@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { gql } from "../../gql";
+import { gql } from '../../gql'
 
-import { BuildArgs, ResolveArgs, assertIsStringArray } from "../";
-import { list, TinaListField } from "../list";
+import { BuildArgs, ResolveArgs, assertIsStringArray } from '../'
+import { list, TinaListField } from '../list'
 
 export const imageGallery = {
   build: {
@@ -27,53 +27,54 @@ export const imageGallery = {
         cache,
         field: list.imageGalleryField(field),
         accumulator,
-      });
+      })
     },
     initialValue: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.FieldDefinition({
         name: field.name,
         type: gql.TYPES.String,
         list: true,
-      });
+      })
     },
     value: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.FieldDefinition({
         name: field.name,
         type: gql.TYPES.String,
         list: true,
-      });
+      })
     },
     input: ({ field }: BuildArgs<ImageGalleryField>) => {
       return gql.InputValueDefinition({
         name: field.name,
         type: gql.TYPES.String,
         list: true,
-      });
+      })
     },
   },
   resolve: {
     field: async ({
       datasource,
       field,
-    }: Omit<ResolveArgs<ImageGalleryField>, "value">): Promise<
-      TinaImageGalleryField
-    > => {
+    }: Omit<
+      ResolveArgs<ImageGalleryField>,
+      'value'
+    >): Promise<TinaImageGalleryField> => {
       return await list.resolve.field({
         datasource,
         field: list.imageGalleryField(field),
-      });
+      })
     },
     initialValue: async ({
       value,
     }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
-      assertIsStringArray(value, { source: "image gallery initial value" });
-      return value;
+      assertIsStringArray(value, { source: 'image gallery initial value' })
+      return value
     },
     value: async ({
       value,
     }: ResolveArgs<ImageGalleryField>): Promise<string[]> => {
-      assertIsStringArray(value, { source: "image gallery value" });
-      return value;
+      assertIsStringArray(value, { source: 'image gallery value' })
+      return value
     },
     input: async ({
       field,
@@ -82,25 +83,25 @@ export const imageGallery = {
       { [key: string]: string[] } | false
     > => {
       try {
-        assertIsStringArray(value, { source: "image gallery input" });
+        assertIsStringArray(value, { source: 'image gallery input' })
 
-        return { [field.name]: value };
+        return { [field.name]: value }
       } catch (e) {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
 export type ImageGalleryField = {
-  label: string;
-  name: string;
-  type: "image_gallery";
-  default?: string;
+  label: string
+  name: string
+  type: 'image_gallery'
+  default?: string
   config?: {
-    required?: boolean;
-  };
-  __namespace: string;
-};
+    required?: boolean
+  }
+  __namespace: string
+}
 
-export type TinaImageGalleryField = TinaListField;
+export type TinaImageGalleryField = TinaListField

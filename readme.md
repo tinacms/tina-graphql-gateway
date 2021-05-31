@@ -32,6 +32,11 @@ See the [contributor docs](./CONTRIBUTING.md) for guidance on how to install and
 
 To use this with your local Tina repo look in the `demo/next.config.js` file, ensure the paths resolve to your local Tina install and you've built all the necessary Tina packages.
 
+Or take a stab at one of our Tina Cloud starters who are using this package:
+
+- https://github.com/tinacms/tina-cloud-starter (simple starter to demo how to work with our GraphQL Client)
+- https://github.com/tinalabs/next-git-starter (based on default Next.js blog starter)
+
 ## Managing License Headers
 
 All _.js, _.ts, and \*.tsx files require a license header to be present.

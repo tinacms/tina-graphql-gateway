@@ -11,15 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { gql } from "../../gql";
-import isValid from "date-fns/isValid";
-import parseISO from "date-fns/parseISO";
-import format from "date-fns/format";
+import { gql } from '../../gql'
+import isValid from 'date-fns/isValid'
+import parseISO from 'date-fns/parseISO'
+import format from 'date-fns/format'
 
-import { BuildArgs, ResolveArgs, assertIsString } from "../";
+import { BuildArgs, ResolveArgs, assertIsString } from '../'
 
-const typename = "DatetimeField";
-const DEFAULT_DATE_FORMAT = "MMM dd, yyyy";
+const typename = 'DatetimeField'
+const DEFAULT_DATE_FORMAT = 'MMM dd, yyyy'
 
 export const datetime = {
   build: {
@@ -29,59 +29,59 @@ export const datetime = {
           name: typename,
           additionalFields: [
             gql.FieldDefinition({
-              name: "dateFormat",
+              name: 'dateFormat',
               type: gql.TYPES.String,
             }),
             gql.FieldDefinition({
-              name: "timeFormat",
+              name: 'timeFormat',
               type: gql.TYPES.String,
             }),
           ],
         })
-      );
+      )
 
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
-      });
+      })
     },
     initialValue: ({ field }: BuildArgs<DatetimeField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     value: ({ field }: BuildArgs<DatetimeField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     input: ({ field }: BuildArgs<DatetimeField>) => {
       return gql.InputValueDefinition({
         name: field.name,
         type: gql.TYPES.String,
-      });
+      })
     },
   },
   resolve: {
     field: ({
       field,
-    }: Omit<ResolveArgs<DatetimeField>, "value">): TinaDatetimeField => {
-      const { type, ...rest } = field;
+    }: Omit<ResolveArgs<DatetimeField>, 'value'>): TinaDatetimeField => {
+      const { type, ...rest } = field
 
       return {
         ...rest,
-        component: "date",
+        component: 'date',
         __typename: typename,
         config: rest.config || {
           required: false,
         },
-      };
+      }
     },
     initialValue: async ({
       value,
     }: ResolveArgs<DatetimeField>): Promise<string> => {
-      assertIsString(value, { source: "datetime" });
-      return value;
+      assertIsString(value, { source: 'datetime' })
+      return value
     },
     value: async ({ value }: ResolveArgs<DatetimeField>): Promise<string> => {
-      assertIsString(value, { source: "datetime" });
-      return value;
+      assertIsString(value, { source: 'datetime' })
+      return value
     },
     input: async ({
       field,
@@ -90,14 +90,14 @@ export const datetime = {
       { [key: string]: string } | false
     > => {
       try {
-        assertIsString(value, { source: "datetime" });
+        assertIsString(value, { source: 'datetime' })
 
         /**
          * Convert string to `new Date()`
          */
-        const date = parseISO(value);
+        const date = parseISO(value)
         if (!isValid(date)) {
-          throw "Invalid Date";
+          throw 'Invalid Date'
         }
 
         /**
@@ -106,7 +106,7 @@ export const datetime = {
          */
         const dateUTC = new Date(
           date.valueOf() + date.getTimezoneOffset() * 60 * 1000
-        );
+        )
 
         /**
          * Determine dateFormat
@@ -115,52 +115,50 @@ export const datetime = {
          * They are explained here:
          * https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
          */
-        const dateFormat = field.dateFormat || DEFAULT_DATE_FORMAT;
-        const fixedDateFormat = dateFormat
-          .replace(/D/g, "d")
-          .replace(/Y/g, "y");
+        const dateFormat = field.dateFormat || DEFAULT_DATE_FORMAT
+        const fixedDateFormat = dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y')
 
         /**
          * Determine timeFormat, if any
          */
-        const timeFormat = field.timeFormat || false;
+        const timeFormat = field.timeFormat || false
 
         /**
          * Format `date` and `time` parts
          */
-        const datePart = format(dateUTC, fixedDateFormat);
-        const timePart = timeFormat ? ` ${format(dateUTC, timeFormat)}` : "";
+        const datePart = format(dateUTC, fixedDateFormat)
+        const timePart = timeFormat ? ` ${format(dateUTC, timeFormat)}` : ''
 
-        return { [field.name]: `${datePart}${timePart}` };
+        return { [field.name]: `${datePart}${timePart}` }
       } catch (e) {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
 export type DatetimeField = {
-  label: string;
-  name: string;
-  type: "datetime";
-  default?: string;
-  dateFormat?: string;
-  timeFormat?: string;
+  label: string
+  name: string
+  type: 'datetime'
+  default?: string
+  dateFormat?: string
+  timeFormat?: string
   config?: {
-    required?: boolean;
-  };
-  __namespace: string;
-};
+    required?: boolean
+  }
+  __namespace: string
+}
 
 export type TinaDatetimeField = {
-  label: string;
-  name: string;
-  component: "date";
-  default?: string;
-  dateFormat?: string;
-  timeFormat?: string;
+  label: string
+  name: string
+  component: 'date'
+  default?: string
+  dateFormat?: string
+  timeFormat?: string
   config?: {
-    required?: boolean;
-  };
-  __typename: typeof typename;
-};
+    required?: boolean
+  }
+  __typename: typeof typename
+}

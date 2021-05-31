@@ -11,29 +11,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { setupTests } from "../setupTests";
+import { setupTests } from '../setupTests'
 
 setupTests({
-  "with an invalid default type": {
+  'with an invalid default type': {
     initial: {
-      name: "authors",
-      label: "Authors",
-      type: "tag_list",
+      name: 'authors',
+      label: 'Authors',
+      type: 'tag_list',
       hidden: true,
       default: 2,
     },
     errors: [
       {
-        dataPath: ".default",
-        keyword: "type",
+        dataPath: '.default',
+        keyword: 'type',
       },
     ],
     fixed: {
-      name: "authors",
-      label: "Authors",
-      type: "tag_list",
+      name: 'authors',
+      label: 'Authors',
+      type: 'tag_list',
       hidden: true,
-      default: ["2"],
+      default: ['2'],
     },
   },
-});
+})

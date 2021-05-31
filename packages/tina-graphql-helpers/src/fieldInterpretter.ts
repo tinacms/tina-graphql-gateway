@@ -19,8 +19,8 @@ import {
   GraphQLUnionType,
   GraphQLArgument,
   ASTNode,
-} from "graphql";
-import get from 'lodash.get';
+} from 'graphql'
+import get from 'lodash.get'
 
 interface FieldInterpretterProps {
   mutationName: string
@@ -34,109 +34,120 @@ abstract class FieldInterpretter {
   protected fieldName: string
   protected docAst: any
   protected paramInputType: GraphQLArgument
-  constructor({mutationName, fieldName ,docAst,paramInputType}: FieldInterpretterProps) {
+  constructor({
+    mutationName,
+    fieldName,
+    docAst,
+    paramInputType,
+  }: FieldInterpretterProps) {
     this.mutationName = mutationName
     this.fieldName = fieldName
     this.docAst = docAst
     this.paramInputType = paramInputType
-   }
+  }
 
-  abstract getQuery(): DocumentNode;
+  abstract getQuery(): DocumentNode
 
-  abstract getMutation(): DocumentNode;
+  abstract getMutation(): DocumentNode
 
-  abstract getDataPath(path: readonly (string | number)[], ancestors: any): string[]
+  abstract getDataPath(
+    path: readonly (string | number)[],
+    ancestors: any
+  ): string[]
 }
 
-export const getFieldInterpretter = (namedType: GraphQLNamedType, args: FieldInterpretterProps): FieldInterpretter | undefined => {
-  if(namedType instanceof GraphQLUnionType && namedType.name === "SectionDocumentUnion") {
+export const getFieldInterpretter = (
+  namedType: GraphQLNamedType,
+  args: FieldInterpretterProps
+): FieldInterpretter | undefined => {
+  if (
+    namedType instanceof GraphQLUnionType &&
+    namedType.name === 'SectionDocumentUnion'
+  ) {
     return new SectionDocumentUnionInterpretter(args)
   }
-  if(namedType instanceof GraphQLObjectType)
-  {
+  if (namedType instanceof GraphQLObjectType) {
     return new GraphQLObjectTypeInterpretter(args)
-
   }
 
   return
 }
 
 class SectionDocumentUnionInterpretter extends FieldInterpretter {
-
   getQuery(): DocumentNode {
     return {
-      kind: "Document" as const,
+      kind: 'Document' as const,
       definitions: [
         {
-          kind: "OperationDefinition" as const,
-          operation: "query",
+          kind: 'OperationDefinition' as const,
+          operation: 'query',
           name: {
-            kind: "Name" as const,
+            kind: 'Name' as const,
             value: this.fieldName,
           },
           variableDefinitions: [
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "section",
+                  kind: 'Name' as const,
+                  value: 'section',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "String",
+                    kind: 'Name' as const,
+                    value: 'String',
                   },
                 },
               },
             },
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "relativePath",
+                  kind: 'Name' as const,
+                  value: 'relativePath',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "String",
+                    kind: 'Name' as const,
+                    value: 'String',
                   },
                 },
               },
             },
           ],
           selectionSet: {
-            kind: "SelectionSet",
+            kind: 'SelectionSet',
             selections: [
               {
-                kind: "Field",
+                kind: 'Field',
                 name: {
-                  kind: "Name",
+                  kind: 'Name',
                   value: this.fieldName,
                 },
                 arguments: [
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "relativePath",
+                      kind: 'Name',
+                      value: 'relativePath',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "relativePath",
+                        kind: 'Name',
+                        value: 'relativePath',
                       },
                     },
                   },
@@ -149,57 +160,55 @@ class SectionDocumentUnionInterpretter extends FieldInterpretter {
         },
       ],
     }
-
-
   }
 
   getMutation(): DocumentNode {
     return {
-      kind: "Document" as const,
+      kind: 'Document' as const,
       definitions: [
         {
-          kind: "OperationDefinition" as const,
-          operation: "mutation",
+          kind: 'OperationDefinition' as const,
+          operation: 'mutation',
           name: {
-            kind: "Name" as const,
+            kind: 'Name' as const,
             value: this.mutationName,
           },
           variableDefinitions: [
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "relativePath",
+                  kind: 'Name' as const,
+                  value: 'relativePath',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "String",
+                    kind: 'Name' as const,
+                    value: 'String',
                   },
                 },
               },
             },
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "params",
+                  kind: 'Name' as const,
+                  value: 'params',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
+                    kind: 'Name' as const,
                     value: getNamedType(this.paramInputType?.type).name,
                   },
                 },
@@ -207,40 +216,40 @@ class SectionDocumentUnionInterpretter extends FieldInterpretter {
             },
           ],
           selectionSet: {
-            kind: "SelectionSet",
+            kind: 'SelectionSet',
             selections: [
               {
-                kind: "Field",
+                kind: 'Field',
                 name: {
-                  kind: "Name",
+                  kind: 'Name',
                   value: this.mutationName,
                 },
                 arguments: [
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "relativePath",
+                      kind: 'Name',
+                      value: 'relativePath',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "relativePath",
+                        kind: 'Name',
+                        value: 'relativePath',
                       },
                     },
                   },
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "params",
+                      kind: 'Name',
+                      value: 'params',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "params",
+                        kind: 'Name',
+                        value: 'params',
                       },
                     },
                   },
@@ -256,27 +265,27 @@ class SectionDocumentUnionInterpretter extends FieldInterpretter {
   }
 
   getDataPath(path: readonly (string | number)[], ancestors: any): string[] {
-    let dataPath: string[] = [];
-    const anc = ancestors[0];
-    const pathAccum: (string | number)[] = [];
+    let dataPath: string[] = []
+    const anc = ancestors[0]
+    const pathAccum: (string | number)[] = []
     path.map((p, i) => {
-      pathAccum.push(p);
-      const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+      pathAccum.push(p)
+      const item: ASTNode | ASTNode[] = get(anc, pathAccum)
       if (Array.isArray(item)) {
       } else {
         switch (item.kind) {
-          case "OperationDefinition":
-            break;
-          case "SelectionSet":
-            break;
-          case "InlineFragment":
-            break;
-          case "Field":
-            dataPath.push(item.name?.value);
-            break;
+          case 'OperationDefinition':
+            break
+          case 'SelectionSet':
+            break
+          case 'InlineFragment':
+            break
+          case 'Field':
+            dataPath.push(item.name?.value)
+            break
         }
       }
-    });
+    })
     return dataPath
   }
 }
@@ -284,58 +293,58 @@ class SectionDocumentUnionInterpretter extends FieldInterpretter {
 class GraphQLObjectTypeInterpretter extends FieldInterpretter {
   getQuery(): DocumentNode {
     return {
-      kind: "Document" as const,
+      kind: 'Document' as const,
       definitions: [
         {
-          kind: "OperationDefinition" as const,
-          operation: "query",
+          kind: 'OperationDefinition' as const,
+          operation: 'query',
           name: {
-            kind: "Name" as const,
+            kind: 'Name' as const,
             value: this.fieldName,
           },
           variableDefinitions: [
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "relativePath",
+                  kind: 'Name' as const,
+                  value: 'relativePath',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "String",
+                    kind: 'Name' as const,
+                    value: 'String',
                   },
                 },
               },
             },
           ],
           selectionSet: {
-            kind: "SelectionSet",
+            kind: 'SelectionSet',
             selections: [
               {
-                kind: "Field",
+                kind: 'Field',
                 name: {
-                  kind: "Name",
+                  kind: 'Name',
                   value: this.fieldName,
                 },
                 arguments: [
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "relativePath",
+                      kind: 'Name',
+                      value: 'relativePath',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "relativePath",
+                        kind: 'Name',
+                        value: 'relativePath',
                       },
                     },
                   },
@@ -347,56 +356,56 @@ class GraphQLObjectTypeInterpretter extends FieldInterpretter {
           },
         },
       ],
-    };
+    }
   }
 
   getMutation(): DocumentNode {
     return {
-      kind: "Document" as const,
+      kind: 'Document' as const,
       definitions: [
         {
-          kind: "OperationDefinition" as const,
-          operation: "mutation",
+          kind: 'OperationDefinition' as const,
+          operation: 'mutation',
           name: {
-            kind: "Name" as const,
+            kind: 'Name' as const,
             value: this.mutationName,
           },
           variableDefinitions: [
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "relativePath",
+                  kind: 'Name' as const,
+                  value: 'relativePath',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
-                    value: "String",
+                    kind: 'Name' as const,
+                    value: 'String',
                   },
                 },
               },
             },
             {
-              kind: "VariableDefinition" as const,
+              kind: 'VariableDefinition' as const,
               variable: {
-                kind: "Variable" as const,
+                kind: 'Variable' as const,
                 name: {
-                  kind: "Name" as const,
-                  value: "params",
+                  kind: 'Name' as const,
+                  value: 'params',
                 },
               },
               type: {
-                kind: "NonNullType" as const,
+                kind: 'NonNullType' as const,
                 type: {
-                  kind: "NamedType" as const,
+                  kind: 'NamedType' as const,
                   name: {
-                    kind: "Name" as const,
+                    kind: 'Name' as const,
                     value: getNamedType(this.paramInputType?.type).name,
                   },
                 },
@@ -404,40 +413,40 @@ class GraphQLObjectTypeInterpretter extends FieldInterpretter {
             },
           ],
           selectionSet: {
-            kind: "SelectionSet",
+            kind: 'SelectionSet',
             selections: [
               {
-                kind: "Field",
+                kind: 'Field',
                 name: {
-                  kind: "Name",
+                  kind: 'Name',
                   value: this.mutationName,
                 },
                 arguments: [
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "relativePath",
+                      kind: 'Name',
+                      value: 'relativePath',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "relativePath",
+                        kind: 'Name',
+                        value: 'relativePath',
                       },
                     },
                   },
                   {
-                    kind: "Argument",
+                    kind: 'Argument',
                     name: {
-                      kind: "Name",
-                      value: "params",
+                      kind: 'Name',
+                      value: 'params',
                     },
                     value: {
-                      kind: "Variable",
+                      kind: 'Variable',
                       name: {
-                        kind: "Name",
-                        value: "params",
+                        kind: 'Name',
+                        value: 'params',
                       },
                     },
                   },
@@ -449,36 +458,32 @@ class GraphQLObjectTypeInterpretter extends FieldInterpretter {
           },
         },
       ],
-    };
+    }
   }
 
   getDataPath(path: readonly (string | number)[], ancestors: any): string[] {
-    let dataPath: string[] = [];
-    const anc = ancestors[0];
-    const pathAccum: (string | number)[] = [];
+    let dataPath: string[] = []
+    const anc = ancestors[0]
+    const pathAccum: (string | number)[] = []
     path.map((p, i) => {
-      pathAccum.push(p);
-      const item: ASTNode | ASTNode[] = get(anc, pathAccum);
+      pathAccum.push(p)
+      const item: ASTNode | ASTNode[] = get(anc, pathAccum)
       if (Array.isArray(item)) {
       } else {
         switch (item.kind) {
-          case "OperationDefinition":
-            break;
-          case "SelectionSet":
-            break;
-          case "InlineFragment":
-            break;
-          case "Field":
-            const value = item.alias
-              ? item.alias.value
-              : item.name.value;
+          case 'OperationDefinition':
+            break
+          case 'SelectionSet':
+            break
+          case 'InlineFragment':
+            break
+          case 'Field':
+            const value = item.alias ? item.alias.value : item.name.value
 
-            dataPath.push(value);
+            dataPath.push(value)
         }
       }
-    });
+    })
     return dataPath
-
-    
   }
 }

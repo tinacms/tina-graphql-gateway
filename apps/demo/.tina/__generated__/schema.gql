@@ -14,13 +14,19 @@ interface FormField {
   component: String
 }
 
-"""References another document, used as a foreign key"""
+"""
+References another document, used as a foreign key
+"""
 scalar Reference
 
-""""""
+"""
+
+"""
 scalar JSON
 
-""""""
+"""
+
+"""
 scalar JSONObject
 
 type SystemInfo {
@@ -54,9 +60,19 @@ input SectionParams {
 }
 
 type Mutation {
-  addPendingDocument(relativePath: String, collection: String, template: String): Document
-  updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
-  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
+  addPendingDocument(
+    relativePath: String
+    collection: String
+    template: String
+  ): Document
+  updateDocument(
+    relativePath: String
+    params: SectionParams
+  ): SectionDocumentUnion
+  updateAuthorsDocument(
+    relativePath: String
+    params: Authors_Input
+  ): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
 }
 
@@ -145,7 +161,11 @@ type Author_Accolades_GroupListField implements FormField {
   fields: [Author_Accolades_FormFieldsUnion]
 }
 
-union Author_Doc_FormFieldsUnion = TextField | BooleanField | TextareaField | Author_Accolades_GroupListField
+union Author_Doc_FormFieldsUnion =
+    TextField
+  | BooleanField
+  | TextareaField
+  | Author_Accolades_GroupListField
 
 type Author_Doc_Form {
   label: String
@@ -221,5 +241,3 @@ input Post_Doc_Input {
   author: String
   _body: String
 }
-
-  

@@ -11,13 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { AppProps } from "next/app";
-import Head from "next/head";
-import { withTina } from "tinacms";
-import { LocalClient } from "tina-graphql-gateway";
-import "graphiql/graphiql.css";
-import "codemirror/lib/codemirror.css";
+import React from 'react'
+import { AppProps } from 'next/app'
+import Head from 'next/head'
+import { withTina } from 'tinacms'
+import { LocalClient } from 'tina-graphql-gateway'
+import 'graphiql/graphiql.css'
+import 'codemirror/lib/codemirror.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -32,10 +32,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
       </div>
     </>
-  );
+  )
 }
 
-const client = new LocalClient();
+const client = new LocalClient()
 
 export default withTina(MyApp, {
   apis: {
@@ -43,4 +43,4 @@ export default withTina(MyApp, {
   },
   sidebar: true,
   enabled: true,
-});
+})

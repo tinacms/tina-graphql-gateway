@@ -11,26 +11,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { ServerStyleSheet } from "styled-components";
-
+import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { ServerStyleSheet } from 'styled-components'
 
 const description =
-  'A demo application that demos editing a site with Tina and Tina Cloud';
+  'A demo application that demos editing a site with Tina and Tina Cloud'
 // This is necessary for styled-components to handle SSR properly
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
-    const sheet = new ServerStyleSheet();
-    const originalRenderPage = ctx.renderPage;
+    const sheet = new ServerStyleSheet()
+    const originalRenderPage = ctx.renderPage
 
     try {
       ctx.renderPage = () =>
         originalRenderPage({
           enhanceApp: (App) => (props) =>
             sheet.collectStyles(<App {...props} />),
-        });
+        })
 
-      const initialProps = await Document.getInitialProps(ctx);
+      const initialProps = await Document.getInitialProps(ctx)
       return {
         ...initialProps,
         styles: (
@@ -39,9 +38,9 @@ export default class MyDocument extends Document {
             {sheet.getStyleElement()}
           </>
         ),
-      };
+      }
     } finally {
-      sheet.seal();
+      sheet.seal()
     }
   }
   render() {
@@ -61,6 +60,6 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }

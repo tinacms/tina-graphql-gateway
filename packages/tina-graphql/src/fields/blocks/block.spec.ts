@@ -11,44 +11,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { gql } from "tina-graphql-helpers/dist/test-util";
-import { setupRunner } from "../test-util";
-import type { BlocksField } from ".";
+import { gql } from 'tina-graphql-helpers/dist/test-util'
+import { setupRunner } from '../test-util'
+import type { BlocksField } from '.'
 
 const field: BlocksField = {
-  label: "My Blocks",
-  name: "my_blocks",
-  type: "blocks" as const,
-  template_types: ["post"],
-  __namespace: "",
-};
+  label: 'My Blocks',
+  name: 'my_blocks',
+  type: 'blocks' as const,
+  template_types: ['post'],
+  __namespace: '',
+}
 
-const run = setupRunner(field);
+const run = setupRunner(field)
 
 describe(`Type ${field.type} builds`, () => {
-  test("a union type of type SelectField", async () => {
-    expect(await run("form")).toEqual(gql`
+  test('a union type of type SelectField', async () => {
+    expect(await run('form')).toEqual(gql`
       type TextField implements FormField {
         name: String
         label: String
         component: String
+        description: String
       }
       type TextField implements FormField {
         name: String
         label: String
         component: String
+        description: String
       }
       union Post_Details_FormFieldsUnion = TextField
       type Post_Details_GroupField implements FormField {
         name: String
         label: String
         component: String
+        description: String
         fields: [Post_Details_FormFieldsUnion]
       }
       type SelectField implements FormField {
         name: String
         label: String
         component: String
+        description: String
         options: [String]
       }
       union Post_FormFieldsUnion =
@@ -67,6 +71,7 @@ describe(`Type ${field.type} builds`, () => {
         name: String
         label: String
         component: String
+        description: String
         templates: MyBlocks_BlocksFieldTemplates
       }
       union Sample_FormFieldsUnion = MyBlocks_BlocksField
@@ -75,11 +80,11 @@ describe(`Type ${field.type} builds`, () => {
         name: String
         fields: [Sample_FormFieldsUnion]
       }
-    `);
-  });
+    `)
+  })
   // FIXME: this shouldn't be reference for a simple options field
-  test("a value of type Reference", async () => {
-    expect(await run("values")).toEqual(gql`
+  test('a value of type Reference', async () => {
+    expect(await run('values')).toEqual(gql`
       type Post_Details_Values {
         reading_time: String
       }
@@ -94,10 +99,10 @@ describe(`Type ${field.type} builds`, () => {
         my_blocks: [MyBlocks_Values]
         _template: String
       }
-    `);
-  });
-  test("a field of type String", async () => {
-    expect(await run("data")).toEqual(gql`
+    `)
+  })
+  test('a field of type String', async () => {
+    expect(await run('data')).toEqual(gql`
       type Post_Details_Data {
         reading_time: String
       }
@@ -110,13 +115,13 @@ describe(`Type ${field.type} builds`, () => {
       type Sample_Data {
         my_blocks: [MyBlocks_Data]
       }
-    `);
-  });
+    `)
+  })
   // FIXME: this should probably not have the "Title_" prefix on it
   // though it might be becauase we have different validation rules
   // depending on which field it belongs to?
-  test("an input of type SomeGroup_Input", async () => {
-    expect(await run("input")).toEqual(gql`
+  test('an input of type SomeGroup_Input', async () => {
+    expect(await run('input')).toEqual(gql`
       input Post_Details_Input {
         reading_time: String
       }
@@ -131,6 +136,6 @@ describe(`Type ${field.type} builds`, () => {
       input Sample_Input {
         my_blocks: [MyBlocks_Input]
       }
-    `);
-  });
-});
+    `)
+  })
+})

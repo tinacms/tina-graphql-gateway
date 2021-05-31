@@ -11,62 +11,62 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { gql } from "../../gql";
+import { gql } from '../../gql'
 
-import { assertIsString, BuildArgs, ResolveArgs } from "../";
+import { assertIsString, BuildArgs, ResolveArgs } from '../'
 
-const typename = "TextareaField";
+const typename = 'TextareaField'
 export const textarea = {
   contentField: {
-    type: "textarea" as const,
-    name: "_body",
-    label: "Body",
-    __namespace: "",
+    type: 'textarea' as const,
+    name: '_body',
+    label: 'Body',
+    __namespace: '',
   },
   build: {
     field: async ({ field, accumulator }: BuildArgs<TextareaField>) => {
-      accumulator.push(gql.FormFieldBuilder({ name: typename }));
+      accumulator.push(gql.FormFieldBuilder({ name: typename }))
       return gql.FieldDefinition({
         name: field.name,
         type: typename,
-      });
+      })
     },
     initialValue: ({ field }: BuildArgs<TextareaField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     value: ({ field }: BuildArgs<TextareaField>) => {
-      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String });
+      return gql.FieldDefinition({ name: field.name, type: gql.TYPES.String })
     },
     input: ({ field }: BuildArgs<TextareaField>) => {
       return gql.InputValueDefinition({
         name: field.name,
         type: gql.TYPES.String,
-      });
+      })
     },
   },
   resolve: {
     field: ({
       field,
-    }: Omit<ResolveArgs<TextareaField>, "value">): TinaTextareaField => {
-      const { type, ...rest } = field;
+    }: Omit<ResolveArgs<TextareaField>, 'value'>): TinaTextareaField => {
+      const { type, ...rest } = field
       return {
         ...rest,
-        component: "textarea",
+        component: 'textarea',
         config: rest.config || {
           required: false,
         },
-        __typename: "TextareaField",
-      };
+        __typename: 'TextareaField',
+      }
     },
     initialValue: async ({
       value,
     }: ResolveArgs<TextareaField>): Promise<string> => {
-      assertIsString(value, { source: "textarea initial value" });
-      return value;
+      assertIsString(value, { source: 'textarea initial value' })
+      return value
     },
     value: async ({ value }: ResolveArgs<TextareaField>): Promise<string> => {
-      assertIsString(value, { source: "textarea value" });
-      return value;
+      assertIsString(value, { source: 'textarea value' })
+      return value
     },
     input: async ({
       field,
@@ -75,33 +75,33 @@ export const textarea = {
       { [key: string]: string } | false
     > => {
       try {
-        assertIsString(value, { source: "textarea input" });
-        return { [field.name]: value };
+        assertIsString(value, { source: 'textarea input' })
+        return { [field.name]: value }
       } catch (e) {
-        return false;
+        return false
       }
     },
   },
-};
+}
 
 export type TextareaField = {
-  label: string;
-  name: string;
-  type: "textarea";
-  default?: string;
+  label: string
+  name: string
+  type: 'textarea'
+  default?: string
   config?: {
-    required?: boolean;
-  };
-  __namespace: string;
-};
+    required?: boolean
+  }
+  __namespace: string
+}
 
 export type TinaTextareaField = {
-  label: string;
-  name: string;
-  component: "textarea";
-  default?: string;
+  label: string
+  name: string
+  component: 'textarea'
+  default?: string
   config?: {
-    required?: boolean;
-  };
-  __typename: typeof typename;
-};
+    required?: boolean
+  }
+  __typename: typeof typename
+}

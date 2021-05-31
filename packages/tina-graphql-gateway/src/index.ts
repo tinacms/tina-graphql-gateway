@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export * from "./client";
-export * from "./auth";
-export * from "./hooks/use-graphql-forms";
+export * from './client'
+export * from './auth'
+export * from './hooks/use-graphql-forms'
 
 /**
  * A passthru function which allows editors
@@ -21,6 +21,6 @@ export * from "./hooks/use-graphql-forms";
  * query or muation
  */
 function graphql(strings: TemplateStringsArray) {
-  return strings[0];
+  return strings[0]
 }
-export { graphql };
+export { graphql }

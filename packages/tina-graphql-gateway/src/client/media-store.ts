@@ -17,29 +17,29 @@ import {
   Media,
   MediaListOptions,
   MediaList,
-} from "@tinacms/core";
+} from '@tinacms/core'
 
-import type { Client } from "./index";
+import type { Client } from './index'
 
 export class ForestryMediaStore implements MediaStore {
-  accept = "*";
+  accept = '*'
 
   constructor(private client: Client) {
-    this.client = client;
+    this.client = client
   }
 
   async persist(files: MediaUploadOptions[]) {
-    const uploaded: Media[] = [];
+    const uploaded: Media[] = []
 
-    return uploaded;
+    return uploaded
   }
   async previewSrc(src: string) {
-    return src;
+    return src
   }
   async list(options?: MediaListOptions): Promise<MediaList> {
-    const directory = options?.directory ?? "";
-    const offset = options?.offset ?? 0;
-    const limit = options?.limit ?? 50;
+    const directory = options?.directory ?? ''
+    const offset = options?.offset ?? 0
+    const limit = options?.limit ?? 50
 
     // console.log("get image directory list here", this.client);
 
@@ -49,12 +49,12 @@ export class ForestryMediaStore implements MediaStore {
       offset: 0,
       limit: 10,
       nextOffset: nextOffset(offset, limit, 3),
-    };
+    }
   }
   async delete(media: Media): Promise<void> {}
 }
 
 export const nextOffset = (offset: number, limit: number, count: number) => {
-  if (offset + limit < count) return offset + limit;
-  return undefined;
-};
+  if (offset + limit < count) return offset + limit
+  return undefined
+}

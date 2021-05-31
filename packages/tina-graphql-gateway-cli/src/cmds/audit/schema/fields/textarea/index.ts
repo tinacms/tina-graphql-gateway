@@ -11,37 +11,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { base, baseRequired } from "../common";
+import { base, baseRequired } from '../common'
 
 export const TextAreaField = {
-  $id: "#textAreaField",
-  label: "Textarea",
+  $id: '#textAreaField',
+  label: 'Textarea',
   description:
-    "Multi-line text input. Good for page descriptions, article summaries etc. ",
-  type: "object",
+    'Multi-line text input. Good for page descriptions, article summaries etc. ',
+  type: 'object',
   properties: {
     type: {
-      const: "textarea",
+      const: 'textarea',
     },
     ...base,
-    default: { type: "string" },
+    default: { type: 'string' },
     config: {
-      type: "object",
+      type: 'object',
       properties: {
-        required: { type: "boolean" },
+        required: { type: 'boolean' },
         wysiwyg: {
-          type: "boolean",
-          title: "WYSIWYG Editor",
+          type: 'boolean',
+          title: 'WYSIWYG Editor',
           description:
-            "Whether or not the editor should present a rich-text editor",
+            'Whether or not the editor should present a rich-text editor',
         },
-        min: { type: "number" },
-        max: { type: "number" },
+        min: { type: 'number' },
+        max: { type: 'number' },
         // FIXME: this should not be present when wysiwyg is false
         schema: {
-          type: "object",
+          type: 'object',
           properties: {
-            format: { type: "string", enum: ["html", "markdown"] },
+            format: { type: 'string', enum: ['html', 'markdown'] },
           },
         },
       },
@@ -51,4 +51,4 @@ export const TextAreaField = {
   },
   required: baseRequired,
   additionalProperties: false,
-};
+}

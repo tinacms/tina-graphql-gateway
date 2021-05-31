@@ -11,12 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import {
-  useGraphqlForms,
-  useDocumentCreatorPlugin,
-} from "tina-graphql-gateway";
-import type * as Tina from "../.tina/__generated__/types";
-import { Sidebar } from "../components/sidebar";
+import { useGraphqlForms, useDocumentCreatorPlugin } from 'tina-graphql-gateway'
+import type * as Tina from '../.tina/__generated__/types'
+import { Sidebar } from '../components/sidebar'
 
 const query = (gql) => gql`
   query ContentQuery($collection: String!, $relativePath: String!) {
@@ -41,38 +38,38 @@ const query = (gql) => gql`
       }
     }
   }
-`;
+`
 
 export const getServerSideProps = async ({ params, ...rest }): Promise<any> => {
-  if (typeof params.path === "string") {
-    throw new Error("Expected an array of strings for path slugs");
+  if (typeof params.path === 'string') {
+    throw new Error('Expected an array of strings for path slugs')
   }
   return {
     props: {
       queryVars: {
         collection: params.path[0],
-        relativePath: params.path.slice(1).join("/"),
+        relativePath: params.path.slice(1).join('/'),
       },
     },
-  };
-};
+  }
+}
 
 const Home = (props: any) => {
   const [payload, isLoading] = useGraphqlForms<{
-    getDocument: Tina.SectionDocumentUnion;
+    getDocument: Tina.SectionDocumentUnion
   }>({
     query,
     variables: props.queryVars,
     formify: ({ formConfig, createForm, skip }) => {
       // return skip();
-      return createForm(formConfig);
+      return createForm(formConfig)
     },
-  });
+  })
   useDocumentCreatorPlugin((args) =>
     window.location.assign(
-      `/${args.collection.slug}/${args.breadcrumbs.join("/")}.md`
+      `/${args.collection.slug}/${args.breadcrumbs.join('/')}.md`
     )
-  );
+  )
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -87,7 +84,7 @@ const Home = (props: any) => {
         )}
       </pre>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

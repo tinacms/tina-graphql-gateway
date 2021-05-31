@@ -10,28 +10,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { compileInner, defineSchema } from "./index";
-import _ from "lodash";
+import { compileInner, defineSchema } from './index'
+import _ from 'lodash'
 
-type Case = Parameters<typeof defineSchema>[0];
+type Case = Parameters<typeof defineSchema>[0]
 
-const validFieldPartial: Case["collections"][0]["templates"][0]["fields"][0] = {
-  type: "text",
-  label: "Title",
-  name: "title",
-};
-const validTemplatePartial: Case["collections"][0]["templates"][0] = {
-  label: "Posts",
-  name: "posts",
+const validFieldPartial: Case['collections'][0]['templates'][0]['fields'][0] = {
+  type: 'text',
+  label: 'Title',
+  name: 'title',
+}
+const validTemplatePartial: Case['collections'][0]['templates'][0] = {
+  label: 'Posts',
+  name: 'posts',
   fields: [validFieldPartial],
-};
-const validSectionPartial: Case["collections"][0] = {
-  label: "Posts",
-  path: "content/posts",
-  name: "posts",
+}
+const validSectionPartial: Case['collections'][0] = {
+  label: 'Posts',
+  path: 'content/posts',
+  name: 'posts',
   templates: [validTemplatePartial],
-};
-const validSchema = { collections: [validSectionPartial] };
+}
+const validSchema = { collections: [validSectionPartial] }
 const safeReplaceAt = <T extends object>(
   object: T,
   path: string,
@@ -42,27 +42,27 @@ const safeReplaceAt = <T extends object>(
     { ..._.cloneDeep(object) },
     path,
     value
-  );
-};
+  )
+}
 
 const invalidCases: { [key: string]: Case } = {
   //@ts-ignore
-  "misspelled collection": { sectionz: [{}] },
+  'misspelled collection': { sectionz: [{}] },
   // @ts-ignore
-  "no collection defiend": {},
-  "collection with missing name": {
+  'no collection defiend': {},
+  'collection with missing name': {
     collections: [{ ...validSectionPartial, name: undefined }],
   },
-  "collection with missing label": {
+  'collection with missing label': {
     collections: [{ ...validSectionPartial, label: undefined }],
   },
-  "collection with missing path": {
+  'collection with missing path': {
     collections: [{ ...validSectionPartial, path: undefined }],
   },
-  "no template defined": {
+  'no template defined': {
     collections: [{ ...validSectionPartial, templates: undefined }],
   },
-  "template with missing name": {
+  'template with missing name': {
     collections: [
       {
         ...validSectionPartial,
@@ -70,7 +70,7 @@ const invalidCases: { [key: string]: Case } = {
       },
     ],
   },
-  "template with missing label": {
+  'template with missing label': {
     collections: [
       {
         ...validSectionPartial,
@@ -78,7 +78,7 @@ const invalidCases: { [key: string]: Case } = {
       },
     ],
   },
-  "template with no fields defined": {
+  'template with no fields defined': {
     collections: [
       {
         ...validSectionPartial,
@@ -86,7 +86,7 @@ const invalidCases: { [key: string]: Case } = {
       },
     ],
   },
-  "template with empty fields": {
+  'template with empty fields': {
     collections: [
       {
         ...validSectionPartial,
@@ -95,7 +95,7 @@ const invalidCases: { [key: string]: Case } = {
       },
     ],
   },
-  "template with a field of an invalid type": {
+  'template with a field of an invalid type': {
     collections: [
       {
         ...validSectionPartial,
@@ -103,118 +103,118 @@ const invalidCases: { [key: string]: Case } = {
           {
             ...validTemplatePartial,
             // @ts-ignore
-            fields: [{ ...validFieldPartial, type: "some-type" }],
+            fields: [{ ...validFieldPartial, type: 'some-type' }],
           },
         ],
       },
     ],
   },
-  "group field with no sub-fields": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'group field with no sub-fields': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "group",
+      type: 'group',
       fields: [],
     }),
   },
-  "group field with invalid sub-field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'group field with invalid sub-field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "group",
-      fields: [{ ...validFieldPartial, type: "some-field-type" }],
+      type: 'group',
+      fields: [{ ...validFieldPartial, type: 'some-field-type' }],
     }),
   },
-  "block field with invalid template": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'block field with invalid template': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "blocks",
+      type: 'blocks',
       templates: [
         {
-          name: "cta",
-          label: "cta",
+          name: 'cta',
+          label: 'cta',
           fields: [
             {
-              name: "title",
+              name: 'title',
               label: undefined,
-              type: "text",
+              type: 'text',
             },
           ],
         },
       ],
     }),
   },
-  "reference field with a collection that does not exist": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'reference field with a collection that does not exist': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "reference",
-      collection: "abc",
+      type: 'reference',
+      collection: 'abc',
     }),
   },
-};
+}
 
 const validCases: { [key: string]: Case } = {
-  "valid config": { collections: [validSectionPartial] },
-  "text field": { collections: [validSectionPartial] },
-  "textarea field": safeReplaceAt(
+  'valid config': { collections: [validSectionPartial] },
+  'text field': { collections: [validSectionPartial] },
+  'textarea field': safeReplaceAt(
     validSchema,
-    "collections[0].templates[0].fields[0].type",
-    "textarea"
+    'collections[0].templates[0].fields[0].type',
+    'textarea'
   ),
-  "select field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'select field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "select",
-      options: ["some-option"],
+      type: 'select',
+      options: ['some-option'],
     }),
   },
-  "list field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'list field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "list",
+      type: 'list',
     }),
   },
-  "group field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'group field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "group",
+      type: 'group',
       fields: [validFieldPartial],
     }),
   },
-  "group-list field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'group-list field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "group-list",
+      type: 'group-list',
       fields: [validFieldPartial],
     }),
   },
-  "block field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'block field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "blocks",
+      type: 'blocks',
       templates: [
         {
-          name: "cta",
-          label: "cta",
+          name: 'cta',
+          label: 'cta',
           fields: [
             {
-              name: "title",
-              label: "Title",
-              type: "text",
+              name: 'title',
+              label: 'Title',
+              type: 'text',
             },
           ],
         },
       ],
     }),
   },
-  "toggle field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'toggle field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "toggle",
+      type: 'toggle',
     }),
   },
-  "tags field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'tags field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "tags",
+      type: 'tags',
     }),
   },
   // "image field": {
@@ -223,43 +223,43 @@ const validCases: { [key: string]: Case } = {
   //     type: "image",
   //   }),
   // },
-  "number field": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'number field': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "number",
+      type: 'number',
     }),
   },
-  "reference field with a collection that exists": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'reference field with a collection that exists': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "reference",
-      collection: "posts",
+      type: 'reference',
+      collection: 'posts',
     }),
   },
-  "reference-list field with a collection that exists": {
-    ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  'reference-list field with a collection that exists': {
+    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
-      type: "reference-list",
-      collection: "posts",
+      type: 'reference-list',
+      collection: 'posts',
     }),
   },
-};
+}
 
-describe("defineSchema", () => {
-  describe("throws an error for invalid schemas", () => {
+describe('defineSchema', () => {
+  describe('throws an error for invalid schemas', () => {
     Object.keys(invalidCases).map((key, index) => {
       it(key, async () => {
-        const config = invalidCases[key];
-        expect(() => defineSchema(config)).toThrowError();
-      });
-    });
-  });
-  describe("succeeds for valid schemas", () => {
+        const config = invalidCases[key]
+        expect(() => defineSchema(config)).toThrowError()
+      })
+    })
+  })
+  describe('succeeds for valid schemas', () => {
     Object.keys(validCases).map((key, index) => {
       it(key, async () => {
-        const config = validCases[key];
-        expect(() => defineSchema(config)).not.toThrowError();
-      });
-    });
-  });
-});
+        const config = validCases[key]
+        expect(() => defineSchema(config)).not.toThrowError()
+      })
+    })
+  })
+})

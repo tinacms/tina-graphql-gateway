@@ -11,63 +11,63 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from "tina-graphql-gateway-cli";
+import { defineSchema } from 'tina-graphql-gateway-cli'
 
 export default defineSchema({
   collections: [
     {
-      label: "Authors",
-      name: "authors",
-      path: "content/authors",
+      label: 'Authors',
+      name: 'authors',
+      path: 'content/authors',
       templates: [
         {
-          name: "author",
-          label: "Author",
+          name: 'author',
+          label: 'Author',
           fields: [
             {
-              type: "text",
-              label: "Name",
-              name: "name",
+              type: 'text',
+              label: 'Name',
+              name: 'name',
             },
           ],
         },
       ],
     },
     {
-      label: "Posts",
-      name: "posts",
-      path: "content/posts",
+      label: 'Posts',
+      name: 'posts',
+      path: 'content/posts',
       templates: [
         {
-          name: "post",
-          label: "Post",
+          name: 'post',
+          label: 'Post',
           fields: [
             {
-              type: "text",
-              label: "Title",
-              name: "title",
+              type: 'text',
+              label: 'Title',
+              name: 'title',
             },
             {
-              type: "group",
-              label: "Details",
-              name: "details",
+              type: 'group',
+              label: 'Details',
+              name: 'details',
               fields: [
                 {
-                  name: "reading_time",
-                  label: "Reading Time",
-                  type: "text",
+                  name: 'reading_time',
+                  label: 'Reading Time',
+                  type: 'text',
                 },
               ],
             },
             {
-              type: "reference",
-              label: "Author",
-              name: "author",
-              collection: "authors",
+              type: 'reference',
+              label: 'Author',
+              name: 'author',
+              collection: 'authors',
             },
           ],
         },
       ],
     },
   ],
-});
+})

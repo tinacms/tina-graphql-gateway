@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
