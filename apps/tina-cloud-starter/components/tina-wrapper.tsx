@@ -29,8 +29,8 @@ const defaultBranch = 'main'
  * I think we should specifically avoid implementing a branch switcher when using the local client.
  * Most likely you're using the local client while working on the code, and you would be better off switching branches via CLI anyway.
  */
-if (true || process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT == '1') {
-  plugins.push(new BranchSwitcherPlugin(['main', 'branch-poc']))
+if (process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT == '1') {
+  plugins.push(new BranchSwitcherPlugin(availableBranches))
 }
 
 /**
