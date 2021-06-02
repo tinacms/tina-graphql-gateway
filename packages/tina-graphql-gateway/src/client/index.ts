@@ -23,6 +23,7 @@ import {
 import { formify } from 'tina-graphql-helpers'
 import gql from 'graphql-tag'
 import { transformPayload } from './transform-payload'
+import { EventBus } from '@tinacms/core'
 
 interface ServerOptions {
   organizationId: string
@@ -40,7 +41,6 @@ const CONTENT_API_URL =
   process.env.CONTENT_API_OVERRIDE || `https://content.${BASE_TINA_URL}`
 
 export class Client {
-  contentApiUrl: string
   organizationId: string
   schema: GraphQLSchema
   clientId: string
@@ -48,20 +48,16 @@ export class Client {
   setToken: (_token: TokenObject) => void
   private getToken: () => TokenObject
   private token: string // used with memory storage
+  branch: string
+  events: EventBus // automatically hooks in to CMS event bus when registered via registerApi
+  customContentApiUrl: string | null = null
 
   constructor({ tokenStorage = 'MEMORY', ...options }: ServerOptions) {
     const _this = this
-    /**
-     * Prevents a CORS-issue when the `branch` has slashes in it.
-     * https://github.com/tinacms/tina-graphql-gateway/issues/219
-     */
-    const encodedBranch = encodeURIComponent(options.branch)
-    ;(this.contentApiUrl =
-      options.customContentApiUrl ||
-      `${CONTENT_API_URL}/content/${options.organizationId}/${options.clientId}/github/${encodedBranch}`),
-      // `https://content.tinajs.dev/content/${options.organizationId}/${options.clientId}/github/${encodedBranch}`),
-      (this.clientId = options.clientId)
+    this.branch = options.branch
+    this.customContentApiUrl = options.customContentApiUrl
     this.organizationId = options.organizationId
+    this.clientId = options.clientId
 
     switch (tokenStorage) {
       case 'LOCAL_STORAGE':
@@ -106,6 +102,28 @@ export class Client {
         this.getToken = options.getTokenFn
         break
     }
+  }
+
+  get contentApiUrl() {
+    /**
+     * Prevents a CORS-issue when the `branch` has slashes in it.
+     * https://github.com/tinacms/tina-graphql-gateway/issues/219
+     */
+    const encodedBranch = encodeURIComponent(this.branch)
+    return (
+      this.customContentApiUrl ||
+      `${CONTENT_API_URL}/content/${this.organizationId}/${this.clientId}/github/${encodedBranch}`
+    )
+    // `https://content.tinajs.dev/content/${options.organizationId}/${options.clientId}/github/${encodedBranch}`),
+  }
+
+  changeBranch = (newBranch) => {
+    if (newBranch === this.branch) return
+    this.branch = newBranch
+    this.events.dispatch({
+      type: 'tgg:change-branch',
+      branch: newBranch,
+    })
   }
 
   addPendingContent = async (props) => {

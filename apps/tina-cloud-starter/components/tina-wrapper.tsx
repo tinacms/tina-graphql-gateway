@@ -18,6 +18,20 @@ import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
+import { BranchSwitcherPlugin } from '../plugins/branch-switcher/BranchSwitcherPlugin'
+
+const plugins = []
+
+const availableBranches = ['main', 'branch-poc']
+const defaultBranch = 'main'
+
+/*
+ * I think we should specifically avoid implementing a branch switcher when using the local client.
+ * Most likely you're using the local client while working on the code, and you would be better off switching branches via CLI anyway.
+ */
+if (true || process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT == '1') {
+  plugins.push(new BranchSwitcherPlugin(['main', 'branch-poc']))
+}
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -32,9 +46,15 @@ const TinaWrapper = (props) => {
       sidebar: {
         placeholder: SidebarPlaceholder,
       },
+      toolbar: true,
       enabled: true,
+      plugins,
     })
   }, [])
+
+  cms.events.subscribe('tgg:change-branch', (payload) => {
+    console.log(JSON.stringify(payload))
+  })
 
   /** Disables the TinaCMS "Media Manager" */
   cms.plugins.all('screen').forEach((plugin) => {
