@@ -54,13 +54,13 @@ type Section {
 }
 
 union SectionDocumentUnion =
-    Posts_Document
-  | Authors_Document
+    Authors_Document
+  | Posts_Document
   | MarketingPages_Document
 
 input SectionParams {
-  posts: Posts_Input
   authors: Authors_Input
+  posts: Posts_Input
   marketingPages: MarketingPages_Input
 }
 
@@ -74,11 +74,11 @@ type Mutation {
     relativePath: String
     params: SectionParams
   ): SectionDocumentUnion
-  updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
   updateAuthorsDocument(
     relativePath: String
     params: Authors_Input
   ): Authors_Document
+  updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
   updateMarketingPagesDocument(
     relativePath: String
     params: MarketingPages_Input
@@ -90,76 +90,12 @@ type Query {
   getDocument(collection: String, relativePath: String): SectionDocumentUnion
   getCollections: [Section]
   getCollection(collection: String): Section
-  getPostsDocument(relativePath: String): Posts_Document
-  getPostsList: [Posts_Document]
   getAuthorsDocument(relativePath: String): Authors_Document
   getAuthorsList: [Authors_Document]
+  getPostsDocument(relativePath: String): Posts_Document
+  getPostsList: [Posts_Document]
   getMarketingPagesDocument(relativePath: String): MarketingPages_Document
   getMarketingPagesList: [MarketingPages_Document]
-}
-
-union Posts_Data = Article_Doc_Data
-
-input Posts_Input {
-  article: Article_Doc_Input
-}
-
-union Posts_Values = Article_Doc_Values
-
-union Posts_Form = Article_Doc_Form
-
-type Posts_Document implements Node & Document {
-  id: ID!
-  sys: SystemInfo
-  data: Posts_Data
-  values: Posts_Values
-  form: Posts_Form
-}
-
-type Article_Doc_Data {
-  title: String
-  author: Authors_Document
-  _body: String
-}
-
-type Article_Doc_Values {
-  title: String
-  author: Reference
-  _body: String
-  _template: String
-}
-
-type TextField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-type SelectField implements FormField {
-  name: String
-  label: String
-  component: String
-  options: [String]
-}
-
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-}
-
-union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
-
-type Article_Doc_Form {
-  label: String
-  name: String
-  fields: [Article_Doc_FormFieldsUnion]
-}
-
-input Article_Doc_Input {
-  title: String
-  author: String
-  _body: String
 }
 
 union Authors_Data = Author_Doc_Data
@@ -193,6 +129,20 @@ type Author_Doc_Values {
   _template: String
 }
 
+type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
+type TextareaField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
 union Author_Doc_FormFieldsUnion = TextField | TextareaField
 
 type Author_Doc_Form {
@@ -204,6 +154,59 @@ type Author_Doc_Form {
 input Author_Doc_Input {
   name: String
   avatar: String
+  _body: String
+}
+
+union Posts_Data = Article_Doc_Data
+
+input Posts_Input {
+  article: Article_Doc_Input
+}
+
+union Posts_Values = Article_Doc_Values
+
+union Posts_Form = Article_Doc_Form
+
+type Posts_Document implements Node & Document {
+  id: ID!
+  sys: SystemInfo
+  data: Posts_Data
+  values: Posts_Values
+  form: Posts_Form
+}
+
+type Article_Doc_Data {
+  title: String
+  author: Authors_Document
+  _body: String
+}
+
+type Article_Doc_Values {
+  title: String
+  author: Reference
+  _body: String
+  _template: String
+}
+
+type SelectField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+  options: [String]
+}
+
+union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
+
+type Article_Doc_Form {
+  label: String
+  name: String
+  fields: [Article_Doc_FormFieldsUnion]
+}
+
+input Article_Doc_Input {
+  title: String
+  author: String
   _body: String
 }
 
@@ -289,6 +292,7 @@ type LandingPage_Blocks_BlocksField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   templates: LandingPage_Blocks_BlocksFieldTemplates
 }
 

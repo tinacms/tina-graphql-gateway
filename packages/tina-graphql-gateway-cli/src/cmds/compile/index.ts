@@ -643,12 +643,17 @@ export function assertShape<T extends object>(
 }
 
 export interface TinaCloudSchema {
-  collections: TinaCloudSection[]
+  collections: TinaCloudCollection[]
 }
 export interface TinaCloudSettings {
-  collections: TinaCloudSection[]
+  collections: TinaCloudCollection[]
 }
-interface TinaCloudSection {
+
+/**
+ * @deprecated use `TinaCloudCollection` instead
+ */
+export type TinaCloudSection = TinaCloudCollection
+export interface TinaCloudCollection {
   path: string
   name: string
   label: string
