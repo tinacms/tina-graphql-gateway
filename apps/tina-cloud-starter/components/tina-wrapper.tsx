@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import React from 'react'
-import { TinaCMS } from 'tinacms'
+import { Media, TinaCMS } from 'tinacms'
 import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
@@ -37,11 +37,11 @@ const TinaWrapper = (props) => {
   }, [])
 
   /** Disables the TinaCMS "Media Manager" */
-  cms.plugins.all('screen').forEach((plugin) => {
-    if (plugin.name === 'Media Manager') {
-      cms.plugins.remove(plugin)
-    }
-  })
+  // cms.plugins.all('screen').forEach((plugin) => {
+  //   if (plugin.name === 'Media Manager') {
+  //     cms.plugins.remove(plugin)
+  //   }
+  // })
 
   return (
     <TinaCloudAuthWall cms={cms}>
@@ -54,6 +54,24 @@ const Inner = (props) => {
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
+    formify: ({ createForm, formConfig, skip }) => {
+      formConfig.fields.forEach((field) => {
+        console.log({ field })
+        if (field.name === 'heroImg') {
+          field.component = 'image'
+          field.previewSrc = (img) => {
+            console.log('preview src is being run')
+            return img
+          }
+          field.parse = (img: Media) => {
+            console.log({ img })
+            console.log('this is running!!!')
+            return img.previewSrc
+          }
+        }
+      })
+      return createForm(formConfig)
+    },
   })
   return (
     <>

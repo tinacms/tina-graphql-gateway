@@ -21,6 +21,7 @@ export const BlogPost = (props: Article_Doc_Data) => {
   return (
     <>
       <h1>{props.title}</h1>
+      <img src={props?.heroImg} width="100%" />
       <AuthorSnippet author={props.author} />
       <ReactMarkdown>{props._body}</ReactMarkdown>
     </>
