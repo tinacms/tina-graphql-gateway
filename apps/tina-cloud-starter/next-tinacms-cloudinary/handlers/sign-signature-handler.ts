@@ -11,23 +11,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaField } from 'tina-graphql-gateway-cli'
+import { NextApiHandler } from 'next'
+import { v2 as cloudinary } from 'cloudinary'
 
-export const BlogFields: TinaField[] = [
-  {
-    type: 'text',
-    label: 'Title',
-    name: 'title',
-  },
-  {
-    type: 'text',
-    label: 'Hero Image',
-    name: 'heroImg',
-  },
-  {
-    type: 'reference',
-    label: 'Author',
-    name: 'author',
-    collection: 'authors',
-  },
-]
+// TODO: refactor this to return a nextAPIHandeler
+export const signSignatureHandler: NextApiHandler = (req, res) => {
+  const timestamp = Math.round(new Date().getTime() / 1000)
+  const params = JSON.parse((req.query.params as string) || '{}')
+  console.log(params)
+
+  const signature = cloudinary.utils.api_sign_request(
+    {
+      ...params,
+      timestamp: timestamp,
+    },
+    process.env.CLOUDINARY_API_SECRET
+  )
+  res.json({ signature, timestamp })
+}

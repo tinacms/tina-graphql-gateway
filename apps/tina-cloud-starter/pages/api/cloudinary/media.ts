@@ -11,23 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaField } from 'tina-graphql-gateway-cli'
+import {
+  mediaHandlerConfig,
+  createMediaHandler,
+} from '../../../next-tinacms-cloudinary/handlers'
 
-export const BlogFields: TinaField[] = [
-  {
-    type: 'text',
-    label: 'Title',
-    name: 'title',
-  },
-  {
-    type: 'text',
-    label: 'Hero Image',
-    name: 'heroImg',
-  },
-  {
-    type: 'reference',
-    label: 'Author',
-    name: 'author',
-    collection: 'authors',
-  },
-]
+export const config = mediaHandlerConfig
+
+// TODO: make this route secure
+export default createMediaHandler({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
