@@ -18,9 +18,12 @@ import type {
 } from '../.tina/__generated__/types'
 
 export const BlogPost = (props: Article_Doc_Data) => {
+  console.log({ props })
   return (
     <>
       <h1>{props.title}</h1>
+      {/* TODO: WHY IS THIS JUST NOT THE IMG */}
+      <img src={props?.heroImg} width="100%" />
       <AuthorSnippet author={props.author} />
       <ReactMarkdown>{props._body}</ReactMarkdown>
     </>
