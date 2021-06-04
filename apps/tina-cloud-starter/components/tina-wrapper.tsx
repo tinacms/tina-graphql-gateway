@@ -18,6 +18,7 @@ import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
+import { CloudinaryMediaStore } from '../next-tinacms-cloudinary'
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -33,6 +34,9 @@ const TinaWrapper = (props) => {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
+      media: new CloudinaryMediaStore(
+        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+      ),
     })
   }, [])
 

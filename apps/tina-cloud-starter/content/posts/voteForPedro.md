@@ -1,5 +1,7 @@
 ---
 title: Vote For Pedro
+heroImg: >-
+  http://res.cloudinary.com/dcpinxzoo/image/upload/v1622840245/samples/food/spices.jpg
 author: content/authors/napolean.md
 _template: article
 ---

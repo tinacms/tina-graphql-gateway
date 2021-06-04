@@ -11215,7 +11215,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["cloudinary-core", "virtual:c138e2457776db9b0b02b2eb0491d78cb011ec86443888aec0d4b5c37b29281dcff25f8f06b3518a916d4b0e955d2076d47ac3e0c527d9886f757cee530fdb1c#npm:2.11.4"],
             ["@types/lodash", null],
-            ["lodash", null]
+            ["lodash", "npm:4.17.21"]
           ],
           "packagePeers": [
             "@types/lodash",
@@ -28119,6 +28119,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/styled-components", "npm:5.1.3"],
             ["cloudinary", "npm:1.25.2"],
             ["cloudinary-core", "virtual:c138e2457776db9b0b02b2eb0491d78cb011ec86443888aec0d4b5c37b29281dcff25f8f06b3518a916d4b0e955d2076d47ac3e0c527d9886f757cee530fdb1c#npm:2.11.4"],
+            ["lodash", "npm:4.17.21"],
             ["multer", "npm:1.4.2"],
             ["next", "virtual:c138e2457776db9b0b02b2eb0491d78cb011ec86443888aec0d4b5c37b29281dcff25f8f06b3518a916d4b0e955d2076d47ac3e0c527d9886f757cee530fdb1c#npm:10.0.5"],
             ["react", "npm:16.13.1"],
