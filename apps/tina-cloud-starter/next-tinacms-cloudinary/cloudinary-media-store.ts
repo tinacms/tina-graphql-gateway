@@ -132,25 +132,7 @@ export class CloudinaryMediaStore implements MediaStore {
 
     const { items } = await response.json()
     return {
-      items: items.map((item) => {
-        // NOT SURE WHY WE WERE DOING THIS, BUT THIS SEEMED TO HAVE BEEN CAUSING THE POOR RESOLUTION FOR THE IMAGE
-        // let previewSrc: string;
-        // console.log(item)
-        // if (item.type === "file") {
-        //   previewSrc = this.api.url(item.id, {
-        //     width: 56,
-        //     height: 56,
-        //     crop: "fill",
-        //     gravity: "auto",
-        //   });
-        // }
-
-        // return {
-        //   ...item,
-        //   previewSrc,
-        // };
-        return item
-      }),
+      items: items.map((item) => item),
       totalCount: items.length,
       limit: 500,
       offset: 0,

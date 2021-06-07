@@ -60,16 +60,16 @@ const Inner = (props) => {
     variables: props.variables || {},
     formify: ({ createForm, formConfig, skip }) => {
       formConfig.fields.forEach((field) => {
-        console.log({ field })
         if (field.name === 'heroImg') {
           field.component = 'image'
-          field.previewSrc = (img) => {
-            console.log('preview src is being run')
-            return img
-          }
-          field.parse = (img: Media) => {
-            console.log({ img })
-            console.log('this is running!!!')
+          field.previewSrc = (img) => img
+          const parseFunc = field.parse
+
+          field.parse = (img: Media, name, f) => {
+            const temp =
+              typeof parseFunc === 'function'
+                ? parseFunc(img.previewSrc, name, f)
+                : null
             return img.previewSrc
           }
         }
