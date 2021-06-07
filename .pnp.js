@@ -28026,7 +28026,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],
             ["dataloader", "npm:2.0.0"],
             ["date-fns", "npm:2.21.1"],
-            ["express", "npm:4.17.1"],
             ["fast-glob", "npm:3.2.5"],
             ["fs-extra", "npm:9.0.1"],
             ["graphql", "npm:15.3.0"],
