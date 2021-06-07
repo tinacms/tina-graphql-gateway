@@ -18,7 +18,6 @@ import type {
 } from '../.tina/__generated__/types'
 
 export const BlogPost = (props: Article_Doc_Data) => {
-  console.log({ props })
   return (
     <>
       <h1>{props.title}</h1>
