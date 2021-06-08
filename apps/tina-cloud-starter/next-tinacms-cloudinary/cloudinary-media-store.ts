@@ -31,6 +31,8 @@ export class CloudinaryMediaStore implements MediaStore {
     })
   }
 
+  parse = (img) => img.previewSrc
+
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
     const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`
 
@@ -140,6 +142,16 @@ export class CloudinaryMediaStore implements MediaStore {
     }
   }
   previewSrc(publicId: string) {
-    return this.api.url(publicId)
+    if (typeof publicId === 'string') {
+      console.log('string', publicId)
+
+      return publicId
+    }
+    try {
+      console.log('not string', publicId)
+      return this.api.url(publicId.previewSrc)
+    } catch (err) {
+      console.log({ err })
+    }
   }
 }

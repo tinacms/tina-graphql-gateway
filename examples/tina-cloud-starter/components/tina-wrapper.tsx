@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import React from 'react'
-import { Media, TinaCMS } from 'tinacms'
+import { Media, TinaCMS, useCMS } from 'tinacms'
 import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
@@ -55,23 +55,32 @@ const TinaWrapper = (props) => {
 }
 
 const Inner = (props) => {
+  const cms = useCMS()
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
     formify: ({ createForm, formConfig, skip }) => {
       formConfig.fields.forEach((field) => {
+        console.log({ field })
         if (field.name === 'heroImg') {
           field.component = 'image'
-          field.previewSrc = (img) => img
+          // field.previewSrc = (img) => img
           const parseFunc = field.parse
 
-          field.parse = (img: Media, name, f) => {
-            const temp =
-              typeof parseFunc === 'function'
-                ? parseFunc(img.previewSrc, name, f)
-                : null
-            return img.previewSrc
-          }
+          // field.parse = (img: Media, name, f) => {
+          //   console.log({img, name, f})
+          //   // const temp =
+          //   //   typeof parseFunc === 'function'
+          //   //     ? parseFunc(img.previewSrc, name, f)
+          //   //     : null
+          //   if (typeof field.parse === 'function') {
+          //     parseFunc(img.previewSrc, name ,f)
+          //   }
+
+          //   return img.previewSrc
+          // }
+          console.log(cms.media)
+          field.parse = cms.media.store.parse
         }
       })
       return createForm(formConfig)
