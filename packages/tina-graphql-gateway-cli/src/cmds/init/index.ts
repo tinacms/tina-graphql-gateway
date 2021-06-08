@@ -52,13 +52,14 @@ export async function installDeps(ctx: any, next: () => void, options) {
   next()
 }
 
+const baseDir = process.cwd()
+const blogContentPath = p.join(baseDir, 'content', 'blog')
+const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
-  const baseDir = process.cwd()
   console.log(logText('Setting up Tina...'))
 
   // 1 Create a content/blog Folder and add one or two blog posts
-  const blogContentPath = p.join(baseDir, 'content', 'blog')
-  const blogPostPath = p.join(blogContentPath, 'post-one.md')
+
   if (!fs.pathExistsSync(blogPostPath)) {
     console.log(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
@@ -68,7 +69,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
   const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
   const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
-  const tinaBlogPagePath = p.join(pagesPath, 'blog')
+  const tinaBlogPagePath = p.join(pagesPath, 'demo', 'blog')
   const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[slug].tsx')
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
@@ -101,10 +102,17 @@ What just Happened?
     '__generated__',
     'schema.gql'
   )}
+✅ Setup a your first post in ${blogPostPath}
 
 ✅ ${successText(
-    "Setup a page to play around with tina Start your next dev start with 'next dev' and go to http://locahost:3000/blog/post-one.md to check it out"
-  )}
+    'Setup a page basic Tina Page 🎉'
+  )} start your dev server with 'next dev' and go to http://locahost:3000/demo/blog/HelloWorld.md to check it out"
+
+
+For more Information visit our docs and checkout our getting starter guide
+
+Dos: https://tina.io/docs/tina-cloud/
+Getting starter guide: https://tina.io/guides/tina-cloud/starter/overview/
 `)
   next()
 }
