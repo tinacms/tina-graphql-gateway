@@ -83,7 +83,7 @@ export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
 
   console.log(`
-What just Happened?
+`Tina Cloud is now properly setup.`
 ✅ Installed Tina Dependencies 
 ✅ Setup a ${successText('basic Schema')} in ${join(
     baseDir,
