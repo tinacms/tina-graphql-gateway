@@ -19,12 +19,7 @@ import * as ts from 'typescript'
 import * as jsyaml from 'js-yaml'
 import * as yup from 'yup'
 import * as _ from 'lodash'
-import {
-  successText,
-  dangerText,
-  CONFIRMATION_TEXT,
-  logText,
-} from '../../utils/theme'
+import { successText, dangerText, logText } from '../../utils/theme'
 import { defaultSchema } from './defaultSchema'
 
 const tinaPath = path.join(process.cwd(), '.tina')
@@ -253,7 +248,10 @@ const regexMessageFunc = (message) =>
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const collections = await Promise.all(
     schemaObject.collections.map(async (collection) => {
+      // TODO: fs.exists is deprecated — since v1.0.0 Use fs.stat() or fs.access() instea
+      // @ts-ignore
       const isValidPath = await fs.exists(collection.path)
+      // @ts-ignore
       if (!isValidPath) {
         console.log(
           dangerText(
