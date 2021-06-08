@@ -14,19 +14,13 @@ interface FormField {
   component: String
 }
 
-"""
-References another document, used as a foreign key
-"""
+"""References another document, used as a foreign key"""
 scalar Reference
 
-"""
-
-"""
+""""""
 scalar JSON
 
-"""
-
-"""
+""""""
 scalar JSONObject
 
 type SystemInfo {
@@ -53,10 +47,7 @@ type Section {
   documents: [Document]
 }
 
-union SectionDocumentUnion =
-    Authors_Document
-  | Posts_Document
-  | MarketingPages_Document
+union SectionDocumentUnion = Authors_Document | Posts_Document | MarketingPages_Document
 
 input SectionParams {
   authors: Authors_Input
@@ -65,24 +56,11 @@ input SectionParams {
 }
 
 type Mutation {
-  addPendingDocument(
-    relativePath: String
-    collection: String
-    template: String
-  ): Document
-  updateDocument(
-    relativePath: String
-    params: SectionParams
-  ): SectionDocumentUnion
-  updateAuthorsDocument(
-    relativePath: String
-    params: Authors_Input
-  ): Authors_Document
+  addPendingDocument(relativePath: String, collection: String, template: String): Document
+  updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
+  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
-  updateMarketingPagesDocument(
-    relativePath: String
-    params: MarketingPages_Input
-  ): MarketingPages_Document
+  updateMarketingPagesDocument(relativePath: String, params: MarketingPages_Input): MarketingPages_Document
 }
 
 type Query {
@@ -177,15 +155,24 @@ type Posts_Document implements Node & Document {
 
 type Article_Doc_Data {
   title: String
+  hero: String
   author: Authors_Document
   _body: String
 }
 
 type Article_Doc_Values {
   title: String
+  hero: String
   author: Reference
   _body: String
   _template: String
+}
+
+type FileField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
 }
 
 type SelectField implements FormField {
@@ -196,7 +183,7 @@ type SelectField implements FormField {
   options: [String]
 }
 
-union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
+union Article_Doc_FormFieldsUnion = TextField | FileField | SelectField | TextareaField
 
 type Article_Doc_Form {
   label: String
@@ -206,6 +193,7 @@ type Article_Doc_Form {
 
 input Article_Doc_Input {
   title: String
+  hero: String
   author: String
   _body: String
 }
@@ -296,9 +284,7 @@ type LandingPage_Blocks_BlocksField implements FormField {
   templates: LandingPage_Blocks_BlocksFieldTemplates
 }
 
-union LandingPage_Doc_FormFieldsUnion =
-    LandingPage_Blocks_BlocksField
-  | TextareaField
+union LandingPage_Doc_FormFieldsUnion = LandingPage_Blocks_BlocksField | TextareaField
 
 type LandingPage_Doc_Form {
   label: String
@@ -326,3 +312,5 @@ input LandingPage_Doc_Input {
   blocks: [Blocks_Input]
   _body: String
 }
+
+  
