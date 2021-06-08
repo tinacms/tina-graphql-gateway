@@ -248,7 +248,7 @@ const regexMessageFunc = (message) =>
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const collections = await Promise.all(
     schemaObject.collections.map(async (collection) => {
-      // TODO: fs.exists is deprecated — since v1.0.0 Use fs.stat() or fs.access() instea
+      // TODO: fs.exists is @deprecated — since v1.0.0 Use fs.stat() or fs.access() instea
       // @ts-ignore
       const isValidPath = await fs.exists(collection.path)
       // @ts-ignore
