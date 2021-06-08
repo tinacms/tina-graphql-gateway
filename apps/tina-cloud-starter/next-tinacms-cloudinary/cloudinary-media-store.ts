@@ -31,57 +31,8 @@ export class CloudinaryMediaStore implements MediaStore {
     })
   }
 
-  parse = (img) => img.previewSrc
-
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
     const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`
-
-    // for (let item of media) {
-    //   const params = {
-    //     // folder: item.directory,
-    //     // filename: item.file.name,
-    //     // use_filename: true,
-    //     // overwrite: false,
-    //     public_id: (item.directory + "/" + item.file.name),
-    //   };
-    //   const res = await fetch(
-    //     // is this save?
-    //     `/api/cloudinary/sig?params=${JSON.stringify(params)}`
-    //   );
-    //   const { signature, timestamp } = await res.json();
-    //   console.log(signature);
-    //   console.log(timestamp);
-    //   console.log(process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    //   const formData = new FormData();
-    //   formData.append("file", item.file);
-    //   formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    //   formData.append("timestamp", timestamp);
-    //   formData.append("signature", signature);
-    //   // append keys in params obj
-    //   for (let key of Object.keys(params)) {
-    //     console.log(key, params[key]);
-    //     formData.append(key, params[key]);
-    //   }
-
-    //   const uploadRes = await fetch(url, {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-    //   console.log({ test: await uploadRes.text() });
-    // }
-    // await Promise.all(
-    // media.map((media) => {
-    //   formData.append("file", media.file);
-    //   formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    //   formData.append("timestamp", timestamp);
-    //   formData.append("signature", signature);
-
-    //   return fetch(url, {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-    // })
-    // );
 
     // TODO: Fix only one file upload
     const { file, directory } = media[0]
@@ -99,23 +50,14 @@ export class CloudinaryMediaStore implements MediaStore {
       const responseData = await res.json()
       throw new Error(responseData.message)
     }
-    console.log('this is a test')
-    // console.log(await res.text());
     const fileRes = await res.json()
-    console.log({ fileRes })
 
     // TODO: be programmer
     // NOTE: why do we need this?
     await new Promise((resolve) => {
       setTimeout(resolve, 2000)
     })
-    // const mediaReturn: Media = {
-    //   directory: directory,
-    //   filename: fileRes.public_id,
-    //   id: fileRes.public_id,
-    //   type: "file",
-    //   previewSrc: fileRes.secure_url,
-    // };
+
     return []
   }
   async delete(media: Media) {
@@ -141,17 +83,8 @@ export class CloudinaryMediaStore implements MediaStore {
       nextOffset: undefined,
     }
   }
-  previewSrc(publicId: string) {
-    if (typeof publicId === 'string') {
-      console.log('string', publicId)
 
-      return publicId
-    }
-    try {
-      console.log('not string', publicId)
-      return this.api.url(publicId.previewSrc)
-    } catch (err) {
-      console.log({ err })
-    }
-  }
+  previewSrc = (publicId: string) => publicId
+
+  parse = (img) => img.previewSrc
 }

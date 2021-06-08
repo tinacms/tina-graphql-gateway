@@ -40,13 +40,6 @@ const TinaWrapper = (props) => {
     })
   }, [])
 
-  /** Disables the TinaCMS "Media Manager" */
-  // cms.plugins.all("screen").forEach((plugin) => {
-  //   if (plugin.name === "Media Manager") {
-  //     cms.plugins.remove(plugin);
-  //   }
-  // });
-
   return (
     <TinaCloudAuthWall cms={cms}>
       <Inner {...props} />
@@ -61,25 +54,7 @@ const Inner = (props) => {
     variables: props.variables || {},
     formify: ({ createForm, formConfig, skip }) => {
       formConfig.fields.forEach((field) => {
-        console.log({ field })
-        if (field.name === 'heroImg') {
-          field.component = 'image'
-          // field.previewSrc = (img) => img
-          const parseFunc = field.parse
-
-          // field.parse = (img: Media, name, f) => {
-          //   console.log({img, name, f})
-          //   // const temp =
-          //   //   typeof parseFunc === 'function'
-          //   //     ? parseFunc(img.previewSrc, name, f)
-          //   //     : null
-          //   if (typeof field.parse === 'function') {
-          //     parseFunc(img.previewSrc, name ,f)
-          //   }
-
-          //   return img.previewSrc
-          // }
-          console.log(cms.media)
+        if (field.component === 'image') {
           field.parse = cms.media.store.parse
         }
       })
