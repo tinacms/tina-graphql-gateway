@@ -80,6 +80,11 @@ export default defineSchema({
               type: 'text',
             },
             {
+              name: 'myHero',
+              type: 'image',
+              label: 'Hero',
+            },
+            {
               name: 'image',
               label: 'Image',
               type: 'text',
