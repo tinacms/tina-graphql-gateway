@@ -17,7 +17,7 @@ import { genTypes, attachSchema } from './query-gen'
 import { audit, migrate, dump } from './audit'
 import { startServer } from './start-server'
 import { compile } from './compile'
-import { initTina, installDeps } from './init'
+import { initTina, installDeps, tinaSetup, successMessage } from './init'
 
 export const CMD_GEN_TYPES = 'schema:types'
 export const CMD_AUDIT = 'schema:audit'
@@ -74,9 +74,23 @@ export const baseCmds: Command[] = [
   },
   {
     command: INIT,
-    description: 'Add Tinacms to an exsisting project',
+    description: 'Add Tina Cloud to an existing project',
     action: (options) =>
-      chain([initTina, installDeps, compile, attachSchema, genTypes], options),
+      chain(
+        [
+          initTina,
+          installDeps,
+          async (_ctx, next) => {
+            await compile()
+            next()
+          },
+          attachSchema,
+          genTypes,
+          tinaSetup,
+          successMessage,
+        ],
+        options
+      ),
   },
   /**
    * These have become outdated and it's not clear if we'll bring them forward.

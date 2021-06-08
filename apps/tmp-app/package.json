@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "tina-graphql-gateway-cli": "workspace:packages/tina-graphql-gateway-cli"
+  },
+  "name": "@forestryio/temp",
+  "scripts": {
+    "build": "forestry-build",
+    "graphiql": "next dev -p 3001",
+    "watch": "forestry-watch"
+  },
+  "typings": "dist/types.d.ts"
+}

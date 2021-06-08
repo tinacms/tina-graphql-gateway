@@ -1791,6 +1791,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@forestryio/temp@workspace:apps/tmp-app":
+  version: 0.0.0-use.local
+  resolution: "@forestryio/temp@workspace:apps/tmp-app"
+  dependencies:
+    tina-graphql-gateway-cli: "workspace:packages/tina-graphql-gateway-cli"
+  languageName: unknown
+  linkType: soft
+
 "@fullhuman/postcss-purgecss@npm:^2.1.2":
   version: 2.3.0
   resolution: "@fullhuman/postcss-purgecss@npm:2.3.0"
@@ -3823,6 +3831,15 @@ __metadata:
   version: 1.2.0
   resolution: "@types/figlet@npm:1.2.0"
   checksum: 24a19da02d71e01be4360018e95b57c90d28375a47e0e33e810718724d8586250a076ce1c7fdc089562cb1319f6685db17e270721dd07a33a90fd03b38949c0d
+  languageName: node
+  linkType: hard
+
+"@types/fs-extra@npm:^9.0.11":
+  version: 9.0.11
+  resolution: "@types/fs-extra@npm:9.0.11"
+  dependencies:
+    "@types/node": "*"
+  checksum: e7a4df27880c525cf12c2d16a4fafb0b68b27c74e24cd4d0d637c56e9be27795efdd89cfc85de751ad1edfdcf1b3eb0bf97231eba90c91086825659de4ab8c72
   languageName: node
   linkType: hard
 
@@ -21833,6 +21850,7 @@ fsevents@~2.3.1:
     "@types/express": ^4.17.7
     "@types/express-graphql": ^0.9.0
     "@types/figlet": 1.2.0
+    "@types/fs-extra": ^9.0.11
     "@types/inquirer": ^6.5.0
     "@types/jest": 26.0.4
     "@types/js-yaml": ^4.0.0

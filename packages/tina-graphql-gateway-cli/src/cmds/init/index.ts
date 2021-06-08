@@ -10,8 +10,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import fs from 'fs-extra'
+import p, { join } from 'path'
 
 import { successText, logText, cmdText } from '../../utils/theme'
+import { blogPost } from './setup-files'
 
 /**
  * Executes a shell command and return it as a Promise.
@@ -53,14 +56,58 @@ export async function installDeps(ctx: any, next: () => void, options) {
 }
 
 export async function tinaSetup(ctx: any, next: () => void, options) {
-  const deps = [
-    'tinacms',
-    'styled-components',
-    'tina-graphql-gateway',
-    'tina-graphql-gateway-cli',
-  ]
-  console.log(logText('Installing dependencies...'))
-  console.log(cmdText(`yarn add ${deps.join(' ')}`))
-  //   TODO: Really install deps
+  const baseDir = process.cwd()
+  console.log(logText('Setting up Tina...'))
+
+  // 1 Create a content/blog Folder and add one or two blog posts
+  const blogContentPath = p.join(baseDir, 'content', 'blog')
+  const blogPostPath = p.join(blogContentPath, 'post-one.md')
+  if (!fs.pathExistsSync(blogPostPath)) {
+    console.log(logText('Adding a content folder...'))
+    fs.mkdirpSync(blogContentPath)
+    fs.writeFileSync(blogPostPath, blogPost)
+  }
+
+  // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
+  const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
+  const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
+  const tinaBlogPagePath = p.join(pagesPath, 'blog')
+  const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[slug].tsx')
+  if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
+    fs.mkdirpSync(tinaBlogPagePath)
+    fs.writeFileSync(tinaBlogPagePathFile, 'testing')
+  }
+
+  next()
+}
+
+export async function successMessage(ctx: any, next: () => void, options) {
+  const baseDir = process.cwd()
+
+  console.log(`
+What just Happened?
+✅ Installed Tina Dependencies 
+✅ Setup a ${successText('basic Schema')} in ${join(
+    baseDir,
+    '.tina',
+    'schema.ts'
+  )}
+✅ Generated ${successText('Typescript Types')} based on the Schema in ${join(
+    baseDir,
+    '.tina',
+    '__generated__',
+    'types.ts'
+  )}
+✅ Generated a ${successText('Graphql Schema')} in ${join(
+    baseDir,
+    '.tina',
+    '__generated__',
+    'schema.gql'
+  )}
+
+✅ ${successText(
+    "Setup a page to play around with tina Start your next dev start with 'next dev' and go to http://locahost:3000/blog/post-one.md to check it out"
+  )}
+`)
   next()
 }

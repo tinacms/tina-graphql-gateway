@@ -35,6 +35,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:apps/tina-cloud-starter"
       },
       {
+        "name": "@forestryio/temp",
+        "reference": "workspace:apps/tmp-app"
+      },
+      {
         "name": "tina-graphql",
         "reference": "workspace:packages/tina-graphql"
       },
@@ -54,6 +58,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.)(?:(?:(?!(?:^|\\/)\\.).)*?)|$))$)",
     "fallbackExclusionList": [
+      ["@forestryio/temp", ["workspace:apps/tmp-app"]],
       ["demo", ["workspace:apps/demo"]],
       ["sc", ["workspace:."]],
       ["test", ["workspace:apps/test"]],
@@ -3353,6 +3358,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/unitless", "npm:0.7.5"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["@forestryio/temp", [
+        ["workspace:apps/tmp-app", {
+          "packageLocation": "./apps/tmp-app/",
+          "packageDependencies": [
+            ["@forestryio/temp", "workspace:apps/tmp-app"],
+            ["tina-graphql-gateway-cli", "workspace:packages/tina-graphql-gateway-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["@fullhuman/postcss-purgecss", [
@@ -7376,6 +7391,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/fs-extra", [
+        ["npm:9.0.11", {
+          "packageLocation": "./.yarn/cache/@types-fs-extra-npm-9.0.11-22ca86822a-e7a4df2788.zip/node_modules/@types/fs-extra/",
+          "packageDependencies": [
+            ["@types/fs-extra", "npm:9.0.11"],
+            ["@types/node", "npm:14.0.27"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:9.0.2", {
           "packageLocation": "./.yarn/cache/@types-fs-extra-npm-9.0.2-76105aa5a6-9fb00885d8.zip/node_modules/@types/fs-extra/",
           "packageDependencies": [
@@ -28290,6 +28313,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.7"],
             ["@types/express-graphql", "npm:0.9.0"],
             ["@types/figlet", "npm:1.2.0"],
+            ["@types/fs-extra", "npm:9.0.11"],
             ["@types/inquirer", "npm:6.5.0"],
             ["@types/jest", "npm:26.0.4"],
             ["@types/js-yaml", "npm:4.0.0"],

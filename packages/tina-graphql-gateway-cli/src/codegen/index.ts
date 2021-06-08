@@ -17,6 +17,7 @@ import { plugin as typescriptPlugin } from '@graphql-codegen/typescript'
 import { plugin as typescriptOperationsPlugin } from '@graphql-codegen/typescript-operations'
 
 export const generateTypes = async (schema: GraphQLSchema) => {
+  console.log('Generating types...')
   try {
     const res = await codegen({
       filename: process.cwd() + '/.forestry/autoschema.gql',
