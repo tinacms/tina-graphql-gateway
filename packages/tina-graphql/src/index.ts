@@ -19,6 +19,9 @@ import { createDatasource } from './datasources/data-manager'
 import { GithubManager } from './datasources/github-manager'
 import { FileSystemManager } from './datasources/filesystem-manager'
 import { simpleCache, clearCache } from './lru'
+import fs from 'fs-extra'
+import path from 'path'
+import { TINA_GENERATED_PATH } from './datasources/data-manager'
 
 export { clearCache }
 
@@ -60,7 +63,15 @@ export const buildSchema = async (projectRoot: string) => {
   )
   const cache = cacheInit(datasource)
 
-  const { schema } = await schemaBuilder({ cache })
+  const { schema, sectionMap } = await schemaBuilder({ cache })
+  await fs.outputFile(
+    path.join(TINA_GENERATED_PATH, 'schema.json'),
+    JSON.stringify(schema, null, 2)
+  )
+  await fs.outputFile(
+    path.join(TINA_GENERATED_PATH, 'sectionMap.json'),
+    JSON.stringify(sectionMap, null, 2)
+  )
   return buildASTSchema(schema)
 }
 
@@ -90,8 +101,12 @@ export const githubRoute = async ({
     cache: simpleCache,
   })
   const datasource = createDatasource(gh)
-  const cache = cacheInit(datasource)
-  const { schema, sectionMap } = await schemaBuilder({ cache })
+  const schema = JSON.parse(
+    await gh.readFile(path.join(TINA_GENERATED_PATH, 'schema.json'))
+  )
+  const sectionMap = JSON.parse(
+    await gh.readFile(path.join(TINA_GENERATED_PATH, 'sectionMap.json'))
+  )
 
   const result = await graphqlInit({
     schema: buildASTSchema(schema),

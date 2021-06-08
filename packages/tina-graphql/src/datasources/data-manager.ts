@@ -38,8 +38,7 @@ import type {
   WithFields,
 } from '../types'
 
-// const tinaPath = ".tina";
-const tinaPath = '.tina/__generated__/config'
+export const TINA_GENERATED_PATH = '.tina/__generated__/config'
 
 export class DataManager implements DataSource {
   rootPath: string
@@ -90,7 +89,11 @@ export class DataManager implements DataSource {
     return documents.map((relativePath) => p.join(section.path, relativePath))
   }
   getAllTemplates = async () => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
+    const fullPath = p.join(
+      this.rootPath,
+      TINA_GENERATED_PATH,
+      'front_matter/templates'
+    )
     const templates = await readDir(fullPath, this.dirLoader)
     return await sequential(
       templates,
@@ -105,7 +108,7 @@ export class DataManager implements DataSource {
     )
   getSettingsData = async () => {
     const { data } = await readFile<Settings>(
-      p.join(this.rootPath, tinaPath, 'settings.yml'),
+      p.join(this.rootPath, TINA_GENERATED_PATH, 'settings.yml'),
       this.loader
     )
 
@@ -229,7 +232,11 @@ export class DataManager implements DataSource {
     if (!sectionData) {
       throw new Error(`No section found for ${args.collection}`)
     }
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
+    const fullPath = p.join(
+      this.rootPath,
+      TINA_GENERATED_PATH,
+      'front_matter/templates'
+    )
     const templates = await readDir(fullPath, this.dirLoader)
 
     const template = (
@@ -256,7 +263,11 @@ export class DataManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
+    const fullPath = p.join(
+      this.rootPath,
+      TINA_GENERATED_PATH,
+      'front_matter/templates'
+    )
     const templates = await readDir(fullPath, this.dirLoader)
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`
@@ -275,7 +286,11 @@ export class DataManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
+    const fullPath = p.join(
+      this.rootPath,
+      TINA_GENERATED_PATH,
+      'front_matter/templates'
+    )
     const templates = await readDir(fullPath, this.dirLoader)
     const template = templates.find((templateBasename) => {
       return templateBasename === `${slug}.yml`
@@ -291,7 +306,11 @@ export class DataManager implements DataSource {
     return data
   }
   addDocument = async ({ relativePath, collection, template }: AddArgs) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
+    const fullPath = p.join(
+      this.rootPath,
+      TINA_GENERATED_PATH,
+      'front_matter/templates'
+    )
     const sectionData = await this.getSettingsForCollection(collection)
     if (!sectionData) {
       throw new Error(`No section found for ${collection}`)
