@@ -111,7 +111,7 @@ export async function successMessage(ctx: any, next: () => void, options) {
 
 For more Information visit our docs and checkout our getting starter guide
 
-Dos: https://tina.io/docs/tina-cloud/
+Docs: https://tina.io/docs/tina-cloud/
 Getting starter guide: https://tina.io/guides/tina-cloud/starter/overview/
 `)
   next()
