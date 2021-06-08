@@ -14,7 +14,7 @@ import fs from 'fs-extra'
 import p, { join } from 'path'
 
 import { successText, logText, cmdText } from '../../utils/theme'
-import { blogPost } from './setup-files'
+import { blogPost, nextPostPage } from './setup-files'
 
 /**
  * Executes a shell command and return it as a Promise.
@@ -49,9 +49,10 @@ export async function installDeps(ctx: any, next: () => void, options) {
     'tina-graphql-gateway',
     'tina-graphql-gateway-cli',
   ]
+  const installCMD = `yarn add ${deps.join(' ')}`
   console.log(logText('Installing dependencies...'))
-  console.log(cmdText(`yarn add ${deps.join(' ')}`))
-  //   TODO: Really install deps
+  console.log(cmdText(installCMD))
+  await execShellCommand(installCMD)
   next()
 }
 
@@ -75,7 +76,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[slug].tsx')
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
-    fs.writeFileSync(tinaBlogPagePathFile, 'testing')
+    fs.writeFileSync(tinaBlogPagePathFile, nextPostPage)
   }
 
   next()
