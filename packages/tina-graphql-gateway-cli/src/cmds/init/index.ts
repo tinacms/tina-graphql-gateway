@@ -34,11 +34,7 @@ function execShellCommand(cmd): Promise<string> {
 }
 
 export async function initTina(ctx: any, next: () => void, options) {
-  console.log(
-    successText(
-      'Welcome to tina Init process sit back and relax while we set up tina for you'
-    )
-  )
+  console.log(successText('Sit back and relax while we set up Tina for you…'))
   next()
 }
 
