@@ -109,7 +109,7 @@ export async function successMessage(ctx: any, next: () => void, options) {
   )} start your dev server with 'next dev' and go to http://locahost:3000/demo/blog/HelloWorld.md to check it out"
 
 
-For more Information visit our docs and checkout our getting starter guide
+For more information visit our docs and check out our getting started guide
 
 Docs: https://tina.io/docs/tina-cloud/
 Getting starter guide: https://tina.io/guides/tina-cloud/starter/overview/
