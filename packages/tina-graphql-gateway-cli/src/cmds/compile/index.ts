@@ -89,12 +89,12 @@ const transformField = async (
       type: 'tag_list',
     }
   }
-  if (field.type === 'image') {
-    return {
-      ...field,
-      type: 'file',
-    }
-  }
+  // if (field.type === "image") {
+  //   return {
+  //     ...field,
+  //     type: "file",
+  //   };
+  // }
   if (field.type === 'reference') {
     yup
       .object({
@@ -564,7 +564,6 @@ export const defineSchema = (config: TinaCloudSchema) => {
     textarea: TextAreaSchema,
     select: SelectSchema,
     list: ListSchema,
-    image: ImageSchema,
     group: GroupSchema,
     'group-list': GroupListSchema,
     reference: ReferenceSchema,
@@ -580,7 +579,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
     NumberSchema,
     TagsSchema,
     ToggleSchema,
-    ImageSchema,
+    // ImageSchema,
     BlocksSchema,
     // FIXME: for some reason these mess up the blocks test if they're listed before it
     GroupSchema,
@@ -675,7 +674,6 @@ export type TinaField =
   | TextareaField
   | SelectField
   | GroupField
-  | ImageField
   | GroupListField
   | ListField
   | ToggleField

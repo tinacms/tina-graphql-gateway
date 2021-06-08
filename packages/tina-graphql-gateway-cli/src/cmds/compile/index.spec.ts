@@ -217,12 +217,12 @@ const validCases: { [key: string]: Case } = {
       type: 'tags',
     }),
   },
-  'image field': {
-    ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
-      ...validFieldPartial,
-      type: 'image',
-    }),
-  },
+  // "image field": {
+  //   ...safeReplaceAt(validSchema, "collections[0].templates[0].fields[0]", {
+  //     ...validFieldPartial,
+  //     type: "image",
+  //   }),
+  // },
   'number field': {
     ...safeReplaceAt(validSchema, 'collections[0].templates[0].fields[0]', {
       ...validFieldPartial,
