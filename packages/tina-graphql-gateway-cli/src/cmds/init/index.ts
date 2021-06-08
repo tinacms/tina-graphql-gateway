@@ -13,7 +13,7 @@ limitations under the License.
 import fs from 'fs-extra'
 import p, { join } from 'path'
 
-import { successText, logText, cmdText } from '../../utils/theme'
+import { successText, logText, cmdText, dangerText } from '../../utils/theme'
 import { blogPost, nextPostPage } from './setup-files'
 
 /**
@@ -49,6 +49,7 @@ export async function installDeps(ctx: any, next: () => void, options) {
   console.log(logText('Installing dependencies...'))
   console.log(cmdText(installCMD))
   await execShellCommand(installCMD)
+  console.log('✅ Installed Tina Dependencies')
   next()
 }
 
@@ -83,30 +84,39 @@ export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
 
   console.log(`
-`Tina Cloud is now properly setup.`
-✅ Installed Tina Dependencies 
+Tina Cloud is now properly setup, just a couple of things before you get started
+${dangerText(
+  'Before you do anything please add the following scripts to your package.json'
+)}
+"dev": "yarn tina-gql server:start -c \"next dev\"",
+"build": "yarn tina-gql server:start -c \"next build\"",
+"start": "yarn tina-gql server:start -c \"next start\""
+
 ✅ Setup a ${successText('basic Schema')} in ${join(
     baseDir,
     '.tina',
     'schema.ts'
   )}
+
 ✅ Generated ${successText('Typescript Types')} based on the Schema in ${join(
     baseDir,
     '.tina',
     '__generated__',
     'types.ts'
   )}
+
 ✅ Generated a ${successText('Graphql Schema')} in ${join(
     baseDir,
     '.tina',
     '__generated__',
     'schema.gql'
   )}
+
 ✅ Setup a your first post in ${blogPostPath}
 
 ✅ ${successText(
     'Setup a page basic Tina Page 🎉'
-  )} start your dev server with 'next dev' and go to http://locahost:3000/demo/blog/HelloWorld.md to check it out"
+  )} start your dev server with 'next dev' and go to http://localhost:3000/demo/blog/HelloWord to check it out"
 
 
 For more information visit our docs and check out our getting started guide

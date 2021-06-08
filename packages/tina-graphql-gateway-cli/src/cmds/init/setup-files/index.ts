@@ -25,7 +25,7 @@ import { TinaCMS } from "tinacms";
 import { TinaCloudAuthWall, Client, LocalClient } from "tina-graphql-gateway";
 import { useGraphqlForms } from "tina-graphql-gateway";
 import { useMemo } from "react";
-import type { Posts_Document } from "../../.tina/__generated__/types";
+import type { Posts_Document } from '../../../.tina/__generated__/types'
 
 export const createClient = () => {
   return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "1"
