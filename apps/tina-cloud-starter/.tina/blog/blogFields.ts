@@ -11,18 +11,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaField } from "tina-graphql-gateway-cli";
+import { TinaField } from 'tina-graphql-gateway-cli'
 
 export const BlogFields: TinaField[] = [
   {
-    type: "text",
-    label: "Title",
-    name: "title",
+    type: 'text',
+    label: 'Title',
+    name: 'title',
   },
   {
-    type: "reference",
-    label: "Author",
-    name: "author",
-    collection: "authors",
+    name: 'hero',
+    type: 'image',
+    label: 'Hero',
   },
-];
+  {
+    type: 'reference',
+    label: 'Author',
+    name: 'author',
+    collection: 'authors',
+  },
+]

@@ -167,6 +167,9 @@ const buildFields = ({
         callback,
       })
     }
+    if (field.component === 'image') {
+      console.log('lets add some stuff here!', context.cms)
+    }
 
     // List
     if (field.component === 'list') {
