@@ -18,8 +18,6 @@ import { v2 as cloudinary } from 'cloudinary'
 export const signSignatureHandler: NextApiHandler = (req, res) => {
   const timestamp = Math.round(new Date().getTime() / 1000)
   const params = JSON.parse((req.query.params as string) || '{}')
-  console.log(params)
-
   const signature = cloudinary.utils.api_sign_request(
     {
       ...params,

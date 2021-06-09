@@ -52,14 +52,6 @@ const Inner = (props) => {
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
-    formify: ({ createForm, formConfig, skip }) => {
-      formConfig.fields.forEach((field) => {
-        if (field.component === 'image') {
-          field.parse = cms.media.store.parse
-        }
-      })
-      return createForm(formConfig)
-    },
   })
   return (
     <>

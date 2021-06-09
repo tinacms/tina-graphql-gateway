@@ -167,8 +167,27 @@ const buildFields = ({
         callback,
       })
     }
+
     if (field.component === 'image') {
-      console.log('lets add some stuff here!', context.cms)
+      return {
+        ...field,
+        parse: (img, name, f) => {
+          //@ts-ignore
+          const mediaParse = context.cms.media.store.parse
+          let fieldData = img
+          if (typeof mediaParse === 'function') {
+            fieldData = mediaParse(img, name, f)
+          }
+          const parseFunc = buildParseFunction({
+            parentPath,
+            context,
+            field,
+            callback,
+          })
+
+          return parseFunc(fieldData, name)
+        },
+      }
     }
 
     // List
