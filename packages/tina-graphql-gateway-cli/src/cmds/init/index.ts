@@ -54,10 +54,13 @@ export async function installDeps(ctx: any, next: () => void, options) {
 }
 
 const baseDir = process.cwd()
-const blogContentPath = p.join(baseDir, 'content', 'blog')
+const blogContentPath = p.join(baseDir, 'content', 'posts')
+const authorContentPath = p.join(baseDir, 'content', 'author')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
   console.log(logText('Setting up Tina...'))
+  // make a folder for "authors"
+  fs.mkdirpSync(authorContentPath)
 
   // 1 Create a content/blog Folder and add one or two blog posts
 
@@ -71,7 +74,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
   const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
   const tinaBlogPagePath = p.join(pagesPath, 'demo', 'blog')
-  const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[slug].tsx')
+  const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[filename].tsx')
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
     fs.writeFileSync(tinaBlogPagePathFile, nextPostPage)
@@ -88,9 +91,9 @@ Tina Cloud is now properly setup, just a couple of things before you get started
 ${dangerText(
   'Before you do anything please add the following scripts to your package.json'
 )}
-"dev": "yarn tina-gql server:start -c \"next dev\"",
-"build": "yarn tina-gql server:start -c \"next build\"",
-"start": "yarn tina-gql server:start -c \"next start\""
+"dev": "yarn tina-gql server:start -c \\"next dev\\"",
+"build": "yarn tina-gql server:start -c \\"next build\\"",
+"start": "yarn tina-gql server:start -c \\"next start\\""
 
 ✅ Setup a ${successText('basic Schema')} in ${join(
     baseDir,
