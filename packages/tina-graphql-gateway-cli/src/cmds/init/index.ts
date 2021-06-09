@@ -55,7 +55,7 @@ export async function installDeps(ctx: any, next: () => void, options) {
 
 const baseDir = process.cwd()
 const blogContentPath = p.join(baseDir, 'content', 'posts')
-const authorContentPath = p.join(baseDir, 'content', 'author')
+const authorContentPath = p.join(baseDir, 'content', 'authors')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
   console.log(logText('Setting up Tina...'))
@@ -119,7 +119,7 @@ ${dangerText(
 
 ✅ ${successText(
     'Setup a page basic Tina Page 🎉'
-  )} start your dev server with 'next dev' and go to http://localhost:3000/demo/blog/HelloWord to check it out"
+  )} start your dev server with 'next dev' and go to http://localhost:3000/demo/blog/HelloWorld to check it out"
 
 
 For more information visit our docs and check out our getting started guide
