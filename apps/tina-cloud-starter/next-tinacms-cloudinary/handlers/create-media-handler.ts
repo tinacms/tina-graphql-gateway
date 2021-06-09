@@ -114,7 +114,6 @@ async function listMedia(req: NextApiRequest, res: NextApiResponse) {
       items: [...folders, ...files],
     })
   } catch (e) {
-    console.log(e)
     res.status(500)
     res.json({ e })
   }
@@ -123,7 +122,7 @@ async function listMedia(req: NextApiRequest, res: NextApiResponse) {
 function cloudinaryToTina(file: any): Media {
   const filename = path.basename(file.public_id)
   const directory = path.dirname(file.public_id)
-  console.log({ file })
+
   return {
     id: file.public_id,
     filename,
