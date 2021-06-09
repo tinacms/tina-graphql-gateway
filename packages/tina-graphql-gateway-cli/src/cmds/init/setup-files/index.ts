@@ -28,9 +28,9 @@ import { useMemo } from "react";
 import type { Posts_Document } from '../../../.tina/__generated__/types'
 
 export const createClient = () => {
-  return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "1"
-    ? createLocalClient()
-    : createCloudClient();
+  return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "0"
+    ? createCloudClient()
+    : createLocalClient();
 };
 
 export const createCloudClient = () => {
