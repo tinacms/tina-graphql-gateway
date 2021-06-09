@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway-cli",
-  "version": "0.2.45",
+  "version": "0.2.45-canary-245",
   "main": "dist/index.js",
   "files": [
     "dist/*",
