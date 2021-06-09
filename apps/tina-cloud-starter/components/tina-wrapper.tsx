@@ -55,7 +55,16 @@ const Inner = (props) => {
     formify: ({ createForm, formConfig, skip }) => {
       formConfig.fields.forEach((field) => {
         if (field.component === 'image') {
-          field.parse = cms.media.store.parse
+          const oldParse = field.parse
+          field.parse = (img: Media, name, f) => {
+            // @ts-ignore
+            const temp = cms.media.store.parse(img, name, f)
+            if (typeof oldParse === 'function') {
+              // this will update the image field data key with whatever came form temp
+              oldParse(temp, name, f)
+            }
+            return temp
+          }
         }
       })
       return createForm(formConfig)
