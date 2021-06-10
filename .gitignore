@@ -13,7 +13,9 @@ node_modules
 # .pnp.*
 package.tgz
 
+# ENV FILES
 .env
+.env.local
 
 builds/*
 !builds/.gitkeep
