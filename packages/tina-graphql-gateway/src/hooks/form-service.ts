@@ -174,8 +174,10 @@ const buildFields = ({
         parse: (img, name, f) => {
           //@ts-ignore
           const mediaParse = context.cms.media.store.parse
+          // Get the original data from the Image field (This will be of type Media)
           let fieldData = img
           if (typeof mediaParse === 'function') {
+            // if there is a media store use its parse function
             fieldData = mediaParse(img, name, f)
           }
           const parseFunc = buildParseFunction({
@@ -185,6 +187,7 @@ const buildFields = ({
             callback,
           })
 
+          // call and return our our parse function (this will return fieldData)
           return parseFunc(fieldData, name)
         },
       }
