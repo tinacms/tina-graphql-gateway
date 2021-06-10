@@ -71,6 +71,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     console.log(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
     fs.writeFileSync(blogPostPath, blogPost)
+    console.log(`✅ Setup a your first post in ${blogPostPath}`)
   }
 
   // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
@@ -81,26 +82,38 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
     fs.writeFileSync(tinaBlogPagePathFile, nextPostPage)
+    console.log(`✅ Setup a blog page in ${tinaBlogPagePathFile}`)
   }
 
   next()
 }
 
 export async function successMessage(ctx: any, next: () => void, options) {
+  const baseDir = process.cwd()
   console.log(`
 Tina Cloud is now properly setup, just a couple of things before you get started
-${warnText(
-  'Before you do anything please add the following scripts to your package.json'
-)}
+\t1. ${warnText('please add the following scripts to your package.json')}
 "dev": "yarn tina-gql server:start -c \\"next dev\\"",
 "build": "yarn tina-gql server:start -c \\"next build\\"",
 "start": "yarn tina-gql server:start -c \\"next start\\""
 
-✅ Setup a your first post in ${blogPostPath}
+\t2. Start your dev server with ${cmdText(
+    'next dev'
+  )} and go to http://localhost:3000/demo/blog/HelloWorld to ${successText(
+    'check it out the page that was created for you'
+  )}
+\t3. Update the Schema.ts located ${p.join(
+    baseDir,
+    '.tina',
+    'schema.ts'
+  )} to match your content: https://tina.io/docs/tina-cloud/cli/#defineschema
 
-✅ ${successText(
-    'Setup a page basic Tina Page 🎉'
-  )} start your dev server with 'next dev' and go to http://localhost:3000/demo/blog/HelloWorld to check it out"
+Add Tina Cloud as a Backend
+\t1. Register at https://auth.tina.io
+\t2. Update .env file
+NEXT_PUBLIC_ORGANIZATION_NAME=<get this from the organization you create at auth.tina.io>
+NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the app you create at auth.tina.io>
+NEXT_PUBLIC_USE_LOCAL_CLIENT=0
 
 
 For more information visit our docs and check out our getting started guide

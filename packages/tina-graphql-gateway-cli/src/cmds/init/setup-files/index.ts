@@ -26,12 +26,14 @@ import { useGraphqlForms } from "tina-graphql-gateway";
 import { useMemo } from "react";
 import type { Posts_Document } from '../../../.tina/__generated__/types'
 
+// This create the client based on NEXT_PUBLIC_USE_LOCAL_CLIENT.
 export const createClient = () => {
   return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "0"
     ? createCloudClient()
     : createLocalClient();
 };
 
+// This creates the cloud client and checks to make sure the correct environment variables are in place
 export const createCloudClient = () => {
   const organization = process.env.NEXT_PUBLIC_ORGANIZATION_NAME;
   const clientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
@@ -68,47 +70,6 @@ export const createLocalClient = () => {
   return new LocalClient();
 };
 
-/**
- *
- * Takes a path (ex. /posts/my-page) and uses the first item
- * as the \`collection\` and the remaining peices for the relativePath
- * arguments
- *
- */
-export const variablesFromPath = (
-  path: string,
-  fallback: { relativePath: string; collection: string }
-) => {
-  const arr = path.split("/");
-  const collection = arr[0];
-  // FIXME: assumes \`.md\` as extension, should work with other extensions
-  const relativePath = \`\${arr.slice(1).join("/")}.md\`;
-
-  if (collection && relativePath) {
-    return { collection, relativePath };
-  } else {
-    return fallback;
-  }
-};
-
-// FIXME: infer args from useForm
-export const redirectToNewDocument = (
-  args: {
-    collection: {
-      slug: string;
-    };
-    relativePath: string;
-    breadcrumbs: string[];
-    path: string;
-  },
-  prefix: string
-) => {
-  const redirect = \`\${window.location.origin}\${prefix}/\${
-    args.collection.slug
-  }/\${args.breadcrumbs.join("/")}\`;
-
-  window.location.assign(redirect);
-};
 
 export type AsyncReturnType<
   T extends (...args: any) => Promise<any>
@@ -200,8 +161,7 @@ export const getStaticPaths = async () => {
 };
 
 /**
- * This gets loaded dynamically in "pages/_app.js"
- * if you're on a route that starts with "/admin"
+ * This should be moved to _app.js and only wrap the app when you are in edit mode
  */
 const TinaWrapper = (props) => {
   const cms = useMemo(() => {
