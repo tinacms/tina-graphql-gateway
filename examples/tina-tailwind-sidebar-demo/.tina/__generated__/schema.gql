@@ -107,6 +107,7 @@ type SelectField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   options: [String]
 }
 
@@ -114,6 +115,7 @@ type TextareaField implements FormField {
   name: String
   label: String
   component: String
+  description: String
 }
 
 union Theme_Doc_FormFieldsUnion = SelectField | TextareaField
@@ -401,6 +403,7 @@ type NavWordmark_Icon_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [NavWordmark_Icon_FormFieldsUnion]
 }
 
@@ -408,6 +411,7 @@ type TextField implements FormField {
   name: String
   label: String
   component: String
+  description: String
 }
 
 union HomepageNav_Wordmark_FormFieldsUnion = NavWordmark_Icon_GroupField | TextField
@@ -416,6 +420,7 @@ type HomepageNav_Wordmark_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [HomepageNav_Wordmark_FormFieldsUnion]
 }
 
@@ -425,6 +430,7 @@ type HomepageNav_Items_GroupListField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [HomepageNav_Items_FormFieldsUnion]
 }
 
@@ -434,6 +440,7 @@ type Homepage_Nav_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Homepage_Nav_FormFieldsUnion]
 }
 
@@ -443,6 +450,7 @@ type Hero_Text_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Hero_Text_FormFieldsUnion]
 }
 
@@ -452,6 +460,7 @@ type Hero_Image_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Hero_Image_FormFieldsUnion]
 }
 
@@ -459,6 +468,7 @@ type BooleanField implements FormField {
   name: String
   label: String
   component: String
+  description: String
 }
 
 union Hero_Actions_FormFieldsUnion = TextField | SelectField | BooleanField
@@ -467,6 +477,7 @@ type Hero_Actions_GroupListField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Hero_Actions_FormFieldsUnion]
 }
 
@@ -476,6 +487,7 @@ type Hero_Style_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Hero_Style_FormFieldsUnion]
 }
 
@@ -493,6 +505,7 @@ type Testimonial_Style_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Testimonial_Style_FormFieldsUnion]
 }
 
@@ -510,6 +523,7 @@ type FeaturesItems_Icon_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [FeaturesItems_Icon_FormFieldsUnion]
 }
 
@@ -519,6 +533,7 @@ type FeaturesItems_Actions_GroupListField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [FeaturesItems_Actions_FormFieldsUnion]
 }
 
@@ -528,6 +543,7 @@ type Features_Items_GroupListField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Features_Items_FormFieldsUnion]
 }
 
@@ -537,6 +553,7 @@ type Features_Style_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Features_Style_FormFieldsUnion]
 }
 
@@ -558,6 +575,7 @@ type Homepage_Blocks_BlocksField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   templates: Homepage_Blocks_BlocksFieldTemplates
 }
 
@@ -567,6 +585,7 @@ type Nav_Items_GroupListField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Nav_Items_FormFieldsUnion]
 }
 
@@ -586,6 +605,7 @@ type Homepage_Navlist_BlocksField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   templates: Homepage_Navlist_BlocksFieldTemplates
 }
 
@@ -595,6 +615,7 @@ type HomepageFooter_Social_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [HomepageFooter_Social_FormFieldsUnion]
 }
 
@@ -604,6 +625,7 @@ type Homepage_Footer_GroupField implements FormField {
   name: String
   label: String
   component: String
+  description: String
   fields: [Homepage_Footer_FormFieldsUnion]
 }
 
