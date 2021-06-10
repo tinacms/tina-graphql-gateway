@@ -20,5 +20,6 @@ export const labelText = chalk.bold
 export const cmdText = chalk.inverse
 
 export const logText = chalk.italic.gray
+export const warnText = chalk.yellowBright
 
 export const CONFIRMATION_TEXT = chalk.dim('enter to confirm')
