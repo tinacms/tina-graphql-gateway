@@ -11,51 +11,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaField } from "tina-graphql-gateway-cli";
+import { TinaField } from 'tina-graphql-gateway-cli'
 
 export const landingPageFields: TinaField[] = [
   {
-    type: "blocks",
-    name: "blocks",
-    label: "Blocks",
+    type: 'blocks',
+    name: 'blocks',
+    label: 'Blocks',
     templates: [
       {
-        name: "message",
-        label: "Message",
+        name: 'message',
+        label: 'Message',
         fields: [
           {
-            type: "text",
-            label: "Message Header",
-            name: "messageHeader",
+            type: 'text',
+            label: 'Message Header',
+            name: 'messageHeader',
           },
           {
-            type: "textarea",
-            label: "Message Body",
-            name: "messageBody",
+            type: 'textarea',
+            label: 'Message Body',
+            name: 'messageBody',
           },
         ],
       },
       {
-        name: "diagram",
-        label: "Diagram",
+        name: 'diagram',
+        label: 'Diagram',
         fields: [
           {
-            type: "text",
-            label: "Diagram Heading",
-            name: "diagramHeading",
+            type: 'text',
+            label: 'Diagram Heading',
+            name: 'diagramHeading',
           },
           {
-            type: "textarea",
-            label: "Diagram Description",
-            name: "diagramDescription",
+            type: 'textarea',
+            label: 'Diagram Description',
+            name: 'diagramDescription',
           },
           {
-            type: "text",
-            label: "Diagram ID",
-            name: "diagramID",
+            type: 'text',
+            label: 'Diagram ID',
+            name: 'diagramID',
           },
         ],
       },
     ],
   },
-];
+]

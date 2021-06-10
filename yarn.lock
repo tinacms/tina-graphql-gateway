@@ -21799,9 +21799,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"tina-cloud-starter@workspace:apps/tina-cloud-starter":
+"tina-cloud-starter@workspace:examples/tina-cloud-starter":
   version: 0.0.0-use.local
-  resolution: "tina-cloud-starter@workspace:apps/tina-cloud-starter"
+  resolution: "tina-cloud-starter@workspace:examples/tina-cloud-starter"
   dependencies:
     "@types/js-cookie": ^2.2.6
     "@types/node": ^13.13.1

@@ -11,13 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaCloudTemplate } from "tina-graphql-gateway-cli";
-import { landingPageFields } from "./landingPageFields";
+import { TinaCloudTemplate } from 'tina-graphql-gateway-cli'
+import { landingPageFields } from './landingPageFields'
 
 export const templates: TinaCloudTemplate[] = [
   {
-    label: "Landing Page",
-    name: "landingPage",
+    label: 'Landing Page',
+    name: 'landingPage',
     fields: landingPageFields,
   },
-];
+]

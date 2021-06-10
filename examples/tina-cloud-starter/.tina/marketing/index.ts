@@ -11,18 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaCloudCollection } from "tina-graphql-gateway-cli";
+import { TinaCloudCollection } from 'tina-graphql-gateway-cli'
+import { templates } from './templates'
 
-import { BlogFields } from "./blogFields";
-export const BlogPostCollection: TinaCloudCollection = {
-  label: "Blog Posts",
-  name: "posts",
-  path: "content/posts",
-  templates: [
-    {
-      label: "Article",
-      name: "article",
-      fields: BlogFields,
-    },
-  ],
-};
+export const Marketing: TinaCloudCollection = {
+  label: 'Marketing Pages',
+  name: 'marketingPages',
+  path: 'content/marketing-pages',
+  templates: templates,
+}

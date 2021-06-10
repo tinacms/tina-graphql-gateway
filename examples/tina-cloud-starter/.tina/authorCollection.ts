@@ -11,11 +11,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from "tina-graphql-gateway-cli";
-import { AuthorCollection } from "./authorCollection";
-import { BlogPostCollection } from "./blog/blogPostCollection";
-import { Marketing } from "./marketing";
+import { TinaCloudCollection } from 'tina-graphql-gateway-cli'
 
-export default defineSchema({
-  collections: [AuthorCollection, BlogPostCollection, Marketing],
-});
+export const AuthorCollection: TinaCloudCollection = {
+  label: 'Authors',
+  name: 'authors',
+  path: 'content/authors',
+  templates: [
+    {
+      label: 'Author',
+      name: 'author',
+      fields: [
+        {
+          type: 'text',
+          label: 'Name',
+          name: 'name',
+        },
+        {
+          type: 'text',
+          label: 'Avatar',
+          name: 'avatar',
+        },
+      ],
+    },
+  ],
+}
