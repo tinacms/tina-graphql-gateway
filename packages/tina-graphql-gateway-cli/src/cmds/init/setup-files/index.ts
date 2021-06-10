@@ -100,14 +100,6 @@ export const query = \`#graphql
         __typename
         ... on Article_Doc_Data {
           title
-          author {
-            data {
-              ... on Author_Doc_Data {
-                name
-                avatar
-              }
-            }
-          }
           _body
         }
       }
