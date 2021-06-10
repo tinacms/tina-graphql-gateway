@@ -61,12 +61,9 @@ export async function installDeps(ctx: any, next: () => void, options) {
 
 const baseDir = process.cwd()
 const blogContentPath = p.join(baseDir, 'content', 'posts')
-const authorContentPath = p.join(baseDir, 'content', 'authors')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
   console.log(logText('Setting up Tina...'))
-  // make a folder for "authors"
-  fs.mkdirpSync(authorContentPath)
 
   // 1 Create a content/blog Folder and add one or two blog posts
 
@@ -90,28 +87,6 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 }
 
 export async function successMessage(ctx: any, next: () => void, options) {
-  const baseDir = process.cwd()
-  const temp = `
-   ✅ Setup a ${successText('basic Schema')} in ${join(
-    baseDir,
-    '.tina',
-    'schema.ts'
-  )}
-
-✅ Generated ${successText('Typescript Types')} based on the Schema in ${join(
-    baseDir,
-    '.tina',
-    '__generated__',
-    'types.ts'
-  )}
-
-✅ Generated a ${successText('Graphql Schema')} in ${join(
-    baseDir,
-    '.tina',
-    '__generated__',
-    'schema.gql'
-  )}
-`
   console.log(`
 Tina Cloud is now properly setup, just a couple of things before you get started
 ${warnText(
