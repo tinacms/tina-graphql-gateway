@@ -98,7 +98,7 @@ Tina Cloud is now properly setup, just a couple of things before you get started
 "start": "yarn tina-gql server:start -c \\"next start\\""
 
 \t2. Start your dev server with ${cmdText(
-    'next dev'
+    'yarn dev'
   )} and go to http://localhost:3000/demo/blog/HelloWorld to ${successText(
     'check it out the page that was created for you'
   )}
