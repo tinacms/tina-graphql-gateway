@@ -9486,6 +9486,37 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["altair-exported-types", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-exported-types-npm-4.0.6-323748e3f1-f534509e75.zip/node_modules/altair-exported-types/",
+          "packageDependencies": [
+            ["altair-exported-types", "npm:4.0.6"],
+            ["uuid", "npm:3.4.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["altair-express-middleware", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-express-middleware-npm-4.0.6-e6dbec8c14-08c3d73f9b.zip/node_modules/altair-express-middleware/",
+          "packageDependencies": [
+            ["altair-express-middleware", "npm:4.0.6"],
+            ["altair-static", "npm:4.0.6"],
+            ["express", "npm:4.17.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["altair-static", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-static-npm-4.0.6-3558702ac4-85a69190a9.zip/node_modules/altair-static/",
+          "packageDependencies": [
+            ["altair-static", "npm:4.0.6"],
+            ["altair-exported-types", "npm:4.0.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["anser", [
         ["npm:1.4.9", {
           "packageLocation": "./.yarn/cache/anser-npm-1.4.9-6b6677f7c6-39acb65797.zip/node_modules/anser/",
@@ -30530,6 +30561,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash.get", "npm:4.4.6"],
             ["@types/yup", "npm:0.29.11"],
             ["ajv", "npm:6.12.3"],
+            ["altair-express-middleware", "npm:4.0.6"],
             ["axios", "npm:0.19.0"],
             ["body-parser", "npm:1.19.0"],
             ["chalk", "npm:2.4.2"],

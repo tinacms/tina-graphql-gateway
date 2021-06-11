@@ -98,6 +98,7 @@ export async function startServer(
     state.server = await s.default()
     state.server.listen(port, () => {
       console.log(`Started Filesystem GraphQL server on port: ${port}`)
+      console.log(`Visit the playground at http://localhost:${port}/altair/`)
     })
     state.server.on('connection', (socket) => {
       state.sockets.push(socket)
