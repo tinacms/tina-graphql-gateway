@@ -14,7 +14,7 @@ limitations under the License.
 import { BlogPost } from '../../components/post'
 import type { Posts_Document } from '../../.tina/__generated__/types'
 import { Wrapper } from '../../components/helper-components'
-import { createLocalClient } from 'tina-graphql-gateway'
+import { LocalClient } from 'tina-graphql-gateway'
 
 // Use the props returned by get static props
 export default function BlogPostPage(
@@ -51,7 +51,7 @@ export const query = `#graphql
   }
 `
 
-const client = createLocalClient()
+const client = new LocalClient()
 
 export const getStaticProps = async ({ params }) => {
   const variables = { relativePath: `${params.filename}.md` }
