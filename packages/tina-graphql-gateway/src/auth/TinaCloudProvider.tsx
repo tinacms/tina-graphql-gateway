@@ -18,6 +18,7 @@ import { TinaCMS, TinaProvider } from 'tinacms'
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'
 import { useTinaAuthRedirect } from './useTinaAuthRedirect'
+import { CreateClientProps, createClient } from '../utils'
 
 type ModalNames = null | 'authenticate'
 
@@ -26,13 +27,14 @@ function sleep(ms) {
 }
 
 export interface TinaCloudAuthWallProps {
-  cms: TinaCMS
+  cms?: TinaCMS
   children: React.ReactNode
   loginScreen?: React.ReactNode
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
 }
+
 export const AuthWallInner = ({
   children,
   cms,
@@ -105,12 +107,24 @@ export const AuthWallInner = ({
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps) => {
+export const TinaCloudAuthWall = (
+  props: TinaCloudAuthWallProps & CreateClientProps
+) => {
   useTinaAuthRedirect()
+  const cms =
+    props.cms ||
+    new TinaCMS({
+      enabled: true,
+      sidebar: true,
+      apis: {
+        tina: createClient(props),
+      },
+    })
+  console.log({ cms })
 
   return (
-    <TinaProvider cms={props.cms}>
-      <AuthWallInner {...props} />
+    <TinaProvider cms={cms}>
+      <AuthWallInner {...props} cms={cms} />
     </TinaProvider>
   )
 }

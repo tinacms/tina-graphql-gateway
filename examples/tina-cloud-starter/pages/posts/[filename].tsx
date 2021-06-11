@@ -13,8 +13,8 @@ limitations under the License.
 
 import { BlogPost } from '../../components/post'
 import type { Posts_Document } from '../../.tina/__generated__/types'
-import { createLocalClient, AsyncReturnType } from '../../utils'
 import { Wrapper } from '../../components/helper-components'
+import { createLocalClient } from 'tina-graphql-gateway'
 
 // Use the props returned by get static props
 export default function BlogPostPage(
@@ -95,3 +95,6 @@ export const getStaticPaths = async () => {
     fallback: false,
   }
 }
+
+export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
+  T extends (...args: any) => Promise<infer R> ? R : any
