@@ -83,10 +83,20 @@ export default function BlogPostPage(
     <TinaWrapper {...props}>
       {(props) => {
         return (
-          <>
+          <div style={{
+            textAlign: "center"
+          }}>
             <h1>{props.data.getPostsDocument.data.title}</h1>
             <div>{props.data.getPostsDocument.data._body}</div>
-          </>
+            <div style={{
+              margin: '5rem',
+              padding: '.5rem',
+              backgroundColor: "rgba(180,244,224,0.3)",
+            }} >
+              <p>Hello! and thanks for bootstrapping a Tina App! Before you do anything click on the pencil icon in the bottom left hand corner. You can now edit this content in real time! Click save and notice that you have update the Hello world blog post in the local file system.</p> 
+              <p>To see how to hook up edit state, and hook up this demo to Tina Cloud, <a href="https://github.com/tinacms/tina-cloud-starter">checkout our starter app</a></p>
+            </div>
+          </div>
         );
       }}
     </TinaWrapper>
