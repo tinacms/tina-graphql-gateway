@@ -53,11 +53,8 @@ export async function startServer(
       .on('ready', async () => {
         try {
           console.log('Generating Tina config')
-          console.log('Compiling...')
           await compile()
-          console.log('Building schema...')
           const schema = await buildSchema(process.cwd())
-          console.log('Generating types...')
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()

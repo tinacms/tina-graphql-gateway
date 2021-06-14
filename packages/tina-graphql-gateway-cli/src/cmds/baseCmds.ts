@@ -17,6 +17,7 @@ import { genTypes, attachSchema } from './query-gen'
 import { audit, migrate, dump } from './audit'
 import { startServer } from './start-server'
 import { compile } from './compile'
+import { initTina, installDeps, tinaSetup, successMessage } from './init'
 
 export const CMD_GEN_TYPES = 'schema:types'
 export const CMD_AUDIT = 'schema:audit'
@@ -25,6 +26,7 @@ export const CMD_MIGRATE = 'schema:migrate'
 export const CMD_START_SERVER = 'server:start'
 export const CMD_START_PLAYGROUND = 'server:playground'
 export const CMD_COMPILE_MODELS = 'schema:compile'
+export const INIT = 'init'
 
 const startServerPortOption = {
   name: '--port <port>',
@@ -69,6 +71,26 @@ export const baseCmds: Command[] = [
     description:
       "Generate a GraphQL query for your site's schema, (and optionally Typescript types)",
     action: (options) => chain([attachSchema, genTypes], options),
+  },
+  {
+    command: INIT,
+    description: 'Add Tina Cloud to an existing project',
+    action: (options) =>
+      chain(
+        [
+          initTina,
+          installDeps,
+          async (_ctx, next) => {
+            await compile()
+            next()
+          },
+          attachSchema,
+          genTypes,
+          tinaSetup,
+          successMessage,
+        ],
+        options
+      ),
   },
   /**
    * These have become outdated and it's not clear if we'll bring them forward.
