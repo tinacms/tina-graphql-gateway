@@ -81,25 +81,47 @@ export default function BlogPostPage(
 ) {
   return (
     <TinaWrapper {...props}>
-      {(props) => {
-        return (
+    {(props) => {
+      return (
+        <div style={{
+          textAlign: "center"
+        }}>
+          <h1>{props.data.getPostsDocument.data.title}</h1>
+          <div>{props.data.getPostsDocument.data._body}</div>
           <div style={{
-            textAlign: "center"
-          }}>
-            <h1>{props.data.getPostsDocument.data.title}</h1>
-            <div>{props.data.getPostsDocument.data._body}</div>
-            <div style={{
-              margin: '5rem',
-              padding: '.5rem',
-              backgroundColor: "rgba(180,244,224,0.3)",
-            }} >
-              <p>Hello! and thanks for bootstrapping a Tina App! Before you do anything click on the pencil icon in the bottom left hand corner. You can now edit this content in real time! Click save and notice that you have update the Hello world blog post in the local file system.</p> 
-              <p>To see how to hook up edit state, and hook up this demo to Tina Cloud, <a href="https://github.com/tinacms/tina-cloud-starter">checkout our starter app</a></p>
-            </div>
+            margin: '5rem',
+            padding: '.5rem',
+            backgroundColor: "rgba(180,244,224,0.3)",
+          }} >
+            <p>Hello! and thanks for bootstrapping a Tina App! Before you do anything click on the pencil icon in the bottom left hand corner. You can now edit this content in real time! Click save and notice that you have update the Hello world blog post in the local file system.</p> 
+            <p>To see how to hook up edit state, <a href="https://github.com/tinacms/tina-cloud-starter">checkout our starter app</a></p>
+            <p>To hook up this demo to Tina Cloud and save content to Github instead of the file system you can do the following.</p>
+            <ol style={{
+              margin: "0px auto"
+            }}>
+              <li>Register at https://auth.tina.io</li>
+              <li>
+                Update .env file to include:
+                <pre>
+                  <code>
+                  <div>
+                    NEXT_PUBLIC_ORGANIZATION_NAME= get this from the organization you create at auth.tina.io
+                  </div>  
+                  <div>
+                    NEXT_PUBLIC_TINA_CLIENT_ID= get this from the app you create at auth.tina.io
+                  </div>
+                  <div>
+                    NEXT_PUBLIC_USE_LOCAL_CLIENT=0
+                  </div>
+                  </code>
+                </pre>
+              </li>
+            </ol>
           </div>
-        );
-      }}
-    </TinaWrapper>
+        </div>
+      );
+    }}
+  </TinaWrapper>
   );
 }
 
