@@ -53,7 +53,7 @@ export async function installDeps(ctx: any, next: () => void, options) {
   ]
   const installCMD = `yarn add ${deps.join(' ')}`
   console.log(logText('Installing dependencies...'))
-  console.log(cmdText(installCMD))
+  // console.log(cmdText(installCMD))
   await execShellCommand(installCMD)
   console.log('✅ Installed Tina Dependencies')
   next()
