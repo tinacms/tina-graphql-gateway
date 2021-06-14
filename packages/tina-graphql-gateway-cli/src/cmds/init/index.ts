@@ -87,7 +87,13 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 
   next()
 }
-
+// const tinaCloudText = `Add Tina Cloud as a Backend
+// \t1. Register at https://auth.tina.io
+// \t2. Update .env file
+// NEXT_PUBLIC_ORGANIZATION_NAME=<get this from the organization you create at auth.tina.io>
+// NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the app you create at auth.tina.io>
+// NEXT_PUBLIC_USE_LOCAL_CLIENT=0
+// `
 export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
   console.log(`
@@ -107,14 +113,6 @@ Tina Cloud is now properly setup, just a couple of things before you get started
     '.tina',
     'schema.ts'
   )} to match your content: https://tina.io/docs/tina-cloud/cli/#defineschema
-
-Add Tina Cloud as a Backend
-\t1. Register at https://auth.tina.io
-\t2. Update .env file
-NEXT_PUBLIC_ORGANIZATION_NAME=<get this from the organization you create at auth.tina.io>
-NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the app you create at auth.tina.io>
-NEXT_PUBLIC_USE_LOCAL_CLIENT=0
-
 
 For more information visit our docs and check out our getting started guide
 
