@@ -27,8 +27,7 @@
     "@types/yup": "^0.29.11",
     "jest": "26.1.0",
     "ts-jest": "^26.5.3",
-    "tsup": "^4.6.1",
-    "typescript": "^4.2.2"
+    "tsup": "^4.6.1"
   },
   "scripts": {
     "build": "yarn tsup src/index.ts --format cjs --dts",
@@ -58,6 +57,7 @@
     "normalize-path": "^3.0.0",
     "tina-graphql": "workspace:packages/tina-graphql",
     "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
+    "typescript": "^4.2.2",
     "yup": "^0.32.9"
   },
   "publishConfig": {
