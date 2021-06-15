@@ -28,8 +28,8 @@ export const select = {
           additionalFields: [
             gql.FieldDefinition({
               name: 'options',
+              type: gql.TYPES.String,
               list: true,
-              type: 'SelectOption',
             }),
           ],
         })
@@ -96,24 +96,17 @@ export const select = {
           return {
             ...f,
             options: [
-              { value: '', label: '' },
-              ...(
-                await datasource.getDocumentsForCollection(
-                  select.config.source.section
-                )
-              ).map((item) => {
-                return {
-                  value: item,
-                  label: item,
-                }
-              }),
+              '',
+              ...(await datasource.getDocumentsForCollection(
+                select.config.source.section
+              )),
             ],
           }
         case 'simple':
           select = field as SimpleSelect
           return {
             ...f,
-            options: [{ value: '', label: '' }, ...select.config.options],
+            options: ['', ...select.config.options],
           }
       }
     },
@@ -141,10 +134,8 @@ export const select = {
           case 'documents':
             throw new Error(`document select not implemented`)
           case 'pages':
+          // TODO: check if reference exists
           case 'simple':
-            if (!value) {
-              return false
-            }
             return { [field.name]: value }
         }
       } catch (e) {
@@ -183,7 +174,7 @@ export type SectionSelect = BaseSelectField & {
 export type SimpleSelect = BaseSelectField & {
   default?: string
   config: {
-    options: { label: string; value: string }[]
+    options: string[]
     required?: boolean
     source: {
       type: 'simple'
@@ -196,5 +187,5 @@ export type TinaSelectField = {
   label: string
   name: string
   component: 'select'
-  options: { label: string; value: string }[]
+  options: string[]
 }
