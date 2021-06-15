@@ -7,3 +7,5 @@ build
 .yarn/*
 .next/*
 *.yml
+.next/*
+_next/*
