@@ -145,9 +145,10 @@ const transformField = async (
   return field
 }
 
-const buildTemplate = async (
-  definition: TinaCloudTemplate,
-  schema: TinaCloudSchema
+const buildTemplate = async <T extends boolean>(
+  definition: TinaCloudTemplate<T>,
+  schema: TinaCloudSchema,
+  withIsBody: T
 ) => {
   const outputYmlPath = path.resolve(
     path.join(
@@ -155,9 +156,28 @@ const buildTemplate = async (
       path.join('front_matter/templates', `${definition.name}.yml`)
     )
   )
+  let hasIsBody = false
+  // @ts-ignore
   const output: { pages?: string[] } & typeof definition = { ...definition }
   output.fields = await Promise.all(
+    // @ts-ignore
     definition.fields.map(async (field) => {
+      // @ts-ignore
+      if (hasIsBody) {
+        throw new Error(
+          `Only one "isBody" property can be set per template, found one on fields "${hasIsBody}" and "${field.name}"`
+        )
+      }
+      // @ts-ignore
+      if (field.isBody) {
+        if (!['text', 'textarea'].includes(field.type)) {
+          throw new Error(
+            `"isBody" may only be specified on "text" and "textarea" fields, found one on field with type "${field.type}"`
+          )
+        }
+        // @ts-ignore
+        hasIsBody = field.name
+      }
       if (field.type === 'blocks') {
         return {
           name: field.name,
@@ -165,7 +185,7 @@ const buildTemplate = async (
           type: 'blocks',
           template_types: await Promise.all(
             field.templates.map(async (template, index) => {
-              await buildTemplate(template, schema)
+              await buildTemplate(template, schema, false)
               return template.name
             })
           ),
@@ -287,7 +307,7 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
       async (collection) =>
         await Promise.all(
           collection.templates.map(async (definition) => {
-            return buildTemplate(definition, schemaObject)
+            return buildTemplate(definition, schemaObject, true)
           })
         )
     )
@@ -666,20 +686,20 @@ export interface TinaCloudCollection {
   name: string
   label: string
   format?: 'json' | 'md'
-  templates: TinaCloudTemplate[]
+  templates: TinaCloudTemplate<true>[]
 }
 
-export interface TinaCloudTemplate {
+export type TinaCloudTemplate<WithIsBody extends boolean> = {
   label: string
   name: string
-  fields: TinaField[]
+  fields: TinaField<WithIsBody>[]
 }
 
-export type TinaField =
-  | TextField
+export type TinaField<WithIsBody extends boolean = false> =
+  | TextField<WithIsBody>
+  | TextareaField<WithIsBody>
   | DateTimeField
   | NumberField
-  | TextareaField
   | SelectField
   | GroupField
   | ImageField
@@ -697,9 +717,38 @@ interface TinaBaseField {
   description?: string
 }
 
-interface TextField extends TinaBaseField {
+interface TextFieldWithIsbody extends TinaBaseField {
+  type: 'text'
+  /**
+   * Specifying `isBody: true` will result in this field
+   * representing the "body" of a markdown file if your
+   * collection is using the markdown format. `isBody`
+   * can only be set for `text` or `textarea` fields
+   * and is limited to one field per template
+   */
+  isBody?: boolean
+}
+
+interface TextFieldRegular extends TinaBaseField {
   type: 'text'
 }
+
+type TextField<WithIsBody extends boolean = false> = WithIsBody extends true
+  ? TextFieldWithIsbody
+  : TextFieldRegular
+
+interface TextareaFieldWithIsbody extends TinaBaseField {
+  type: 'textarea'
+  isBody?: boolean
+}
+
+interface TextareaFieldRegular extends TinaBaseField {
+  type: 'textarea'
+}
+
+type TextareaField<WithIsBody extends boolean = false> = WithIsBody extends true
+  ? TextareaFieldWithIsbody
+  : TextareaFieldRegular
 
 interface DateTimeField extends TinaBaseField {
   type: 'datetime'
@@ -709,10 +758,6 @@ interface DateTimeField extends TinaBaseField {
 
 interface NumberField extends TinaBaseField {
   type: 'number'
-}
-
-interface TextareaField extends TinaBaseField {
-  type: 'textarea'
 }
 
 interface SelectField extends TinaBaseField {
@@ -750,7 +795,7 @@ interface TagsField extends TinaBaseField {
 
 interface BlocksField extends TinaBaseField {
   type: 'blocks'
-  templates: TinaCloudTemplate[]
+  templates: TinaCloudTemplate<false>[]
 }
 
 interface Reference extends TinaBaseField {
