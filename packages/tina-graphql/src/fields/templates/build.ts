@@ -54,21 +54,12 @@ export const buildTemplateOrFieldData = async ({
   cache,
   template,
   accumulator,
-  includeBody,
-}: TemplateBuildArgs & {
-  includeBody: boolean
-}) => {
-  const name = templateTypeName(template, 'Data', includeBody)
+}: TemplateBuildArgs) => {
+  const name = templateTypeName(template, 'Data')
 
   const fields = await sequential(template.fields, async (field) => {
     return await buildTemplateDataField(cache, field, accumulator)
   })
-
-  if (includeBody) {
-    fields.push(
-      await buildTemplateDataField(cache, textarea.contentField, accumulator)
-    )
-  }
 
   accumulator.push(
     gql.ObjectTypeDefinition({
@@ -83,27 +74,15 @@ export const buildTemplateOrFieldValues = async ({
   cache,
   template,
   accumulator,
-  includeBody,
   includeTemplate = true,
 }: TemplateBuildArgs & {
-  includeBody: boolean
   includeTemplate?: boolean
 }) => {
-  const name = templateTypeName(template, 'Values', includeBody)
+  const name = templateTypeName(template, 'Values')
 
   const fields = await sequential(template.fields, async (field) => {
     return buildTemplateInitialValueField(cache, field, accumulator)
   })
-
-  if (includeBody) {
-    fields.push(
-      await buildTemplateInitialValueField(
-        cache,
-        textarea.contentField,
-        accumulator
-      )
-    )
-  }
 
   if (includeTemplate) {
     fields.push(
@@ -124,20 +103,13 @@ export const buildTemplateOrFieldFormFields = async ({
   cache,
   template,
   accumulator,
-  includeBody,
-}: TemplateBuildArgs & { includeBody: boolean }) => {
-  const name = templateTypeName(template, 'Form', includeBody)
+}: TemplateBuildArgs) => {
+  const name = templateTypeName(template, 'Form')
 
   const fields = await sequential(
     template.fields,
     async (field) => await buildTemplateFormField(cache, field, accumulator)
   )
-
-  if (includeBody) {
-    fields.push(
-      await buildTemplateFormField(cache, textarea.contentField, accumulator)
-    )
-  }
 
   const fieldsUnionName = `${name}FieldsUnion`
   accumulator.push(
@@ -166,25 +138,14 @@ export const buildTemplateOrFieldInput = async ({
   cache,
   template,
   accumulator,
-  includeBody,
-}: TemplateBuildArgs & { includeBody: boolean }) => {
-  const name = templateTypeName(template, 'Input', includeBody)
+}: TemplateBuildArgs) => {
+  const name = templateTypeName(template, 'Input')
 
   const fields = await sequential(
     template.fields,
     async (field) =>
       await buildTemplateInputDataField(cache, field, accumulator)
   )
-
-  if (includeBody) {
-    fields.push(
-      await buildTemplateInputDataField(
-        cache,
-        textarea.contentField,
-        accumulator
-      )
-    )
-  }
 
   accumulator.push(
     gql.InputObjectTypeDefinition({
@@ -200,19 +161,16 @@ export const buildTemplateOrFieldForm = async ({
   cache,
   template,
   accumulator,
-  includeBody,
   nameOverride,
 }: TemplateBuildArgs & {
-  includeBody: boolean
   nameOverride?: string
 }) => {
-  const name = nameOverride || templateTypeName(template, 'Form', includeBody)
+  const name = nameOverride || templateTypeName(template, 'Form')
 
   const fieldsUnionName = await buildTemplateOrFieldFormFields({
     cache,
     template,
     accumulator,
-    includeBody,
   })
 
   accumulator.push(

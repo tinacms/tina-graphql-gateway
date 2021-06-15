@@ -55,11 +55,6 @@ export const templateName = (string: string) => {
   return kebabcase(string)
 }
 
-export const templateTypeName = (
-  template: FriendlyType,
-  suffix: string,
-  includeBody: boolean
-) => {
-  const suffixName = (includeBody ? 'Doc_' : '') + suffix
-  return friendlyName(template, { suffix: suffixName })
+export const templateTypeName = (template: FriendlyType, suffix: string) => {
+  return friendlyName(template, { suffix })
 }

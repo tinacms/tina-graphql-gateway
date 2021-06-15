@@ -42,7 +42,6 @@ export const blocks: Blocks = {
                 cache,
                 template: t,
                 accumulator,
-                includeBody: false,
               })
               return gql.FieldDefinition({
                 name: friendlyName(t, { lowerCase: true }),
@@ -76,7 +75,6 @@ export const blocks: Blocks = {
           cache,
           template: t,
           accumulator,
-          includeBody: false,
         })
       })
 
@@ -99,7 +97,6 @@ export const blocks: Blocks = {
           cache,
           template: t,
           accumulator,
-          includeBody: false,
         })
       })
       accumulator.push(
@@ -123,7 +120,6 @@ export const blocks: Blocks = {
           cache,
           template: t,
           accumulator,
-          includeBody: false,
         })
       })
 

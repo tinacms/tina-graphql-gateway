@@ -30,7 +30,7 @@ export default defineSchema({
               name: 'title',
             },
             {
-              type: 'number',
+              type: 'textarea',
               label: 'Body',
               name: 'body',
               isBody: true,

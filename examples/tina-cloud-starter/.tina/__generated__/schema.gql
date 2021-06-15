@@ -76,15 +76,15 @@ type Query {
   getMarketingPagesList: [MarketingPages_Document]
 }
 
-union Posts_Data = Article_Doc_Data
+union Posts_Data = Article_Data
 
 input Posts_Input {
-  article: Article_Doc_Input
+  article: Article_Input
 }
 
-union Posts_Values = Article_Doc_Values
+union Posts_Values = Article_Values
 
-union Posts_Form = Article_Doc_Form
+union Posts_Form = Article_Form
 
 type Posts_Document implements Node & Document {
   id: ID!
@@ -94,20 +94,27 @@ type Posts_Document implements Node & Document {
   form: Posts_Form
 }
 
-type Article_Doc_Data {
+type Article_Data {
   title: String
+  body: String
   author: Authors_Document
-  _body: String
 }
 
-type Article_Doc_Values {
+type Article_Values {
   title: String
+  body: String
   author: Reference
-  _body: String
   _template: String
 }
 
 type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
+type TextareaField implements FormField {
   name: String
   label: String
   component: String
@@ -122,36 +129,29 @@ type SelectField implements FormField {
   options: [String]
 }
 
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-  description: String
-}
+union Article_FormFieldsUnion = TextField | TextareaField | SelectField
 
-union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
-
-type Article_Doc_Form {
+type Article_Form {
   label: String
   name: String
-  fields: [Article_Doc_FormFieldsUnion]
+  fields: [Article_FormFieldsUnion]
 }
 
-input Article_Doc_Input {
+input Article_Input {
   title: String
+  body: String
   author: String
-  _body: String
 }
 
-union Authors_Data = Author_Doc_Data
+union Authors_Data = Author_Data
 
 input Authors_Input {
-  author: Author_Doc_Input
+  author: Author_Input
 }
 
-union Authors_Values = Author_Doc_Values
+union Authors_Values = Author_Values
 
-union Authors_Form = Author_Doc_Form
+union Authors_Form = Author_Form
 
 type Authors_Document implements Node & Document {
   id: ID!
@@ -161,42 +161,39 @@ type Authors_Document implements Node & Document {
   form: Authors_Form
 }
 
-type Author_Doc_Data {
+type Author_Data {
   name: String
   avatar: String
-  _body: String
 }
 
-type Author_Doc_Values {
+type Author_Values {
   name: String
   avatar: String
-  _body: String
   _template: String
 }
 
-union Author_Doc_FormFieldsUnion = TextField | TextareaField
+union Author_FormFieldsUnion = TextField
 
-type Author_Doc_Form {
+type Author_Form {
   label: String
   name: String
-  fields: [Author_Doc_FormFieldsUnion]
+  fields: [Author_FormFieldsUnion]
 }
 
-input Author_Doc_Input {
+input Author_Input {
   name: String
   avatar: String
-  _body: String
 }
 
-union MarketingPages_Data = LandingPage_Doc_Data
+union MarketingPages_Data = LandingPage_Data
 
 input MarketingPages_Input {
-  landingPage: LandingPage_Doc_Input
+  landingPage: LandingPage_Input
 }
 
-union MarketingPages_Values = LandingPage_Doc_Values
+union MarketingPages_Values = LandingPage_Values
 
-union MarketingPages_Form = LandingPage_Doc_Form
+union MarketingPages_Form = LandingPage_Form
 
 type MarketingPages_Document implements Node & Document {
   id: ID!
@@ -219,9 +216,8 @@ type Image_Data {
 
 union LandingPage_Blocks_Data = Message_Data | Image_Data
 
-type LandingPage_Doc_Data {
+type LandingPage_Data {
   blocks: [LandingPage_Blocks_Data]
-  _body: String
 }
 
 type Message_Values {
@@ -239,9 +235,8 @@ type Image_Values {
 
 union LandingPage_Blocks_Values = Message_Values | Image_Values
 
-type LandingPage_Doc_Values {
+type LandingPage_Values {
   blocks: [LandingPage_Blocks_Values]
-  _body: String
   _template: String
 }
 
@@ -274,12 +269,12 @@ type LandingPage_Blocks_BlocksField implements FormField {
   templates: LandingPage_Blocks_BlocksFieldTemplates
 }
 
-union LandingPage_Doc_FormFieldsUnion = LandingPage_Blocks_BlocksField | TextareaField
+union LandingPage_FormFieldsUnion = LandingPage_Blocks_BlocksField
 
-type LandingPage_Doc_Form {
+type LandingPage_Form {
   label: String
   name: String
-  fields: [LandingPage_Doc_FormFieldsUnion]
+  fields: [LandingPage_FormFieldsUnion]
 }
 
 input Message_Input {
@@ -298,9 +293,8 @@ input Blocks_Input {
   image: Image_Input
 }
 
-input LandingPage_Doc_Input {
+input LandingPage_Input {
   blocks: [Blocks_Input]
-  _body: String
 }
 
   

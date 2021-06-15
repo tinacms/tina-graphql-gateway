@@ -50,11 +50,7 @@ export const resolve = {
     })
 
     return {
-      __typename: templateTypeName(
-        template,
-        'Data',
-        typeof content !== 'undefined' // FIXME: be more explicit
-      ),
+      __typename: templateTypeName(template, 'Data'),
       ...accum,
     }
   },
@@ -78,11 +74,7 @@ export const resolve = {
     })
 
     return {
-      __typename: templateTypeName(
-        template,
-        'Values',
-        typeof content !== 'undefined' // FIXME: be more explicit
-      ),
+      __typename: templateTypeName(template, 'Values'),
       _template: template.name,
       ...accum,
     }
@@ -94,7 +86,7 @@ export const resolve = {
   }: {
     datasource: DataSource
     template: TemplateData
-    includeBody?: boolean
+    includeBody?: false
   }) => {
     const fields = await sequential(template.fields, async (field) =>
       dataField(datasource, field)
@@ -111,7 +103,7 @@ export const resolve = {
 
     return {
       ...template,
-      __typename: templateTypeName(template, 'Form', !!includeBody),
+      __typename: templateTypeName(template, 'Form'),
       fields,
     }
   },
@@ -125,7 +117,7 @@ export const resolve = {
     datasource: DataSource
     template: TemplateData
     data: unknown
-    includeBody?: true
+    includeBody?: false
   }) => {
     if (includeBody) {
       template.fields.push(textarea.contentField)

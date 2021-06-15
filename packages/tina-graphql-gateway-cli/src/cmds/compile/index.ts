@@ -163,7 +163,7 @@ const buildTemplate = async <T extends boolean>(
     // @ts-ignore
     definition.fields.map(async (field) => {
       // @ts-ignore
-      if (hasIsBody) {
+      if (field.isBody && hasIsBody) {
         throw new Error(
           `Only one "isBody" property can be set per template, found one on fields "${hasIsBody}" and "${field.name}"`
         )

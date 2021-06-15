@@ -154,7 +154,7 @@ const schemaResolver = async (
         },
         template,
         datasource: context.datasource,
-        includeBody: true,
+        includeBody: false,
       })
       const relativePath = args.relativePath
 
@@ -235,7 +235,7 @@ const schemaResolver = async (
           _template: template.name,
         },
         datasource: context.datasource,
-        includeBody: true,
+        includeBody: false,
       })
 
       const payload = {
@@ -379,7 +379,7 @@ const resolveDocument = async ({
       filename,
       extension,
     },
-    form: await resolve.form({ datasource, template, includeBody: true }),
+    form: await resolve.form({ datasource, template, includeBody: false }),
     data: await resolve.data({
       datasource,
       template: template,

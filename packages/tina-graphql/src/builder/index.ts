@@ -102,7 +102,6 @@ export const schemaBuilder = async ({ cache }: { cache: Cache }) => {
           cache,
           template: await cache.datasource.getTemplate(templateSlug),
           accumulator,
-          includeBody: true,
         }
 
         await template.build.data(args)
@@ -393,7 +392,7 @@ const buildSectionDefinitions = (
     gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: 'Data' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, 'Data', true)
+        templateTypeName(template, 'Data')
       ),
     })
   )
@@ -403,7 +402,7 @@ const buildSectionDefinitions = (
       fields: section.templates.map((template) =>
         gql.InputValueDefinition({
           name: friendlyName(template, { lowerCase: true }),
-          type: templateTypeName(template, 'Input', true),
+          type: templateTypeName(template, 'Input'),
         })
       ),
     })
@@ -412,7 +411,7 @@ const buildSectionDefinitions = (
     gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: 'Values' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, 'Values', true)
+        templateTypeName(template, 'Values')
       ),
     })
   )
@@ -420,7 +419,7 @@ const buildSectionDefinitions = (
     gql.UnionTypeDefinition({
       name: friendlyName(name, { suffix: 'Form' }),
       types: section.templates.map((template) =>
-        templateTypeName(template, 'Form', true)
+        templateTypeName(template, 'Form')
       ),
     })
   )
