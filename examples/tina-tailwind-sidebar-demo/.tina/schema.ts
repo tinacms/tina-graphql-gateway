@@ -11,25 +11,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from "tina-graphql-gateway-cli";
-import { PageTemplate } from "./PageTemplate";
-import { ThemeTemplate } from "./ThemeTemplate";
+import { defineSchema } from 'tina-graphql-gateway-cli'
+import { PageTemplate } from './PageTemplate'
+import { ThemeTemplate } from './ThemeTemplate'
 
 export default defineSchema({
   collections: [
     {
-      label: "Theme",
-      name: "theme",
-      path: "content/theme",
-      format: "json",
+      label: 'Theme',
+      name: 'theme',
+      path: 'content/theme',
+      format: 'json',
       templates: [ThemeTemplate],
     },
     {
-      label: "Pages",
-      name: "page",
-      path: "content/data",
-      format: "json",
+      label: 'Pages',
+      name: 'page',
+      path: 'content/data',
+      format: 'json',
       templates: [PageTemplate],
     },
   ],
-});
+})

@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { useEditState } from "../utils/editState";
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { useEditState } from '../utils/editState'
 const Admin = () => {
-  const { setEdit } = useEditState();
-  const router = useRouter();
+  const { setEdit } = useEditState()
+  const router = useRouter()
   useEffect(() => {
-    setEdit(true);
-    router.back();
-  }, []);
-  return <div>Going into edit mode...</div>;
-};
-export default Admin;
+    setEdit(true)
+    router.back()
+  }, [])
+  return <div>Going into edit mode...</div>
+}
+export default Admin

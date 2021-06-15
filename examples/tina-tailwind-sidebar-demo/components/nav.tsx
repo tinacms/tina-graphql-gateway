@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
-import { ThemeContext } from "./theme";
-import { Section } from "./section";
-import { Icon, ICON_FIELDS } from "./icon";
-import { BiSun } from "react-icons/bi";
-import { RiMoonClearLine } from "react-icons/ri";
-import { Homepage_Nav_Data, Maybe } from "../.tina/__generated__/types";
+import * as React from 'react'
+import { ThemeContext } from './theme'
+import { Section } from './section'
+import { Icon, ICON_FIELDS } from './icon'
+import { BiSun } from 'react-icons/bi'
+import { RiMoonClearLine } from 'react-icons/ri'
+import { Homepage_Nav_Data, Maybe } from '../.tina/__generated__/types'
 
 export const Nav = ({ nav }: { nav?: Maybe<Homepage_Nav_Data> }) => {
-  const theme = React.useContext(ThemeContext);
+  const theme = React.useContext(ThemeContext)
 
   return (
     <Section>
@@ -31,10 +31,10 @@ export const Nav = ({ nav }: { nav?: Maybe<Homepage_Nav_Data> }) => {
         >
           <div className="inline-flex items-center">
             <div className={`mr-2`}>
-              <Icon icon={nav?.wordmark?.icon || ""} />
+              <Icon icon={nav?.wordmark?.icon || ''} />
             </div>
             <h2 className="font-bold tracking-tight transition duration-150 ease-out transform text-blueGray-500 dark:text-blueGray-200 lg:text-md text-bold">
-              {nav?.wordmark?.name || ""}
+              {nav?.wordmark?.name || ''}
             </h2>
           </div>
         </a>
@@ -49,13 +49,13 @@ export const Nav = ({ nav }: { nav?: Maybe<Homepage_Nav_Data> }) => {
                 >
                   {item.label}
                 </a>
-              );
+              )
             })}
           </nav>
           <button
             onClick={() => {
               // @ts-ignore
-              theme.toggleThemeMode();
+              theme.toggleThemeMode()
             }}
             type="button"
             className="ml-8 outline-none opacity-30 hover:opacity-70 focus:opacity-100 focus:outline-none transparent absolute top-9 right-6  md:relative md:top-auto md:right-auto transition duration-150 ease-out"
@@ -64,58 +64,58 @@ export const Nav = ({ nav }: { nav?: Maybe<Homepage_Nav_Data> }) => {
             <BiSun
               className={`w-6 h-6 transition duration-300 ease-out transform ${
                 // @ts-ignore
-                theme.themeMode === "light" && "opacity-0 rotate-90"
+                theme.themeMode === 'light' && 'opacity-0 rotate-90'
               }`}
             />
             <RiMoonClearLine
               className={`w-6 h-6 absolute top-0 left-0 transition duration-300 ease-out transform  ${
                 // @ts-ignore
-                theme.themeMode === "dark" && "opacity-0 -rotate-90"
+                theme.themeMode === 'dark' && 'opacity-0 -rotate-90'
               }`}
             />
           </button>
         </div>
       </div>
     </Section>
-  );
-};
+  )
+}
 
 export const NAV_FIELDS = [
   {
-    label: "Wordmark",
-    name: "wordmark",
-    component: "group",
+    label: 'Wordmark',
+    name: 'wordmark',
+    component: 'group',
     fields: [
       ...ICON_FIELDS,
       {
-        label: "Name",
-        name: "name",
-        component: "text",
+        label: 'Name',
+        name: 'name',
+        component: 'text',
       },
     ],
   },
   {
-    label: "Nav Items",
-    name: "items",
-    component: "group-list",
+    label: 'Nav Items',
+    name: 'items',
+    component: 'group-list',
     itemProps: (item) => ({
       label: item.label,
     }),
     defaultItem: () => ({
-      label: "Nav Link",
-      link: "/",
+      label: 'Nav Link',
+      link: '/',
     }),
     fields: [
       {
-        label: "Label",
-        name: "label",
-        component: "text",
+        label: 'Label',
+        name: 'label',
+        component: 'text',
       },
       {
-        label: "Link",
-        name: "link",
-        component: "text",
+        label: 'Link',
+        name: 'link',
+        component: 'text',
       },
     ],
   },
-];
+]

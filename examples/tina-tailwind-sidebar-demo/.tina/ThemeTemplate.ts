@@ -11,32 +11,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaCloudTemplate } from "tina-graphql-gateway-cli";
+import { TinaCloudTemplate } from 'tina-graphql-gateway-cli'
 
 export const ThemeTemplate: TinaCloudTemplate = {
-  name: "theme",
-  label: "Theme",
+  name: 'theme',
+  label: 'Theme',
   fields: [
     {
-      name: "color",
-      label: "Primary Color",
-      type: "select",
+      name: 'color',
+      label: 'Primary Color',
+      type: 'select',
       options: [
-        "blue",
-        "teal",
-        "green",
-        "red",
-        "pink",
-        "purple",
-        "orange",
-        "yellow",
+        'blue',
+        'teal',
+        'green',
+        'red',
+        'pink',
+        'purple',
+        'orange',
+        'yellow',
       ],
     },
     {
-      name: "btnStyle",
-      label: "Button Style",
-      type: "select",
-      options: ["round", "rounded", "square"],
+      name: 'btnStyle',
+      label: 'Button Style',
+      type: 'select',
+      options: ['round', 'rounded', 'square'],
     },
   ],
-};
+}

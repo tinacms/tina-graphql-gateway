@@ -11,23 +11,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaField } from 'tina-graphql-gateway-cli'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
-export const BlogFields: TinaField[] = [
-  {
-    type: 'text',
-    label: 'Title',
-    name: 'title',
-  },
-  {
-    name: 'hero',
-    type: 'image',
-    label: 'Hero',
-  },
-  {
-    type: 'reference',
-    label: 'Author',
-    name: 'author',
-    collection: 'authors',
-  },
-]
+import { Wrapper } from '../components/helper-components'
+import { useEditState } from '../utils/editState'
+
+const GoToEditPage: React.FC = () => {
+  const { setEdit } = useEditState()
+  const router = useRouter()
+  useEffect(() => {
+    setEdit(true)
+    router.back()
+  }, [])
+  return (
+    <Wrapper data={{}}>
+      <div>Going into edit mode...</div>
+    </Wrapper>
+  )
+}
+
+export default GoToEditPage

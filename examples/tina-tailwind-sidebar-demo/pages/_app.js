@@ -11,18 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import dynamic from "next/dynamic";
-import "../styles.css";
+import dynamic from 'next/dynamic'
+import '../styles.css'
 
-import { EditProvider, useEditState } from "../utils/editState";
+import { EditProvider, useEditState } from '../utils/editState'
 
 // InnerApp that handles rendering edit mode or not
 function InnerApp({ Component, pageProps }) {
-  const { edit, setEdit } = useEditState();
+  const { edit, setEdit } = useEditState()
   if (edit) {
     // Dynamically load Tina only when in edit mode so it does not affect production
     // see https://nextjs.org/docs/advanced-features/dynamic-import#basic-usage
-    const TinaWrapper = dynamic(() => import("../components/tina-wrapper"));
+    const TinaWrapper = dynamic(() => import('../components/tina-wrapper'))
     return (
       <>
         <TinaWrapper {...pageProps}>
@@ -31,7 +31,7 @@ function InnerApp({ Component, pageProps }) {
               <div>
                 <button
                   onClick={() => {
-                    setEdit(false);
+                    setEdit(false)
                   }}
                 >
                   Exit Edit mode
@@ -42,13 +42,13 @@ function InnerApp({ Component, pageProps }) {
           )}
         </TinaWrapper>
       </>
-    );
+    )
   }
   return (
     <>
       <Component {...pageProps} />
     </>
-  );
+  )
 }
 
 // Our app is wrapped with edit provider
@@ -60,7 +60,7 @@ function App(props) {
       <InnerApp {...props} />
       {/* </TinaProvider> */}
     </EditProvider>
-  );
+  )
 }
 
-export default App;
+export default App
