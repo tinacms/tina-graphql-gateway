@@ -23,7 +23,7 @@ const field: SelectField = {
     source: {
       type: 'simple',
     },
-    options: ['option A'],
+    options: [{ label: 'option A', value: 'option A' }],
   },
 }
 
