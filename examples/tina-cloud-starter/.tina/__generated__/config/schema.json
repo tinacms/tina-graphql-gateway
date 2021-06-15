@@ -2,11 +2,11 @@
   "settings": {
     "sections": [
       {
-        "label": "Authors",
-        "name": "authors",
-        "path": "content/authors",
+        "label": "Blog Posts",
+        "name": "posts",
+        "path": "content/posts",
         "templates": [
-          "author"
+          "article"
         ],
         "type": "directory",
         "create": "documents",
@@ -14,11 +14,11 @@
         "new_doc_ext": "md"
       },
       {
-        "label": "Blog Posts",
-        "name": "posts",
-        "path": "content/posts",
+        "label": "Authors",
+        "name": "authors",
+        "path": "content/authors",
         "templates": [
-          "article"
+          "author"
         ],
         "type": "directory",
         "create": "documents",
@@ -41,6 +41,28 @@
   },
   "templates": [
     {
+      "label": "Article",
+      "name": "article",
+      "fields": [
+        {
+          "type": "text",
+          "label": "Title",
+          "name": "title"
+        },
+        {
+          "name": "author",
+          "label": "Author",
+          "type": "select",
+          "config": {
+            "source": {
+              "type": "pages",
+              "section": "authors"
+            }
+          }
+        }
+      ]
+    },
+    {
       "label": "Author",
       "name": "author",
       "fields": [
@@ -53,33 +75,6 @@
           "type": "text",
           "label": "Avatar",
           "name": "avatar"
-        }
-      ]
-    },
-    {
-      "label": "Article",
-      "name": "article",
-      "fields": [
-        {
-          "type": "text",
-          "label": "Title",
-          "name": "title"
-        },
-        {
-          "name": "hero",
-          "type": "file",
-          "label": "Hero"
-        },
-        {
-          "name": "author",
-          "label": "Author",
-          "type": "select",
-          "config": {
-            "source": {
-              "type": "pages",
-              "section": "authors"
-            }
-          }
         }
       ]
     },
@@ -100,23 +95,23 @@
       ]
     },
     {
-      "name": "diagram",
-      "label": "Diagram",
+      "name": "image",
+      "label": "Image",
       "fields": [
         {
           "type": "text",
-          "label": "Diagram Heading",
-          "name": "diagramHeading"
+          "label": "Heading",
+          "name": "heading"
         },
         {
           "type": "textarea",
-          "label": "Diagram Description",
-          "name": "diagramDescription"
+          "label": "Image Description",
+          "name": "imgDescription"
         },
         {
           "type": "text",
-          "label": "Diagram ID",
-          "name": "diagramID"
+          "label": "Image src",
+          "name": "src"
         }
       ]
     },
@@ -130,7 +125,7 @@
           "type": "blocks",
           "template_types": [
             "message",
-            "diagram"
+            "image"
           ]
         }
       ]

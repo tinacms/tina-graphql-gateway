@@ -138,7 +138,15 @@ const transformField = async (
         source: {
           type: 'simple',
         },
-        options: field.options,
+        options: field.options.map((option) => {
+          if (typeof option === 'string') {
+            return {
+              value: option,
+              label: option,
+            }
+          }
+          return option
+        }),
       },
     }
   }
@@ -492,7 +500,8 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .string()
       .matches(/^select$/)
       .required(),
-    options: yup.array().min(1).of(yup.string()).required(),
+    // options: yup.array().min(1).of(yup.string()).required(),
+    options: yup.array().min(1).required(),
   })
   const ListSchema = baseSchema.label('list').shape({
     type: yup
@@ -718,7 +727,7 @@ interface TextareaField extends TinaBaseField {
 
 interface SelectField extends TinaBaseField {
   type: 'select'
-  options: string[] // NOTE this is possibly an object in Tina's case
+  options: ({ label: string; value: string } | string)[]
 }
 
 interface ImageField extends TinaBaseField {
