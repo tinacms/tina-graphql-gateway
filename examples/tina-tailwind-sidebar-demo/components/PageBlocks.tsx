@@ -23,28 +23,28 @@ limitations under the License.
 //     : null;
 // };
 
-import { Homepage_Blocks_Data } from "../.tina/__generated__/types";
-import { Features } from "./features";
-import { Hero } from "./hero";
-import { Testimonial } from "./testimonial";
+import { Homepage_Blocks_Data } from '../.tina/__generated__/types'
+import { Features } from './features'
+import { Hero } from './hero'
+import { Testimonial } from './testimonial'
 
 export const Blocks: React.FC<{
-  blocksData: Homepage_Blocks_Data[];
-  placeholder: JSX.Element;
+  blocksData: Homepage_Blocks_Data[]
+  placeholder: JSX.Element
 }> = ({ blocksData, placeholder }) => {
-  if (!blocksData || blocksData.length < 1) return placeholder;
+  if (!blocksData || blocksData.length < 1) return placeholder
   return (
     <>
       {blocksData.map((block, i) => {
         switch (block.__typename) {
-          case "Features_Data":
-            return <Features key={i} {...block} />;
-          case "Hero_Data":
-            return <Hero key={i} {...block} />;
-          case "Testimonial_Data":
-            return <Testimonial key={i} {...block} />;
+          case 'Features_Data':
+            return <Features key={i} {...block} />
+          case 'Hero_Data':
+            return <Hero key={i} {...block} />
+          case 'Testimonial_Data':
+            return <Testimonial key={i} {...block} />
         }
       })}
     </>
-  );
-};
+  )
+}

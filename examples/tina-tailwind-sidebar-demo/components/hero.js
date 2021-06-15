@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
-import { ThemeContext } from "./theme";
-import { ACTION_FIELDS, Actions } from "./actions";
-import { Section, SectionFields } from "./section";
+import * as React from 'react'
+import { ThemeContext } from './theme'
+import { ACTION_FIELDS, Actions } from './actions'
+import { Section, SectionFields } from './section'
 
 export const Hero = (data) => {
-  const theme = React.useContext(ThemeContext);
+  const theme = React.useContext(ThemeContext)
 
   return (
-    <Section variant={data?.style?.color || "blue"}>
+    <Section variant={data?.style?.color || 'blue'}>
       <div className="w-full pt-20 lg:py-56 lg:text-left">
         <div className="px-8 pb-20 lg:pb-0 lg:w-1/2 lg:px-12">
           <div className="max-w-3xl mx-auto">
@@ -30,13 +30,13 @@ export const Hero = (data) => {
             <h3
               className={`w-full relative	mb-6 text-5xl font-extrabold tracking-normal text-left title-font`}
             >
-              {data.style?.color === "primary" ? (
+              {data.style?.color === 'primary' ? (
                 <span
                   className={`bg-clip-text text-transparent bg-gradient-to-r from-gray-600 to-gray-800`}
                   style={{
                     textShadow: `0 0.5rem 3rem rgba(var(--color-rgb-${theme.color}-600),0.35)`,
-                    boxDecorationBreak: "clone",
-                    WebkitBoxDecorationBreak: "clone",
+                    boxDecorationBreak: 'clone',
+                    WebkitBoxDecorationBreak: 'clone',
                   }}
                 >
                   {data.headline}
@@ -46,8 +46,8 @@ export const Hero = (data) => {
                   className={`bg-clip-text text-transparent bg-gradient-to-r from-${theme.color}-400 to-${theme.color}-600`}
                   style={{
                     textShadow: `0 0.5rem 3rem rgba(var(--color-rgb-${theme.color}-600),0.35)`,
-                    boxDecorationBreak: "clone",
-                    WebkitBoxDecorationBreak: "clone",
+                    boxDecorationBreak: 'clone',
+                    WebkitBoxDecorationBreak: 'clone',
                   }}
                 >
                   {data.headline}
@@ -71,86 +71,86 @@ export const Hero = (data) => {
         </div>
       </div>
     </Section>
-  );
-};
+  )
+}
 
 export const IMAGE_FIELDS = [
   {
-    name: "src",
-    label: "Image Source",
-    component: "text",
+    name: 'src',
+    label: 'Image Source',
+    component: 'text',
   },
   {
-    name: "alt",
-    label: "Alt Text",
-    component: "text",
+    name: 'alt',
+    label: 'Alt Text',
+    component: 'text',
   },
-];
+]
 
 export const hero_template = {
-  label: "Hero",
+  label: 'Hero',
   defaultItem: {
-    tagline: "TAGLINE ABOVE TEXT",
-    headline: "This is a large display heading.",
-    text: "Give your team a contextual, intuitive editing experience without sacrificing code quality.",
+    tagline: 'TAGLINE ABOVE TEXT',
+    headline: 'This is a large display heading.',
+    text: 'Give your team a contextual, intuitive editing experience without sacrificing code quality.',
     image: {
-      src: "/canal.jpg",
-      alt: "Photo from Unsplash",
+      src: '/canal.jpg',
+      alt: 'Photo from Unsplash',
     },
     actions: [
       {
-        label: "Primary Action",
-        type: "button",
-        icon: "true",
+        label: 'Primary Action',
+        type: 'button',
+        icon: 'true',
       },
       {
-        label: "Learn More",
-        type: "link",
+        label: 'Learn More',
+        type: 'link',
       },
     ],
     style: {
-      color: "tint",
+      color: 'tint',
     },
   },
   fields: [
     {
-      name: "",
-      label: "Text",
-      component: "group",
+      name: '',
+      label: 'Text',
+      component: 'group',
       fields: [...SectionFields],
     },
     {
-      name: "image",
-      label: "Image",
-      component: "group",
+      name: 'image',
+      label: 'Image',
+      component: 'group',
       fields: IMAGE_FIELDS,
     },
     ...ACTION_FIELDS,
     {
-      name: "style",
-      label: "Style",
-      component: "group",
+      name: 'style',
+      label: 'Style',
+      component: 'group',
       fields: [
         {
-          name: "color",
-          label: "Color",
-          component: "select",
+          name: 'color',
+          label: 'Color',
+          component: 'select',
           options: [
             {
-              label: "Default",
-              value: "default",
+              label: 'Default',
+              value: 'default',
             },
             {
-              label: "Tint",
-              value: "tint",
+              label: 'Tint',
+              value: 'tint',
             },
             {
-              label: "Primary",
-              value: "primary",
+              label: 'Primary',
+              value: 'primary',
             },
           ],
         },
       ],
     },
   ],
-};
+}

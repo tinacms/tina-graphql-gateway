@@ -11,71 +11,71 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
-import { Theme_Document } from "../.tina/__generated__/types";
+import * as React from 'react'
+import { Theme_Document } from '../.tina/__generated__/types'
 
-export const ThemeContext = React.createContext(null as any);
+export const ThemeContext = React.createContext(null as any)
 
 const getInitialThemeMode = (_) => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     if (window.localStorage) {
-      const storedPrefs = window.localStorage.getItem("theme-mode");
+      const storedPrefs = window.localStorage.getItem('theme-mode')
 
-      if (typeof storedPrefs === "string") {
-        return storedPrefs;
+      if (typeof storedPrefs === 'string') {
+        return storedPrefs
       }
     }
 
-    const userMedia = window.matchMedia("(prefers-color-scheme: dark)");
+    const userMedia = window.matchMedia('(prefers-color-scheme: dark)')
 
     if (userMedia.matches) {
-      return "dark";
+      return 'dark'
     }
   }
 
-  return "light";
-};
+  return 'light'
+}
 
 const updateRenderColorMode = (themeMode) => {
-  if (typeof window !== "undefined") {
-    const root = window.document.documentElement;
-    root.classList.remove("dark");
-    root.classList.remove("light");
-    root.classList.add(themeMode);
+  if (typeof window !== 'undefined') {
+    const root = window.document.documentElement
+    root.classList.remove('dark')
+    root.classList.remove('light')
+    root.classList.add(themeMode)
   }
-};
+}
 
 export const Theme: React.FC<{
   theme: {
-    getThemeDocument: Theme_Document;
-  };
+    getThemeDocument: Theme_Document
+  }
 }> = ({ children, theme }) => {
-  const [themeMode, setThemeMode] = React.useState(getInitialThemeMode(""));
+  const [themeMode, setThemeMode] = React.useState(getInitialThemeMode(''))
 
   const toggleThemeMode = () => {
-    let newMode = "";
+    let newMode = ''
 
-    if (themeMode === "light") {
-      newMode = "dark";
+    if (themeMode === 'light') {
+      newMode = 'dark'
     } else {
-      newMode = "light";
+      newMode = 'light'
     }
 
-    setThemeMode(newMode);
+    setThemeMode(newMode)
 
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.setItem("theme-mode", newMode);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('theme-mode', newMode)
     }
-  };
+  }
 
   React.useEffect(() => {
-    updateRenderColorMode(themeMode);
-  }, [themeMode]);
+    updateRenderColorMode(themeMode)
+  }, [themeMode])
 
-  const themeData = theme.getThemeDocument.data;
+  const themeData = theme.getThemeDocument.data
   return (
     <ThemeContext.Provider value={{ themeMode, toggleThemeMode, ...themeData }}>
       {children}
     </ThemeContext.Provider>
-  );
-};
+  )
+}

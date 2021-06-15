@@ -11,38 +11,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Client, LocalClient } from "tina-graphql-gateway";
+import { Client, LocalClient } from 'tina-graphql-gateway'
 
 export const createClient = () => {
-  return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "1"
+  return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === '1'
     ? createLocalClient()
-    : createCloudClient();
-};
+    : createCloudClient()
+}
 
 export const createCloudClient = () => {
-  const organization = process.env.NEXT_PUBLIC_ORGANIZATION_NAME;
-  const clientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
+  const organization = process.env.NEXT_PUBLIC_ORGANIZATION_NAME
+  const clientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID
 
-  const missingEnv = [];
+  const missingEnv = []
   if (!organization) {
-    missingEnv.push("NEXT_PUBLIC_ORGANIZATION_NAME");
+    missingEnv.push('NEXT_PUBLIC_ORGANIZATION_NAME')
   }
   if (!clientId) {
-    missingEnv.push("NEXT_PUBLIC_TINA_CLIENT_ID");
+    missingEnv.push('NEXT_PUBLIC_TINA_CLIENT_ID')
   }
 
   if (missingEnv.length) {
     throw new Error(`The following environment variables are required when using the Tina Cloud Client:
-     ${missingEnv.join(", ")}`);
+     ${missingEnv.join(', ')}`)
   }
 
   return new Client({
     organizationId: organization,
     clientId,
-    branch: "tina-cloud",
-    tokenStorage: "LOCAL_STORAGE",
-  });
-};
+    branch: 'tina-cloud',
+    tokenStorage: 'LOCAL_STORAGE',
+  })
+}
 
 /**
  * This is a GraphQL client that only talks to your local filesystem server,
@@ -52,8 +52,8 @@ export const createCloudClient = () => {
  * option to "switch on" the non-local client via environment variables.
  */
 export const createLocalClient = () => {
-  return new LocalClient();
-};
+  return new LocalClient()
+}
 
 /**
  *
@@ -63,23 +63,23 @@ export const createLocalClient = () => {
  *
  */
 export const variablesFromPath = (path, fallback) => {
-  const arr = path.split("/");
-  const collection = arr[0];
+  const arr = path.split('/')
+  const collection = arr[0]
   // FIXME: assumes `.md` as extension, should work with other extensions
-  const relativePath = `${arr.slice(1).join("/")}.md`;
+  const relativePath = `${arr.slice(1).join('/')}.md`
 
   if (collection && relativePath) {
-    return { collection, relativePath };
+    return { collection, relativePath }
   } else {
-    return fallback;
+    return fallback
   }
-};
+}
 
 // FIXME: infer args from useForm
 export const redirectToNewDocument = (args, prefix) => {
   const redirect = `${window.location.origin}${prefix}/${
     args.collection.slug
-  }/${args.breadcrumbs.join("/")}`;
+  }/${args.breadcrumbs.join('/')}`
 
-  window.location.assign(redirect);
-};
+  window.location.assign(redirect)
+}

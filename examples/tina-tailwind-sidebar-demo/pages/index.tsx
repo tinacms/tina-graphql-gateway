@@ -11,32 +11,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
+import * as React from 'react'
 
-import { Hero, hero_template } from "../components/hero";
-import { Testimonial, testimonial_template } from "../components/testimonial";
-import { Blocks } from "../components/PageBlocks";
-import { Nav } from "../components/nav";
-import { Footer } from "../components/footer";
-import { Features, features_template } from "../components/features";
-import { createLocalClient } from "../utils";
-import {
-  Homepage_Doc_Data,
-  Theme_Document,
-} from "../.tina/__generated__/types";
-import { Theme } from "../components/theme";
-import { ThemeQuery } from "../components/tina-wrapper";
+import { Hero, hero_template } from '../components/hero'
+import { Testimonial, testimonial_template } from '../components/testimonial'
+import { Blocks } from '../components/PageBlocks'
+import { Nav } from '../components/nav'
+import { Footer } from '../components/footer'
+import { Features, features_template } from '../components/features'
+import { createLocalClient } from '../utils'
+import { Homepage_Doc_Data, Theme_Document } from '../.tina/__generated__/types'
+import { Theme } from '../components/theme'
+import { ThemeQuery } from '../components/tina-wrapper'
 
 interface AppProps {
   pageProps: {
-    getPageDocument: { data: Homepage_Doc_Data };
-  };
+    getPageDocument: { data: Homepage_Doc_Data }
+  }
   theme: {
-    getThemeDocument: Theme_Document;
-  };
+    getThemeDocument: Theme_Document
+  }
 }
 const App = ({ pageProps, theme }: AppProps) => {
-  const { blocks, nav, footer, navlist } = pageProps.getPageDocument.data;
+  const { blocks, nav, footer, navlist } = pageProps.getPageDocument.data
   return (
     <div className="App">
       <Theme theme={theme}>
@@ -55,7 +52,7 @@ const App = ({ pageProps, theme }: AppProps) => {
             />
           </div>
           <Footer
-            name={nav?.wordmark?.name || ""}
+            name={nav?.wordmark?.name || ''}
             footer={footer}
             navList={navlist}
           />
@@ -70,24 +67,24 @@ const App = ({ pageProps, theme }: AppProps) => {
       /> */}
       {/* )} */}
     </div>
-  );
-};
+  )
+}
 
 const PAGE_BLOCKS = {
   hero: Hero,
   testimonial: Testimonial,
   features: Features,
-};
+}
 
 const PAGE_BLOCK_TEMPLATES = {
   hero: hero_template,
   testimonial: testimonial_template,
   features: features_template,
-};
+}
 
-export default App;
+export default App
 
-const client = createLocalClient();
+const client = createLocalClient()
 
 export const query = `#graphql
  query ContentQuery
@@ -179,15 +176,15 @@ export const query = `#graphql
     }
   }
 }
-`;
+`
 
 export const getStaticProps = async (ctx) => {
   const data = await client.request(query, {
     variables: {},
-  });
+  })
   const theme = await client.request(ThemeQuery, {
     variables: {},
-  });
+  })
   return {
     props: {
       pageProps: data,
@@ -195,5 +192,5 @@ export const getStaticProps = async (ctx) => {
       query,
       variables: {},
     },
-  };
-};
+  }
+}

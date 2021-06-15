@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
+import * as React from 'react'
 import {
   Modal,
   PopupModal,
@@ -19,18 +19,18 @@ import {
   ModalBody,
   ModalActions,
   FieldsGroup,
-} from "tinacms";
-import { Button } from "@tinacms/styles";
+} from 'tinacms'
+import { Button } from '@tinacms/styles'
 
 export function TinaModal({
-  title = "Save Changes",
+  title = 'Save Changes',
   close = () => {},
   data = {},
 }) {
   function handleClose(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    close();
+    event.stopPropagation()
+    event.preventDefault()
+    close()
   }
 
   return (
@@ -64,8 +64,7 @@ export function TinaModal({
           <Button
             primary
             onClick={() => {
-              window.location =
-                "https://tina.io/docs/getting-started/backends/";
+              window.location = 'https://tina.io/docs/getting-started/backends/'
             }}
           >
             <span className="whitespace-nowrap inline-block">
@@ -76,5 +75,5 @@ export function TinaModal({
         </ModalActions>
       </PopupModal>
     </Modal>
-  );
+  )
 }
