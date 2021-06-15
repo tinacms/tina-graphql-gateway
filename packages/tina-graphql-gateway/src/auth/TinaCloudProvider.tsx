@@ -116,11 +116,10 @@ export const TinaCloudAuthWall = (
     new TinaCMS({
       enabled: true,
       sidebar: true,
-      apis: {
-        tina: createClient(props),
-      },
     })
-  console.log({ cms })
+  if (!cms.api.tina) {
+    cms.api.tina = createClient(props)
+  }
 
   return (
     <TinaProvider cms={cms}>
