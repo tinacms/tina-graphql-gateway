@@ -90,26 +90,27 @@ export class DataManager implements DataSource {
     return documents.map((relativePath) => p.join(section.path, relativePath))
   }
   getAllTemplates = async () => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
-    const templates = await readDir(fullPath, this.dirLoader)
-    return await sequential(
-      templates,
-      async (templateSlug) =>
-        await this.getTemplate(templateSlug.replace('.yml', ''))
+    const data = await this.getSchema()
+    return data.templates
+  }
+  getTemplates = async (templateSlugs: string[]) => {
+    const data = await this.getSchema()
+
+    return data.templates.filter((template) =>
+      templateSlugs.includes(template.name)
     )
   }
-  getTemplates = async (templateSlugs: string[]) =>
-    await sequential(
-      templateSlugs,
-      async (templateSlug) => await this.getTemplate(templateSlug)
-    )
-  getSettingsData = async () => {
-    const { data } = await readFile<Settings>(
-      p.join(this.rootPath, tinaPath, 'settings.yml'),
-      this.loader
-    )
+  getSchema = async () => {
+    const { data } = await readFile<{
+      data: { settings: Settings; templates: TemplateData[] }
+    }>(p.join(this.rootPath, tinaPath, 'schema.json'), this.loader)
 
     return data
+  }
+  getSettingsData = async () => {
+    const data = await this.getSchema()
+
+    return data.settings
   }
   getSettingsForCollection = async (section?: string) => {
     const sectionsSettings = await this.getCollectionsSettings()
@@ -256,42 +257,22 @@ export class DataManager implements DataSource {
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
-    const templates = await readDir(fullPath, this.dirLoader)
-    const template = templates.find((templateBasename) => {
-      return templateBasename === `${slug}.yml`
-    })
-    if (!template) {
-      throw new Error(`No template found for slug ${slug}`)
-    }
-    const { data } = await readFile<RawTemplate>(
-      p.join(fullPath, template),
-      this.loader
-    )
+    const template = await this.getTemplateWithoutName(slug)
 
-    return namespaceFields({ name: slug, ...data })
+    return namespaceFields(template)
   }
   getTemplateWithoutName = async (
     slug: string,
     options: { namespace: boolean } = { namespace: true }
   ) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
-    const templates = await readDir(fullPath, this.dirLoader)
-    const template = templates.find((templateBasename) => {
-      return templateBasename === `${slug}.yml`
-    })
+    const data = await this.getSchema()
+    const template = data.templates.find((template) => template.name === slug)
     if (!template) {
       throw new Error(`No template found for slug ${slug}`)
     }
-    const { data } = await readFile<RawTemplate>(
-      p.join(fullPath, template),
-      this.loader
-    )
-
-    return data
+    return template
   }
   addDocument = async ({ relativePath, collection, template }: AddArgs) => {
-    const fullPath = p.join(this.rootPath, tinaPath, 'front_matter/templates')
     const sectionData = await this.getSettingsForCollection(collection)
     if (!sectionData) {
       throw new Error(`No section found for ${collection}`)
@@ -299,11 +280,9 @@ export class DataManager implements DataSource {
     const path = p.join(sectionData.path, relativePath)
 
     const fullFilePath = p.join(this.rootPath, path)
-    const fullTemplatePath = p.join(fullPath, `${template}.yml`)
     const extension = p.extname(fullFilePath)
 
     this.loader.clear(fullFilePath)
-    this.loader.clear(fullTemplatePath)
 
     switch (extension) {
       case '.md':
@@ -316,7 +295,7 @@ export class DataManager implements DataSource {
         break
       default:
         throw new Error(
-          `Unable to parse file, unknown extension ${extension} for path ${fullPath}`
+          `Unable to parse file, unknown extension ${extension} for path ${fullFilePath}`
         )
     }
   }

@@ -57,7 +57,7 @@ export const byTypeWorks =
     section.type === type
 
 export type Settings = {
-  data: { sections: Section[] }
+  sections: Section[]
 }
 
 export type WithFields = {

@@ -179,14 +179,12 @@ const buildTemplate = async (
   // TODO: check that a compiled template matches
   // with the new one, probably need something robust
   // here to ensure we're keeping things sane
-  if (compiledTemplates.includes(output.name)) {
+  if (compiledTemplates.find((template) => template.name === output.name)) {
     // console.log(`already compiled template at ${outputYmlPath}, skipping`);
     return true
   } else {
-    compiledTemplates.push(output.name)
+    compiledTemplates.push(output)
   }
-  const templateString = '---\n' + jsyaml.dump(output)
-  await fs.outputFile(outputYmlPath, templateString)
   return true
 }
 let types = [
@@ -276,12 +274,6 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
       }
     }),
   }
-  const schemaString = '---\n' + jsyaml.dump(sectionOutput)
-  await fs.outputFile(
-    // TODO: this should probably not be a hard coded temp as it will run into issues if the users path as the word "temp"
-    path.join(tinaTempPath.replace('temp', 'config'), 'settings.yml'),
-    schemaString
-  )
   await Promise.all(
     collections.map(
       async (collection) =>
@@ -290,6 +282,15 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
             return buildTemplate(definition, schemaObject)
           })
         )
+    )
+  )
+  await fs.outputFile(
+    // TODO: this should probably not be a hard coded temp as it will run into issues if the users path as the word "temp"
+    path.join(tinaTempPath.replace('temp', 'config'), 'schema.json'),
+    JSON.stringify(
+      { settings: sectionOutput, templates: compiledTemplates },
+      null,
+      2
     )
   )
   console.log(`Tina config ======> ${successText(tinaConfigPath)}`)
