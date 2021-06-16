@@ -54,7 +54,7 @@ export const isAuthorized = async (
       }
     } catch (e) {
       console.error(e)
-      return undefined
+      throw e
     }
   }
   const errorMessage = (queryParam: string) => {
