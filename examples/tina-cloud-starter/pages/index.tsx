@@ -35,7 +35,7 @@ export const query = `#graphql
     getMarketingPagesDocument(relativePath: "index.md") {
       data {
         __typename
-        ... on LandingPage_Doc_Data {
+        ... on LandingPage_Data {
           blocks {
             __typename
             ... on Message_Data {

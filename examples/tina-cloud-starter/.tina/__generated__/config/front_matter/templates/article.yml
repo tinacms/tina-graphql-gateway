@@ -7,7 +7,7 @@ fields:
     name: title
   - type: textarea
     label: Body
-    name: body
+    name: _body
     isBody: true
   - name: author
     label: Author

@@ -34,11 +34,11 @@ export const query = `#graphql
     getPostsDocument(relativePath: $relativePath) {
       data {
         __typename
-        ... on Article_Doc_Data {
+        ... on Article_Data {
           title
           author {
             data {
-              ... on Author_Doc_Data {
+              ... on Author_Data {
                 name
                 avatar
               }

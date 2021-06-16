@@ -32,7 +32,7 @@ export default defineSchema({
             {
               type: 'textarea',
               label: 'Body',
-              name: 'body',
+              name: '_body',
               isBody: true,
             },
             {

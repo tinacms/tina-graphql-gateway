@@ -96,13 +96,13 @@ type Posts_Document implements Node & Document {
 
 type Article_Data {
   title: String
-  body: String
+  _body: String
   author: Authors_Document
 }
 
 type Article_Values {
   title: String
-  body: String
+  _body: String
   author: Reference
   _template: String
 }
@@ -139,7 +139,7 @@ type Article_Form {
 
 input Article_Input {
   title: String
-  body: String
+  _body: String
   author: String
 }
 

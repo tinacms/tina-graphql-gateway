@@ -34,18 +34,27 @@ import type { Field } from '../../fields'
 import type { TemplateData } from '../../types'
 
 export const resolve = {
-  data: async ({ datasource, template, data, content }: any) => {
+  data: async ({
+    datasource,
+    template,
+    data,
+    content,
+  }: {
+    datasource: DataSource
+    template: TemplateData
+    data: { template?: string } & { [key: string]: unknown }
+    content: string | undefined
+  }) => {
     const accum: { [key: string]: unknown } = {}
     const { template: _templateName, ...rest } = data
 
-    const values = content ? { ...rest, _body: content } : rest
+    const bodyField = template.fields.find((field) =>
+      field.hasOwnProperty('isBody')
+    )
+    const values = bodyField ? { ...rest, [bodyField.name]: content } : rest
 
     await sequential(Object.keys(values), async (key) => {
-      const field = findField(
-        [...template.fields, textarea.contentField],
-        key,
-        template
-      )
+      const field = findField(template.fields, key, template)
       return (accum[key] = await dataValue(datasource, field, values[key]))
     })
 
@@ -54,11 +63,24 @@ export const resolve = {
       ...accum,
     }
   },
-  values: async ({ datasource, template, data, content }: any) => {
+  values: async ({
+    datasource,
+    template,
+    data,
+    content,
+  }: {
+    datasource: DataSource
+    template: TemplateData
+    data: { template?: string } & { [key: string]: unknown }
+    content: string | undefined
+  }) => {
     const accum: { [key: string]: unknown } = {}
     const { template: _templateName, ...rest } = data
 
-    const values = content ? { ...rest, _body: content } : rest
+    const bodyField = template.fields.find((field) =>
+      field.hasOwnProperty('isBody')
+    )
+    const values = bodyField ? { ...rest, [bodyField.name]: content } : rest
 
     await sequential(Object.keys(values), async (key) => {
       const field = findField(
@@ -82,24 +104,13 @@ export const resolve = {
   form: async ({
     datasource,
     template,
-    includeBody,
   }: {
     datasource: DataSource
     template: TemplateData
-    includeBody?: false
   }) => {
     const fields = await sequential(template.fields, async (field) =>
       dataField(datasource, field)
     )
-
-    if (includeBody) {
-      fields.push(
-        await textarea.resolve.field({
-          datasource,
-          field: textarea.contentField,
-        })
-      )
-    }
 
     return {
       ...template,
@@ -117,24 +128,16 @@ export const resolve = {
     datasource: DataSource
     template: TemplateData
     data: unknown
-    includeBody?: false
+    includeBody?: boolean
   }) => {
-    if (includeBody) {
-      template.fields.push(textarea.contentField)
-    }
-
-    if (includeBody) {
-      assertShape<{ _template: string; [key: string]: unknown }>(data, (yup) =>
-        yup.object({ _template: yup.string().required() })
-      )
-    } else {
-      assertShape<{ [key: string]: unknown }>(data, (yup) => yup.object())
-    }
+    assertShape<{ [key: string]: unknown }>(data, (yup) => yup.object())
 
     const fieldsToWrite = await sequential(template.fields, async (field) => {
       return inputField({
         datasource,
-        field,
+        field: field.hasOwnProperty('isBody')
+          ? { ...field, name: '_body' }
+          : field,
         value: data[field.name],
       })
     })
@@ -150,6 +153,7 @@ export const resolve = {
       const value = Object.values(item)[0]
       accum[key] = value
     })
+    console.log(accum)
 
     return accum
   },

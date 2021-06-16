@@ -178,14 +178,14 @@ export type Posts_Document = Node & Document & {
 export type Article_Data = {
   __typename?: 'Article_Data';
   title?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Scalars['String']>;
   author?: Maybe<Authors_Document>;
 };
 
 export type Article_Values = {
   __typename?: 'Article_Values';
   title?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['Reference']>;
   _template?: Maybe<Scalars['String']>;
 };
@@ -226,7 +226,7 @@ export type Article_Form = {
 
 export type Article_Input = {
   title?: Maybe<Scalars['String']>;
-  body?: Maybe<Scalars['String']>;
+  _body?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
 };
 
