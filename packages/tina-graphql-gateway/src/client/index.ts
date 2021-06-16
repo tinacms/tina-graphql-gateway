@@ -46,7 +46,7 @@ export class Client {
   clientId: string
   query: string
   setToken: (_token: TokenObject) => void
-  private getToken: () => TokenObject
+  public getToken: () => TokenObject
   private token: string // used with memory storage
 
   constructor({ tokenStorage = 'MEMORY', ...options }: ServerOptions) {

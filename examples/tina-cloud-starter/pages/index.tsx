@@ -15,6 +15,9 @@ import { LandingPage } from '../components/landing-page'
 import { Wrapper } from '../components/helper-components'
 import type { MarketingPages_Document } from '../.tina/__generated__/types'
 import { createLocalClient, AsyncReturnType } from '../utils'
+import { useEffect } from 'react'
+import { useCMS } from 'tinacms'
+import { Client } from 'tina-graphql-gateway'
 
 export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
