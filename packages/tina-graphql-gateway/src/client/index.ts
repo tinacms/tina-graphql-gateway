@@ -46,7 +46,7 @@ export class Client {
   clientId: string
   query: string
   setToken: (_token: TokenObject) => void
-  public getToken: () => TokenObject
+  private getToken: () => TokenObject
   private token: string // used with memory storage
 
   constructor({ tokenStorage = 'MEMORY', ...options }: ServerOptions) {
@@ -234,17 +234,35 @@ export class Client {
     this.setToken(token)
     return token
   }
+  /**
+   * Wraps the normal fetch function with same API but adds the authorization header the token.
+   *
+   * @example
+   * const test = await tinaCloudClient.fetchWithToken(`/mycustomAPI/thing/one`) // the token will be passed in the authorization header
+   *
+   * @param input fetch function input
+   * @param init fetch function init
+   */
+  async fetchWithToken(
+    input: RequestInfo,
+    init?: RequestInit
+  ): Promise<Response> {
+    return await fetch(input, {
+      ...init,
+      headers: new Headers({
+        Authorization: 'Bearer ' + this.getToken().id_token,
+        'Content-Type': 'application/json',
+        ...init.headers,
+      }),
+    })
+  }
 
   async getUser() {
     const url = `${IDENTITY_API_URL}/realm/${this.organizationId}/${this.clientId}/currentUser`
 
     try {
-      const res = await fetch(url, {
+      const res = await this.fetchWithToken(url, {
         method: 'GET',
-        headers: new Headers({
-          Authorization: 'Bearer ' + this.getToken().id_token,
-          'Content-Type': 'application/json',
-        }),
       })
       const val = await res.json()
       if (!res.status.toString().startsWith('2')) {

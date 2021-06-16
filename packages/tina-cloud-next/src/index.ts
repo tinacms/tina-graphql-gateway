@@ -16,7 +16,6 @@ export const isAuthorized = async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<TinaCloudUser | undefined> => {
-  const query = req.query
   const org = req.query.org
   const clientID = req.query.clientID
   const token = req.headers.authorization

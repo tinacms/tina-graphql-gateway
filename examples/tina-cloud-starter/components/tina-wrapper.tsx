@@ -59,14 +59,8 @@ const Inner = (props) => {
   const tinaCloudClient: Client = cms.api.tina
   useEffect(() => {
     const fetchTest = async () => {
-      // const token = tinaCloudClient.getToken()
-      const test = await fetch(
-        `/api/test?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`,
-        {
-          headers: {
-            Authorization: 'Bearer ' + tinaCloudClient.getToken().id_token,
-          },
-        }
+      const test = await tinaCloudClient.fetchWithToken(
+        `/api/test?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`
       )
       console.log({ test: await test.json() })
     }
