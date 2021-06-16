@@ -19,7 +19,7 @@ import { isAuthorized } from 'tina-cloud-next'
 const apiHandler: NextApiHandler = async (req, res) => {
 
   // This will check if the user is logged in. It will return undefined if the user token is not valid
-  const user = await isAuthorized(req, res)
+  const user = await isAuthorized(req)
   if (user && user.verified) {
     console.log('this user is logged in')
     // now you could (for example) upload images

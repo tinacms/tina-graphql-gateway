@@ -26,8 +26,7 @@ export interface TinaCloudUser {
  *
  */
 export const isAuthorized = async (
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: NextApiRequest
 ): Promise<TinaCloudUser | undefined> => {
   const org = req.query.org
   const clientID = req.query.clientID
