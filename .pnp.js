@@ -9706,6 +9706,37 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["altair-exported-types", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-exported-types-npm-4.0.6-323748e3f1-f534509e75.zip/node_modules/altair-exported-types/",
+          "packageDependencies": [
+            ["altair-exported-types", "npm:4.0.6"],
+            ["uuid", "npm:3.4.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["altair-express-middleware", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-express-middleware-npm-4.0.6-e6dbec8c14-08c3d73f9b.zip/node_modules/altair-express-middleware/",
+          "packageDependencies": [
+            ["altair-express-middleware", "npm:4.0.6"],
+            ["altair-static", "npm:4.0.6"],
+            ["express", "npm:4.17.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["altair-static", [
+        ["npm:4.0.6", {
+          "packageLocation": "./.yarn/cache/altair-static-npm-4.0.6-3558702ac4-85a69190a9.zip/node_modules/altair-static/",
+          "packageDependencies": [
+            ["altair-static", "npm:4.0.6"],
+            ["altair-exported-types", "npm:4.0.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["anser", [
         ["npm:1.4.9", {
           "packageLocation": "./.yarn/cache/anser-npm-1.4.9-6b6677f7c6-39acb65797.zip/node_modules/anser/",
@@ -10294,6 +10325,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/aws4-npm-1.10.0-74d09999c1-f8c20a0031.zip/node_modules/aws4/",
           "packageDependencies": [
             ["aws4", "npm:1.10.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["axios", [
+        ["npm:0.19.0", {
+          "packageLocation": "./.yarn/cache/axios-npm-0.19.0-3dc3d92067-be5f8504a1.zip/node_modules/axios/",
+          "packageDependencies": [
+            ["axios", "npm:0.19.0"],
+            ["follow-redirects", "npm:1.5.10"],
+            ["is-buffer", "npm:2.0.5"]
           ],
           "linkType": "HARD",
         }]
@@ -15276,6 +15318,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["follow-redirects", [
+        ["npm:1.5.10", {
+          "packageLocation": "./.yarn/cache/follow-redirects-npm-1.5.10-bde6f43576-6e58e02c31.zip/node_modules/follow-redirects/",
+          "packageDependencies": [
+            ["follow-redirects", "npm:1.5.10"],
+            ["debug", "virtual:6618ab6046111bda0b9a733e34fec5329265b155b4408a2345f36333ccbe1a86dfc9efc447e5134e4156dde98ed737f5efbe42b5378f22c09197bf46e2cdab17#npm:3.1.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["for-in", [
         ["npm:1.0.2", {
           "packageLocation": "./.yarn/cache/for-in-npm-1.0.2-37e3d7aae5-e8d7280a65.zip/node_modules/for-in/",
@@ -17294,6 +17346,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/is-buffer-npm-2.0.4-ce097f06a1-cd1cbc19e5.zip/node_modules/is-buffer/",
           "packageDependencies": [
             ["is-buffer", "npm:2.0.4"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:2.0.5", {
+          "packageLocation": "./.yarn/cache/is-buffer-npm-2.0.5-17e563f277-1a6dc68206.zip/node_modules/is-buffer/",
+          "packageDependencies": [
+            ["is-buffer", "npm:2.0.5"]
           ],
           "linkType": "HARD",
         }]
@@ -28566,6 +28625,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash.get", "npm:4.4.6"],
             ["@types/yup", "npm:0.29.11"],
             ["ajv", "npm:6.12.3"],
+            ["altair-express-middleware", "npm:4.0.6"],
+            ["axios", "npm:0.19.0"],
             ["body-parser", "npm:1.19.0"],
             ["chalk", "npm:2.4.2"],
             ["chokidar", "npm:3.5.1"],

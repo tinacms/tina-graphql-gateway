@@ -5251,6 +5251,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"altair-exported-types@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "altair-exported-types@npm:4.0.6"
+  dependencies:
+    uuid: 3.4.0
+  checksum: f534509e75174d76f74b94464d4d4af48af7b665e7c54d26748e760d1fc26d02437a305137bb20b0d7cf853ddece746ca87c83eded6a656a7a064e6469bfe643
+  languageName: node
+  linkType: hard
+
+"altair-express-middleware@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "altair-express-middleware@npm:4.0.6"
+  dependencies:
+    altair-static: ^4.0.6
+    express: ^4.16.2
+  checksum: 08c3d73f9b609400ad61a973a673dce2fdd607cc3161f056f3db4538dea03071abb0ba3b3fad04476b632deb22895e2bf2b9845f6fe0e28e9108a98f6d2bfe5a
+  languageName: node
+  linkType: hard
+
+"altair-static@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "altair-static@npm:4.0.6"
+  dependencies:
+    altair-exported-types: ^4.0.6
+  checksum: 85a69190a91355418385033302c8421b8444d1b2fe70297cce3d13dc090e07204368469ae9c4866e919e360c4a2fd9bcc67f88e396d60496ba01a61024d85558
+  languageName: node
+  linkType: hard
+
 "anser@npm:1.4.9":
   version: 1.4.9
   resolution: "anser@npm:1.4.9"
@@ -5732,6 +5760,16 @@ __metadata:
   version: 1.10.0
   resolution: "aws4@npm:1.10.0"
   checksum: f8c20a0031a2ae88bb29a89d5e5f8139eb0cc8aa964d0a8d69a476a4b0f6cf3954e3dd40bd08cea69c95ee31e2e69226d82e804628261a2375223ac67582009d
+  languageName: node
+  linkType: hard
+
+"axios@npm:0.19.0":
+  version: 0.19.0
+  resolution: "axios@npm:0.19.0"
+  dependencies:
+    follow-redirects: 1.5.10
+    is-buffer: ^2.0.2
+  checksum: be5f8504a1adcb74e4a0353238a81e129f181c7ad65c13feda589c793fcf148e09afe721df808ac6ed2ffcdb95f9b7143e2c44d1bc90056b3e2523f5ed3e2fbd
   languageName: node
   linkType: hard
 
@@ -8275,7 +8313,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:3.1.0":
+"debug@npm:3.1.0, debug@npm:=3.1.0":
   version: 3.1.0
   resolution: "debug@npm:3.1.0"
   dependencies:
@@ -9617,7 +9655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.1":
+"express@npm:^4.16.2, express@npm:^4.17.1":
   version: 4.17.1
   resolution: "express@npm:4.17.1"
   dependencies:
@@ -10073,6 +10111,15 @@ __metadata:
   version: 3.0.0
   resolution: "fn-name@npm:3.0.0"
   checksum: dd2190001862d3ea6d1f0788c58d083593166debfa65ff77473a3d37795548e92e5d050ca32f90781fa5c270901694c45022fc90ff2fa50f44aa302f20916589
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:1.5.10":
+  version: 1.5.10
+  resolution: "follow-redirects@npm:1.5.10"
+  dependencies:
+    debug: =3.1.0
+  checksum: 6e58e02c31337b6b41ffc3d5f3d49920b7db428eddcf374537da00ef121fe473983e12d8557f4304287604168d3efcc288d1f009abaf4c9d61e5db0c0cee3c4a
   languageName: node
   linkType: hard
 
@@ -11784,6 +11831,13 @@ fsevents@~2.3.1:
   version: 2.0.4
   resolution: "is-buffer@npm:2.0.4"
   checksum: cd1cbc19e5ad2f33284109210945606494bf1adbe775b157b18ffeeb98571187d5fd1dc3fcd36566f67b90a776e364262f496c8998f8f369694b68ad334f8655
+  languageName: node
+  linkType: hard
+
+"is-buffer@npm:^2.0.2":
+  version: 2.0.5
+  resolution: "is-buffer@npm:2.0.5"
+  checksum: 1a6dc68206e834887d3b0d8e8ec6c95e0d780314479526a5a2cf458838d1bc441a105c4cebf95d8cc16e383238f66c41761ec622f6154043186e3d9439d56970
   languageName: node
   linkType: hard
 
@@ -20905,6 +20959,8 @@ fsevents@~2.3.1:
     "@types/lodash.get": ^4.4.6
     "@types/yup": ^0.29.11
     ajv: ^6.12.3
+    altair-express-middleware: ^4.0.6
+    axios: 0.19.0
     body-parser: ^1.19.0
     chalk: ^2.4.2
     chokidar: ^3.5.1
@@ -22405,7 +22461,7 @@ typescript@^4.2.3:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2":
+"uuid@npm:3.4.0, uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
