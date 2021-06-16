@@ -159,6 +159,13 @@ const scalarDefinitions = [
   }),
   gql.ScalarTypeDefinition({ name: 'JSON' }),
   gql.ScalarTypeDefinition({ name: 'JSONObject' }),
+  gql.ObjectTypeDefinition({
+    name: 'SelectOption',
+    fields: [
+      gql.FieldDefinition({ name: 'label', type: gql.TYPES.String }),
+      gql.FieldDefinition({ name: 'value', type: gql.TYPES.String }),
+    ],
+  }),
 ]
 
 /**
