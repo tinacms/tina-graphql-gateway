@@ -40,7 +40,7 @@ export const isAuthorized = async (
     try {
       // fetch identity from content server
       const tinaCloudRes = await fetch(
-        'https://identity.tinajs.io/realm/logan/1o2sfba0u5t82qcsk16dtl7149/currentUser',
+        `https://identity.tinajs.io/realm/${org}/${clientID}/currentUser`,
         {
           headers: new Headers({
             'Content-Type': 'application/json',
@@ -58,5 +58,14 @@ export const isAuthorized = async (
       return undefined
     }
   }
+  const errorMessage = (queryParam: string) => {
+    return `An ${queryParam} query param is required for isAuthorized function but not found please use cms.api.tina.fetchWithToken('/api/something?org=orgID&clientID=YourClientID')`
+  }
+  !org && console.error(errorMessage('org'))
+  !clientID && console.error(errorMessage('clientID'))
+  !token &&
+    console.error(
+      'A authorization header was not found. Please use the cms.api.tina.fetchWithToken function on the frontend'
+    )
   return undefined
 }

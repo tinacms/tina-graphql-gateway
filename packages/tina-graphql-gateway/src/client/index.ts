@@ -247,12 +247,13 @@ export class Client {
     input: RequestInfo,
     init?: RequestInit
   ): Promise<Response> {
+    const headers = init?.headers || {}
     return await fetch(input, {
       ...init,
       headers: new Headers({
         Authorization: 'Bearer ' + this.getToken().id_token,
         'Content-Type': 'application/json',
-        ...init.headers,
+        ...headers,
       }),
     })
   }
