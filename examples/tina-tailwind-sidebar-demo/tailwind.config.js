@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const chroma = require("chroma-js");
-const colors = require("tailwindcss/colors");
+const chroma = require('chroma-js')
+const colors = require('tailwindcss/colors')
 
 module.exports = {
   purge: [],
-  darkMode: "class",
+  darkMode: 'class',
   theme: {
     colors: {
-      transparent: "transparent",
-      current: "currentColor",
+      transparent: 'transparent',
+      current: 'currentColor',
       black: colors.black,
       white: colors.white,
       gray: colors.coolGray,
@@ -34,18 +34,18 @@ module.exports = {
       orange: colors.orange,
     },
     screens: {
-      sm: "600px",
-      md: "900px",
-      lg: "1200px",
-      xl: "1500px",
-      "2xl": "1800px",
+      sm: '600px',
+      md: '900px',
+      lg: '1200px',
+      xl: '1500px',
+      '2xl': '1800px',
     },
     extend: {
       spacing: {
-        128: "32rem",
+        128: '32rem',
       },
       zIndex: {
-        "-1": "-1",
+        '-1': '-1',
       },
     },
   },
@@ -55,29 +55,29 @@ module.exports = {
   plugins: [
     /* https://gist.github.com/Merott/d2a19b32db07565e94f10d13d11a8574 */
     function ({ addBase, theme }) {
-      function extractColorVars(colorObj, colorGroup = "") {
+      function extractColorVars(colorObj, colorGroup = '') {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
-          const value = colorObj[colorKey];
+          const value = colorObj[colorKey]
 
-          if (value === "transparent" || value === "currentColor") return;
+          if (value === 'transparent' || value === 'currentColor') return
 
           const newVars =
-            typeof value === "string"
+            typeof value === 'string'
               ? {
                   [`--color${colorGroup}-${colorKey}`]: value,
                   [`--color-rgb${colorGroup}-${colorKey}`]: chroma(value)
                     .rgb()
                     .toString(),
                 }
-              : extractColorVars(value, `-${colorKey}`);
+              : extractColorVars(value, `-${colorKey}`)
 
-          return { ...vars, ...newVars };
-        }, {});
+          return { ...vars, ...newVars }
+        }, {})
       }
 
       addBase({
-        ":root": extractColorVars(theme("colors")),
-      });
+        ':root': extractColorVars(theme('colors')),
+      })
     },
   ],
-};
+}
