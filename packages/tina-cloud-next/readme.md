@@ -39,7 +39,7 @@ const apiHandler: NextApiHandler = async (req, res) => {
 export default apiHandler
 ```
 
-The `isAuthorized` function takes in the `req` and `res` and returns `undefined` if there is no user and returns a `TinaCloudUser` if the user is logged in.
+The `isAuthorized` function takes in the `req`  and returns `undefined` if there is no user and returns a `TinaCloudUser` if the user is logged in.
 
 ```ts
 interface TinaCloudUser {

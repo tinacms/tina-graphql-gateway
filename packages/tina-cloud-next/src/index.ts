@@ -22,7 +22,30 @@ export interface TinaCloudUser {
   fullName: string
 }
 
-/*
+/**
+ *
+ * @description Takes in the `req` and returns `undefined` if there is no user and returns a `TinaCloudUser` if the user is logged in.
+ *
+ * @example
+ * import { NextApiHandler } from 'next'
+ * import { isAuthorized } from 'tina-cloud-next'
+ * const apiHandler: NextApiHandler = async (req, res) => {
+ *   const user = await isAuthorized(req)
+ *   if (user && user.verified) {
+ *       res.json({
+ *         validUser: true,
+ *        })
+ *       return
+ *   } else {
+ *     console.log('this user NOT is logged in')
+ *     res.json({
+ *      validUser: false,
+ *      })
+ *   }
+ *}
+ * export default apiHandler
+ *
+ * @param {NextApiRequest} req - the request. It must contain a req.query.org, req.query.clientID and req.headers.authorization
  *
  */
 export const isAuthorized = async (
