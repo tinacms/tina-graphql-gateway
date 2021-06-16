@@ -235,7 +235,7 @@ export class Client {
     return token
   }
   /**
-   * Wraps the normal fetch function with same API but adds the authorization header the token.
+   * Wraps the normal fetch function with same API but adds the authorization header token.
    *
    * @example
    * const test = await tinaCloudClient.fetchWithToken(`/mycustomAPI/thing/one`) // the token will be passed in the authorization header
