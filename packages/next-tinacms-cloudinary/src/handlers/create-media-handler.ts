@@ -62,7 +62,6 @@ async function uploadMedia(req: NextApiRequest, res: NextApiResponse) {
 
 async function listMedia(req: NextApiRequest, res: NextApiResponse) {
   try {
-    console.log({ req })
     const { directory = '""', limit = 500 } = req.query as MediaListOptions
 
     let query = `folder=${directory}`
