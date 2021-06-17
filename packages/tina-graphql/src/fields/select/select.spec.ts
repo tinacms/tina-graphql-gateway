@@ -23,7 +23,7 @@ const field: SelectField = {
     source: {
       type: 'simple',
     },
-    options: ['option A'],
+    options: [{ label: 'option A', value: 'option A' }],
   },
 }
 
@@ -37,7 +37,7 @@ describe(`Field of type ${field.type} builds`, () => {
         label: String
         component: String
         description: String
-        options: [String]
+        options: [SelectOption]
       }
       union Sample_FormFieldsUnion = SelectField
       type Sample_Form {

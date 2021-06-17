@@ -40,7 +40,7 @@ describe(`Field of type ${field.type} builds`, () => {
         label: String
         component: String
         description: String
-        options: [String]
+        options: [SelectOption]
       }
       union List_FormFieldsUnion = TextField | SelectField
       type ListField implements FormField {

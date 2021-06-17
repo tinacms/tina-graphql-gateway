@@ -21,3 +21,11 @@ yarn dev
 ```
 
 That should allow you to see 2 things: The GraphiQL playground at `http:localhost:4001/graphql` and the NextJS demo app at `http:localhost:3000/home`. Tina form changes should result in `content/pages/home.md` being changed.
+
+## Creating a PR
+
+> Note: this is experimental for now, we'll see how we like [changesets]() before falling back to conventional commits
+
+When your work is ready, from the root of the repository run `yarn changeset` and follow the prompts to select the packages you'd like to update. For more information on how to work with changesets read [their documentation](https://github.com/atlassian/changesets/blob/main/docs/adding-a-changeset.md)
+
+Once your changeset has been generated, commit it as part of your work and push to Github. From there we'll know how to version the package when we do a release.

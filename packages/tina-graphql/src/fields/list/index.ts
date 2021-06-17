@@ -53,7 +53,7 @@ export const list = {
           label: '',
           type: 'select',
           config: {
-            options: [''],
+            options: [{ label: '', value: '' }],
             source: {
               type: 'simple',
             },
@@ -149,7 +149,7 @@ export const list = {
           : field.config?.source?.type === 'pages'
           ? 'pages'
           : 'simple'
-      let defaultItem = ''
+      let defaultItem = { value: '', label: '' }
 
       // FIXME this should be a subset type of TinaField,
       // this property doesn't need most of these fields
@@ -336,6 +336,6 @@ export type TinaListField = {
   name: string
   component: 'list'
   field: TinaField
-  defaultItem: string
+  defaultItem: { label: string; value: string }
   __typename: typeof typename
 }
