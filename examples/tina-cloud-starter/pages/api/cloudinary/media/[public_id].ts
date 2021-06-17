@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ResourceApiResponse, v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary } from 'cloudinary'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 cloudinary.config({

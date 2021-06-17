@@ -36,7 +36,6 @@ const TinaWrapper = (props) => {
       enabled: true,
       media: new CloudinaryMediaStore(
         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-        // 'dcpinxzoo'
       ),
     })
   }, [])
