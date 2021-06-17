@@ -20,6 +20,7 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=<Your Cloudinary Cloud Name>
 NEXT_PUBLIC_CLOUDINARY_API_KEY=<Your Cloudinary API key>
 CLOUDINARY_API_SECRET=<Your Cloudinary API secret>
 ```
+<<<<<<< HEAD
 ## Register the Media Store
 Now, you can register the Cloudinary Media store with the instance of Tina in your app.
 
@@ -74,3 +75,14 @@ In your ```.tina/schema.ts``` add a new field for the image
 
  Now, when editing your site, the image field will allow you to connect to your Cloudinary account via the Media Store to manage your media assets.
 
+=======
+
+## Set up API routes
+...WIP...
+
+## Update Tina Forms
+...WIP...
+
+## Upload a new image
+...WIP...
+>>>>>>> d3d732a1 (add cloudinary package)
