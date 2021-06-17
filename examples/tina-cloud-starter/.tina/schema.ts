@@ -30,6 +30,11 @@ export default defineSchema({
               name: 'title',
             },
             {
+              name: 'hero',
+              type: 'image',
+              label: 'Hero',
+            },
+            {
               type: 'reference',
               label: 'Author',
               name: 'author',

@@ -184,6 +184,7 @@ export type Posts_Document = Node & Document & {
 export type Article_Doc_Data = {
   __typename?: 'Article_Doc_Data';
   title?: Maybe<Scalars['String']>;
+  hero?: Maybe<Scalars['String']>;
   author?: Maybe<Authors_Document>;
   _body?: Maybe<Scalars['String']>;
 };
@@ -191,6 +192,7 @@ export type Article_Doc_Data = {
 export type Article_Doc_Values = {
   __typename?: 'Article_Doc_Values';
   title?: Maybe<Scalars['String']>;
+  hero?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['Reference']>;
   _body?: Maybe<Scalars['String']>;
   _template?: Maybe<Scalars['String']>;
@@ -198,6 +200,14 @@ export type Article_Doc_Values = {
 
 export type TextField = FormField & {
   __typename?: 'TextField';
+  name?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  component?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+};
+
+export type FileField = FormField & {
+  __typename?: 'FileField';
   name?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   component?: Maybe<Scalars['String']>;
@@ -221,7 +231,7 @@ export type TextareaField = FormField & {
   description?: Maybe<Scalars['String']>;
 };
 
-export type Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField;
+export type Article_Doc_FormFieldsUnion = TextField | FileField | SelectField | TextareaField;
 
 export type Article_Doc_Form = {
   __typename?: 'Article_Doc_Form';
@@ -232,6 +242,7 @@ export type Article_Doc_Form = {
 
 export type Article_Doc_Input = {
   title?: Maybe<Scalars['String']>;
+  hero?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   _body?: Maybe<Scalars['String']>;
 };

@@ -1,5 +1,7 @@
 ---
 title: Vote For Pedro
+hero: >-
+  http://res.cloudinary.com/dcpinxzoo/image/upload/v1622844377/flying-tina_n74wob.png
 author: content/authors/napolean.md
 _template: article
 ---
