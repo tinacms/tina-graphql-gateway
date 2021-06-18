@@ -28,6 +28,7 @@ export class CloudinaryMediaStore implements MediaStore {
   private api: Cloudinary
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
 =======
   constructor(public cloud_name: string) {
@@ -42,6 +43,9 @@ export class CloudinaryMediaStore implements MediaStore {
 
     // TODO: Fix only one file upload
 >>>>>>> d3d732a1 (add cloudinary package)
+=======
+  async persist(media: MediaUploadOptions[]): Promise<Media[]> {
+>>>>>>> 8195aef4 (clean up media handlers)
     const { file, directory } = media[0]
     const formData = new FormData()
     formData.append('file', file)
@@ -60,10 +64,13 @@ export class CloudinaryMediaStore implements MediaStore {
     const fileRes = await res.json()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // TODO: be programmer
     // NOTE: why do we need this?
 >>>>>>> d3d732a1 (add cloudinary package)
+=======
+>>>>>>> 8195aef4 (clean up media handlers)
     await new Promise((resolve) => {
       setTimeout(resolve, 2000)
     })
