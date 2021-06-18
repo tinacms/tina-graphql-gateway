@@ -15,6 +15,7 @@ import path from 'path'
 import cors from 'cors'
 import http from 'http'
 import express from 'express'
+import { altairExpress } from 'altair-express-middleware'
 // @ts-ignore
 import bodyParser from 'body-parser'
 
@@ -28,6 +29,26 @@ const gqlServer = async () => {
   app.use(bodyParser.json())
 
   let projectRoot = path.join(process.cwd())
+  app.use(
+    '/altair',
+    altairExpress({
+      endpointURL: '/graphql',
+      initialQuery: `# Welcome to Tina!
+# We've got a simple query set up for you to get started
+# but there's plenty more for you to explore on your own!
+query MyQuery {
+  getCollections {
+    documents {
+      id
+      sys {
+        filename
+        extension
+      }
+    }
+  }
+}`,
+    })
+  )
 
   app.post('/graphql', async (req, res) => {
     const { query, variables } = req.body
