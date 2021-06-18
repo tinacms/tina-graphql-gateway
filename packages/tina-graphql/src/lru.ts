@@ -35,9 +35,9 @@ export const clearCache = ({
   ref: string
   path?: string
 }) => {
-  const repoPrefix = `${owner}:${repo}:${ref}__`
+  const repoPrefix = `${owner}/${repo}/${ref}/`
   if (path) {
-    const key = `${repoPrefix}${path}`
+    const key = `${repoPrefix}/${path}`
     console.log('[LRU cache]: clearing key ', key)
     cache.del(key)
   } else {
