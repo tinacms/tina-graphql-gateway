@@ -26,6 +26,8 @@ export const createMediaHandler = (config: CloudinaryConfig) => {
         return listMedia(req, res)
       case 'POST':
         return uploadMedia(req, res)
+      case 'DELETE':
+        return deleteAsset(req, res)
       default:
         res.end(404)
     }
@@ -105,6 +107,19 @@ async function listMedia(req: NextApiRequest, res: NextApiResponse) {
     res.status(500)
     res.json({ e })
   }
+}
+
+async function deleteAsset(req: NextApiRequest, res: NextApiResponse) {
+  const { media } = req.query
+  const [_media, public_id] = media
+
+  cloudinary.uploader.destroy(public_id as string, {}, (err) => {
+    if (err) res.status(500)
+    res.json({
+      err,
+      public_id,
+    })
+  })
 }
 
 function cloudinaryToTina(file: any): Media {

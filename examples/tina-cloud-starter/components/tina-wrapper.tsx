@@ -34,9 +34,7 @@ const TinaWrapper = (props) => {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
-      media: new CloudinaryMediaStore(
-        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-      ),
+      media: new CloudinaryMediaStore(),
     })
   }, [])
 

@@ -11,17 +11,7 @@ export class CloudinaryMediaStore implements MediaStore {
   accept = '*'
   private api: Cloudinary
 
-  constructor(public cloud_name: string) {
-    this.api = new Cloudinary({
-      cloud_name: this.cloud_name,
-      secure: true,
-    })
-  }
-
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
-    const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`
-
-    // TODO: Fix only one file upload
     const { file, directory } = media[0]
     const formData = new FormData()
     formData.append('file', file)
@@ -39,8 +29,6 @@ export class CloudinaryMediaStore implements MediaStore {
     }
     const fileRes = await res.json()
 
-    // TODO: be programmer
-    // NOTE: why do we need this?
     await new Promise((resolve) => {
       setTimeout(resolve, 2000)
     })
