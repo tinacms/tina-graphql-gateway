@@ -11,8 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react'
 import { TinaCloudAuthWall } from 'tina-graphql-gateway'
+import React, { useEffect } from 'react'
+import { TinaCMS, useCMS } from 'tinacms'
 import { SidebarPlaceholder } from './helper-components'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
@@ -39,6 +40,17 @@ const Inner = (props) => {
     query: (gql) => gql(props.query),
     variables: props.variables || {},
   })
+  const cms = useCMS()
+  const tinaCloudClient: Client = cms.api.tina
+  useEffect(() => {
+    const fetchTest = async () => {
+      const test = await tinaCloudClient.fetchWithToken(
+        `/api/test?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`
+      )
+      console.log({ test: await test.json() })
+    }
+    fetchTest()
+  }, [])
   return (
     <>
       {isLoading ? (

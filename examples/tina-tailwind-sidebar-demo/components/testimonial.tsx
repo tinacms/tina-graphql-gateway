@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as React from "react";
-import { ThemeContext } from "./theme";
-import { Section, SectionFields } from "./section";
-import { Testimonial_Data } from "../.tina/__generated__/types";
+import * as React from 'react'
+import { ThemeContext } from './theme'
+import { Section, SectionFields } from './section'
+import { Testimonial_Data } from '../.tina/__generated__/types'
 
 export const Testimonial = (props: Testimonial_Data) => {
-  const theme = React.useContext(ThemeContext);
+  const theme = React.useContext(ThemeContext)
 
   return (
-    <Section variant={props?.style?.color || "blue"}>
+    <Section variant={props?.style?.color || 'blue'}>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="relative">
           <blockquote>
@@ -53,35 +53,35 @@ export const Testimonial = (props: Testimonial_Data) => {
         </div>
       </div>
     </Section>
-  );
-};
+  )
+}
 
 export const testimonial_template = {
-  label: "Testimonial",
+  label: 'Testimonial',
   defaultItem: {
     quote:
-      "There are only two hard things in Computer Science: cache invalidation and naming things.",
-    author: "Phil Karlton",
+      'There are only two hard things in Computer Science: cache invalidation and naming things.',
+    author: 'Phil Karlton',
     style: {
-      color: "primary",
+      color: 'primary',
     },
   },
   fields: [
     {
-      name: "quote",
-      label: "Quote",
-      component: "textarea",
+      name: 'quote',
+      label: 'Quote',
+      component: 'textarea',
     },
     {
-      name: "author",
-      label: "Author",
-      component: "text",
+      name: 'author',
+      label: 'Author',
+      component: 'text',
     },
     {
-      name: "style",
-      label: "Style",
-      component: "group",
+      name: 'style',
+      label: 'Style',
+      component: 'group',
       fields: [...SectionFields],
     },
   ],
-};
+}

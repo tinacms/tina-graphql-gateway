@@ -53,11 +53,8 @@ export async function startServer(
       .on('ready', async () => {
         try {
           console.log('Generating Tina config')
-          console.log('Compiling...')
           await compile()
-          console.log('Building schema...')
           const schema = await buildSchema(process.cwd())
-          console.log('Generating types...')
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()
@@ -98,6 +95,7 @@ export async function startServer(
     state.server = await s.default()
     state.server.listen(port, () => {
       console.log(`Started Filesystem GraphQL server on port: ${port}`)
+      console.log(`Visit the playground at http://localhost:${port}/altair/`)
     })
     state.server.on('connection', (socket) => {
       state.sockets.push(socket)

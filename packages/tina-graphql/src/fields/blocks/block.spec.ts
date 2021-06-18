@@ -53,7 +53,7 @@ describe(`Type ${field.type} builds`, () => {
         label: String
         component: String
         description: String
-        options: [String]
+        options: [SelectOption]
       }
       union Post_FormFieldsUnion =
           TextField

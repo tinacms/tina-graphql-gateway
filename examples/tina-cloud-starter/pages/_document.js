@@ -13,6 +13,7 @@ limitations under the License.
 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
+import flush from 'styled-jsx/server'
 
 const description =
   'A demo application that demos editing a site with Tina and Tina Cloud'
@@ -30,12 +31,14 @@ export default class MyDocument extends Document {
         })
 
       const initialProps = await Document.getInitialProps(ctx)
+      const styledJSXStyles = flush()
       return {
         ...initialProps,
         styles: (
           <>
             {initialProps.styles}
             {sheet.getStyleElement()}
+            {styledJSXStyles}
           </>
         ),
       }

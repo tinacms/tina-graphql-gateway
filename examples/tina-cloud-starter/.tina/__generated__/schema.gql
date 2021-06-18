@@ -23,6 +23,11 @@ scalar JSON
 """"""
 scalar JSONObject
 
+type SelectOption {
+  label: String
+  value: String
+}
+
 type SystemInfo {
   filename: String
   basename: String
@@ -47,19 +52,19 @@ type Section {
   documents: [Document]
 }
 
-union SectionDocumentUnion = Authors_Document | Posts_Document | MarketingPages_Document
+union SectionDocumentUnion = Posts_Document | Authors_Document | MarketingPages_Document
 
 input SectionParams {
-  authors: Authors_Input
   posts: Posts_Input
+  authors: Authors_Input
   marketingPages: MarketingPages_Input
 }
 
 type Mutation {
   addPendingDocument(relativePath: String, collection: String, template: String): Document
   updateDocument(relativePath: String, params: SectionParams): SectionDocumentUnion
-  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updatePostsDocument(relativePath: String, params: Posts_Input): Posts_Document
+  updateAuthorsDocument(relativePath: String, params: Authors_Input): Authors_Document
   updateMarketingPagesDocument(relativePath: String, params: MarketingPages_Input): MarketingPages_Document
 }
 
@@ -68,12 +73,79 @@ type Query {
   getDocument(collection: String, relativePath: String): SectionDocumentUnion
   getCollections: [Section]
   getCollection(collection: String): Section
-  getAuthorsDocument(relativePath: String): Authors_Document
-  getAuthorsList: [Authors_Document]
   getPostsDocument(relativePath: String): Posts_Document
   getPostsList: [Posts_Document]
+  getAuthorsDocument(relativePath: String): Authors_Document
+  getAuthorsList: [Authors_Document]
   getMarketingPagesDocument(relativePath: String): MarketingPages_Document
   getMarketingPagesList: [MarketingPages_Document]
+}
+
+union Posts_Data = Article_Doc_Data
+
+input Posts_Input {
+  article: Article_Doc_Input
+}
+
+union Posts_Values = Article_Doc_Values
+
+union Posts_Form = Article_Doc_Form
+
+type Posts_Document implements Node & Document {
+  id: ID!
+  sys: SystemInfo
+  data: Posts_Data
+  values: Posts_Values
+  form: Posts_Form
+}
+
+type Article_Doc_Data {
+  title: String
+  author: Authors_Document
+  _body: String
+}
+
+type Article_Doc_Values {
+  title: String
+  author: Reference
+  _body: String
+  _template: String
+}
+
+type TextField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
+type SelectField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+  options: [SelectOption]
+}
+
+type TextareaField implements FormField {
+  name: String
+  label: String
+  component: String
+  description: String
+}
+
+union Article_Doc_FormFieldsUnion = TextField | SelectField | TextareaField
+
+type Article_Doc_Form {
+  label: String
+  name: String
+  fields: [Article_Doc_FormFieldsUnion]
+}
+
+input Article_Doc_Input {
+  title: String
+  author: String
+  _body: String
 }
 
 union Authors_Data = Author_Doc_Data
@@ -107,20 +179,6 @@ type Author_Doc_Values {
   _template: String
 }
 
-type TextField implements FormField {
-  name: String
-  label: String
-  component: String
-  description: String
-}
-
-type TextareaField implements FormField {
-  name: String
-  label: String
-  component: String
-  description: String
-}
-
 union Author_Doc_FormFieldsUnion = TextField | TextareaField
 
 type Author_Doc_Form {
@@ -132,69 +190,6 @@ type Author_Doc_Form {
 input Author_Doc_Input {
   name: String
   avatar: String
-  _body: String
-}
-
-union Posts_Data = Article_Doc_Data
-
-input Posts_Input {
-  article: Article_Doc_Input
-}
-
-union Posts_Values = Article_Doc_Values
-
-union Posts_Form = Article_Doc_Form
-
-type Posts_Document implements Node & Document {
-  id: ID!
-  sys: SystemInfo
-  data: Posts_Data
-  values: Posts_Values
-  form: Posts_Form
-}
-
-type Article_Doc_Data {
-  title: String
-  hero: String
-  author: Authors_Document
-  _body: String
-}
-
-type Article_Doc_Values {
-  title: String
-  hero: String
-  author: Reference
-  _body: String
-  _template: String
-}
-
-type FileField implements FormField {
-  name: String
-  label: String
-  component: String
-  description: String
-}
-
-type SelectField implements FormField {
-  name: String
-  label: String
-  component: String
-  description: String
-  options: [String]
-}
-
-union Article_Doc_FormFieldsUnion = TextField | FileField | SelectField | TextareaField
-
-type Article_Doc_Form {
-  label: String
-  name: String
-  fields: [Article_Doc_FormFieldsUnion]
-}
-
-input Article_Doc_Input {
-  title: String
-  hero: String
-  author: String
   _body: String
 }
 
@@ -221,13 +216,13 @@ type Message_Data {
   messageBody: String
 }
 
-type Diagram_Data {
-  diagramHeading: String
-  diagramDescription: String
-  diagramID: String
+type Image_Data {
+  heading: String
+  imgDescription: String
+  src: String
 }
 
-union LandingPage_Blocks_Data = Message_Data | Diagram_Data
+union LandingPage_Blocks_Data = Message_Data | Image_Data
 
 type LandingPage_Doc_Data {
   blocks: [LandingPage_Blocks_Data]
@@ -240,14 +235,14 @@ type Message_Values {
   _template: String
 }
 
-type Diagram_Values {
-  diagramHeading: String
-  diagramDescription: String
-  diagramID: String
+type Image_Values {
+  heading: String
+  imgDescription: String
+  src: String
   _template: String
 }
 
-union LandingPage_Blocks_Values = Message_Values | Diagram_Values
+union LandingPage_Blocks_Values = Message_Values | Image_Values
 
 type LandingPage_Doc_Values {
   blocks: [LandingPage_Blocks_Values]
@@ -263,17 +258,17 @@ type Message_Form {
   fields: [Message_FormFieldsUnion]
 }
 
-union Diagram_FormFieldsUnion = TextField | TextareaField
+union Image_FormFieldsUnion = TextField | TextareaField
 
-type Diagram_Form {
+type Image_Form {
   label: String
   name: String
-  fields: [Diagram_FormFieldsUnion]
+  fields: [Image_FormFieldsUnion]
 }
 
 type LandingPage_Blocks_BlocksFieldTemplates {
   message: Message_Form
-  diagram: Diagram_Form
+  image: Image_Form
 }
 
 type LandingPage_Blocks_BlocksField implements FormField {
@@ -297,15 +292,15 @@ input Message_Input {
   messageBody: String
 }
 
-input Diagram_Input {
-  diagramHeading: String
-  diagramDescription: String
-  diagramID: String
+input Image_Input {
+  heading: String
+  imgDescription: String
+  src: String
 }
 
 input Blocks_Input {
   message: Message_Input
-  diagram: Diagram_Input
+  image: Image_Input
 }
 
 input LandingPage_Doc_Input {

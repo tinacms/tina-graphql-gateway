@@ -19,7 +19,7 @@ import * as ts from 'typescript'
 import * as jsyaml from 'js-yaml'
 import * as yup from 'yup'
 import * as _ from 'lodash'
-import { successText, dangerText, CONFIRMATION_TEXT } from '../../utils/theme'
+import { successText, dangerText, logText } from '../../utils/theme'
 import { defaultSchema } from './defaultSchema'
 
 const tinaPath = path.join(process.cwd(), '.tina')
@@ -138,7 +138,15 @@ const transformField = async (
         source: {
           type: 'simple',
         },
-        options: field.options,
+        options: field.options.map((option) => {
+          if (typeof option === 'string') {
+            return {
+              value: option,
+              label: option,
+            }
+          }
+          return option
+        }),
       },
     }
   }
@@ -209,6 +217,7 @@ let types = [
 let compiledTemplates = []
 
 export const compile = async () => {
+  console.log(logText('Compiling...'))
   // FIXME: This assume it is a schema.ts file
   if (
     !fs.existsSync(tinaPath) ||
@@ -247,7 +256,10 @@ const regexMessageFunc = (message) =>
 export const compileInner = async (schemaObject: TinaCloudSchema) => {
   const collections = await Promise.all(
     schemaObject.collections.map(async (collection) => {
+      // TODO: fs.exists is @deprecated — since v1.0.0 Use fs.stat() or fs.access() instea
+      // @ts-ignore
       const isValidPath = await fs.exists(collection.path)
+      // @ts-ignore
       if (!isValidPath) {
         console.log(
           dangerText(
@@ -274,6 +286,7 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
   }
   const schemaString = '---\n' + jsyaml.dump(sectionOutput)
   await fs.outputFile(
+    // TODO: this should probably not be a hard coded temp as it will run into issues if the users path as the word "temp"
     path.join(tinaTempPath.replace('temp', 'config'), 'settings.yml'),
     schemaString
   )
@@ -289,9 +302,11 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
   )
   console.log(`Tina config ======> ${successText(tinaConfigPath)}`)
   await fs.remove(tinaTempPath)
+  console.log(logText('Done Compiling...'))
 }
 
 const transpile = async (projectDir, tempDir) => {
+  console.log(logText('Transpiling...'))
   // Make sure that post paths are posix (unix paths). This is necessary on windows.
   const posixProjectDir = normalize(projectDir)
   const posixTempDir = normalize(tempDir)
@@ -484,7 +499,8 @@ export const defineSchema = (config: TinaCloudSchema) => {
       .string()
       .matches(/^select$/)
       .required(),
-    options: yup.array().min(1).of(yup.string()).required(),
+    // options: yup.array().min(1).of(yup.string()).required(),
+    options: yup.array().min(1).required(),
   })
   const ListSchema = baseSchema.label('list').shape({
     type: yup
@@ -710,7 +726,7 @@ interface TextareaField extends TinaBaseField {
 
 interface SelectField extends TinaBaseField {
   type: 'select'
-  options: string[] // NOTE this is possibly an object in Tina's case
+  options: ({ label: string; value: string } | string)[]
 }
 
 interface ImageField extends TinaBaseField {
