@@ -17,7 +17,7 @@ import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
-import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
+import { TinaCLoudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
 
 /**
@@ -25,16 +25,20 @@ import { LoadingPage } from './Spinner'
  * if you're on a route that starts with "/admin"
  */
 const TinaWrapper = (props) => {
+  const tinaCloudClient = createClient()
+  const fetchFunction = (input: RequestInfo, init?: RequestInit) => {
+    return tinaCloudClient.fetchWithToken(input, init)
+  }
   const cms = React.useMemo(() => {
     return new TinaCMS({
       apis: {
-        tina: createClient(),
+        tina: tinaCloudClient,
       },
       sidebar: {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
-      media: new CloudinaryMediaStore(),
+      media: new TinaCLoudCloudinaryMediaStore(fetchFunction),
     })
   }, [])
 

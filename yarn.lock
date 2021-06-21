@@ -14528,6 +14528,8 @@ fsevents@~2.3.1:
     tinacms: 0.31.0
     tsup: ^3.7.0
     typescript: ^3.8.3
+  peerDependencies:
+    styled-components: "*"
   languageName: unknown
   linkType: soft
 
