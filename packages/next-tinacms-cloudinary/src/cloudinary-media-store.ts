@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
 Copyright 2021 Forestry.io Holdings, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-=======
->>>>>>> d3d732a1 (add cloudinary package)
 import { Cloudinary } from 'cloudinary-core'
 import {
   Media,
@@ -27,25 +24,7 @@ export class CloudinaryMediaStore implements MediaStore {
   accept = '*'
   private api: Cloudinary
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
-=======
-  constructor(public cloud_name: string) {
-    this.api = new Cloudinary({
-      cloud_name: this.cloud_name,
-      secure: true,
-    })
-  }
-
-  async persist(media: MediaUploadOptions[]): Promise<Media[]> {
-    const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`
-
-    // TODO: Fix only one file upload
->>>>>>> d3d732a1 (add cloudinary package)
-=======
-  async persist(media: MediaUploadOptions[]): Promise<Media[]> {
->>>>>>> 8195aef4 (clean up media handlers)
     const { file, directory } = media[0]
     const formData = new FormData()
     formData.append('file', file)
@@ -63,14 +42,8 @@ export class CloudinaryMediaStore implements MediaStore {
     }
     const fileRes = await res.json()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     // TODO: be programmer
     // NOTE: why do we need this?
->>>>>>> d3d732a1 (add cloudinary package)
-=======
->>>>>>> 8195aef4 (clean up media handlers)
     await new Promise((resolve) => {
       setTimeout(resolve, 2000)
     })
