@@ -17,6 +17,7 @@ import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
+import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
 
 /**
@@ -33,15 +34,9 @@ const TinaWrapper = (props) => {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
+      media: new CloudinaryMediaStore(),
     })
   }, [])
-
-  /** Disables the TinaCMS "Media Manager" */
-  cms.plugins.all('screen').forEach((plugin) => {
-    if (plugin.name === 'Media Manager') {
-      cms.plugins.remove(plugin)
-    }
-  })
 
   return (
     <TinaCloudAuthWall cms={cms}>
