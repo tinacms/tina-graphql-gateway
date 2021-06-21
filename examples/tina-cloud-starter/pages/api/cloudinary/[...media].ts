@@ -23,4 +23,7 @@ export default createMediaHandler({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  authorized: (_req, _res) => {
+    return Promise.resolve(true)
+  },
 })
