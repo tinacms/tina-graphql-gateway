@@ -46,6 +46,7 @@ describe('S3 cache', () => {
       mockS3.getObject.mockImplementationOnce(() => awsPromise({ Body: '' }))
       await s3Cache.get('key', setter(''))
       expect(mockS3.getObject).toBeCalled()
+      expect(mockS3.upload).not.toBeCalled()
     })
     test('returns value found for key', async () => {
       const mockValue = { Body: 'value' }
