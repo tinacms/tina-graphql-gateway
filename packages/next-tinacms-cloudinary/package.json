@@ -8,8 +8,8 @@
   "typings": "dist/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.ts src/handlers/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts src/handlers/index.ts --watch --format cjs --dts"
+    "build": "yarn tsup src/index.ts src/handlers.ts --format cjs --dts",
+    "watch": "yarn tsup src/index.ts src/handlers.ts --watch --format cjs --dts"
   },
   "dependencies": {
     "cloudinary": "^1.25.2",
