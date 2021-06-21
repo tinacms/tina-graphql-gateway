@@ -16,57 +16,56 @@ import { S3 } from 'aws-sdk'
 
 const bucketName = 'tina-contentapi'
 
-const cache = new S3({
+const realCache = new S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 })
 
-/*
-  ref is used as the the branch for now, so in future we may switch to commits
-*/
-export const clearCache = async ({
-  owner,
-  repo,
-  ref,
-  path,
-}: {
-  owner: string
-  repo: string
-  ref: string
-  path?: string
-}) => {
-  const repoPrefix = `${owner}/${repo}/${ref}`
-  if (path) {
-    const key = `${repoPrefix}/${path}`
-    console.log('[S3 cache]: clearing key ', key)
-    await cache
-      .deleteObject({
-        Bucket: bucketName,
-        Key: key,
-      })
-      .promise()
-  } else {
-    console.log('[S3 cache]: clearing all keys for repo ', repoPrefix)
-    const data = await cache
-      .listObjectsV2({
-        Bucket: bucketName,
-        Prefix: repoPrefix,
-      })
-      .promise()
-    if (data.Contents) {
+export const clearCacheWith =
+  (cache: S3) =>
+  async ({
+    owner,
+    repo,
+    ref,
+    path,
+  }: {
+    owner: string
+    repo: string
+    ref: string
+    path?: string
+  }) => {
+    const repoPrefix = `${owner}/${repo}/${ref}`
+    if (path) {
+      const key = `${repoPrefix}/${path}`
+      console.log('[S3 cache]: clearing key ', key)
       await cache
-        .deleteObjects({
+        .deleteObject({
           Bucket: bucketName,
-          Delete: {
-            Objects: data.Contents.map((key) => ({ Key: key.Key! })),
-          },
+          Key: key,
         })
         .promise()
+    } else {
+      console.log('[S3 cache]: clearing all keys for repo ', repoPrefix)
+      const data = await cache
+        .listObjectsV2({
+          Bucket: bucketName,
+          Prefix: repoPrefix,
+        })
+        .promise()
+      if (data.Contents) {
+        await cache
+          .deleteObjects({
+            Bucket: bucketName,
+            Delete: {
+              Objects: data.Contents.map((key) => ({ Key: key.Key! })),
+            },
+          })
+          .promise()
+      }
     }
   }
-}
 
-export const s3Cache = {
+export const s3CacheWith = (cache: S3) => ({
   get: async (keyName: string, setter: () => Promise<any>) => {
     try {
       const value = await cache
@@ -91,4 +90,7 @@ export const s3Cache = {
       return valueToCache
     }
   },
-}
+})
+
+export const clearCache = clearCacheWith(realCache)
+export const s3Cache = s3CacheWith(realCache)

@@ -13,7 +13,7 @@
     "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/server.js",
-    "test": "jest --passWithNoTests"
+    "test": "jest"
   },
   "dependencies": {
     "@octokit/auth-app": "^2.6.0",

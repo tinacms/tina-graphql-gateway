@@ -18,7 +18,7 @@ import { buildASTSchema } from 'graphql'
 import { createDatasource } from './datasources/data-manager'
 import { GithubManager } from './datasources/github-manager'
 import { FileSystemManager } from './datasources/filesystem-manager'
-import { s3Cache, clearCache } from './s3'
+import { s3Cache, clearCache } from './cache/s3'
 
 export { clearCache }
 
@@ -31,9 +31,20 @@ export const gql = async ({
   query: string
   variables: object
 }) => {
-  const datasource = createDatasource(
-    new FileSystemManager({ rootPath: projectRoot })
-  )
+  /**
+   * To work with Github, uncomment the lines below, replacing
+   * the FileSystemManager with GithubManager
+   */
+  // const manager = new GithubManager({
+  //   rootPath: '', If your .tina config is nested, provide the path to it
+  //   accessToken: '<Use Personal Access Token>',
+  //   owner: 'some-owner',
+  //   repo: 'some-repo',
+  //   ref: 'main',
+  //   cache: simpleCache,
+  // })
+  const manager = new FileSystemManager({ rootPath: projectRoot })
+  const datasource = createDatasource(manager)
 
   const cache = cacheInit(datasource)
 
