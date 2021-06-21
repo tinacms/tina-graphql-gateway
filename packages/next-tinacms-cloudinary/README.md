@@ -29,9 +29,7 @@ import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
 ...
 const cms = new TinaCMS({
   ---
-  media: new CloudinaryMediaStore(
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-  ),
+  media: new CloudinaryMediaStore(),
   ---
 })
 ...
