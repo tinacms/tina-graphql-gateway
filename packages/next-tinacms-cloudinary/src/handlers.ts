@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
 Copyright 2021 Forestry.io Holdings, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+=======
+>>>>>>> 220e9ea7 (fixed types in cloudinary package)
 import { v2 as cloudinary } from 'cloudinary'
 import { Media, MediaListOptions } from 'tinacms'
 import path from 'path'
