@@ -17,10 +17,7 @@ import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
-import {
-  TinaCLoudCloudinaryMediaStore,
-  CloudinaryMediaStore,
-} from 'next-tinacms-cloudinary'
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
 const client = createClient()
 
@@ -41,7 +38,7 @@ const TinaWrapper = (props) => {
     })
   }, [])
 
-  cms.media.store = new TinaCLoudCloudinaryMediaStore(client)
+  cms.media.store = new TinaCloudCloudinaryMediaStore(client)
 
   return (
     <TinaCloudAuthWall cms={cms}>
