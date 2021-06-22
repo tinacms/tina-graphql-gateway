@@ -2,15 +2,18 @@
   "name": "tina-graphql",
   "version": "0.1.14",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "types": "src/index.ts",
   "files": [
     "dist/*",
     "src/fixtures/**/*"
   ],
+  "buildConfig": {
+    "platform": "node"
+  },
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tina-build build",
+    "watch": "yarn tina-build build --watch",
     "docs": "yarn typedoc",
     "serve": "yarn nodemon dist/server.js",
     "test": "jest --passWithNoTests"
@@ -73,6 +76,7 @@
     "jest-diff": "^26.4.2",
     "jest-matcher-utils": "^26.4.2",
     "nodemon": "^2.0.4",
+    "tina-build": "workspace:packages/build",
     "ts-jest": "^26.1.2",
     "tsup": "^3.7.0",
     "typedoc": "^0.19.2",

@@ -1,15 +1,16 @@
 {
   "name": "tina-graphql-gateway",
   "version": "0.2.17",
+  "types": "src/index.ts",
   "main": "dist/index.js",
   "files": [
     "dist/*"
   ],
-  "typings": "dist/index.d.ts",
+  "buildConfig": {},
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
+    "build": "yarn tina-build build",
+    "watch": "yarn tina-build build --watch",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },
@@ -37,6 +38,7 @@
     "next": "9.4.2",
     "node-fetch": "^2.6.0",
     "prop-types": "15.7.2",
+    "tina-build": "workspace:packages/build",
     "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
     "tsup": "^3.7.0",
     "typescript": "^3.9.5",
@@ -57,6 +59,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styled-components": "^5.2.0",
+    "tina-build": "workspace:packages/build",
     "tinacms": "^0.31.0"
   },
   "peerDependencies": {

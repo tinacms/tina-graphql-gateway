@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+require = require("esm")(module);
+const build = require("../dist")
+const pnp = require(`pnpapi`);
+const chokidar = require('chokidar');
+const path = require("path")
+
+// build.init(process.argv);
+
+// pnp.getDependencyTreeRoots().map(packageLocator => {
+// 	const packageInformation = pnp.getPackageInformation(packageLocator)
+// 	console.log(packageInformation.packageLocation)
+// })
+
+// chokidar.watch('/Users/jeffsee/code/tina-graphql/packages/*/src/**/*.ts', {
+	const watchPath = path.resolve('..', "*/src/**/*.ts")
+console.log('Watching ', watchPath)
+chokidar.watch(watchPath).on('change', async (path) => {
+	const packageLocator = pnp.findPackageLocator(path)
+	const packageInformation = pnp.getPackageInformation(packageLocator)
+	await build.run({dir: packageInformation.packageLocation})
+});

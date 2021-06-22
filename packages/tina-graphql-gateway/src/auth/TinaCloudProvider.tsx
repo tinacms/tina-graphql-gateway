@@ -101,7 +101,7 @@ export const AuthWallInner = ({
 }
 
 /**
- * Provides an authentication wall so Tina is not enabled without a valid user session.
+ * Provides an authentication wall so Tina is not enabled without a valid user session
  *
  * Note: this will not restrict access for local filesystem clients
  */

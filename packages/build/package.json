@@ -1,20 +1,14 @@
 {
-  "name": "tina-graphql-gateway-cli",
+  "name": "tina-build",
   "version": "0.2.51",
   "main": "dist/index.js",
-  "types": "src/index.ts",
   "files": [
     "dist/*",
     "bin/*",
     ".env"
   ],
   "license": "Apache-2.0",
-  "bin": {
-    "tina-gql": "bin/tina-gql"
-  },
-  "buildConfig": {
-    "platform": "node"
-  },
+  "bin": "bin/tina-build",
   "devDependencies": {
     "@types/clear": "0.1.0",
     "@types/cors": "2.8.5",
@@ -30,13 +24,13 @@
     "@types/lodash.get": "^4.4.6",
     "@types/yup": "^0.29.11",
     "jest": "26.1.0",
-    "tina-build": "workspace:packages/build",
     "ts-jest": "^26.5.3",
     "tsup": "^4.6.1"
   },
   "scripts": {
-    "build": "yarn tina-build build",
-    "watch": "yarn tina-build build --watch",
+    "buildAll": "bin/tina-build",
+    "build": "yarn tsup src/index.ts --format cjs",
+    "watch": "yarn tsup src/index.ts --watch --format cjs",
     "test": "jest --passWithNoTests",
     "test-watch": "jest  --passWithNoTests --watch",
     "generate:schema": "yarn node scripts/generateSchema.js"
@@ -49,10 +43,11 @@
     "altair-express-middleware": "^4.0.6",
     "axios": "0.19.0",
     "body-parser": "^1.19.0",
-    "chalk": "^2.4.2",
-    "chokidar": "^3.5.1",
-    "commander": "5.1.0",
+    "chalk": "^4.1.1",
+    "chokidar": "^3.5.2",
+    "commander": "^7.2.0",
     "cors": "^2.8.5",
+    "esbuild": "^0.12.9",
     "esm": "3.2.25",
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
@@ -61,10 +56,12 @@
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.19",
     "lodash.get": "^4.4.2",
+    "meow": "^10.0.1",
     "normalize-path": "^3.0.0",
     "tina-graphql": "workspace:packages/tina-graphql",
     "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
     "typescript": "^4.2.2",
+    "yargs": "^17.0.1",
     "yup": "^0.32.9"
   },
   "publishConfig": {

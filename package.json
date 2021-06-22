@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "build": "yarn ci:build",
-    "watch": "yarn workspaces foreach --exclude=sc --exclude=test --exclude=demo -p -i --verbose run watch",
+    "watch": "yarn workspace tina-build buildAll",
+    "watch2": "yarn workspaces foreach --exclude=sc --exclude tina-build --exclude=test --exclude=demo -p -i --verbose run watch",
     "test": "yarn workspaces foreach run test",
     "apply": "yarn version apply --all --json",
     "apply:workspaces": "yarn version apply --all",

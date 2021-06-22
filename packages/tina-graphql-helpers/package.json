@@ -6,15 +6,19 @@
     "dist/*"
   ],
   "license": "Apache-2.0",
-  "typings": "dist/index.d.ts",
+  "types": "src/index.ts",
+  "buildConfig": {
+    "entryPoints": [
+      "src/index.ts",
+      "src/test-util.ts"
+    ]
+  },
   "bin": {
     "forestry:serve": "./dist/index.js"
   },
   "scripts": {
-    "build": "yarn tsup src/index.ts src/test-util.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts src/test-util.ts --watch --format cjs --dts",
-    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
-    "serve": "yarn nodemon dist/index.js",
+    "build": "yarn tina-build build",
+    "watch": "yarn tina-build build --watch",
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
@@ -48,6 +52,7 @@
     "@types/lodash.upperfirst": "^4.3.6",
     "@types/node": "^14.14.31",
     "jest": "^26.6.3",
+    "tina-build": "workspace:packages/build",
     "ts-jest": "^26.5.3"
   }
 }
