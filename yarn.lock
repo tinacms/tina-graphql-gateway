@@ -14518,18 +14518,21 @@ fsevents@~2.3.1:
     "@types/react": ^16.9.43
     "@types/styled-components": ^5.1.3
     cloudinary: ^1.25.2
-    cloudinary-core: ^2.11.4
     lodash: ^4.17.21
     multer: ^1.4.2
     next: 10.0.5
     react: ^16.13.1
     react-dom: ^16.13.1
     react-is: ^17.0.2
+    tina-graphql-gateway: "workspace:packages/tina-graphql-gateway"
     tinacms: 0.31.0
     tsup: ^3.7.0
     typescript: ^3.8.3
   peerDependencies:
     styled-components: "*"
+  dependenciesMeta:
+    tina-graphql-gateway:
+      optional: true
   languageName: unknown
   linkType: soft
 

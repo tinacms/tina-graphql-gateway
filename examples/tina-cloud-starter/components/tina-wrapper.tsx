@@ -11,36 +11,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useEffect } from 'react'
-import { TinaCMS, useCMS } from 'tinacms'
-import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
+import React from 'react'
+import { TinaCMS } from 'tinacms'
+import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
-import { TinaCLoudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
+const client = createClient()
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
  * if you're on a route that starts with "/admin"
  */
 const TinaWrapper = (props) => {
-  const tinaCloudClient = createClient()
-  const fetchFunction = (input: RequestInfo, init?: RequestInit) => {
-    return tinaCloudClient.fetchWithToken(input, init)
-  }
   const cms = React.useMemo(() => {
     return new TinaCMS({
       apis: {
-        tina: tinaCloudClient,
+        tina: client,
       },
       sidebar: {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
-      media: new TinaCLoudCloudinaryMediaStore(fetchFunction),
     })
   }, [])
+
+  cms.media.store = new TinaCloudCloudinaryMediaStore(client)
 
   return (
     <TinaCloudAuthWall cms={cms}>
@@ -54,17 +52,6 @@ const Inner = (props) => {
     query: (gql) => gql(props.query),
     variables: props.variables || {},
   })
-  const cms = useCMS()
-  const tinaCloudClient: Client = cms.api.tina
-  useEffect(() => {
-    const fetchTest = async () => {
-      const test = await tinaCloudClient.fetchWithToken(
-        `/api/test?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`
-      )
-      console.log({ test: await test.json() })
-    }
-    fetchTest()
-  }, [])
   return (
     <>
       {isLoading ? (

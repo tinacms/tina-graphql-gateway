@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Cloudinary } from 'cloudinary-core'
 import {
   Media,
   MediaList,
@@ -25,7 +24,6 @@ export class CloudinaryMediaStore implements MediaStore {
     return fetch(input, init)
   }
   accept = '*'
-  private api: Cloudinary
 
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
     const { file, directory } = media[0]
