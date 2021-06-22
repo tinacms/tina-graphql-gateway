@@ -34,7 +34,7 @@ export class CloudinaryMediaStore implements MediaStore {
     formData.append('directory', directory)
     formData.append('filename', file.name)
 
-    const res = await this.fetchFunction(`/api/cloudinary/media`, {
+    const res = await fetch(`/api/cloudinary/media`, {
       method: 'POST',
       body: formData,
     })
