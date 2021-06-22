@@ -14,11 +14,10 @@ limitations under the License.
 import { CloudinaryMediaStore } from './cloudinary-media-store'
 import { Client } from 'tina-graphql-gateway'
 export class TinaCLoudCloudinaryMediaStore extends CloudinaryMediaStore {
-  client: any
+  client: Client
   constructor(client: Client) {
     super()
     this.client = client
-    console.log('child class')
     this.fetchFunction = async (input: RequestInfo, init?: RequestInit) => {
       try {
         const url = input.toString()
