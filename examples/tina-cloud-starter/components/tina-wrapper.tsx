@@ -11,11 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaCloudAuthWall } from 'tina-graphql-gateway'
+import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
 import React, { useEffect } from 'react'
 import { TinaCMS, useCMS } from 'tinacms'
 import { SidebarPlaceholder } from './helper-components'
 import { useGraphqlForms } from 'tina-graphql-gateway'
+import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
 
 /**

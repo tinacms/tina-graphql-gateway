@@ -1,5 +1,6 @@
 ---
 title: Vote For Pedro
+hero: 'http://res.cloudinary.com/dcpinxzoo/image/upload/v1622840233/sample.jpg'
 author: content/authors/napolean.md
 _template: article
 ---
