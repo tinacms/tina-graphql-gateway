@@ -47,5 +47,8 @@
     "tsup": "^3.7.0",
     "typedoc": "^0.19.2",
     "typescript": "^3.8.3"
+  },
+  "optionalDependencies": {
+    "tina-graphql-gateway": "workspace:packages/tina-graphql-gateway"
   }
 }

@@ -14494,11 +14494,15 @@ fsevents@~2.3.1:
     react: ^16.13.1
     react-dom: ^16.13.1
     react-is: ^17.0.2
+    tina-graphql-gateway: "workspace:packages/tina-graphql-gateway"
     tinacms: 0.31.0
     tsup: ^3.7.0
     typescript: ^3.8.3
   peerDependencies:
     styled-components: "*"
+  dependenciesMeta:
+    tina-graphql-gateway:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -20283,12 +20287,16 @@ fsevents@~2.3.1:
     jest-matcher-utils: ^26.4.2
     next: 10.0.5
     nodemon: ^2.0.4
+    tina-graphql-gateway: "workspace:packages/tina-graphql-gateway"
     ts-jest: ^26.1.2
     tsup: ^3.7.0
     typedoc: ^0.19.2
     typescript: ^3.8.3
   peerDependencies:
     next: ">=10.0.5"
+  dependenciesMeta:
+    tina-graphql-gateway:
+      optional: true
   languageName: unknown
   linkType: soft
 

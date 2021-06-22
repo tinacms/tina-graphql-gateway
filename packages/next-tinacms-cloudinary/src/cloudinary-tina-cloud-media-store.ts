@@ -1,9 +1,23 @@
 import { CloudinaryMediaStore } from './cloudinary-media-store'
-import { useCMS } from 'tinacms'
+import { Client } from 'tina-graphql-gateway'
 export class TinaCLoudCloudinaryMediaStore extends CloudinaryMediaStore {
-  constructor(fetchFunction: typeof fetch) {
-    console.log('child class')
+  client: any
+  constructor(client: Client) {
     super()
-    this.fetchFunction = fetchFunction
+    this.client = client
+    console.log('child class')
+    this.fetchFunction = async (input: RequestInfo, init?: RequestInit) => {
+      try {
+        const url = input.toString()
+        const query = `${url.includes('?') ? '&' : '?'}org=${
+          client.organizationId
+        }&clientID=${client.clientId}`
+
+        const res = client.fetchWithToken(url + query, init)
+        return res
+      } catch (error) {
+        console.error(error)
+      }
+    }
   }
 }

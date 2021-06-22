@@ -16,6 +16,8 @@ import {
   createMediaHandler,
 } from 'next-tinacms-cloudinary/dist/handlers'
 
+import { isAuthorized } from 'tina-cloud-next'
+
 export const config = mediaHandlerConfig
 
 // TODO: make this route secure
@@ -23,7 +25,13 @@ export default createMediaHandler({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-  authorized: (_req, _res) => {
-    return Promise.resolve(true)
+  authorized: async (req, _res) => {
+    try {
+      const user = await isAuthorized(req)
+      return user && user.verified
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   },
 })
