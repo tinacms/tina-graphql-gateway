@@ -33,6 +33,7 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
+  // media?: 'cloudinary'
 }
 
 export const AuthWallInner = ({
@@ -120,6 +121,11 @@ export const TinaCloudAuthWall = (
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
   }
+  // switch (props.media) {
+  //   case 'cloudinary':
+  //     const store = require('next-tinacms-cloudinary')
+  //     cms.media.store = store
+  // }
 
   return (
     <TinaProvider cms={cms}>
