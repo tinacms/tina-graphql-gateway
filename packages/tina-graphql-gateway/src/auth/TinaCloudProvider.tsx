@@ -33,7 +33,7 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
-  // media?: 'cloudinary'
+  media?: 'cloudinary'
 }
 
 export const AuthWallInner = ({
@@ -121,11 +121,18 @@ export const TinaCloudAuthWall = (
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
   }
-  // switch (props.media) {
-  //   case 'cloudinary':
-  //     const store = require('next-tinacms-cloudinary')
-  //     cms.media.store = store
-  // }
+  switch (props.media) {
+    case 'cloudinary':
+      try {
+        const store = require('next-tinacms-cloudinary')
+        cms.media.store = new store.CloudinaryMediaStore()
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          'Error when setting up cloudinary media store. You may have forgot to install the package. Please run yarn add next-tinacms-cloudinary'
+        )
+      }
+  }
 
   return (
     <TinaProvider cms={cms}>

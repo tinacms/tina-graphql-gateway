@@ -20400,6 +20400,7 @@ fsevents@~2.3.1:
     lodash.merge: ^4.6.2
     lodash.set: ^4.3.2
     next: 9.4.2
+    next-tinacms-cloudinary: "workspace:packages/next-tinacms-cloudinary"
     node-fetch: ^2.6.0
     prop-types: 15.7.2
     react: 16.13.1
@@ -20424,6 +20425,9 @@ fsevents@~2.3.1:
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
     tinacms: ^0.31.0
+  dependenciesMeta:
+    next-tinacms-cloudinary:
+      optional: true
   languageName: unknown
   linkType: soft
 

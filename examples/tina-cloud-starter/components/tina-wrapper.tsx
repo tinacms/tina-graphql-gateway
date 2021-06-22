@@ -30,6 +30,7 @@ const TinaWrapper = (props) => {
       branch="main"
       isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
       organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+      media="cloudinary"
     >
       <Inner {...props} />
     </TinaCloudAuthWall>
