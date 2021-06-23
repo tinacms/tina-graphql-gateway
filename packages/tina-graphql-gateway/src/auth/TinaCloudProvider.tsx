@@ -13,7 +13,15 @@ limitations under the License.
 
 import { ModalBuilder } from './AuthModal'
 import React, { useState } from 'react'
-import { TinaCMS, TinaProvider, MediaStore } from 'tinacms'
+import {
+  TinaCMS,
+  TinaProvider,
+  MediaStore,
+  Media,
+  MediaList,
+  MediaListOptions,
+  MediaUploadOptions,
+} from 'tinacms'
 
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'
@@ -26,8 +34,21 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+abstract class CloudMediaStore implements MediaStore {
+  client: Client
+  abstract list(options?: MediaListOptions): Promise<MediaList>
+  accept: string
+  abstract persist(file: MediaUploadOptions[]): Promise<Media[]>
+  abstract delete(media: Media): Promise<void>
+  abstract previewSrc(
+    src: string,
+    fieldPath?: string,
+    formValues?: any
+  ): string | Promise<string>
+  constructor(client: Client) {}
+}
 interface MediaStoreClass {
-  new (name: string): MediaStore
+  new (client: Client): CloudMediaStore
 }
 export interface TinaCloudAuthWallProps {
   cms?: TinaCMS
