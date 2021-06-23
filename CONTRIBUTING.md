@@ -29,3 +29,12 @@ That should allow you to see 2 things: The GraphiQL playground at `http:localhos
 When your work is ready, from the root of the repository run `yarn changeset` and follow the prompts to select the packages you'd like to update. For more information on how to work with changesets read [their documentation](https://github.com/atlassian/changesets/blob/main/docs/adding-a-changeset.md)
 
 Once your changeset has been generated, commit it as part of your work and push to Github. From there we'll know how to version the package when we do a release.
+
+## Creating a beta release
+
+`cd` into the package you want to release, append `-beta` to the `version` in it's `package.json`. Run `yarn version prerelease`, which will bump your version in the `package.json`. So if you had `0.1.1-beta`, it would become `0.1.1-beta.1`. Next, run `yarn npm publish --tag beta`.
+
+To install this version `yarn add my-package@beta`. For users you do `yarn add my-package`, they won't get your beta version.
+
+> Hint: there's no special meaning to the term `beta`, you can use whatever keyword you want
+
