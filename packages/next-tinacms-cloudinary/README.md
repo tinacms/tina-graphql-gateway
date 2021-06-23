@@ -24,14 +24,25 @@ CLOUDINARY_API_SECRET=<Your Cloudinary API secret>
 Now, you can register the Cloudinary Media store with the instance of Tina in your app.
 
 ```
-import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
+import { Client } from 'tina-gql-gateway'
 
+//Use `createClient` to fetch the Client class for the application
+const client = createClient()
 ...
 const cms = new TinaCMS({
-  ---
-  media: new CloudinaryMediaStore(),
-  ---
+  apis: {
+      tina: client,
+    },
+  sidebar: {
+    placeholder: SidebarPlaceholder,
+  },
+  enabled: true,
 })
+
+//Register the Cloudinary store with the cms object behind the Tina Cloud Auth Wall.
+cms.media.store = new TinaCloudCloudinaryMediaStore(client)
+
 ...
 ```
 
@@ -40,7 +51,14 @@ Set up a new api route in the ```pages``` directory of your Next.js app.
 
 e.g. ```pages/api/cloudinary```
 
-Then add a new catch all api route for media
+Then add a new catch all api route for media.
+
+Call createMediaHandler to set up routes and connect your instance of the Media Store to your Cloudinary account.
+
+Import (isAuthorized)[https://github.com/tinacms/tina-graphql-gateway/tree/main/packages/tina-cloud-next] from ```tina-cloud-next```.
+
+The ```authorized``` key will make it so only authorized users within Tina Cloud can upload and make media edits.
+
 
 ```
 //[...media].ts
@@ -48,7 +66,10 @@ Then add a new catch all api route for media
 import {
   mediaHandlerConfig,
   createMediaHandler,
-} from 'next-tinacms-cloudinary/dist/handlers'
+} from 'next-tinacms-cloudinary'
+
+import { isAuthorized } from 'tina-cloud-next'
+
 
 export const config = mediaHandlerConfig
 
@@ -56,6 +77,16 @@ export default createMediaHandler({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  authorized: async (req, _res) => {
+    try {
+      const user = await isAuthorized(req)
+
+      return user && user.verified
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+  },
 })
 ```
 
@@ -73,4 +104,3 @@ In your ```.tina/schema.ts``` add a new field for the image
  ```
 
  Now, when editing your site, the image field will allow you to connect to your Cloudinary account via the Media Store to manage your media assets.
-

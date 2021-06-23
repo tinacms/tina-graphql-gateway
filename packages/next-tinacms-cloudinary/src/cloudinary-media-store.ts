@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Cloudinary } from 'cloudinary-core'
 import {
   Media,
   MediaList,
@@ -21,8 +20,10 @@ import {
 } from 'tinacms'
 
 export class CloudinaryMediaStore implements MediaStore {
+  fetchFunction = (input: RequestInfo, init?: RequestInit) => {
+    return fetch(input, init)
+  }
   accept = '*'
-  private api: Cloudinary
 
   async persist(media: MediaUploadOptions[]): Promise<Media[]> {
     const { file, directory } = media[0]
@@ -31,7 +32,7 @@ export class CloudinaryMediaStore implements MediaStore {
     formData.append('directory', directory)
     formData.append('filename', file.name)
 
-    const res = await fetch(`/api/cloudinary/media`, {
+    const res = await this.fetchFunction(`/api/cloudinary/media`, {
       method: 'POST',
       body: formData,
     })
@@ -42,6 +43,8 @@ export class CloudinaryMediaStore implements MediaStore {
     }
     const fileRes = await res.json()
 
+    // TODO: be programmer
+    // NOTE: why do we need this?
     await new Promise((resolve) => {
       setTimeout(resolve, 2000)
     })
@@ -49,9 +52,12 @@ export class CloudinaryMediaStore implements MediaStore {
     return []
   }
   async delete(media: Media) {
-    await fetch(`/api/cloudinary/media/${encodeURIComponent(media.id)}`, {
-      method: 'DELETE',
-    })
+    await this.fetchFunction(
+      `/api/cloudinary/media/${encodeURIComponent(media.id)}`,
+      {
+        method: 'DELETE',
+      }
+    )
   }
   async list(options: MediaListOptions): Promise<MediaList> {
     let query = '?'
@@ -59,8 +65,7 @@ export class CloudinaryMediaStore implements MediaStore {
     if (options.directory) {
       query += `directory=${encodeURIComponent(options.directory)}`
     }
-
-    const response = await fetch('/api/cloudinary/media' + query)
+    const response = await this.fetchFunction('/api/cloudinary/media' + query)
 
     const { items } = await response.json()
     return {

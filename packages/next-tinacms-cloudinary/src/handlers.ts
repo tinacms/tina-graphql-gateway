@@ -22,6 +22,7 @@ export interface CloudinaryConfig {
   cloud_name: string
   api_key: string
   api_secret: string
+  authorized: (req: NextApiRequest, res: NextApiResponse) => Promise<boolean>
 }
 
 export const mediaHandlerConfig = {
@@ -34,6 +35,12 @@ export const createMediaHandler = (config: CloudinaryConfig) => {
   cloudinary.config(config)
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    const isAuthorized = await config.authorized(req, res)
+    // make sure the user is authorized to upload
+    if (!isAuthorized) {
+      res.status(401).json({ message: 'sorry this user is unauthorized' })
+      return
+    }
     switch (req.method) {
       case 'GET':
         return listMedia(req, res)
