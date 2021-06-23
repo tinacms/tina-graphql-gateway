@@ -15,6 +15,7 @@ import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import React, { useEffect } from 'react'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -27,7 +28,7 @@ const TinaWrapper = (props) => {
       branch="main"
       isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
       organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      media="cloudinary"
+      media={TinaCloudCloudinaryMediaStore}
     >
       <Inner {...props} />
     </TinaCloudAuthWall>

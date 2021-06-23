@@ -14513,13 +14513,6 @@ fsevents@~2.3.1:
   version: 0.0.0-use.local
   resolution: "next-tinacms-cloudinary@workspace:packages/next-tinacms-cloudinary"
   dependencies:
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.38.0
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.31.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
     "@types/crypto-js": ^3.1.47
     "@types/js-cookie": ^2.2.6
     "@types/node": ^13.13.1
@@ -14535,13 +14528,6 @@ fsevents@~2.3.1:
     tinacms: ^0.31.0
     tsup: ^3.7.0
   peerDependencies:
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.38.0
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.32.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
     react: ">=16.8"
     react-dom: ">=16.8"
     react-is: ^16.13.1 || <18.0.0
@@ -20458,7 +20444,6 @@ fsevents@~2.3.1:
     lodash.merge: ^4.6.2
     lodash.set: ^4.3.2
     next: 9.4.2
-    next-tinacms-cloudinary: "workspace:packages/next-tinacms-cloudinary"
     node-fetch: ^2.6.0
     prop-types: 15.7.2
     react: 16.13.1
@@ -20483,9 +20468,6 @@ fsevents@~2.3.1:
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
     tinacms: ^0.31.0
-  dependenciesMeta:
-    next-tinacms-cloudinary:
-      optional: true
   languageName: unknown
   linkType: soft
 

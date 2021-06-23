@@ -13,7 +13,7 @@ limitations under the License.
 
 import { ModalBuilder } from './AuthModal'
 import React, { useState } from 'react'
-import { TinaCMS, TinaProvider } from 'tinacms'
+import { TinaCMS, TinaProvider, MediaStore } from 'tinacms'
 
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'
@@ -26,6 +26,9 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+interface MediaStoreClass {
+  new (name: string): MediaStore
+}
 export interface TinaCloudAuthWallProps {
   cms?: TinaCMS
   children: React.ReactNode
@@ -33,7 +36,7 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
-  media?: 'cloudinary'
+  media?: MediaStoreClass
 }
 
 export const AuthWallInner = ({
@@ -121,22 +124,8 @@ export const TinaCloudAuthWall = (
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
   }
-  switch (props.media) {
-    case 'cloudinary':
-      try {
-        const setupStore = async () => {
-          const store = await import('next-tinacms-cloudinary')
-          cms.media.store = new store.TinaCloudCloudinaryMediaStore(
-            cms.api.tina
-          )
-        }
-        setupStore()
-      } catch (error) {
-        console.error(error)
-        throw new Error(
-          'Error when setting up cloudinary media store. You may have forgot to install the package. Please run yarn add next-tinacms-cloudinary'
-        )
-      }
+  if (props.media) {
+    cms.media.store = new props.media(cms.api.tina)
   }
 
   return (

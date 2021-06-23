@@ -79,8 +79,5 @@
   "repository": {
     "url": "https://github.com/tinacms/tina-graphql-gateway.git",
     "directory": "packages/tina-graphql-gateway"
-  },
-  "optionalDependencies": {
-    "next-tinacms-cloudinary": "workspace:packages/next-tinacms-cloudinary"
   }
 }
