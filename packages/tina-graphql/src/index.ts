@@ -18,9 +18,11 @@ import { buildASTSchema } from 'graphql'
 import { createDatasource } from './datasources/data-manager'
 import { GithubManager } from './datasources/github-manager'
 import { FileSystemManager } from './datasources/filesystem-manager'
-import { simpleCache, clearCache } from './lru'
+import { clearCache as s3ClearCache } from './cache/s3'
+import { simpleCache, clearCache as lruClearCache } from './cache/lru'
+import { Cache } from './cache'
 
-export { clearCache }
+export { lruClearCache, s3ClearCache }
 
 export const gql = async ({
   projectRoot,
@@ -83,6 +85,7 @@ export const githubRoute = async ({
   variables,
   rootPath,
   branch,
+  cacheType = simpleCache,
 }: {
   accessToken: string
   owner: string
@@ -91,6 +94,7 @@ export const githubRoute = async ({
   variables: object
   rootPath?: string
   branch: string
+  cacheType?: typeof simpleCache
 }) => {
   const gh = new GithubManager({
     rootPath: rootPath || '',
@@ -98,7 +102,7 @@ export const githubRoute = async ({
     owner,
     repo,
     ref: branch,
-    cache: simpleCache,
+    cache: cacheType,
   })
   const datasource = createDatasource(gh)
   const cache = cacheInit(datasource)
