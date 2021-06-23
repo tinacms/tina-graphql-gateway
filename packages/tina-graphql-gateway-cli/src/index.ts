@@ -17,7 +17,7 @@ import { version, name } from '../package.json'
 import { Command } from './command'
 import { baseCmds as baseCommands } from './cmds/baseCmds'
 import { logText } from './utils/theme'
-export { defineSchema } from './cmds/compile'
+export { defineSchema, defineSchema2 } from './cmds/compile'
 export type {
   TinaCloudTemplate,
   TinaCloudSchema,

@@ -13,11 +13,8 @@ limitations under the License.
 
 import { LandingPage } from '../components/landing-page'
 import { Wrapper } from '../components/helper-components'
-import type { MarketingPages_Document } from '../.tina/__generated__/types'
+import type { MarketingPagesDocument } from '../.tina/__generated__/types'
 import { createLocalClient, AsyncReturnType } from '../utils'
-import { useEffect } from 'react'
-import { useCMS } from 'tinacms'
-import { Client } from 'tina-graphql-gateway'
 
 export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
@@ -31,24 +28,26 @@ export default function HomePage(
   )
 }
 
-export const query = `#graphql
+const gql = (strings: TemplateStringsArray) => strings
+
+export const query = gql`
   query ContentQuery {
     # "index.md" is _relative_ to the "Marketing Pages" path property in your schema definition
     # you can inspect this file at "content/marketing-pages/index.md"
     getMarketingPagesDocument(relativePath: "index.md") {
       data {
         __typename
-        ... on LandingPage_Doc_Data {
+        ... on MarketingPagesLandingPage {
           blocks {
             __typename
-            ... on Message_Data {
-              messageHeader
-              messageBody
-            }
-            ... on Image_Data {
+            ... on MarketingPagesLandingPageBlocksImage {
               heading
               imgDescription
               src
+            }
+            ... on MarketingPagesLandingPageBlocksMessage {
+              messageHeader
+              messageBody
             }
           }
         }
@@ -62,8 +61,8 @@ export const getStaticProps = async () => {
   return {
     props: {
       data: await client.request<{
-        getMarketingPagesDocument: MarketingPages_Document
-      }>(query, {
+        getMarketingPagesDocument: MarketingPagesDocument
+      }>(query.join(''), {
         variables: {},
       }),
       query: query,

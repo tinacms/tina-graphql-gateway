@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from 'tina-graphql-gateway-cli'
+import { defineSchema, defineSchema2 } from 'tina-graphql-gateway-cli'
 
 export default defineSchema({
   collections: [
@@ -113,6 +113,121 @@ export default defineSchema({
                     },
                     {
                       type: 'text',
+                      label: 'Image src',
+                      name: 'src',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+})
+
+export const primitive = defineSchema2({
+  collections: [
+    {
+      label: 'Blog Posts',
+      name: 'posts',
+      path: 'content/posts',
+      templates: [
+        {
+          label: 'Article',
+          name: 'article',
+          fields: [
+            {
+              type: 'string',
+              label: 'Title',
+              name: 'title',
+            },
+            {
+              name: 'hero',
+              type: 'image',
+              label: 'Hero',
+            },
+            {
+              type: 'reference',
+              label: 'Author',
+              name: 'author',
+              collections: ['authors'],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Authors',
+      name: 'authors',
+      path: 'content/authors',
+      templates: [
+        {
+          label: 'Author',
+          name: 'author',
+          fields: [
+            {
+              type: 'string',
+              label: 'Name',
+              name: 'name',
+            },
+            {
+              type: 'string',
+              label: 'Avatar',
+              name: 'avatar',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Marketing Pages',
+      name: 'marketingPages',
+      path: 'content/marketing-pages',
+      templates: [
+        {
+          label: 'Landing Page',
+          name: 'landingPage',
+          fields: [
+            {
+              type: 'object',
+              name: 'blocks',
+              label: 'Blocks',
+              list: true,
+              templates: [
+                {
+                  name: 'message',
+                  label: 'Message',
+                  fields: [
+                    {
+                      type: 'string',
+                      label: 'Message Header',
+                      name: 'messageHeader',
+                    },
+                    {
+                      type: 'string',
+                      label: 'Message Body',
+                      name: 'messageBody',
+                    },
+                  ],
+                },
+                {
+                  name: 'image',
+                  label: 'Image',
+                  fields: [
+                    {
+                      type: 'string',
+                      label: 'Heading',
+                      name: 'heading',
+                    },
+                    {
+                      type: 'string',
+                      label: 'Image Description',
+                      name: 'imgDescription',
+                    },
+                    {
+                      type: 'string',
                       label: 'Image src',
                       name: 'src',
                     },

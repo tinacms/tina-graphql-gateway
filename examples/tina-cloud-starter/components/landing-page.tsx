@@ -14,22 +14,22 @@ limitations under the License.
 import React from 'react'
 import Markdown from 'react-markdown'
 import Image from 'next/image'
-import type { LandingPage_Doc_Data } from '../.tina/__generated__/types'
+import type { MarketingPagesLandingPage } from '../.tina/__generated__/types'
 
-export const LandingPage = (props: LandingPage_Doc_Data) => {
+export const LandingPage = (props: MarketingPagesLandingPage) => {
   return (
     <>
       {props.blocks
         ? props.blocks.map(function (block, i) {
             switch (block.__typename) {
-              case 'Message_Data':
+              case 'MarketingPagesLandingPageBlocksMessage':
                 return (
                   <React.Fragment key={`block-${block.messageHeader}`}>
                     <h3>{block.messageHeader}</h3>
                     <Markdown>{block.messageBody}</Markdown>
                   </React.Fragment>
                 )
-              case 'Image_Data':
+              case 'MarketingPagesLandingPageBlocksImage':
                 return (
                   <React.Fragment key={`diagram-${i}`}>
                     <h3>{block.heading}</h3>

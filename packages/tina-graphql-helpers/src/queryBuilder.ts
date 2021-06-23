@@ -253,7 +253,7 @@ const buildSysForType = (type: GraphQLNamedType): FieldNode => {
 }
 
 const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
-  assertIsUnionType(type)
+  // assertIsUnionType(type)
 
   return {
     kind: 'Field' as const,
@@ -261,15 +261,15 @@ const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
       kind: 'Name' as const,
       value: 'values',
     },
-    selectionSet: {
-      kind: 'SelectionSet' as const,
-      selections: buildSelectionInlineFragments(type.getTypes()),
-    },
+    // selectionSet: {
+    //   kind: 'SelectionSet' as const,
+    //   selections: buildSelectionInlineFragments(type.getTypes()),
+    // },
   }
 }
 
 const buildFormForType = (type: GraphQLNamedType): FieldNode => {
-  assertIsUnionType(type)
+  // assertIsUnionType(type)
 
   return {
     kind: 'Field' as const,
@@ -277,10 +277,10 @@ const buildFormForType = (type: GraphQLNamedType): FieldNode => {
       kind: 'Name' as const,
       value: 'form',
     },
-    selectionSet: {
-      kind: 'SelectionSet' as const,
-      selections: buildSelectionInlineFragments(type.getTypes()),
-    },
+    // selectionSet: {
+    //   kind: 'SelectionSet' as const,
+    //   selections: buildSelectionInlineFragments(type.getTypes()),
+    // },
   }
 }
 

@@ -14,10 +14,11 @@ limitations under the License.
 import childProcess from 'child_process'
 import path from 'path'
 import { buildSchema } from 'tina-graphql'
+import { buildSchema as buildSchema2, createDatabase } from 'tina-graphql-2'
 import { genTypes } from '../query-gen'
 import { compile } from '../compile'
 import chokidar from 'chokidar'
-import { successText, dangerText } from '../../utils/theme'
+import { dangerText } from '../../utils/theme'
 
 interface Options {
   port?: number
@@ -25,6 +26,7 @@ interface Options {
 }
 
 const gqlPackageFile = require.resolve('tina-graphql')
+const gqlPackageFile2 = require.resolve('tina-graphql-2')
 
 export async function startServer(
   _ctx,
@@ -52,9 +54,13 @@ export async function startServer(
       })
       .on('ready', async () => {
         try {
+          const database = await createDatabase({
+            rootPath: projectRoot,
+          })
           console.log('Generating Tina config')
           await compile()
-          const schema = await buildSchema(process.cwd())
+          // const schema = await buildSchema(process.cwd())
+          const schema = await buildSchema2(process.cwd(), database)
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()
@@ -104,7 +110,9 @@ export async function startServer(
 
   const restart = async () => {
     console.log('Detected change to gql package, restarting...')
+    console.log(gqlPackageFile2)
     delete require.cache[gqlPackageFile]
+    delete require.cache[gqlPackageFile2]
 
     state.sockets.forEach((socket, index) => {
       if (socket.destroyed === false) {
@@ -120,7 +128,7 @@ export async function startServer(
 
   if (!process.env.CI) {
     chokidar
-      .watch(gqlPackageFile)
+      .watch([gqlPackageFile, gqlPackageFile2])
       .on('ready', async () => {
         isReady = true
         start()
