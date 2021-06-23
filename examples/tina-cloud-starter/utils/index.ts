@@ -37,7 +37,6 @@ export const createCloudClient = () => {
   }
 
   return new Client({
-    organizationId: organization,
     clientId,
     branch: 'main',
     tokenStorage: 'LOCAL_STORAGE',

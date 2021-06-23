@@ -46,7 +46,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 const client = new LocalClient()
 // const client = new Client({
 //   clientId: 'some-id',
-//   organizationId: 'gctc',
 //   branch: 'main',
 // })
 
