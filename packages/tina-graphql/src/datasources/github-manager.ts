@@ -51,7 +51,7 @@ export class GithubManager implements DataAdaptor {
   }
 
   private generateKey = (key: string) => {
-    return `${this.repoConfig.owner}:${this.repoConfig.repo}:${this.repoConfig.ref}__${key}`
+    return `${this.repoConfig.owner}/${this.repoConfig.repo}/${this.repoConfig.ref}/${key}`
   }
 
   readFile = async (path: string) => {
@@ -68,32 +68,36 @@ export class GithubManager implements DataAdaptor {
   }
   readDir = async (path: string): Promise<string[]> => {
     return _.flatten(
-      await this.cache.get(this.generateKey(path), async () =>
-        this.appOctoKit.repos
-          .getContent({
-            ...this.repoConfig,
-            path,
-          })
-          .then(async (response) => {
-            if (Array.isArray(response.data)) {
-              return await Promise.all(
-                await response.data.map(async (d) => {
-                  if (d.type === 'dir') {
-                    const nestedItems = await this.readDir(d.path)
-                    return nestedItems.map((nestedItem) => {
-                      return p.join(d.name, nestedItem)
-                    })
-                  }
-                  return d.name
-                })
-              )
-            }
+      (
+        await this.cache.get(this.generateKey(path), async () =>
+          this.appOctoKit.repos
+            .getContent({
+              ...this.repoConfig,
+              path,
+            })
+            .then(async (response) => {
+              if (Array.isArray(response.data)) {
+                return await Promise.all(
+                  await response.data.map(async (d) => {
+                    if (d.type === 'dir') {
+                      const nestedItems = await this.readDir(d.path)
+                      return nestedItems.map((nestedItem) => {
+                        return p.join(d.name, nestedItem)
+                      })
+                    }
+                    return d.name
+                  })
+                )
+              }
 
-            throw new Error(
-              `Expected to return an array from Github directory ${path}`
-            )
-          })
+              throw new Error(
+                `Expected to return an array from Github directory ${path}`
+              )
+            })
+        )
       )
+        .toString()
+        .split(',')
     )
   }
   writeFile = async (path: string, content: string) => {
