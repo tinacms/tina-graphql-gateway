@@ -38,8 +38,5 @@
   },
   "peerDependencies": {
     "styled-components": "*"
-  },
-  "optionalDependencies": {
-    "tina-graphql-gateway": "workspace:packages/tina-graphql-gateway"
   }
 }

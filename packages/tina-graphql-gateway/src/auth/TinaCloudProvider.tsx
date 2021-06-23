@@ -124,8 +124,13 @@ export const TinaCloudAuthWall = (
   switch (props.media) {
     case 'cloudinary':
       try {
-        const store = require('next-tinacms-cloudinary')
-        cms.media.store = new store.CloudinaryMediaStore()
+        const setupStore = async () => {
+          const store = await import('next-tinacms-cloudinary')
+          cms.media.store = new store.TinaCloudCloudinaryMediaStore(
+            cms.api.tina
+          )
+        }
+        setupStore()
       } catch (error) {
         console.error(error)
         throw new Error(
