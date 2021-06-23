@@ -21736,6 +21736,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:13.13.15"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
+            ["@types/tina-graphql-gateway", null],
             ["cloudinary", "npm:1.26.0"],
             ["lodash", "npm:4.17.21"],
             ["multer", "npm:1.4.2"],
@@ -21751,7 +21752,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "@types/styled-components",
-            "styled-components"
+            "@types/tina-graphql-gateway",
+            "styled-components",
+            "tina-graphql-gateway"
           ],
           "linkType": "SOFT",
         }],

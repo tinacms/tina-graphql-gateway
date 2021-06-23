@@ -14530,9 +14530,7 @@ fsevents@~2.3.1:
     typescript: ^3.8.3
   peerDependencies:
     styled-components: "*"
-  dependenciesMeta:
-    tina-graphql-gateway:
-      optional: true
+    tina-graphql-gateway: ">=0.2.18"
   languageName: unknown
   linkType: soft
 
