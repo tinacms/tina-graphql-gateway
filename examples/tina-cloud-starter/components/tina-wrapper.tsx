@@ -22,6 +22,23 @@ import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
  * if you're on a route that starts with "/admin"
  */
 const TinaWrapper = (props) => {
+  const cms = React.useMemo(() => {
+    return new TinaCMS({
+      apis: {
+        tina: client,
+      },
+      sidebar: {
+        placeholder: SidebarPlaceholder,
+      },
+      enabled: true,
+      mediaOptions: {
+        pageSize: 20,
+      },
+    })
+  }, [])
+
+  cms.media.store = new TinaCloudCloudinaryMediaStore(client)
+
   return (
     <TinaCloudProvider
       clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}

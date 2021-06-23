@@ -65,15 +65,19 @@ export class CloudinaryMediaStore implements MediaStore {
     if (options.directory) {
       query += `directory=${encodeURIComponent(options.directory)}`
     }
+    if (options.limit) {
+      query += `directory=${encodeURIComponent(options.limit)}`
+    }
+    if (options.offset) {
+      query += `directory=${encodeURIComponent(options.offset)}`
+    }
+
     const response = await this.fetchFunction('/api/cloudinary/media' + query)
 
     const { items } = await response.json()
     return {
       items: items.map((item) => item),
-      totalCount: items.length,
-      limit: 500,
-      offset: 0,
-      nextOffset: undefined,
+      nextOffset: options.offset,
     }
   }
 
