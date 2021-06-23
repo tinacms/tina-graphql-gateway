@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useEffect } from 'react'
-import { TinaCMS, useCMS } from 'tinacms'
-import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
+import React from 'react'
+import { TinaCMS } from 'tinacms'
+import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
