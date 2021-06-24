@@ -13,14 +13,9 @@ limitations under the License.
 import fs from 'fs-extra'
 import p, { join } from 'path'
 
-import {
-  successText,
-  logText,
-  cmdText,
-  dangerText,
-  warnText,
-} from '../../utils/theme'
+import { successText, logText, cmdText, warnText } from '../../utils/theme'
 import { blogPost, nextPostPage } from './setup-files'
+import { logger } from '../../logger'
 
 /**
  * Executes a shell command and return it as a Promise.
@@ -40,7 +35,7 @@ function execShellCommand(cmd): Promise<string> {
 }
 
 export async function initTina(ctx: any, next: () => void, options) {
-  console.log(successText('Sit back and relax while we set up Tina for you…'))
+  logger.info(successText('Sit back and relax while we set up Tina for you…'))
   next()
 }
 
@@ -52,10 +47,10 @@ export async function installDeps(ctx: any, next: () => void, options) {
     'tina-graphql-gateway-cli',
   ]
   const installCMD = `yarn add ${deps.join(' ')}`
-  console.log(logText('Installing dependencies...'))
-  // console.log(cmdText(installCMD))
-  await execShellCommand(installCMD)
-  console.log('✅ Installed Tina Dependencies')
+  logger.info(logText('Installing dependencies...'))
+  // await execShellCommand(installCMD)
+  logger.info('✅ Installed Tina Dependencies')
+  logger.level = 'fatal'
   next()
 }
 
@@ -63,15 +58,16 @@ const baseDir = process.cwd()
 const blogContentPath = p.join(baseDir, 'content', 'posts')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
-  console.log(logText('Setting up Tina...'))
+  logger.level = 'info'
+  logger.info(logText('Setting up Tina...'))
 
   // 1 Create a content/blog Folder and add one or two blog posts
 
   if (!fs.pathExistsSync(blogPostPath)) {
-    console.log(logText('Adding a content folder...'))
+    logger.info(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
     fs.writeFileSync(blogPostPath, blogPost)
-    console.log(`✅ Setup a your first post in ${blogPostPath}`)
+    logger.info(`✅ Setup a your first post in ${blogPostPath}`)
   }
 
   // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
@@ -82,7 +78,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
     fs.writeFileSync(tinaBlogPagePathFile, nextPostPage)
-    console.log(`✅ Setup a blog page in ${tinaBlogPagePathFile}`)
+    logger.info(`✅ Setup a blog page in ${tinaBlogPagePathFile}`)
   }
 
   next()
@@ -96,7 +92,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 // `
 export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
-  console.log(`
+  logger.info(`
 Tina Cloud is now properly setup, just a couple of things before you get started
 \t1. ${warnText('please add the following scripts to your package.json')}
 "dev": "yarn tina-gql server:start -c \\"next dev\\"",

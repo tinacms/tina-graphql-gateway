@@ -31,6 +31,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:apps/test"
       },
       {
+        "name": "tmp",
+        "reference": "workspace:apps/tmp"
+      },
+      {
         "name": "tina-cloud-starter",
         "reference": "workspace:examples/tina-cloud-starter"
       },
@@ -76,7 +80,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["tina-graphql-gateway", ["virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#workspace:packages/tina-graphql-gateway", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/tina-graphql-gateway", "virtual:5ff5fac769c22d235eb004cce26d423448e67bbcc8dd3d8e6244bd48feb8883b0138e61947ecd4701d5e750b6874626277cfb4b4e459f401758b90d08d21457c#workspace:packages/tina-graphql-gateway", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#workspace:packages/tina-graphql-gateway", "workspace:packages/tina-graphql-gateway"]],
       ["tina-graphql-gateway-cli", ["workspace:packages/tina-graphql-gateway-cli"]],
       ["tina-graphql-helpers", ["workspace:packages/tina-graphql-helpers"]],
-      ["tina-tailwind-sidebar-demo", ["workspace:examples/tina-tailwind-sidebar-demo"]]
+      ["tina-tailwind-sidebar-demo", ["workspace:examples/tina-tailwind-sidebar-demo"]],
+      ["tmp", ["workspace:apps/tmp"]]
     ],
     "fallbackPool": [
     ],
@@ -6067,11 +6072,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@tinacms/fields", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@sambego/storybook-styles", "npm:1.0.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-forms", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-beautiful-dnd", null],
@@ -6126,7 +6131,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-forms", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-beautiful-dnd", null],
@@ -6243,21 +6248,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:1515b2dd1586cd9a8092f9a0760a7741d00a54246da86f6987c3fac9cd12994fa9c81abc997a4ad4c0be8c2e1e8c863caf7de755d77cf51a92764d345b1e5a5b#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-form-builder-virtual-695b86b639/0/cache/@tinacms-form-builder-npm-0.31.0-e132b54713-f818a0b314.zip/node_modules/@tinacms/form-builder/",
+        ["virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-form-builder-virtual-42ccce1ed6/0/cache/@tinacms-form-builder-npm-0.31.0-e132b54713-f818a0b314.zip/node_modules/@tinacms/form-builder/",
           "packageDependencies": [
-            ["@tinacms/form-builder", "virtual:1515b2dd1586cd9a8092f9a0760a7741d00a54246da86f6987c3fac9cd12994fa9c81abc997a4ad4c0be8c2e1e8c863caf7de755d77cf51a92764d345b1e5a5b#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@types/final-form", null],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
-            ["final-form", null],
-            ["prop-types", null],
+            ["final-form", "npm:4.20.1"],
+            ["prop-types", "npm:15.7.2"],
             ["react", "npm:16.13.1"],
-            ["react-final-form", "virtual:695b86b63920f314fb46fabfdc2f2d34348586b4a42803d017a26e017bd78146b5979c302a739c6e329470cb0cd52b272f822516aeee849b2a804bd25ca6037f#npm:6.5.1"],
-            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"]
+            ["react-final-form", "virtual:0da5c6aeb3b056df8e95ba8e7560931515b1a821e3ee4f32bed09c41780549e3b8474893f15b7ccf8bda165926a86ced5fb022c9de579d3f748988a2184e4918#npm:6.5.1"],
+            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
           ],
           "packagePeers": [
             "@types/final-form",
@@ -6327,34 +6332,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-form-builder-virtual-ee89e69da1/0/cache/@tinacms-form-builder-npm-0.31.0-e132b54713-f818a0b314.zip/node_modules/@tinacms/form-builder/",
-          "packageDependencies": [
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@types/final-form", null],
-            ["@types/prop-types", null],
-            ["@types/react", "npm:16.9.43"],
-            ["@types/styled-components", "npm:5.1.3"],
-            ["final-form", "npm:4.20.1"],
-            ["prop-types", "npm:15.7.2"],
-            ["react", "npm:16.13.1"],
-            ["react-final-form", "virtual:0da5c6aeb3b056df8e95ba8e7560931515b1a821e3ee4f32bed09c41780549e3b8474893f15b7ccf8bda165926a86ced5fb022c9de579d3f748988a2184e4918#npm:6.5.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
-          ],
-          "packagePeers": [
-            "@types/final-form",
-            "@types/prop-types",
-            "@types/react",
-            "@types/styled-components",
-            "final-form",
-            "prop-types",
-            "react",
-            "styled-components"
-          ],
-          "linkType": "HARD",
-        }],
         ["virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:0.32.0", {
           "packageLocation": "./.yarn/$$virtual/@tinacms-form-builder-virtual-0da5c6aeb3/0/cache/@tinacms-form-builder-npm-0.32.0-2d7405477c-7c7ed3758d.zip/node_modules/@tinacms/form-builder/",
           "packageDependencies": [
@@ -6398,34 +6375,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:16.13.1"],
             ["react-final-form", "virtual:dfa5fb88f22f9a4831982fb22387c591541e511aeaf0b325067f7e069b133d316457f3d394ec10dd083bcee51449ba9b8951a7fd0f30471e7b03928e4279842c#npm:6.5.1"],
             ["styled-components", "virtual:5ff5fac769c22d235eb004cce26d423448e67bbcc8dd3d8e6244bd48feb8883b0138e61947ecd4701d5e750b6874626277cfb4b4e459f401758b90d08d21457c#npm:5.3.0"]
-          ],
-          "packagePeers": [
-            "@types/final-form",
-            "@types/prop-types",
-            "@types/react",
-            "@types/styled-components",
-            "final-form",
-            "prop-types",
-            "react",
-            "styled-components"
-          ],
-          "linkType": "HARD",
-        }],
-        ["virtual:d5a042c1a3a8cd2c35b770c53273005a5c8b3a4a52db353089a8d7862debf87ffa2b072c3f37ee749937541ac159bbf1c1f9be977e82ba6bb6c845e9edc3b5fd#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-form-builder-virtual-b3f999c274/0/cache/@tinacms-form-builder-npm-0.31.0-e132b54713-f818a0b314.zip/node_modules/@tinacms/form-builder/",
-          "packageDependencies": [
-            ["@tinacms/form-builder", "virtual:d5a042c1a3a8cd2c35b770c53273005a5c8b3a4a52db353089a8d7862debf87ffa2b072c3f37ee749937541ac159bbf1c1f9be977e82ba6bb6c845e9edc3b5fd#npm:0.31.0"],
-            ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@types/final-form", null],
-            ["@types/prop-types", null],
-            ["@types/react", "npm:16.9.43"],
-            ["@types/styled-components", "npm:5.1.3"],
-            ["final-form", null],
-            ["prop-types", null],
-            ["react", "npm:16.13.1"],
-            ["react-final-form", "virtual:695b86b63920f314fb46fabfdc2f2d34348586b4a42803d017a26e017bd78146b5979c302a739c6e329470cb0cd52b272f822516aeee849b2a804bd25ca6037f#npm:6.5.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
           ],
           "packagePeers": [
             "@types/final-form",
@@ -6719,7 +6668,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/alerts", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
             ["@types/tinacms__alerts", null],
@@ -6752,7 +6701,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/alerts", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
             ["@types/tinacms__alerts", null],
@@ -6925,6 +6874,58 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
+        ["virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.31.0", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-18e27fa7ad/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
+          "packageDependencies": [
+            ["@tinacms/react-forms", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
+            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
+            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
+            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
+            ["@tinacms/react-modals", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
+            ["@types/final-form", null],
+            ["@types/prop-types", null],
+            ["@types/react", "npm:16.9.43"],
+            ["@types/react-dom", null],
+            ["@types/styled-components", "npm:5.1.3"],
+            ["@types/tinacms__forms", null],
+            ["@types/tinacms__icons", null],
+            ["@types/tinacms__react-core", null],
+            ["@types/tinacms__react-modals", null],
+            ["@types/tinacms__styles", null],
+            ["final-form", "npm:4.20.1"],
+            ["prop-types", "npm:15.7.2"],
+            ["react", "npm:16.13.1"],
+            ["react-beautiful-dnd", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:11.0.5"],
+            ["react-dismissible", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:1.3.0"],
+            ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
+            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
+          ],
+          "packagePeers": [
+            "@tinacms/forms",
+            "@tinacms/icons",
+            "@tinacms/react-core",
+            "@tinacms/react-modals",
+            "@tinacms/styles",
+            "@types/final-form",
+            "@types/prop-types",
+            "@types/react-dom",
+            "@types/react",
+            "@types/styled-components",
+            "@types/tinacms__forms",
+            "@types/tinacms__icons",
+            "@types/tinacms__react-core",
+            "@types/tinacms__react-modals",
+            "@types/tinacms__styles",
+            "final-form",
+            "prop-types",
+            "react-dom",
+            "react",
+            "styled-components"
+          ],
+          "linkType": "HARD",
+        }],
         ["virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0", {
           "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-0e28938c6e/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
           "packageDependencies": [
@@ -6952,58 +6953,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dismissible", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:1.3.0"],
             ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
             ["styled-components", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:5.2.0"]
-          ],
-          "packagePeers": [
-            "@tinacms/forms",
-            "@tinacms/icons",
-            "@tinacms/react-core",
-            "@tinacms/react-modals",
-            "@tinacms/styles",
-            "@types/final-form",
-            "@types/prop-types",
-            "@types/react-dom",
-            "@types/react",
-            "@types/styled-components",
-            "@types/tinacms__forms",
-            "@types/tinacms__icons",
-            "@types/tinacms__react-core",
-            "@types/tinacms__react-modals",
-            "@types/tinacms__styles",
-            "final-form",
-            "prop-types",
-            "react-dom",
-            "react",
-            "styled-components"
-          ],
-          "linkType": "HARD",
-        }],
-        ["virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-1515b2dd15/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
-          "packageDependencies": [
-            ["@tinacms/react-forms", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:1515b2dd1586cd9a8092f9a0760a7741d00a54246da86f6987c3fac9cd12994fa9c81abc997a4ad4c0be8c2e1e8c863caf7de755d77cf51a92764d345b1e5a5b#npm:0.31.0"],
-            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-modals", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
-            ["@types/final-form", null],
-            ["@types/prop-types", null],
-            ["@types/react", "npm:16.9.43"],
-            ["@types/react-dom", null],
-            ["@types/styled-components", "npm:5.1.3"],
-            ["@types/tinacms__forms", null],
-            ["@types/tinacms__icons", null],
-            ["@types/tinacms__react-core", null],
-            ["@types/tinacms__react-modals", null],
-            ["@types/tinacms__styles", null],
-            ["final-form", null],
-            ["prop-types", null],
-            ["react", "npm:16.13.1"],
-            ["react-beautiful-dnd", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:11.0.5"],
-            ["react-dismissible", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:1.3.0"],
-            ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"]
           ],
           "packagePeers": [
             "@tinacms/forms",
@@ -7085,12 +7034,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-07b89c71ba/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
           "packageDependencies": [
             ["@tinacms/react-forms", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/final-form", null],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
@@ -7142,7 +7091,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/final-form", null],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
@@ -7289,110 +7238,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:e6605cbf649ec5936183cbdff8c4360c7c267d6e07754ab5fec1e0d59fa6dbcef80b2b8bcdd05740e1e77c13bd6506025bd9eefdd3d1714a498c8e6c69b4d794#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-694916a241/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
-          "packageDependencies": [
-            ["@tinacms/react-forms", "virtual:e6605cbf649ec5936183cbdff8c4360c7c267d6e07754ab5fec1e0d59fa6dbcef80b2b8bcdd05740e1e77c13bd6506025bd9eefdd3d1714a498c8e6c69b4d794#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
-            ["@types/final-form", null],
-            ["@types/prop-types", null],
-            ["@types/react", "npm:16.9.43"],
-            ["@types/react-dom", null],
-            ["@types/styled-components", "npm:5.1.3"],
-            ["@types/tinacms__forms", null],
-            ["@types/tinacms__icons", null],
-            ["@types/tinacms__react-core", null],
-            ["@types/tinacms__react-modals", null],
-            ["@types/tinacms__styles", null],
-            ["final-form", "npm:4.20.1"],
-            ["prop-types", "npm:15.7.2"],
-            ["react", "npm:16.13.1"],
-            ["react-beautiful-dnd", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:11.0.5"],
-            ["react-dismissible", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:1.3.0"],
-            ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
-          ],
-          "packagePeers": [
-            "@tinacms/forms",
-            "@tinacms/icons",
-            "@tinacms/react-core",
-            "@tinacms/react-modals",
-            "@tinacms/styles",
-            "@types/final-form",
-            "@types/prop-types",
-            "@types/react-dom",
-            "@types/react",
-            "@types/styled-components",
-            "@types/tinacms__forms",
-            "@types/tinacms__icons",
-            "@types/tinacms__react-core",
-            "@types/tinacms__react-modals",
-            "@types/tinacms__styles",
-            "final-form",
-            "prop-types",
-            "react-dom",
-            "react",
-            "styled-components"
-          ],
-          "linkType": "HARD",
-        }],
-        ["virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-d5a042c1a3/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
-          "packageDependencies": [
-            ["@tinacms/react-forms", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:d5a042c1a3a8cd2c35b770c53273005a5c8b3a4a52db353089a8d7862debf87ffa2b072c3f37ee749937541ac159bbf1c1f9be977e82ba6bb6c845e9edc3b5fd#npm:0.31.0"],
-            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
-            ["@types/final-form", null],
-            ["@types/prop-types", null],
-            ["@types/react", "npm:16.9.43"],
-            ["@types/react-dom", null],
-            ["@types/styled-components", "npm:5.1.3"],
-            ["@types/tinacms__forms", null],
-            ["@types/tinacms__icons", null],
-            ["@types/tinacms__react-core", null],
-            ["@types/tinacms__react-modals", null],
-            ["@types/tinacms__styles", null],
-            ["final-form", null],
-            ["prop-types", null],
-            ["react", "npm:16.13.1"],
-            ["react-beautiful-dnd", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:11.0.5"],
-            ["react-dismissible", "virtual:9c101bc2ddeaa29962d5a9fc567fab5c5e7cc68727d73cce5832e2cfa9458276a72cd37fc5778915cbb2ee0c94cefe04388b7c6dde0c6bfe39db41f056fc5074#npm:1.3.0"],
-            ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
-          ],
-          "packagePeers": [
-            "@tinacms/forms",
-            "@tinacms/icons",
-            "@tinacms/react-core",
-            "@tinacms/react-modals",
-            "@tinacms/styles",
-            "@types/final-form",
-            "@types/prop-types",
-            "@types/react-dom",
-            "@types/react",
-            "@types/styled-components",
-            "@types/tinacms__forms",
-            "@types/tinacms__icons",
-            "@types/tinacms__react-core",
-            "@types/tinacms__react-modals",
-            "@types/tinacms__styles",
-            "final-form",
-            "prop-types",
-            "react-dom",
-            "react",
-            "styled-components"
-          ],
-          "linkType": "HARD",
-        }],
         ["virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.31.0", {
           "packageLocation": "./.yarn/$$virtual/@tinacms-react-forms-virtual-674330b381/0/cache/@tinacms-react-forms-npm-0.31.0-2d1a42791d-91d562d724.zip/node_modules/@tinacms/react-forms/",
           "packageDependencies": [
@@ -7401,8 +7246,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
             ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
             ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-modals", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/react-modals", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/final-form", null],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
@@ -7461,13 +7306,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-1a986ac7ad/0/cache/@tinacms-react-modals-npm-0.31.0-606d315281-1cfdfc9997.zip/node_modules/@tinacms/react-modals/",
+        ["virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.1.12", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-99c4d3defb/0/cache/@tinacms-react-modals-npm-0.1.12-550b5f97a3-56ad506340.zip/node_modules/@tinacms/react-modals/",
           "packageDependencies": [
-            ["@tinacms/react-modals", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.29.0"],
+            ["@tinacms/react-modals", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.1.12"],
+            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
+            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7476,7 +7321,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/tinacms__styles", null],
             ["react", "npm:16.13.1"],
             ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:5.2.0"]
+            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
           ],
           "packagePeers": [
             "@tinacms/icons",
@@ -7494,13 +7339,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-4283d8fcd9/0/cache/@tinacms-react-modals-npm-0.1.12-550b5f97a3-56ad506340.zip/node_modules/@tinacms/react-modals/",
+        ["virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-1a986ac7ad/0/cache/@tinacms-react-modals-npm-0.31.0-606d315281-1cfdfc9997.zip/node_modules/@tinacms/react-modals/",
           "packageDependencies": [
-            ["@tinacms/react-modals", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/react-modals", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
+            ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
+            ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
+            ["@tinacms/styles", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7509,7 +7354,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/tinacms__styles", null],
             ["react", "npm:16.13.1"],
             ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"]
+            ["styled-components", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:5.2.0"]
           ],
           "packagePeers": [
             "@tinacms/icons",
@@ -7566,7 +7411,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7599,7 +7444,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-modals", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7692,13 +7537,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-3d5f5dd7c2/0/cache/@tinacms-react-modals-npm-0.1.12-550b5f97a3-56ad506340.zip/node_modules/@tinacms/react-modals/",
+        ["virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.1.12", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-react-modals-virtual-8c3e909eb5/0/cache/@tinacms-react-modals-npm-0.1.12-550b5f97a3-56ad506340.zip/node_modules/@tinacms/react-modals/",
           "packageDependencies": [
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
+            ["@tinacms/react-modals", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.1.12"],
             ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
             ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7707,7 +7552,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/tinacms__styles", null],
             ["react", "npm:16.13.1"],
             ["react-dom", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:16.13.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"]
+            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"]
           ],
           "packagePeers": [
             "@tinacms/icons",
@@ -7900,14 +7745,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@tinacms/react-sidebar", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/core", "npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-forms", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-screens", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -7959,7 +7804,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-forms", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-screens", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
@@ -8127,14 +7972,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-toolbar", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/core", "npm:0.31.0"],
             ["@tinacms/fields", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-core", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-forms", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-screens", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-beautiful-dnd", null],
@@ -8195,7 +8040,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-forms", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-modals", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-screens", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/prop-types", null],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-beautiful-dnd", null],
@@ -8313,14 +8158,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-styles-virtual-610365532b/0/cache/@tinacms-styles-npm-0.29.0-2ef0e213c1-0d5413bef1.zip/node_modules/@tinacms/styles/",
+        ["virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-styles-virtual-b33afa66ea/0/cache/@tinacms-styles-npm-0.29.0-2ef0e213c1-0d5413bef1.zip/node_modules/@tinacms/styles/",
           "packageDependencies": [
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
             ["react", "npm:16.13.1"],
-            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"],
+            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"],
             ["webfontloader", "npm:1.6.28"]
           ],
           "packagePeers": [
@@ -8385,14 +8230,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0", {
-          "packageLocation": "./.yarn/$$virtual/@tinacms-styles-virtual-bbcd60a50a/0/cache/@tinacms-styles-npm-0.29.0-2ef0e213c1-0d5413bef1.zip/node_modules/@tinacms/styles/",
+        ["virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0", {
+          "packageLocation": "./.yarn/$$virtual/@tinacms-styles-virtual-dbc40a4399/0/cache/@tinacms-styles-npm-0.29.0-2ef0e213c1-0d5413bef1.zip/node_modules/@tinacms/styles/",
           "packageDependencies": [
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/styled-components", "npm:5.1.3"],
             ["react", "npm:16.13.1"],
-            ["styled-components", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:5.2.0"],
+            ["styled-components", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:5.2.0"],
             ["webfontloader", "npm:1.6.28"]
           ],
           "packagePeers": [
@@ -8885,6 +8730,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@types/lodash.upperfirst", "npm:4.3.6"],
             ["@types/lodash", "npm:4.14.158"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/log4js", [
+        ["npm:2.3.5", {
+          "packageLocation": "./.yarn/cache/@types-log4js-npm-2.3.5-490336a958-5f0c44ca2c.zip/node_modules/@types/log4js/",
+          "packageDependencies": [
+            ["@types/log4js", "npm:2.3.5"],
+            ["log4js", "npm:6.3.0"]
           ],
           "linkType": "HARD",
         }]
@@ -13585,6 +13440,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/date-fns-npm-2.21.1-a333d4fe93-00a2ddea10.zip/node_modules/date-fns/",
           "packageDependencies": [
             ["date-fns", "npm:2.21.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["date-format", [
+        ["npm:2.1.0", {
+          "packageLocation": "./.yarn/cache/date-format-npm-2.1.0-6d206457ad-c642edf1a1.zip/node_modules/date-format/",
+          "packageDependencies": [
+            ["date-format", "npm:2.1.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.0.0", {
+          "packageLocation": "./.yarn/cache/date-format-npm-3.0.0-da04d77f82-42fc691af5.zip/node_modules/date-format/",
+          "packageDependencies": [
+            ["date-format", "npm:3.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -20014,6 +19885,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["log4js", [
+        ["npm:6.3.0", {
+          "packageLocation": "./.yarn/cache/log4js-npm-6.3.0-7d1ea76e6b-7296c3fc2d.zip/node_modules/log4js/",
+          "packageDependencies": [
+            ["log4js", "npm:6.3.0"],
+            ["date-format", "npm:3.0.0"],
+            ["debug", "virtual:27690e4121be41f57b977a82de27e88841c7d71310e2598a86e8acde7a476277b0c1cf1ac2f8f919102f83918c4375e16d7bdd4c0d11e89212599db35e092b20#npm:4.2.0"],
+            ["flatted", "npm:2.0.2"],
+            ["rfdc", "npm:1.3.0"],
+            ["streamroller", "npm:2.2.4"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["logic-solver", [
         ["npm:2.0.1", {
           "packageLocation": "./.yarn/cache/logic-solver-npm-2.0.1-3f092e9b27-48458c6771.zip/node_modules/logic-solver/",
@@ -21535,13 +21420,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/$$virtual/next-tinacms-cloudinary-virtual-3e265ebba5/1/packages/next-tinacms-cloudinary/",
           "packageDependencies": [
             ["next-tinacms-cloudinary", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#workspace:packages/next-tinacms-cloudinary"],
-            ["@tinacms/core", "npm:0.31.0"],
-            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-forms", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.31.0"],
-            ["@tinacms/react-modals", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
             ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:13.13.15"],
@@ -21551,13 +21429,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/styled-components", "npm:5.1.3"],
             ["@types/tina-graphql-gateway", null],
             ["@types/tinacms", null],
-            ["@types/tinacms__core", null],
-            ["@types/tinacms__forms", null],
-            ["@types/tinacms__icons", null],
-            ["@types/tinacms__react-core", null],
-            ["@types/tinacms__react-forms", null],
-            ["@types/tinacms__react-modals", null],
-            ["@types/tinacms__styles", null],
             ["cloudinary", "npm:1.26.0"],
             ["multer", "npm:1.4.2"],
             ["next", "virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#npm:10.0.5"],
@@ -21576,13 +21447,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/styled-components",
             "@types/tina-graphql-gateway",
             "@types/tinacms",
-            "@types/tinacms__core",
-            "@types/tinacms__forms",
-            "@types/tinacms__icons",
-            "@types/tinacms__react-core",
-            "@types/tinacms__react-forms",
-            "@types/tinacms__react-modals",
-            "@types/tinacms__styles",
             "react-dom",
             "react-is",
             "react",
@@ -21596,13 +21460,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/next-tinacms-cloudinary/",
           "packageDependencies": [
             ["next-tinacms-cloudinary", "workspace:packages/next-tinacms-cloudinary"],
-            ["@tinacms/core", "npm:0.31.0"],
-            ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
-            ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
-            ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-forms", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.31.0"],
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
             ["@types/js-cookie", "npm:2.2.6"],
             ["@types/node", "npm:13.13.15"],
@@ -24639,24 +24496,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["virtual:695b86b63920f314fb46fabfdc2f2d34348586b4a42803d017a26e017bd78146b5979c302a739c6e329470cb0cd52b272f822516aeee849b2a804bd25ca6037f#npm:6.5.1", {
-          "packageLocation": "./.yarn/$$virtual/react-final-form-virtual-71c0f5ae5d/0/cache/react-final-form-npm-6.5.1-58e075ed94-cc4c0f880a.zip/node_modules/react-final-form/",
-          "packageDependencies": [
-            ["react-final-form", "virtual:695b86b63920f314fb46fabfdc2f2d34348586b4a42803d017a26e017bd78146b5979c302a739c6e329470cb0cd52b272f822516aeee849b2a804bd25ca6037f#npm:6.5.1"],
-            ["@babel/runtime", "npm:7.10.5"],
-            ["@types/final-form", null],
-            ["@types/react", "npm:16.9.43"],
-            ["final-form", null],
-            ["react", "npm:16.13.1"]
-          ],
-          "packagePeers": [
-            "@types/final-form",
-            "@types/react",
-            "final-form",
-            "react"
-          ],
-          "linkType": "HARD",
-        }],
         ["virtual:dfa5fb88f22f9a4831982fb22387c591541e511aeaf0b325067f7e069b133d316457f3d394ec10dd083bcee51449ba9b8951a7fd0f30471e7b03928e4279842c#npm:6.5.1", {
           "packageLocation": "./.yarn/$$virtual/react-final-form-virtual-5c102220f3/0/cache/react-final-form-npm-6.5.1-58e075ed94-cc4c0f880a.zip/node_modules/react-final-form/",
           "packageDependencies": [
@@ -26012,6 +25851,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["rfdc", [
+        ["npm:1.3.0", {
+          "packageLocation": "./.yarn/cache/rfdc-npm-1.3.0-272f288ad8-34dd5c5acf.zip/node_modules/rfdc/",
+          "packageDependencies": [
+            ["rfdc", "npm:1.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["rgb-regex", [
         ["npm:1.0.1", {
           "packageLocation": "./.yarn/cache/rgb-regex-npm-1.0.1-c867413fad-7701e22ec4.zip/node_modules/rgb-regex/",
@@ -27284,6 +27132,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["any-promise", "npm:1.3.0"],
             ["end-of-stream", "npm:1.1.0"],
             ["stream-to-array", "npm:2.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["streamroller", [
+        ["npm:2.2.4", {
+          "packageLocation": "./.yarn/cache/streamroller-npm-2.2.4-84aaab4674-7a27e4a02c.zip/node_modules/streamroller/",
+          "packageDependencies": [
+            ["streamroller", "npm:2.2.4"],
+            ["date-format", "npm:2.1.0"],
+            ["debug", "virtual:27690e4121be41f57b977a82de27e88841c7d71310e2598a86e8acde7a476277b0c1cf1ac2f8f919102f83918c4375e16d7bdd4c0d11e89212599db35e092b20#npm:4.2.0"],
+            ["fs-extra", "npm:8.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -28718,8 +28578,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
             ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
             ["@tinacms/react-forms", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.31.0"],
-            ["@tinacms/react-modals", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/react-modals", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
             ["@types/lodash", "npm:4.14.169"],
             ["@types/node", "npm:14.0.27"],
@@ -28957,9 +28817,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
             ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
             ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-forms", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.31.0"],
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/react-forms", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.31.0"],
+            ["@tinacms/react-modals", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
             ["@types/lodash", "npm:4.14.169"],
             ["@types/node", "npm:14.0.27"],
@@ -29004,13 +28864,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["yup", "npm:0.32.0"]
           ],
           "packagePeers": [
-            "@tinacms/core",
-            "@tinacms/forms",
-            "@tinacms/icons",
-            "@tinacms/react-core",
-            "@tinacms/react-forms",
-            "@tinacms/react-modals",
-            "@tinacms/styles",
             "@types/react-dom",
             "@types/react-is",
             "@types/react",
@@ -29042,9 +28895,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/forms", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.38.0"],
             ["@tinacms/icons", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.7.0"],
             ["@tinacms/react-core", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#npm:0.2.13"],
-            ["@tinacms/react-forms", "virtual:e6605cbf649ec5936183cbdff8c4360c7c267d6e07754ab5fec1e0d59fa6dbcef80b2b8bcdd05740e1e77c13bd6506025bd9eefdd3d1714a498c8e6c69b4d794#npm:0.31.0"],
-            ["@tinacms/react-modals", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.1.12"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/react-forms", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.31.0"],
+            ["@tinacms/react-modals", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.1.12"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/crypto-js", "npm:3.1.47"],
             ["@types/lodash", "npm:4.14.169"],
             ["@types/node", "npm:14.0.27"],
@@ -29100,6 +28953,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/listr", "npm:0.14.2"],
             ["@types/lodash", "npm:4.14.158"],
             ["@types/lodash.get", "npm:4.4.6"],
+            ["@types/log4js", "npm:2.3.5"],
             ["@types/yup", "npm:0.29.11"],
             ["ajv", "npm:6.12.3"],
             ["altair-express-middleware", "npm:4.0.6"],
@@ -29118,6 +28972,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["js-yaml", "npm:4.0.0"],
             ["lodash", "npm:4.17.19"],
             ["lodash.get", "npm:4.4.2"],
+            ["log4js", "npm:6.3.0"],
             ["normalize-path", "npm:3.0.0"],
             ["tina-graphql", "workspace:packages/tina-graphql"],
             ["tina-graphql-helpers", "workspace:packages/tina-graphql-helpers"],
@@ -29212,7 +29067,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-screens", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-sidebar", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
             ["@tinacms/react-toolbar", "virtual:94b19eceb2a34bafc12a1352ca303d33af333085441a502d310eb8f9a1cfe3d41ce698c281f7eb93b11a372760e8aae55acef11fa84c7a38100e1b7270a6e64d#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:3e265ebba5cc67ef2f09315673b6688debec43982b70e78c7908c88f4a0d78f77660782078dc20ae1ecbaa402aaaa7d03ec05906311cc17da75329f19a8d7067#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:f8917c6dde17839096e720fcc601c842bbe708e8beca714e81fb51ae687d6505364d2f37c80a557d4a9ca74ac16212f2229996c426a482c9a90e797bdef0f4f8#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -29319,7 +29174,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/alerts", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/core", "npm:0.31.0"],
             ["@tinacms/fields", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/form-builder", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
+            ["@tinacms/form-builder", "virtual:18e27fa7ad3a628d019570359bd015094304f5450d584d683c47c699af38b943610d06184b9b24c8e2e0937b0be7d73c450e79db84df8e4ef346731b2af9be23#npm:0.31.0"],
             ["@tinacms/forms", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/icons", "virtual:3cfb69b39fa30c2e9293d1812d48cea5fab593b8ba0e56029783f94895d2cfe05b482a0aa8b00ce304a023bdf75f2e7c7cc5d5f23ab8db0cbfb64b5737636c42#npm:0.31.0"],
             ["@tinacms/react-alerts", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
@@ -29329,7 +29184,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tinacms/react-screens", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-sidebar", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
             ["@tinacms/react-toolbar", "virtual:7c700658900ce698c43ed6284c4b0747aef57f5ea5424d2082b66270c53c6d6ddb7c6bbdb8754895a7861871aef50cdf21d357a17abb98c70a8db9bec7ab61de#npm:0.31.0"],
-            ["@tinacms/styles", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#npm:0.29.0"],
+            ["@tinacms/styles", "virtual:21eb45c994f2c2615d1c2eee5fc670a495ef92d459dc63a61fe4a15c90f3f6786cac39026d0e3dd9a9b88a79dbaad861fc3b2dbcd30ff2addc5e98b900efd387#npm:0.29.0"],
             ["@types/react", "npm:16.9.43"],
             ["@types/react-dom", null],
             ["@types/styled-components", "npm:5.1.3"],
@@ -29387,6 +29242,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["os-tmpdir", "npm:1.0.2"]
           ],
           "linkType": "HARD",
+        }],
+        ["workspace:apps/tmp", {
+          "packageLocation": "./apps/tmp/",
+          "packageDependencies": [
+            ["tmp", "workspace:apps/tmp"],
+            ["tina-graphql-gateway-cli", "workspace:packages/tina-graphql-gateway-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["tmpl", [
