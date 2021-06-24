@@ -13355,7 +13355,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["create-react-class", "npm:15.7.0"],
             ["loose-envify", "npm:1.4.0"],
-            ["object-assign", "npm:4.1.1"]
+            ["object-assign", "npm:4.1.1"],
+            ["react", "npm:16.14.0"]
           ],
           "linkType": "HARD",
         }]
@@ -24783,6 +24784,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/react-npm-16.13.1-56d408860d-13dcc9ba8a.zip/node_modules/react/",
           "packageDependencies": [
             ["react", "npm:16.13.1"],
+            ["loose-envify", "npm:1.4.0"],
+            ["object-assign", "npm:4.1.1"],
+            ["prop-types", "npm:15.7.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:16.14.0", {
+          "packageLocation": "./.yarn/cache/react-npm-16.14.0-932446ec69-2769580b22.zip/node_modules/react/",
+          "packageDependencies": [
+            ["react", "npm:16.14.0"],
             ["loose-envify", "npm:1.4.0"],
             ["object-assign", "npm:4.1.1"],
             ["prop-types", "npm:15.7.2"]

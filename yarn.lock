@@ -17777,6 +17777,17 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"react@npm:^16.13.0":
+  version: 16.14.0
+  resolution: "react@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+  checksum: 2769580b22952a52de3b5b2ea0f09cb904030b762d759739f49ab4da0b1f550e5c087ce3728c4be90f423d09481e0c075483c0c30b1ea9c549445c8b12020fd3
+  languageName: node
+  linkType: hard
+
 "reactcss@npm:^1.2.0":
   version: 1.2.3
   resolution: "reactcss@npm:1.2.3"
