@@ -13,15 +13,7 @@ limitations under the License.
 
 import { ModalBuilder } from './AuthModal'
 import React, { useState } from 'react'
-import {
-  TinaCMS,
-  TinaProvider,
-  MediaStore,
-  Media,
-  MediaList,
-  MediaListOptions,
-  MediaUploadOptions,
-} from 'tinacms'
+import { TinaCMS, TinaProvider, MediaStore } from 'tinacms'
 
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'
@@ -44,7 +36,7 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
-  media?: TinaCloudMediaStoreClass
+  mediaStore?: TinaCloudMediaStoreClass
 }
 
 export const AuthWallInner = ({
@@ -132,8 +124,8 @@ export const TinaCloudAuthWall = (
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
   }
-  if (props.media) {
-    cms.media.store = new props.media(cms.api.tina)
+  if (props.mediaStore) {
+    cms.media.store = new props.mediaStore(cms.api.tina)
   }
 
   return (
