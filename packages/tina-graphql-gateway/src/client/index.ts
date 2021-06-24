@@ -256,7 +256,7 @@ export class Client {
   }
 
   async getUser() {
-    const url = `${IDENTITY_API_URL}/${this.clientId}/currentUser`
+    const url = `${IDENTITY_API_URL}/v2/apps/${this.clientId}/currentUser`
 
     try {
       const res = await this.fetchWithToken(url, {
