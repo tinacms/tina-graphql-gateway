@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { TinaCloudAuthWall } from 'tina-graphql-gateway'
+import { TinaCloudProvider } from 'tina-graphql-gateway'
 import React from 'react'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
@@ -23,7 +23,7 @@ import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
  */
 const TinaWrapper = (props) => {
   return (
-    <TinaCloudAuthWall
+    <TinaCloudProvider
       clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
       branch="main"
       isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
@@ -31,7 +31,7 @@ const TinaWrapper = (props) => {
       mediaStore={TinaCloudCloudinaryMediaStore}
     >
       <Inner {...props} />
-    </TinaCloudAuthWall>
+    </TinaCloudProvider>
   )
 }
 

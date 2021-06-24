@@ -107,11 +107,11 @@ export const AuthWallInner = ({
 }
 
 /**
- * Provides an authentication wall so Tina is not enabled without a valid user session.
+ * Provides the ability to setup your CMS and media while also providing an authentication wall so Tina is not enabled without a valid user session.
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (
+export const TinaCloudProvider = (
   props: TinaCloudAuthWallProps & CreateClientProps
 ) => {
   useTinaAuthRedirect()
@@ -134,3 +134,8 @@ export const TinaCloudAuthWall = (
     </TinaProvider>
   )
 }
+
+/**
+ * @deprecated Please use `TinaCloudProvider` instead
+ */
+export const TinaCloudAuthWall = TinaCloudProvider
