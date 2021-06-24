@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import { TinaCloudAuthWall } from 'tina-graphql-gateway'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
 import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'

@@ -34,21 +34,8 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-abstract class CloudMediaStore implements MediaStore {
-  client: Client
-  abstract list(options?: MediaListOptions): Promise<MediaList>
-  accept: string
-  abstract persist(file: MediaUploadOptions[]): Promise<Media[]>
-  abstract delete(media: Media): Promise<void>
-  abstract previewSrc(
-    src: string,
-    fieldPath?: string,
-    formValues?: any
-  ): string | Promise<string>
-  constructor(client: Client) {}
-}
-interface MediaStoreClass {
-  new (client: Client): CloudMediaStore
+interface TinaCloudMediaStoreClass {
+  new (client: Client): MediaStore
 }
 export interface TinaCloudAuthWallProps {
   cms?: TinaCMS
@@ -57,7 +44,7 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
-  media?: MediaStoreClass
+  media?: TinaCloudMediaStoreClass
 }
 
 export const AuthWallInner = ({
