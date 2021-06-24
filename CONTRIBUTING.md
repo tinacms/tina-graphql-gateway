@@ -30,6 +30,14 @@ When your work is ready, from the root of the repository run `yarn changeset` an
 
 Once your changeset has been generated, commit it as part of your work and push to Github. From there we'll know how to version the package when we do a release.
 
+## Creating a beta release
+
+`cd` into the package you want to release, append `-beta` to the `version` in it's `package.json`. Run `yarn version prerelease`, which will bump your version in the `package.json`. So if you had `0.1.1-beta`, it would become `0.1.1-beta.1`. Next, run `yarn npm publish --tag beta`.
+
+To install this version `yarn add my-package@beta`. For users you do `yarn add my-package`, they won't get your beta version.
+
+> Hint: there's no special meaning to the term `beta`, you can use whatever keyword you want
+
 ## Working with the GitHub Manager locally
 
 In `packages/tina-graphql/src/index.ts`, replace:
@@ -73,3 +81,4 @@ CONTENT_API_OVERRIDE<URL TO CONTENTAPI>
 
 ### Import errors
 Are you getting lots of import errors in VSCode and yet it builds fine? In VSCode try pressing cmd+shift+p, search for `select typescript version` and choose `use workspace version`.
+

@@ -11,14 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useEffect } from 'react'
-import { TinaCMS, useCMS } from 'tinacms'
-import { TinaCloudAuthWall, Client } from 'tina-graphql-gateway'
+import React from 'react'
+import { TinaCMS } from 'tinacms'
+import { TinaCloudAuthWall } from 'tina-graphql-gateway'
 import { SidebarPlaceholder } from './helper-components'
 import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
-import { CloudinaryMediaStore } from 'next-tinacms-cloudinary'
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
+const client = createClient()
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -28,15 +29,16 @@ const TinaWrapper = (props) => {
   const cms = React.useMemo(() => {
     return new TinaCMS({
       apis: {
-        tina: createClient(),
+        tina: client,
       },
       sidebar: {
         placeholder: SidebarPlaceholder,
       },
       enabled: true,
-      media: new CloudinaryMediaStore(),
     })
   }, [])
+
+  cms.media.store = new TinaCloudCloudinaryMediaStore(client)
 
   return (
     <TinaCloudAuthWall cms={cms}>
@@ -50,17 +52,6 @@ const Inner = (props) => {
     query: (gql) => gql(props.query),
     variables: props.variables || {},
   })
-  const cms = useCMS()
-  const tinaCloudClient: Client = cms.api.tina
-  useEffect(() => {
-    const fetchTest = async () => {
-      const test = await tinaCloudClient.fetchWithToken(
-        `/api/test?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`
-      )
-      console.log({ test: await test.json() })
-    }
-    fetchTest()
-  }, [])
   return (
     <>
       {isLoading ? (
