@@ -14,7 +14,7 @@ limitations under the License.
 import _ from 'lodash'
 import { S3 } from 'aws-sdk'
 
-const bucketName = 'tina-contentapi'
+const bucketName = process.env.CACHE_S3_BUCKET_NAME || 'tina-contentapi'
 
 const realCache = new S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
