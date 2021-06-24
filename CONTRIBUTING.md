@@ -38,3 +38,47 @@ To install this version `yarn add my-package@beta`. For users you do `yarn add m
 
 > Hint: there's no special meaning to the term `beta`, you can use whatever keyword you want
 
+## Working with the GitHub Manager locally
+
+In `packages/tina-graphql/src/index.ts`, replace:
+```ts
+const manager = new FileSystemManager({ rootPath: projectRoot })
+```
+
+with:
+
+```ts
+const manager = new GithubManager({
+    rootPath: 'examples/tina-cloud-starter',
+    accessToken: '<TOKEN>',
+    owner: 'tinacms',
+    repo: 'tina-graphql-gateway',
+    ref: '<BRANCH>',
+    cache: simpleCache,
+  })
+```
+Use whichever branch you're currently working with, and generate and provide a GitHub personal access token with full permissions and SSO enabled with tinacms authorized. 
+
+## Trying out changes to a package
+### Local
+If the changes affect local use of the packages (i.e. not the ContentAPI), use the tina-cloud-starter found in the examples directory of this repo. That starter will require a .env file with the following values:
+```
+NEXT_PUBLIC_ORGANIZATION_NAME=<ANYTHING YOU WANT>
+NEXT_PUBLIC_TINA_CLIENT_ID=<ANYTHING YOU WANT>
+NEXT_PUBLIC_USE_LOCAL_CLIENT=1
+```
+
+### Backend
+If the changes you want to try out will be in the ContentAPI, then you will need to canary release your package changes. Ask somebody about how to do this.
+
+## Misc
+### Getting the starter to reference a different Identity API or ContentAPI
+If you've made changes to the ContentAPI or Identity and you want the starter to use the different API, use these override env variables in the tina-cloud-starter:
+```
+IDENTITY_API_OVERRIDE=<URL TO IDENTITY>
+CONTENT_API_OVERRIDE<URL TO CONTENTAPI>
+```
+
+### Import errors
+Are you getting lots of import errors in VSCode and yet it builds fine? In VSCode try pressing cmd+shift+p, search for `select typescript version` and choose `use workspace version`.
+
