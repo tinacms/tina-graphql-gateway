@@ -4142,6 +4142,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/progress@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/progress@npm:2.0.3"
+  dependencies:
+    "@types/node": "*"
+  checksum: b221d95b40f8fade9a512b04a064571b2b35b3d4928e4d583f10bacf083d55c1400f87b5e260bd40abb74ed6b9cd4b7cea21cc8227bc219ef3f98490e511089f
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.3
   resolution: "@types/prop-types@npm:15.7.3"
@@ -20435,6 +20444,7 @@ fsevents@~2.3.1:
     "@types/lodash": ^4.14.157
     "@types/lodash.get": ^4.4.6
     "@types/log4js": ^2.3.5
+    "@types/progress": ^2.0.3
     "@types/yup": ^0.29.11
     ajv: ^6.12.3
     altair-express-middleware: ^4.0.6
@@ -20455,6 +20465,7 @@ fsevents@~2.3.1:
     lodash.get: ^4.4.2
     log4js: ^6.3.0
     normalize-path: ^3.0.0
+    progress: ^2.0.3
     tina-graphql: "workspace:packages/tina-graphql"
     tina-graphql-helpers: "workspace:packages/tina-graphql-helpers"
     ts-jest: ^26.5.3
