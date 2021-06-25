@@ -21,6 +21,7 @@ import * as jsyaml from 'js-yaml'
 import { ForestryFMTSchema } from './schema/fmt'
 import { ForestrySettingsSchema } from './schema/settings'
 import { neutralText, successText, dangerText } from '../../utils/theme'
+import { logger } from '../../logger'
 
 export const audit = async (_ctx, _next, { fix }: { fix: boolean }) => {
   const output = await runValidation({
@@ -135,9 +136,9 @@ export const validateFile = async ({ filePath, payload, schema, ajv, fix }) => {
   var valid = validate(fileJSON)
 
   if (!valid) {
-    console.log(`${filePath} is ${dangerText('invalid')}`)
+    logger.error(`${filePath} is ${dangerText('invalid')}`)
     const errorKeys = printErrors(validate.errors, fileJSON)
-    console.log('\n')
+    logger.error('\n')
     return { success: false, fileJSON, errors: errorKeys }
   } else {
     return { success: true, fileJSON, errors: [] }
@@ -159,12 +160,12 @@ const printErrors = (errors, object) => {
 
 const keywordError = {
   required: (error, object) => {
-    console.log(`${propertyName(error, object)} ${error.message}`)
+    logger.error(`${propertyName(error, object)} ${error.message}`)
 
     return error
   },
   minItems: (error) => {
-    console.log(
+    logger.error(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
@@ -173,12 +174,12 @@ const keywordError = {
     return error
   },
   exclusiveMinimum: (error, object) => {
-    console.log(`${propertyName(error, object)} ${error.message}`)
+    logger.error(`${propertyName(error, object)} ${error.message}`)
 
     return error
   },
   minimum: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
@@ -187,7 +188,7 @@ const keywordError = {
     return error
   },
   maximum: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
@@ -199,8 +200,8 @@ const keywordError = {
     if (error.schema === 'now') {
       // Ignoring for this case since it's handled better by anyOf
     } else {
-      console.log(`Unanticipated error - ${error.keyword}`)
-      console.log(error)
+      logger.error(`Unanticipated error - ${error.keyword}`)
+      logger.error(error)
     }
 
     return false
@@ -209,24 +210,24 @@ const keywordError = {
     if (error.schema === 'date-time') {
       // Ignoring for this case since it's handled better by anyOf
     } else {
-      console.log(`Unanticipated error - ${error.keyword}`)
+      logger.error(`Unanticipated error - ${error.keyword}`)
     }
     return false
   },
   anyOf: (error, object) => {
-    console.log(`${propertyName(error, object)} should be one of:
+    logger.error(`${propertyName(error, object)} should be one of:
     ${anyOfPossibleTypes(error)}
     But got ${dangerText(displayType(error))}
 `)
     return error
   },
   oneOf: (error) => {
-    console.log(`Unanticipated error - ${error.keyword}`)
-    console.log(error)
+    logger.error(`Unanticipated error - ${error.keyword}`)
+    logger.error(error)
     return false
   },
   datetimeFormat: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(
         error,
         object
@@ -237,7 +238,7 @@ const keywordError = {
     return error
   },
   minLength: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error, object)} should not be shorter than ${dangerText(
         error.params.limit
       )} character`
@@ -249,7 +250,7 @@ const keywordError = {
     return false
   },
   additionalProperties: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(
         error,
         object
@@ -260,7 +261,7 @@ const keywordError = {
     return error
   },
   multipleOf: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}`
@@ -268,7 +269,7 @@ const keywordError = {
     return error
   },
   enum: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error, object)} ${error.message} but got ${dangerText(
         displayType(error)
       )}
@@ -278,7 +279,7 @@ const keywordError = {
     return error
   },
   type: (error, object) => {
-    console.log(
+    logger.error(
       `${propertyName(error, object)} ${error.message.replace(
         'should be',
         'should be of type'
@@ -370,7 +371,7 @@ const anyOfPossibleTypes = (error) => {
         // Ignore, we're handling this better elsewhere
         return false
       }
-      console.log(`Unrecognized oneOf schema key`, item)
+      logger.error(`Unrecognized oneOf schema key`, item)
     })
     .filter(Boolean)
     .join('\n')
