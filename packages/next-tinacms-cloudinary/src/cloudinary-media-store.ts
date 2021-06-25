@@ -84,7 +84,7 @@ export class CloudinaryMediaStore implements MediaStore {
         delete options[key]
       }
     })
-    g
+
     const params = Object.keys(options)
       .map((key) => `${key}=${options[key]}`)
       .join('&')
