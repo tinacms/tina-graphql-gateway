@@ -74,19 +74,21 @@ export class CloudinaryMediaStore implements MediaStore {
   parse = (img) => img.previewSrc
 
   private buildQuery(options: MediaListOptions) {
-    const keys = Object.keys(options)
-    return keys.reduce((query, key) => {
-      if (!options[key]) {
-        return query
-      }
+    const entries = Object.entries(options)
 
-      if (keys.indexOf(key) === keys.length - 1) {
-        query += `${key}=${encodeURIComponent(options[key])}`
-      } else {
-        query += `${key}=${encodeURIComponent(options[key])}&`
-      }
+    entries.forEach((entry) => {
+      const key = entry[0]
+      const value = entry[1]
 
-      return query
-    }, '?')
+      if (value === '' || value === undefined) {
+        delete options[key]
+      }
+    })
+    g
+    const params = Object.keys(options)
+      .map((key) => `${key}=${options[key]}`)
+      .join('&')
+
+    return `?${params}`
   }
 }
