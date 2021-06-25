@@ -20,110 +20,89 @@ This is your first post!
 `
 
 export const nextPostPage = `
-import { TinaCMS } from "tinacms";
-import { TinaCloudAuthWall, Client, LocalClient } from "tina-graphql-gateway";
-import { useGraphqlForms } from "tina-graphql-gateway";
-import { useMemo } from "react";
-import type { Posts_Document } from '../../../.tina/__generated__/types'
+import { LocalClient, EditProvider } from "tina-graphql-gateway";
+import type { Posts_Document } from "../../../.tina/__generated__/types";
+import TinaWrapper from "../../../.tina/tina-wrapper";
 
-// This create the client based on NEXT_PUBLIC_USE_LOCAL_CLIENT.
-export const createClient = () => {
-  return process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT === "0"
-    ? createCloudClient()
-    : createLocalClient();
-};
-
-// This creates the cloud client and checks to make sure the correct environment variables are in place
-export const createCloudClient = () => {
-  const organization = process.env.NEXT_PUBLIC_ORGANIZATION_NAME;
-  const clientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
-
-  const missingEnv: string[] = [];
-  if (!organization) {
-    missingEnv.push("NEXT_PUBLIC_ORGANIZATION_NAME");
-  }
-  if (!clientId) {
-    missingEnv.push("NEXT_PUBLIC_TINA_CLIENT_ID");
-  }
-
-  if (missingEnv.length) {
-    throw new Error(\`The following environment variables are required when using the Tina Cloud Client:
-     \${missingEnv.join(', ')}\`);
-  }
-
-  return new Client({
-    organizationId: organization,
-    clientId,
-    branch: "main",
-    tokenStorage: "LOCAL_STORAGE",
-  });
-};
-
-/**
- * This is a GraphQL client that only talks to your local filesystem server,
- * as a result it's a great tool for static page building or local development.
- *
- * In this starter app you'll see it being used as both, with the
- * option to "switch on" the non-local client via environment variables.
- */
-export const createLocalClient = () => {
-  return new LocalClient();
-};
-
-
-export type AsyncReturnType<
-  T extends (...args: any) => Promise<any>
-> = T extends (...args: any) => Promise<infer R> ? R : any;
+export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
+  T extends (...args: any) => Promise<infer R> ? R : any;
 
 // Use the props returned by get static props
-export default function BlogPostPage(
+export default function BlogPostPageWrapper(
   props: AsyncReturnType<typeof getStaticProps>["props"]
 ) {
   return (
-    <TinaWrapper {...props}>
-    {(props) => {
-      return (
-        <div style={{
-          textAlign: "center"
-        }}>
-          <h1>{props.data.getPostsDocument.data.title}</h1>
-          <div>{props.data.getPostsDocument.data._body}</div>
-          <div style={{
-            margin: '5rem',
-            padding: '.5rem',
-            backgroundColor: "rgba(180,244,224,0.3)",
-          }} >
-            <p>Hello! and thanks for bootstrapping a Tina App! Before you do anything click on the pencil icon in the bottom left hand corner. You can now edit this content in real time! Click save and notice that you have update the Hello world blog post in the local file system.</p> 
-            <p>To see how to hook up edit state, <a href="https://github.com/tinacms/tina-cloud-starter">checkout our starter app</a></p>
-            <p>To hook up this demo to Tina Cloud and save content to Github instead of the file system you can do the following.</p>
-            <ol style={{
-              margin: "0px auto"
-            }}>
-              <li>Register at https://auth.tina.io</li>
-              <li>
-                Update .env file to include:
-                <pre>
-                  <code>
-                  <div>
-                    NEXT_PUBLIC_ORGANIZATION_NAME= get this from the organization you create at auth.tina.io
-                  </div>  
-                  <div>
-                    NEXT_PUBLIC_TINA_CLIENT_ID= get this from the app you create at auth.tina.io
-                  </div>
-                  <div>
-                    NEXT_PUBLIC_USE_LOCAL_CLIENT=0
-                  </div>
-                  </code>
-                </pre>
-              </li>
-            </ol>
-          </div>
-        </div>
-      );
-    }}
-  </TinaWrapper>
+    // TODO: Move edit provider and Tina provider to _app.js
+    // your whole app should be wrapped in the lightweight edit provider
+    <EditProvider>
+      {/* When in edit mode your site should be wrapped in this Tina Wrapper */}
+      <TinaWrapper {...props}>
+        {(props) => {
+          return <BlogPage {...props} />;
+        }}
+      </TinaWrapper>
+    </EditProvider>
   );
 }
+const BlogPage = (props: AsyncReturnType<typeof getStaticProps>["props"]) => {
+  return (
+    <div
+      style={{
+        textAlign: "center",
+      }}
+    >
+      <h1>{props.data.getPostsDocument.data.title}</h1>
+      <div>{props.data.getPostsDocument.data._body}</div>
+      <div
+        style={{
+          margin: "5rem",
+          padding: ".5rem",
+          backgroundColor: "rgba(180,244,224,0.3)",
+        }}
+      >
+        <p>
+          Hello! and thanks for bootstrapping a Tina App! Before you do anything
+          click on the pencil icon in the bottom left hand corner. You can now
+          edit this content in real time! Click save and notice that you have
+          update the Hello world blog post in the local file system.
+        </p>
+        <p>
+          To see how to hook up edit state,{" "}
+          <a href="https://github.com/tinacms/tina-cloud-starter">
+            checkout our starter app
+          </a>
+        </p>
+        <p>
+          To hook up this demo to Tina Cloud and save content to Github instead
+          of the file system you can do the following.
+        </p>
+        <ol
+          style={{
+            margin: "0px auto",
+          }}
+        >
+          <li>Register at https://auth.tina.io</li>
+          <li>
+            Update .env file to include:
+            <pre>
+              <code>
+                <div>
+                  NEXT_PUBLIC_ORGANIZATION_NAME= get this from the organization
+                  you create at auth.tina.io
+                </div>
+                <div>
+                  NEXT_PUBLIC_TINA_CLIENT_ID= get this from the app you create
+                  at auth.tina.io
+                </div>
+                <div>NEXT_PUBLIC_USE_LOCAL_CLIENT=0</div>
+              </code>
+            </pre>
+          </li>
+        </ol>
+      </div>
+    </div>
+  );
+};
 
 export const query = \`#graphql
   query BlogPostQuery($relativePath: String!) {
@@ -139,7 +118,7 @@ export const query = \`#graphql
   }
 \`;
 
-const client = createLocalClient();
+const client = new LocalClient();
 
 export const getStaticProps = async ({ params }) => {
   const variables = { relativePath: \`\${params.filename}.md\` };
@@ -184,31 +163,24 @@ export const getStaticPaths = async () => {
   };
 };
 
-/**
- * This should be moved to _app.js and only wrap the app when you are in edit mode
- */
+};
+`
+
+export const TinaWrapper = `
+import { TinaCloudProvider, useGraphqlForms } from "tina-graphql-gateway";
+
 const TinaWrapper = (props) => {
-  const cms = useMemo(() => {
-    return new TinaCMS({
-      apis: {
-        tina: createClient(),
-      },
-      enabled: true,
-      sidebar: true,
-    });
-  }, []);
-
-  /** Disables the TinaCMS "Media Manager" */
-  cms.plugins.all("screen").forEach((plugin) => {
-    if (plugin.name === "Media Manager") {
-      cms.plugins.remove(plugin);
-    }
-  });
-
   return (
-    <TinaCloudAuthWall cms={cms}>
+    <TinaCloudProvider
+      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      branch={process.env.NEXT_PUBLIC_EDIT_BRACH}
+      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+      isLocalClient={Boolean(
+        Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT ?? true)
+      )}
+    >
       <Inner {...props} />
-    </TinaCloudAuthWall>
+    </TinaCloudProvider>
   );
 };
 
@@ -237,5 +209,7 @@ const Inner = (props) => {
     </>
   );
 };
+
+export default TinaWrapper;
 
 `

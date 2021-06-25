@@ -15,7 +15,7 @@ import p from 'path'
 import Progress from 'progress'
 
 import { successText, logText, cmdText, warnText } from '../../utils/theme'
-import { blogPost, nextPostPage } from './setup-files'
+import { blogPost, nextPostPage, TinaWrapper } from './setup-files'
 import { logger } from '../../logger'
 
 /**
@@ -66,13 +66,14 @@ export async function installDeps(ctx: any, next: () => void, options) {
 }
 
 const baseDir = process.cwd()
+const TinaPath = p.join(baseDir, '.tina')
+const TinaWrapperPath = p.join(TinaPath, 'tina-wrapper.tsx')
 const blogContentPath = p.join(baseDir, 'content', 'posts')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
   logger.level = 'info'
 
-  // 1 Create a content/blog Folder and add one or two blog posts
-
+  // 1. Create a content/blog Folder and add one or two blog posts
   if (!fs.pathExistsSync(blogPostPath)) {
     logger.info(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
@@ -80,7 +81,15 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     // logger.info(`✅ Setup your first post in ${blogPostPath}`)
   }
 
-  // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
+  // 2. Create a Tina Wrapper
+  if (!fs.pathExistsSync(TinaWrapperPath)) {
+    logger.info(logText('Adding a tina-wrapper...'))
+    fs.mkdirpSync(TinaPath)
+    fs.writeFileSync(TinaWrapperPath, TinaWrapper)
+    // logger.info(`✅ Setup your first post in ${blogPostPath}`)
+  }
+
+  // 3. Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
   const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
   const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
   const tinaBlogPagePath = p.join(pagesPath, 'demo', 'blog')
