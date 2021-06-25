@@ -26,38 +26,48 @@ export const Spinner: React.FC = () => {
 
 export const LoadingPage: React.FC<{ text?: string }> = ({
   text = 'Wait a bit, Tina is loading data...',
+  children,
 }) => (
-  <div
-    style={{
-      position: 'fixed',
-      width: '100vw',
-      height: '100vh',
-      zIndex: 40,
-      pointerEvents: 'none',
-      background: 'rgba(255,255, 255, .85)',
-    }}
-  >
+  <>
     <div
       style={{
         position: 'fixed',
-        top: '50%',
-        bottom: '50%',
-        textAlign: 'center',
         width: '100vw',
         height: '100vh',
-        zIndex: 50,
-        color: 'black',
+        zIndex: 40,
+        pointerEvents: 'none',
+        background: 'rgba(255,255, 255, .85)',
       }}
     >
-      {text}
       <div
         style={{
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          position: 'fixed',
+          top: '50%',
+          bottom: '50%',
+          textAlign: 'center',
+          width: '100vw',
+          height: '100vh',
+          zIndex: 50,
+          color: 'black',
         }}
       >
-        <Spinner />
+        {text}
+        <div
+          style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          <Spinner />
+        </div>
       </div>
     </div>
-  </div>
+    <div
+      style={{
+        pointerEvents: 'none',
+      }}
+    >
+      {children}
+    </div>
+  </>
 )

@@ -13,11 +13,12 @@ limitations under the License.
 
 import { ModalBuilder } from './AuthModal'
 import React, { useState } from 'react'
-import { TinaCMS, TinaProvider } from 'tinacms'
+import { TinaCMS, TinaProvider, MediaStore } from 'tinacms'
 
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'
 import { useTinaAuthRedirect } from './useTinaAuthRedirect'
+import { CreateClientProps, createClient } from '../utils'
 
 type ModalNames = null | 'authenticate'
 
@@ -25,14 +26,19 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+interface TinaCloudMediaStoreClass {
+  new (client: Client): MediaStore
+}
 export interface TinaCloudAuthWallProps {
-  cms: TinaCMS
+  cms?: TinaCMS
   children: React.ReactNode
   loginScreen?: React.ReactNode
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
+  mediaStore?: TinaCloudMediaStoreClass
 }
+
 export const AuthWallInner = ({
   children,
   cms,
@@ -101,16 +107,35 @@ export const AuthWallInner = ({
 }
 
 /**
- * Provides an authentication wall so Tina is not enabled without a valid user session.
+ * Provides the ability to setup your CMS and media while also providing an authentication wall so Tina is not enabled without a valid user session.
  *
  * Note: this will not restrict access for local filesystem clients
  */
-export const TinaCloudAuthWall = (props: TinaCloudAuthWallProps) => {
+export const TinaCloudProvider = (
+  props: TinaCloudAuthWallProps & CreateClientProps
+) => {
   useTinaAuthRedirect()
+  const cms =
+    props.cms ||
+    new TinaCMS({
+      enabled: true,
+      sidebar: true,
+    })
+  if (!cms.api.tina) {
+    cms.api.tina = createClient(props)
+  }
+  if (props.mediaStore) {
+    cms.media.store = new props.mediaStore(cms.api.tina)
+  }
 
   return (
-    <TinaProvider cms={props.cms}>
-      <AuthWallInner {...props} />
+    <TinaProvider cms={cms}>
+      <AuthWallInner {...props} cms={cms} />
     </TinaProvider>
   )
 }
+
+/**
+ * @deprecated Please use `TinaCloudProvider` instead
+ */
+export const TinaCloudAuthWall = TinaCloudProvider
