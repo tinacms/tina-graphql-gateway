@@ -67,7 +67,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     logger.info(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
     fs.writeFileSync(blogPostPath, blogPost)
-    logger.info(`✅ Setup a your first post in ${blogPostPath}`)
+    logger.info(`✅ Setup your first post in ${blogPostPath}`)
   }
 
   // 2 Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
