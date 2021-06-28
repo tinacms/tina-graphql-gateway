@@ -1,0 +1,191 @@
+import { addNamespaceToSchema } from '../ast-builder'
+import _ from 'lodash'
+import { lastItem, assertShape } from '../util'
+
+import type {
+  CollectionTemplateable,
+  Collectable,
+  TinaFieldEnriched,
+  TinaCloudSchemaEnriched,
+  TinaCloudSchemaBase,
+  Templateable,
+} from '../types'
+
+export const createSchema = async ({
+  schema,
+}: {
+  schema: TinaCloudSchemaBase
+}) => {
+  return new TinaSchema(schema)
+}
+
+/**
+ * TinaSchema is responsible for allowing you to look up certain
+ * properties of the user-provided schema with ease.
+ */
+export class TinaSchema {
+  public schema: TinaCloudSchemaEnriched
+  constructor(public config: TinaCloudSchemaBase) {
+    // @ts-ignore
+    this.schema = addNamespaceToSchema(
+      _.cloneDeep(config)
+    ) as TinaCloudSchemaEnriched
+  }
+
+  public getCollectionsByName = (collectionNames: string[]) => {
+    return this.schema.collections.filter((collection) =>
+      collectionNames.includes(collection.name)
+    )
+  }
+  public getCollection = (collectionName: string) => {
+    const collection = this.schema.collections.find(
+      (collection) => collection.name === collectionName
+    )
+    if (!collection) {
+      throw new Error(`Expected to find collection named ${collectionName}`)
+    }
+    return collection
+  }
+  public getCollections = () => {
+    return this.schema.collections || []
+  }
+  public getGlobalTemplate = (templateName: string) => {
+    const globalTemplate = this.schema.templates?.find(
+      (template) => template.name === templateName
+    )
+    if (!globalTemplate) {
+      throw new Error(
+        `Expected to find global template of name ${templateName}`
+      )
+    }
+    return globalTemplate
+  }
+  public getCollectionByFullPath = async (filepath: string) => {
+    const collection = this.getCollections().find((collection) => {
+      return filepath.startsWith(collection.path)
+    })
+    if (!collection) {
+      throw new Error(`Unable to find collection for file at ${filepath}`)
+    }
+    return collection
+  }
+  public getCollectionAndTemplateByFullPath = async (
+    filepath: string,
+    templateName?: string
+  ): Promise<{ collectionName: string; templateName: string }> => {
+    const collection = this.getCollections().find((collection) => {
+      return filepath.startsWith(collection.path)
+    })
+    if (!collection) {
+      throw new Error(`Unable to find collection for file at ${filepath}`)
+    }
+    const templates = this.getTemplatesForCollectable(collection)
+    let templateKey
+    if (templateName) {
+      if (templates.type === 'union') {
+        templateKey = templates.templates.find(
+          (template) => lastItem(template.namespace) === templateName
+        )
+      } else {
+        throw new Error(`Unable to determine template for item at ${filepath}`)
+      }
+    }
+    if (templates.type === 'object') {
+      templateName = lastItem(templates.template.namespace)
+    }
+    if (!templateName) {
+      throw new Error(
+        `Something went wrong while trying to determine template for ${filepath}`
+      )
+    }
+
+    return { collectionName: collection.name, templateName }
+  }
+  public getTemplateForData = async (
+    data: object,
+    collection: Collectable
+  ): Promise<Templateable> => {
+    const templateInfo = this.getTemplatesForCollectable(collection)
+    switch (templateInfo.type) {
+      case 'object':
+        return templateInfo.template
+      case 'union':
+        assertShape<{ _template: string }>(data, (yup) =>
+          yup.object({ _template: yup.string().required() })
+        )
+        const template = templateInfo.templates.find(
+          (template) =>
+            template.namespace[template.namespace.length - 1] === data._template
+        )
+        if (!template) {
+          throw new Error(`Exptected to find template named ${data._template}`)
+        }
+        return template
+    }
+  }
+
+  /**
+   * Gets the template or templates from the item.
+   * Both `object` fields and collections support
+   * the ability for an object to be polymorphic,
+   * and if it is, we need to build unions, which
+   * are more of a headache for non-polymorphic
+   * needs, so we also need the ability to just
+   * build object types
+   *
+   *
+   */
+  public getTemplatesForCollectable = (
+    collection: Collectable
+  ): CollectionTemplateable => {
+    let extraFields: TinaFieldEnriched[] = []
+    if (collection.references) {
+      extraFields = collection.references
+    }
+    if (collection.fields) {
+      const template =
+        typeof collection.fields === 'string'
+          ? this.getGlobalTemplate(collection.fields)
+          : collection
+
+      if (
+        typeof template.fields === 'string' ||
+        typeof template.fields === 'undefined'
+      ) {
+        throw new Error('Exptected template to have fields but none were found')
+      }
+
+      return {
+        namespace: collection.namespace,
+        type: 'object',
+        template: {
+          ...template,
+          fields: [...template.fields, ...extraFields],
+        },
+      }
+    } else {
+      if (collection.templates) {
+        return {
+          namespace: collection.namespace,
+          type: 'union',
+          templates: collection.templates.map((templateOrTemplateString) => {
+            const template =
+              typeof templateOrTemplateString === 'string'
+                ? this.getGlobalTemplate(templateOrTemplateString)
+                : templateOrTemplateString
+            return {
+              ...template,
+              fields: [...template.fields, ...extraFields],
+            }
+          }),
+        }
+      } else {
+        throw new Error(
+          `Expected either fields or templates array to be defined on collection ${collection.namespace.join(
+            '_'
+          )}`
+        )
+      }
+    }
+  }
+}

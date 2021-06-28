@@ -13,8 +13,11 @@ limitations under the License.
 
 import childProcess from 'child_process'
 import path from 'path'
-import { buildSchema } from 'tina-graphql'
-import { buildSchema as buildSchema2, createDatabase } from 'tina-graphql-2'
+import {
+  buildSchema,
+  unstable_buildSchema,
+  unstable_createDatabase,
+} from 'tina-graphql'
 import { genTypes } from '../query-gen'
 import { compile } from '../compile'
 import chokidar from 'chokidar'
@@ -23,15 +26,15 @@ import { dangerText } from '../../utils/theme'
 interface Options {
   port?: number
   command?: string
+  experimental?: boolean
 }
 
 const gqlPackageFile = require.resolve('tina-graphql')
-const gqlPackageFile2 = require.resolve('tina-graphql-2')
 
 export async function startServer(
   _ctx,
   _next,
-  { port = 4001, command }: Options
+  { port = 4001, command, experimental }: Options
 ) {
   const startSubprocess = () => {
     if (typeof command === 'string') {
@@ -54,13 +57,13 @@ export async function startServer(
       })
       .on('ready', async () => {
         try {
-          const database = await createDatabase({
+          const database = await unstable_createDatabase({
             rootPath: projectRoot,
           })
           console.log('Generating Tina config')
-          await compile()
+          await compile(null, null, { experimental })
           // const schema = await buildSchema(process.cwd())
-          const schema = await buildSchema2(process.cwd(), database)
+          const schema = await unstable_buildSchema(process.cwd(), database)
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()
@@ -74,7 +77,7 @@ export async function startServer(
         if (ready) {
           console.log('Tina change detected, regenerating config')
           try {
-            await compile()
+            await compile(null, null, { experimental })
             const schema = await buildSchema(process.cwd())
             await genTypes({ schema }, () => {}, {})
           } catch (e) {
@@ -98,7 +101,7 @@ export async function startServer(
 
   const start = async () => {
     const s = require('./server')
-    state.server = await s.default()
+    state.server = await s.default(experimental)
     state.server.listen(port, () => {
       console.log(`Started Filesystem GraphQL server on port: ${port}`)
       console.log(`Visit the playground at http://localhost:${port}/altair/`)
@@ -110,9 +113,7 @@ export async function startServer(
 
   const restart = async () => {
     console.log('Detected change to gql package, restarting...')
-    console.log(gqlPackageFile2)
     delete require.cache[gqlPackageFile]
-    delete require.cache[gqlPackageFile2]
 
     state.sockets.forEach((socket, index) => {
       if (socket.destroyed === false) {
@@ -128,7 +129,7 @@ export async function startServer(
 
   if (!process.env.CI) {
     chokidar
-      .watch([gqlPackageFile, gqlPackageFile2])
+      .watch([gqlPackageFile])
       .on('ready', async () => {
         isReady = true
         start()

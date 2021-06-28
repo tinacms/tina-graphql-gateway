@@ -1,0 +1,38 @@
+{
+  "data": {
+    "getMovieDocument": {
+      "id": "content/movies/star-wars.md",
+      "sys": {
+        "basename": "star-wars.md",
+        "breadcrumbs": ["star-wars"],
+        "collection": {
+          "name": "movie"
+        },
+        "extension": ".md",
+        "filename": "star-wars",
+        "path": null,
+        "relativePath": "star-wars.md",
+        "template": null
+      },
+      "data": {
+        "title": "Star Wars",
+        "genre": "scifi",
+        "body": "\nA long, long time ago, in galaxy far far away...\n",
+        "director": {
+          "data": {
+            "name": "George Lucas"
+          }
+        },
+        "actors": {
+          "edges": [
+            {
+              "node": {
+                "id": "content/actors/harrison.md"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

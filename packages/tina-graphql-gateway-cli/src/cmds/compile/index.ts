@@ -19,7 +19,7 @@ import * as ts from 'typescript'
 import * as jsyaml from 'js-yaml'
 import * as yup from 'yup'
 import * as _ from 'lodash'
-import type { TinaCloudSchema as TinaCloudSchema2 } from 'tina-graphql-2'
+import type { unstable_TinaCloudSchema } from 'tina-graphql'
 import { successText, dangerText, logText } from '../../utils/theme'
 import { defaultSchema } from './defaultSchema'
 
@@ -217,7 +217,7 @@ let types = [
 
 let compiledTemplates = []
 
-export const compile = async () => {
+export const compile = async (_ctx, _next, { experimental }) => {
   console.log(logText('Compiling...'))
   // FIXME: This assume it is a schema.ts file
   if (
@@ -246,15 +246,19 @@ export const compile = async () => {
   })
 
   const schemaFunc = require(path.join(tinaTempPath, 'schema.js'))
-  const schemaObject: TinaCloudSchema = schemaFunc.default.config
 
-  const schemaObject2: TinaCloudSchema = schemaFunc.primitive
-  await fs.outputFile(
-    path.join(tinaConfigPath, 'schema.json'),
-    JSON.stringify(schemaObject2, null, 2)
-  )
-  await compileInner(schemaObject)
-  compiledTemplates = []
+  if (experimental) {
+    const schemaObject: TinaCloudSchema = schemaFunc.default
+    await fs.outputFile(
+      path.join(tinaConfigPath, 'schema.json'),
+      JSON.stringify(schemaObject, null, 2)
+    )
+    await fs.remove(tinaTempPath)
+  } else {
+    const schemaObject: TinaCloudSchema = schemaFunc.default.config
+    await compileInner(schemaObject)
+    compiledTemplates = []
+  }
 }
 
 const regexMessageFunc = (message) =>
@@ -360,8 +364,8 @@ class ValidationError extends Error {
   }
 }
 
-export const defineSchema2 = (
-  config: TinaCloudSchema2<string, string, false>
+export const unstable_defineSchema = (
+  config: unstable_TinaCloudSchema<string, string, false>
 ) => {
   return config
 }

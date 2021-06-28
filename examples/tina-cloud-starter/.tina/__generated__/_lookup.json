@@ -8,6 +8,10 @@
       "marketingPages"
     ]
   },
+  "Node": {
+    "type": "Node",
+    "resolveType": "nodeDocument"
+  },
   "DocumentNode": {
     "type": "DocumentNode",
     "resolveType": "multiCollectionDocument"
@@ -49,10 +53,6 @@
     "type": "AuthorsConnection",
     "resolveType": "collectionDocumentList",
     "collection": "authors"
-  },
-  "Node": {
-    "type": "Node",
-    "resolveType": "nodeDocument"
   },
   "MarketingPagesLandingPageBlocks": {
     "type": "MarketingPagesLandingPageBlocks",
