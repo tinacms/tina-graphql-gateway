@@ -72,7 +72,7 @@ export const sequential = async <A, B>(
  */
 export function assertShape<T extends object>(
   value: unknown,
-  yupSchema: (args: typeof yup) => yup.AnySchema<unknown, unknown>
+  yupSchema: (args: typeof yup) => yup.AnyObjectSchema
 ): asserts value is T {
   const shape = yupSchema(yup)
   try {
