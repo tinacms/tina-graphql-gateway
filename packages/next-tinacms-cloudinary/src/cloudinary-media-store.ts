@@ -74,18 +74,8 @@ export class CloudinaryMediaStore implements MediaStore {
   parse = (img) => img.previewSrc
 
   private buildQuery(options: MediaListOptions) {
-    const entries = Object.entries(options)
-
-    entries.forEach((entry) => {
-      const key = entry[0]
-      const value = entry[1]
-
-      if (value === '' || value === undefined) {
-        delete options[key]
-      }
-    })
-
     const params = Object.keys(options)
+      .filter((key) => options[key] !== '' && options[key] !== undefined)
       .map((key) => `${key}=${options[key]}`)
       .join('&')
 
