@@ -31,10 +31,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:apps/test"
       },
       {
-        "name": "tmp",
-        "reference": "workspace:apps/tmp"
-      },
-      {
         "name": "tina-cloud-starter",
         "reference": "workspace:examples/tina-cloud-starter"
       },
@@ -80,8 +76,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["tina-graphql-gateway", ["virtual:2b2aaae62b5397fe1a167fe925efc38928570fe879f2f4cea3a913c70e43865d1b895f665773c1b227c3bd0f10086a84642bd926d3ac5e759332669954c6a10c#workspace:packages/tina-graphql-gateway", "virtual:4844e5daff3cdacbe824d4f38e5b46ad1a8b3a6063f0e278e3970230ced923850cc1edd66b900b9e88b96ec427ca0939ebb2ef63a4036d45927ba8b7cff18fa0#workspace:packages/tina-graphql-gateway", "virtual:5ff5fac769c22d235eb004cce26d423448e67bbcc8dd3d8e6244bd48feb8883b0138e61947ecd4701d5e750b6874626277cfb4b4e459f401758b90d08d21457c#workspace:packages/tina-graphql-gateway", "virtual:ef5f0464a93c3efa41c08b335f0011b665ab750b218ec89596f2c387b034c562de80d22bd9889f3b06824e2d0df8379c46c9f8422073fc867bf4526e43954b59#workspace:packages/tina-graphql-gateway", "workspace:packages/tina-graphql-gateway"]],
       ["tina-graphql-gateway-cli", ["workspace:packages/tina-graphql-gateway-cli"]],
       ["tina-graphql-helpers", ["workspace:packages/tina-graphql-helpers"]],
-      ["tina-tailwind-sidebar-demo", ["workspace:examples/tina-tailwind-sidebar-demo"]],
-      ["tmp", ["workspace:apps/tmp"]]
+      ["tina-tailwind-sidebar-demo", ["workspace:examples/tina-tailwind-sidebar-demo"]]
     ],
     "fallbackPool": [
     ],
@@ -29254,14 +29249,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["os-tmpdir", "npm:1.0.2"]
           ],
           "linkType": "HARD",
-        }],
-        ["workspace:apps/tmp", {
-          "packageLocation": "./apps/tmp/",
-          "packageDependencies": [
-            ["tmp", "workspace:apps/tmp"],
-            ["tina-graphql-gateway-cli", "workspace:packages/tina-graphql-gateway-cli"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["tmpl", [

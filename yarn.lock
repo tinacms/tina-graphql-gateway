@@ -20711,14 +20711,6 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"tmp@workspace:apps/tmp":
-  version: 0.0.0-use.local
-  resolution: "tmp@workspace:apps/tmp"
-  dependencies:
-    tina-graphql-gateway-cli: "workspace:packages/tina-graphql-gateway-cli"
-  languageName: unknown
-  linkType: soft
-
 "tmpl@npm:1.0.x":
   version: 1.0.4
   resolution: "tmpl@npm:1.0.4"
