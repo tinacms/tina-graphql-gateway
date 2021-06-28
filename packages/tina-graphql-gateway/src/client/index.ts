@@ -247,15 +247,36 @@ export class Client {
     input: RequestInfo,
     init?: RequestInit
   ): Promise<Response> {
-    const headers = init?.headers || {}
-    return await fetch(input, {
-      ...init,
-      headers: new Headers({
-        Authorization: 'Bearer ' + this.getToken().id_token,
-        'Content-Type': 'application/json',
-        ...headers,
-      }),
+    // const mergedInit = {
+    //   ...init,
+    //   headers: new Headers({
+    //     Authorization: 'Bearer ' + this.getToken().id_token,
+    //     'Content-Type': 'application/json',
+    //   }),
+    // }
+    // console.log({ init_from_auth_fetch_merged: mergedInit })
+    // const oldHeaders = init.headers
+    // init.headers = new Headers({
+    //   Authorization: 'Bearer ' + this.getToken().id_token,
+    //   'Content-Type': 'application/json',
+    //   ...oldHeaders,
+    // })
+    console.log({ freeze: Object.isFrozen(init) })
+    const headers = new Headers({
+      Authorization: 'Bearer ' + this.getToken().id_token,
+      'Content-Type': 'application/json',
     })
+    const merged = { ...init, headers }
+    console.log({ merged })
+
+    // Object.defineProperty(merged, 'headers', {
+    //   value: headers,
+    //   enumerable: true,
+    //   configurable: true,
+    //   writable: true,
+    // })
+
+    return fetch(input, merged)
   }
 
   async getUser() {
