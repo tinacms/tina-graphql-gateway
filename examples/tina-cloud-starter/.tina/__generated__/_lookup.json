@@ -1,0 +1,82 @@
+{
+  "DocumentConnection": {
+    "type": "DocumentConnection",
+    "resolveType": "multiCollectionDocumentList",
+    "collections": [
+      "posts",
+      "authors",
+      "marketingPages"
+    ]
+  },
+  "DocumentNode": {
+    "type": "DocumentNode",
+    "resolveType": "multiCollectionDocument"
+  },
+  "PostsArticleAuthorDocument": {
+    "type": "PostsArticleAuthorDocument",
+    "resolveType": "multiCollectionDocument"
+  },
+  "Posts": {
+    "type": "Posts",
+    "resolveType": "unionData",
+    "typeMap": {
+      "article": "PostsArticle"
+    }
+  },
+  "PostsDocument": {
+    "type": "PostsDocument",
+    "resolveType": "collectionDocument",
+    "collection": "posts"
+  },
+  "PostsConnection": {
+    "type": "PostsConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "posts"
+  },
+  "Authors": {
+    "type": "Authors",
+    "resolveType": "unionData",
+    "typeMap": {
+      "author": "AuthorsAuthor"
+    }
+  },
+  "AuthorsDocument": {
+    "type": "AuthorsDocument",
+    "resolveType": "collectionDocument",
+    "collection": "authors"
+  },
+  "AuthorsConnection": {
+    "type": "AuthorsConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "authors"
+  },
+  "Node": {
+    "type": "Node",
+    "resolveType": "nodeDocument"
+  },
+  "MarketingPagesLandingPageBlocks": {
+    "type": "MarketingPagesLandingPageBlocks",
+    "resolveType": "unionData",
+    "typeMap": {
+      "message": "MarketingPagesLandingPageBlocksMessage",
+      "image": "MarketingPagesLandingPageBlocksImage"
+    }
+  },
+  "MarketingPages": {
+    "type": "MarketingPages",
+    "resolveType": "unionData",
+    "typeMap": {
+      "landingPage": "MarketingPagesLandingPage"
+    }
+  },
+  "MarketingPagesDocument": {
+    "type": "MarketingPagesDocument",
+    "resolveType": "collectionDocument",
+    "collection": "marketingPages"
+  },
+  "MarketingPagesConnection": {
+    "type": "MarketingPagesConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "marketingPages"
+  }
+}

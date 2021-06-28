@@ -19,6 +19,7 @@ import * as ts from 'typescript'
 import * as jsyaml from 'js-yaml'
 import * as yup from 'yup'
 import * as _ from 'lodash'
+import type { TinaCloudSchema as TinaCloudSchema2 } from 'tina-graphql-2'
 import { successText, dangerText, logText } from '../../utils/theme'
 import { defaultSchema } from './defaultSchema'
 
@@ -246,6 +247,12 @@ export const compile = async () => {
 
   const schemaFunc = require(path.join(tinaTempPath, 'schema.js'))
   const schemaObject: TinaCloudSchema = schemaFunc.default.config
+
+  const schemaObject2: TinaCloudSchema = schemaFunc.primitive
+  await fs.outputFile(
+    path.join(tinaConfigPath, 'schema.json'),
+    JSON.stringify(schemaObject2, null, 2)
+  )
   await compileInner(schemaObject)
   compiledTemplates = []
 }
@@ -351,6 +358,12 @@ class ValidationError extends Error {
     this.name = 'ValidationError'
     this.validationMessage = validationMessage
   }
+}
+
+export const defineSchema2 = (
+  config: TinaCloudSchema2<string, string, false>
+) => {
+  return config
 }
 
 export const defineSchema = (config: TinaCloudSchema) => {

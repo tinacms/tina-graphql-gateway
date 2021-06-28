@@ -1,0 +1,215 @@
+{
+  "collections": [
+    {
+      "label": "Blog Posts",
+      "name": "posts",
+      "path": "content/posts",
+      "templates": [
+        {
+          "label": "Article",
+          "name": "article",
+          "fields": [
+            {
+              "type": "string",
+              "label": "Title",
+              "name": "title",
+              "namespace": [
+                "posts",
+                "article",
+                "title"
+              ]
+            },
+            {
+              "name": "hero",
+              "type": "image",
+              "label": "Hero",
+              "namespace": [
+                "posts",
+                "article",
+                "hero"
+              ]
+            },
+            {
+              "type": "reference",
+              "label": "Author",
+              "name": "author",
+              "collections": [
+                "authors"
+              ],
+              "namespace": [
+                "posts",
+                "article",
+                "author"
+              ]
+            }
+          ],
+          "namespace": [
+            "posts",
+            "article"
+          ]
+        }
+      ],
+      "namespace": [
+        "posts"
+      ]
+    },
+    {
+      "label": "Authors",
+      "name": "authors",
+      "path": "content/authors",
+      "templates": [
+        {
+          "label": "Author",
+          "name": "author",
+          "fields": [
+            {
+              "type": "string",
+              "label": "Name",
+              "name": "name",
+              "namespace": [
+                "authors",
+                "author",
+                "name"
+              ]
+            },
+            {
+              "type": "string",
+              "label": "Avatar",
+              "name": "avatar",
+              "namespace": [
+                "authors",
+                "author",
+                "avatar"
+              ]
+            }
+          ],
+          "namespace": [
+            "authors",
+            "author"
+          ]
+        }
+      ],
+      "namespace": [
+        "authors"
+      ]
+    },
+    {
+      "label": "Marketing Pages",
+      "name": "marketingPages",
+      "path": "content/marketing-pages",
+      "templates": [
+        {
+          "label": "Landing Page",
+          "name": "landingPage",
+          "fields": [
+            {
+              "type": "object",
+              "name": "blocks",
+              "label": "Blocks",
+              "list": true,
+              "templates": [
+                {
+                  "name": "message",
+                  "label": "Message",
+                  "fields": [
+                    {
+                      "type": "string",
+                      "label": "Message Header",
+                      "name": "messageHeader",
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "message",
+                        "messageHeader"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "label": "Message Body",
+                      "name": "messageBody",
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "message",
+                        "messageBody"
+                      ]
+                    }
+                  ],
+                  "namespace": [
+                    "marketingPages",
+                    "landingPage",
+                    "blocks",
+                    "message"
+                  ]
+                },
+                {
+                  "name": "image",
+                  "label": "Image",
+                  "fields": [
+                    {
+                      "type": "string",
+                      "label": "Heading",
+                      "name": "heading",
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "image",
+                        "heading"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "label": "Image Description",
+                      "name": "imgDescription",
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "image",
+                        "imgDescription"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "label": "Image src",
+                      "name": "src",
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "image",
+                        "src"
+                      ]
+                    }
+                  ],
+                  "namespace": [
+                    "marketingPages",
+                    "landingPage",
+                    "blocks",
+                    "image"
+                  ]
+                }
+              ],
+              "namespace": [
+                "marketingPages",
+                "landingPage",
+                "blocks"
+              ]
+            }
+          ],
+          "namespace": [
+            "marketingPages",
+            "landingPage"
+          ]
+        }
+      ],
+      "namespace": [
+        "marketingPages"
+      ]
+    }
+  ],
+  "namespace": []
+}

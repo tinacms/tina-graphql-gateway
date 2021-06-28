@@ -58,6 +58,7 @@
     "lodash.get": "^4.4.2",
     "normalize-path": "^3.0.0",
     "tina-graphql": "workspace:packages/tina-graphql",
+    "tina-graphql-2": "workspace:packages/graphql",
     "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
     "typescript": "^4.2.2",
     "yup": "^0.32.9"
