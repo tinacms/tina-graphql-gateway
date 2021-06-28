@@ -125,7 +125,7 @@ export function assertIsStringArray(
 
 export function assertShape<T>(
   value: unknown,
-  schema: yup.Schema<unknown, unknown>
+  schema: yup.AnyObjectSchema
 ): asserts value is T {
   try {
     schema.validateSync(value)
