@@ -1,0 +1,15 @@
+mutation {
+  updateDocument(
+    collection: "movie"
+    relativePath: "star-wars.md"
+    # Changes the genre to action
+    params: { movie: { genre: "action" } }
+  ) {
+    ... on MovieDocument {
+      id
+      data {
+        genre
+      }
+    }
+  }
+}

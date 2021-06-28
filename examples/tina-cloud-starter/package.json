@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "yarn tina-gql server:start -c \"next dev\"",
+    "dev": "IS_EXPERIMENTAL=true yarn tina-gql server:start -c \"next dev\" --experimental",
     "build": "yarn tina-gql server:start -c \"next build\"",
     "start": "yarn tina-gql server:start -c \"next start\""
   },

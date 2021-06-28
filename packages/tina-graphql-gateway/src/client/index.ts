@@ -22,6 +22,7 @@ import {
 
 import { formify } from 'tina-graphql-helpers'
 import gql from 'graphql-tag'
+import { transformPayload } from './transform-payload'
 
 interface ServerOptions {
   organizationId: string
@@ -140,35 +141,6 @@ export class Client {
     return this.schema
   }
 
-  private transformPayload = (
-    obj: { _template?: string } | string | number | boolean,
-    accum: { [key: string]: unknown }
-  ) => {
-    if (
-      typeof obj === 'string' ||
-      typeof obj === 'number' ||
-      typeof obj === 'boolean'
-    ) {
-      return obj
-    }
-    if (obj._template) {
-      const { _template, ...rest } = obj
-      const temp = this.transformPayload(rest, {})
-      accum[_template] = temp
-      return accum
-    }
-    Object.entries(obj).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        console.log('its an array', value)
-        accum[key] = value.map((item) => this.transformPayload(item, {}))
-      } else {
-        accum[key] = this.transformPayload(value, {})
-      }
-    })
-
-    return accum
-  }
-
   prepareVariables = async ({
     mutationString,
     relativePath,
@@ -185,9 +157,13 @@ export class Client {
       }
     }
   }) => {
-    // @ts-ignore FIXME: `updateDocument` will need the collection name as the top-level key
-    const { _collection, ...payload } = values
-    const params = this.transformPayload(payload, {})
+    const schema = await this.getSchema()
+    const params = transformPayload({
+      mutation: mutationString,
+      values: values,
+      sys,
+      schema,
+    })
 
     return {
       relativePath,
@@ -304,8 +280,7 @@ export class Client {
 
 export { ForestryMediaStore } from './media-store'
 
-export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL =
-  'http://localhost:4001/graphql-2'
+export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL = 'http://localhost:4001/graphql'
 
 export class LocalClient extends Client {
   constructor(props?: { customContentApiUrl?: string }) {

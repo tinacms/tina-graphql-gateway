@@ -18,13 +18,11 @@ import express from 'express'
 import { altairExpress } from 'altair-express-middleware'
 // @ts-ignore
 import bodyParser from 'body-parser'
-import { createDatabase } from 'tina-graphql-2'
 
-const gqlServer = async () => {
+const gqlServer = async (experimental: boolean = false) => {
   // This is lazily required so we can update the module
   // without having to restart the server
   const gqlPackage = require('tina-graphql')
-  const gqlPackage2 = require('tina-graphql-2')
 
   const app = express()
   const server = http.createServer(app)
@@ -32,7 +30,6 @@ const gqlServer = async () => {
   app.use(bodyParser.json())
 
   let projectRoot = path.join(process.cwd())
-  const database = await createDatabase({ rootPath: projectRoot })
   app.use(
     '/altair',
     altairExpress({
@@ -54,41 +51,27 @@ query MyQuery {
     })
   )
 
-  app.use(
-    '/altair-2',
-    altairExpress({
-      endpointURL: '/graphql-2',
-      initialQuery: `# Welcome to Tina!
-# We've got a simple query set up for you to get started
-# but there's plenty more for you to explore on your own!
-query MyQuery {
-  getCollections {
-    documents {
-      id
-    }
-  }
-}`,
-    })
-  )
-
   app.post('/graphql', async (req, res) => {
-    const { query, variables } = req.body
-    const result = await gqlPackage.gql({ projectRoot, query, variables })
-    return res.json(result)
-  })
-
-  app.post('/graphql-2', async (req, res) => {
-    const { query, variables } = req.body
-    const result = await gqlPackage2.gql({
-      projectRoot,
-      query,
-      variables,
-      database,
-    })
-    if (result.errors) {
-      console.log(result.errors)
+    if (experimental) {
+      const { query, variables } = req.body
+      const database = await gqlPackage.unstable_createDatabase({
+        rootPath: projectRoot,
+      })
+      const result = await gqlPackage.unstable_gql({
+        projectRoot,
+        query,
+        variables,
+        database,
+      })
+      if (result.errors) {
+        console.log(result.errors)
+      }
+      return res.json(result)
+    } else {
+      const { query, variables } = req.body
+      const result = await gqlPackage.gql({ projectRoot, query, variables })
+      return res.json(result)
     }
-    return res.json(result)
   })
 
   return server

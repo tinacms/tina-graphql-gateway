@@ -253,34 +253,56 @@ const buildSysForType = (type: GraphQLNamedType): FieldNode => {
 }
 
 const buildValuesForType = (type: GraphQLNamedType): FieldNode => {
-  // assertIsUnionType(type)
+  try {
+    assertIsUnionType(type)
 
-  return {
-    kind: 'Field' as const,
-    name: {
-      kind: 'Name' as const,
-      value: 'values',
-    },
-    // selectionSet: {
-    //   kind: 'SelectionSet' as const,
-    //   selections: buildSelectionInlineFragments(type.getTypes()),
-    // },
+    return {
+      kind: 'Field' as const,
+      name: {
+        kind: 'Name' as const,
+        value: 'values',
+      },
+      selectionSet: {
+        kind: 'SelectionSet' as const,
+        selections: buildSelectionInlineFragments(type.getTypes()),
+      },
+    }
+  } catch (e) {
+    // FIXME: PRIMITIVE types
+    return {
+      kind: 'Field' as const,
+      name: {
+        kind: 'Name' as const,
+        value: 'values',
+      },
+    }
   }
 }
 
 const buildFormForType = (type: GraphQLNamedType): FieldNode => {
-  // assertIsUnionType(type)
+  try {
+    assertIsUnionType(type)
 
-  return {
-    kind: 'Field' as const,
-    name: {
-      kind: 'Name' as const,
-      value: 'form',
-    },
-    // selectionSet: {
-    //   kind: 'SelectionSet' as const,
-    //   selections: buildSelectionInlineFragments(type.getTypes()),
-    // },
+    return {
+      kind: 'Field' as const,
+      name: {
+        kind: 'Name' as const,
+        value: 'form',
+      },
+      selectionSet: {
+        kind: 'SelectionSet' as const,
+        selections: buildSelectionInlineFragments(type.getTypes()),
+      },
+    }
+  } catch (e) {
+    // FIXME: PRIMITIVE types
+    return {
+      kind: 'Field' as const,
+      name: {
+        kind: 'Name' as const,
+        value: 'form',
+      },
+    }
   }
 }
 
