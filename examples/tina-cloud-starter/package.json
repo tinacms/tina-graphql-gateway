@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "IS_EXPERIMENTAL=true yarn tina-gql server:start -c \"next dev\" --experimental",
-    "build": "yarn tina-gql server:start -c \"next build\"",
-    "start": "yarn tina-gql server:start -c \"next start\""
+    "dev": "yarn tina-gql server:start -c \"next dev\" --experimental",
+    "build": "yarn tina-gql server:start -c \"next build\" --experimental",
+    "start": "yarn tina-gql server:start -c \"next start\" --experimental"
   },
   "devDependencies": {
     "@types/js-cookie": "^2.2.6",
