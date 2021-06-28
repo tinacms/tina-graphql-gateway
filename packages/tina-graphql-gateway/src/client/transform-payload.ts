@@ -98,10 +98,15 @@ export const transformPayload = ({
       }
       return transformInputObject(values, accum, inputType)
     } else {
-      return transformPayload2(values, accum)
-      throw new Error(
-        `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
-      )
+      // @ts-ignore FIXME: PRIMITIVES
+      const { _collection, ...rest } = values
+      const payload = transformPayload2(rest, accum)
+      // FIXME: PRIMITIVES this probably needs to be supported for `updateDocument` mutation
+      if (false) {
+        return { [_collection]: payload }
+      } else {
+        return payload
+      }
     }
   } catch (e) {
     console.log('oh no', e)
@@ -179,7 +184,7 @@ const transformPayload2 = (
   }
   if (obj._template) {
     const { _template, ...rest } = obj
-    const temp = this.transformPayload(rest, {})
+    const temp = transformPayload2(rest, {})
     accum[_template] = temp
     return accum
   }
