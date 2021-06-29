@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -57,7 +57,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styled-components": "^5.2.0",
-    "tinacms": "^0.31.0"
+    "tinacms": "^0.42.1"
   },
   "peerDependencies": {
     "@tinacms/core": "^0.31.0",
@@ -71,7 +71,7 @@
     "react-dom": ">=16.8",
     "react-is": "^16.13.1 || <18.0.0",
     "styled-components": "*",
-    "tinacms": "^0.31.0"
+    "tinacms": "^0.42.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

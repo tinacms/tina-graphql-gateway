@@ -19,6 +19,7 @@ import { Client } from '../client'
 import type { TokenObject } from './authenticate'
 import { useTinaAuthRedirect } from './useTinaAuthRedirect'
 import { CreateClientProps, createClient } from '../utils'
+import { MediaListOptions } from '@tinacms/core'
 
 type ModalNames = null | 'authenticate'
 
@@ -36,7 +37,10 @@ export interface TinaCloudAuthWallProps {
   getModalActions?: (args: {
     closeModal: () => void
   }) => { name: string; action: () => Promise<void>; primary: boolean }[]
-  mediaStore?: TinaCloudMediaStoreClass
+  mediaStore?: {
+    store: TinaCloudMediaStoreClass
+    pageSize?: number
+  }
 }
 
 export const AuthWallInner = ({
@@ -120,12 +124,14 @@ export const TinaCloudProvider = (
     new TinaCMS({
       enabled: true,
       sidebar: true,
+      mediaOptions: {},
     })
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
   }
   if (props.mediaStore) {
-    cms.media.store = new props.mediaStore(cms.api.tina)
+    cms.media.store = new props.mediaStore.store(cms.api.tina)
+    cms.media.pageSize = props.mediaStore.pageSize ?? 20
   }
 
   return (

@@ -22,13 +22,18 @@ import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
  * if you're on a route that starts with "/admin"
  */
 const TinaWrapper = (props) => {
+  const mediaStore = {
+    store: TinaCloudCloudinaryMediaStore,
+    pageSize: 10,
+  }
+
   return (
     <TinaCloudProvider
       clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
       branch="main"
       isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
       organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      mediaStore={TinaCloudCloudinaryMediaStore}
+      mediaStore={mediaStore}
     >
       <Inner {...props} />
     </TinaCloudProvider>
