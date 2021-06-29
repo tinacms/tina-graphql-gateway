@@ -252,7 +252,6 @@ export class Client {
       ...init,
       headers: new Headers({
         Authorization: 'Bearer ' + this.getToken().id_token,
-        'Content-Type': 'application/json',
         ...headers,
       }),
     })
