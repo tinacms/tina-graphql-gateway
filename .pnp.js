@@ -8729,6 +8729,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@types/log4js", [
+        ["npm:2.3.5", {
+          "packageLocation": "./.yarn/cache/@types-log4js-npm-2.3.5-490336a958-5f0c44ca2c.zip/node_modules/@types/log4js/",
+          "packageDependencies": [
+            ["@types/log4js", "npm:2.3.5"],
+            ["log4js", "npm:6.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@types/lru-cache", [
         ["npm:5.1.0", {
           "packageLocation": "./.yarn/cache/@types-lru-cache-npm-5.1.0-eea307985c-55bffcbc95.zip/node_modules/@types/lru-cache/",
@@ -8826,6 +8836,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-prettier-npm-2.2.1-bc35c4da60-9dc257dfc5.zip/node_modules/@types/prettier/",
           "packageDependencies": [
             ["@types/prettier", "npm:2.2.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/progress", [
+        ["npm:2.0.3", {
+          "packageLocation": "./.yarn/cache/@types-progress-npm-2.0.3-8223f090c8-b221d95b40.zip/node_modules/@types/progress/",
+          "packageDependencies": [
+            ["@types/progress", "npm:2.0.3"],
+            ["@types/node", "npm:14.0.27"]
           ],
           "linkType": "HARD",
         }]
@@ -13425,6 +13445,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/date-fns-npm-2.21.1-a333d4fe93-00a2ddea10.zip/node_modules/date-fns/",
           "packageDependencies": [
             ["date-fns", "npm:2.21.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["date-format", [
+        ["npm:2.1.0", {
+          "packageLocation": "./.yarn/cache/date-format-npm-2.1.0-6d206457ad-c642edf1a1.zip/node_modules/date-format/",
+          "packageDependencies": [
+            ["date-format", "npm:2.1.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:3.0.0", {
+          "packageLocation": "./.yarn/cache/date-format-npm-3.0.0-da04d77f82-42fc691af5.zip/node_modules/date-format/",
+          "packageDependencies": [
+            ["date-format", "npm:3.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -19854,6 +19890,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["log4js", [
+        ["npm:6.3.0", {
+          "packageLocation": "./.yarn/cache/log4js-npm-6.3.0-7d1ea76e6b-7296c3fc2d.zip/node_modules/log4js/",
+          "packageDependencies": [
+            ["log4js", "npm:6.3.0"],
+            ["date-format", "npm:3.0.0"],
+            ["debug", "virtual:27690e4121be41f57b977a82de27e88841c7d71310e2598a86e8acde7a476277b0c1cf1ac2f8f919102f83918c4375e16d7bdd4c0d11e89212599db35e092b20#npm:4.2.0"],
+            ["flatted", "npm:2.0.2"],
+            ["rfdc", "npm:1.3.0"],
+            ["streamroller", "npm:2.2.4"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["logic-solver", [
         ["npm:2.0.1", {
           "packageLocation": "./.yarn/cache/logic-solver-npm-2.0.1-3f092e9b27-48458c6771.zip/node_modules/logic-solver/",
@@ -25806,6 +25856,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["rfdc", [
+        ["npm:1.3.0", {
+          "packageLocation": "./.yarn/cache/rfdc-npm-1.3.0-272f288ad8-34dd5c5acf.zip/node_modules/rfdc/",
+          "packageDependencies": [
+            ["rfdc", "npm:1.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["rgb-regex", [
         ["npm:1.0.1", {
           "packageLocation": "./.yarn/cache/rgb-regex-npm-1.0.1-c867413fad-7701e22ec4.zip/node_modules/rgb-regex/",
@@ -27078,6 +27137,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["any-promise", "npm:1.3.0"],
             ["end-of-stream", "npm:1.1.0"],
             ["stream-to-array", "npm:2.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["streamroller", [
+        ["npm:2.2.4", {
+          "packageLocation": "./.yarn/cache/streamroller-npm-2.2.4-84aaab4674-7a27e4a02c.zip/node_modules/streamroller/",
+          "packageDependencies": [
+            ["streamroller", "npm:2.2.4"],
+            ["date-format", "npm:2.1.0"],
+            ["debug", "virtual:27690e4121be41f57b977a82de27e88841c7d71310e2598a86e8acde7a476277b0c1cf1ac2f8f919102f83918c4375e16d7bdd4c0d11e89212599db35e092b20#npm:4.2.0"],
+            ["fs-extra", "npm:8.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -28887,6 +28958,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/listr", "npm:0.14.2"],
             ["@types/lodash", "npm:4.14.158"],
             ["@types/lodash.get", "npm:4.4.6"],
+            ["@types/log4js", "npm:2.3.5"],
+            ["@types/progress", "npm:2.0.3"],
             ["@types/yup", "npm:0.29.11"],
             ["ajv", "npm:6.12.3"],
             ["altair-express-middleware", "npm:4.0.6"],
@@ -28905,7 +28978,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["js-yaml", "npm:4.0.0"],
             ["lodash", "npm:4.17.19"],
             ["lodash.get", "npm:4.4.2"],
+            ["log4js", "npm:6.3.0"],
             ["normalize-path", "npm:3.0.0"],
+            ["progress", "npm:2.0.3"],
             ["tina-graphql", "workspace:packages/tina-graphql"],
             ["tina-graphql-helpers", "workspace:packages/tina-graphql-helpers"],
             ["ts-jest", "virtual:a722c7d3ce2b8affe9d77374b299e3e86c9e2e410ae49fc16482f2b404f8238e91488a64649ef452edcd1202a92da0e7883fbb56fd4d35f3ad5f6cf5921f0783#npm:26.5.3"],

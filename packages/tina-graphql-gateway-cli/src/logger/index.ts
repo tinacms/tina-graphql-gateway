@@ -11,15 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { buildSchema } from 'tina-graphql'
-import { logText } from '../../utils/theme'
-import { logger } from '../../logger'
+import log4js from 'log4js'
+export const logger = log4js.getLogger()
 
-export async function attachSchema(ctx: any, next: () => void, options) {
-  logger.info(logText('Building schema...'))
-  const rootPath = process.cwd()
-  const schema = await buildSchema(rootPath)
-
-  ctx.schema = schema
-  next()
-}
+// https://log4js-node.github.io/log4js-node/layouts.html
+// This disables the logger prefix
+log4js.configure({
+  appenders: {
+    out: { type: 'stdout', layout: { type: 'messagePassThrough' } },
+  },
+  categories: { default: { appenders: ['out'], level: 'info' } },
+})
+// set initial level to info
+logger.level = 'info'

@@ -17,6 +17,7 @@ import { version, name } from '../package.json'
 import { Command } from './command'
 import { baseCmds as baseCommands } from './cmds/baseCmds'
 import { logText } from './utils/theme'
+import { logger } from './logger'
 export { defineSchema } from './cmds/compile'
 export type {
   TinaCloudTemplate,
@@ -33,7 +34,7 @@ const registerCommands = (commands: Command[], noHelp: boolean = false) => {
       .command(command.command, { noHelp })
       .description(command.description)
       .action((...args) => {
-        console.log('')
+        logger.info('')
         command.action(...args)
       })
 
@@ -43,10 +44,10 @@ const registerCommands = (commands: Command[], noHelp: boolean = false) => {
 
     newCmd.on('--help', function () {
       if (command.examples) {
-        console.log(`\nExamples:\n  ${command.examples}`)
+        logger.info(`\nExamples:\n  ${command.examples}`)
       }
       if (command.subCommands) {
-        console.log('\nCommands:')
+        logger.info('\nCommands:')
         const optionTag = ' [options]'
         command.subCommands.forEach((subcommand, i) => {
           const commandStr = `${subcommand.command}${
@@ -56,12 +57,12 @@ const registerCommands = (commands: Command[], noHelp: boolean = false) => {
           const padLength =
             Math.max(...command.subCommands.map((sub) => sub.command.length)) +
             optionTag.length
-          console.log(
+          logger.info(
             `${commandStr.padEnd(padLength)} ${subcommand.description}`
           )
         })
       }
-      console.log('')
+      logger.info('')
     })
     ;(command.options || []).forEach((option) => {
       newCmd.option(option.name, option.description)
@@ -83,7 +84,7 @@ export async function init(args: any) {
   program.usage('command [options]')
   // error on unknown commands
   program.on('command:*', function () {
-    console.error(
+    logger.error(
       'Invalid command: %s\nSee --help for a list of available commands.',
       args.join(' ')
     )
@@ -91,7 +92,7 @@ export async function init(args: any) {
   })
 
   program.on('--help', function () {
-    console.log(
+    logger.info(
       logText(`
 You can get help on any command with "-h" or "--help".
 e.g: "forestry types:gen --help"
