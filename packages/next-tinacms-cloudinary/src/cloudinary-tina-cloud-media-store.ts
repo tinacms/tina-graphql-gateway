@@ -25,14 +25,10 @@ export class TinaCloudCloudinaryMediaStore extends CloudinaryMediaStore {
         const query = `${url.includes('?') ? '&' : '?'}org=${
           client.organizationId
         }&clientID=${client.clientId}`
-        console.log(url + query)
-        console.log({ init })
-        console.log({ body: init?.body })
 
         const res = client.fetchWithToken(url + query, init)
         return res
       } catch (error) {
-        console.log('error in fetchFunction')
         console.error(error)
       }
     }
