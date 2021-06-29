@@ -66,8 +66,9 @@ export async function installDeps(ctx: any, next: () => void, options) {
 }
 
 const baseDir = process.cwd()
-const TinaPath = p.join(baseDir, '.tina')
-const TinaWrapperPath = p.join(TinaPath, 'tina-wrapper.tsx')
+// TODO: should handle src folder here
+const TinaWrapperPathDir = p.join(baseDir, 'components')
+const TinaWrapperPath = p.join(TinaWrapperPathDir, 'tina-wrapper.tsx')
 const blogContentPath = p.join(baseDir, 'content', 'posts')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
@@ -84,9 +85,8 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   // 2. Create a Tina Wrapper
   if (!fs.pathExistsSync(TinaWrapperPath)) {
     logger.info(logText('Adding a tina-wrapper...'))
-    fs.mkdirpSync(TinaPath)
+    fs.mkdirpSync(TinaWrapperPathDir)
     fs.writeFileSync(TinaWrapperPath, TinaWrapper)
-    // logger.info(`✅ Setup your first post in ${blogPostPath}`)
   }
 
   // 3. Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
