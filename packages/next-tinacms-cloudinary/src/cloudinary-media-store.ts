@@ -60,24 +60,25 @@ export class CloudinaryMediaStore implements MediaStore {
     )
   }
   async list(options: MediaListOptions): Promise<MediaList> {
-    let query = '?'
-
-    if (options.directory) {
-      query += `directory=${encodeURIComponent(options.directory)}`
-    }
+    const query = this.buildQuery(options)
     const response = await this.fetchFunction('/api/cloudinary/media' + query)
-
-    const { items } = await response.json()
+    const { items, offset } = await response.json()
     return {
       items: items.map((item) => item),
-      totalCount: items.length,
-      limit: 500,
-      offset: 0,
-      nextOffset: undefined,
+      nextOffset: offset,
     }
   }
 
   previewSrc = (publicId: string) => publicId
 
   parse = (img) => img.previewSrc
+
+  private buildQuery(options: MediaListOptions) {
+    const params = Object.keys(options)
+      .filter((key) => options[key] !== '' && options[key] !== undefined)
+      .map((key) => `${key}=${options[key]}`)
+      .join('&')
+
+    return `?${params}`
+  }
 }
