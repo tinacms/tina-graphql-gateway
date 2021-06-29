@@ -26,10 +26,10 @@ module.exports = {
     // },
     forestrySample: {
       schema: [
-        './packages/graphql/src/spec/forestry-sample/.tina/__generated__/schema.gql',
+        './packages/tina-graphql/src/primitives/spec/forestry-sample/.tina/__generated__/schema.gql',
       ],
       documents:
-        './packages/graphql/src/spec/forestry-sample/**/*.{graphql,gql,js,ts,jsx,tsx}',
+        './packages/tina-graphql/src/primitives/spec/forestry-sample/**/*.{graphql,gql,js,ts,jsx,tsx}',
     },
     // movies: {
     //   schema: [

@@ -67,7 +67,7 @@ const tinaSchema: TinaCloudSchema<string, string, false> = {
               name: 'title',
             },
             {
-              type: 'text',
+              type: 'string',
               label: 'Body',
               name: 'body',
             },

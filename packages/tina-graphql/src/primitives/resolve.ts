@@ -123,7 +123,7 @@ export const resolve = async ({
               isMutation,
             })
           }
-          if (args && args.collection) {
+          if (['getDocument', 'updateDocument'].includes(info.fieldName)) {
             /**
              * `getDocument`/`updateDocument`
              */

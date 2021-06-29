@@ -159,14 +159,10 @@ input AuthorMutation {
   author: AuthorAuthorMutation
 }
 
-input PostPostAuthorMutation {
-  author: AuthorMutation
-}
-
 input PostPostMutation {
   title: String
   body: String
-  author: PostPostAuthorMutation
+  author: String
 }
 
 input PostMutation {

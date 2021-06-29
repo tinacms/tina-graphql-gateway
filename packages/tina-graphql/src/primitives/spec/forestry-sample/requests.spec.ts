@@ -16,7 +16,13 @@ import { setup, setupFixture } from '../setup'
 
 const rootPath = path.join(__dirname, '/')
 
-const fixtures = ['getAuthorDocument', 'updateAuthorDocument', 'updateDocument']
+const fixtures = [
+  'getAuthorDocument',
+  'getPostDocument',
+  'updateAuthorDocument',
+  'updateDocument',
+  'updateDocument-no-collection',
+]
 import { tinaSchema } from './.tina/schema'
 
 describe('The given configuration', () => {
@@ -36,7 +42,9 @@ describe('The given configuration', () => {
         fixture
       )
 
-      expect(response).toEqual(JSON.parse(expectedReponse))
+      expect(JSON.parse(JSON.stringify(response))).toMatchObject(
+        JSON.parse(expectedReponse)
+      )
     })
   })
 })

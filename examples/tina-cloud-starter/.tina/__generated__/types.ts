@@ -317,14 +317,10 @@ export type DocumentMutation = {
   marketingPages?: Maybe<MarketingPagesMutation>;
 };
 
-export type PostsArticleAuthorMutation = {
-  authors?: Maybe<AuthorsMutation>;
-};
-
 export type PostsArticleMutation = {
   title?: Maybe<Scalars['String']>;
   hero?: Maybe<Scalars['String']>;
-  author?: Maybe<PostsArticleAuthorMutation>;
+  author?: Maybe<Scalars['String']>;
 };
 
 export type PostsMutation = {

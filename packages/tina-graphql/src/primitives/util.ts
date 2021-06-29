@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 import * as yup from 'yup'
+import { GraphQLError } from 'graphql'
 
 /**
  * Iterate through an array of promises sequentially, ensuring the order
@@ -54,13 +55,17 @@ export const sequential = async <A, B>(
 
 export function assertShape<T extends unknown>(
   value: unknown,
-  yupSchema: (args: typeof yup) => yup.AnySchema
+  yupSchema: (args: typeof yup) => yup.AnySchema,
+  errorMessage?: string
 ): asserts value is T {
   const shape = yupSchema(yup)
   try {
     shape.validateSync(value)
   } catch (e) {
-    throw new Error(`Failed to assertShape - ${e.message}`)
+    const message = errorMessage || `Failed to assertShape - ${e.message}`
+    throw new GraphQLError(message, null, null, null, null, null, {
+      stack: e.stack,
+    })
   }
 }
 

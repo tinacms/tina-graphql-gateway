@@ -1,16 +1,9 @@
-mutation {
-  updateDocument(
-    collection: "post"
-    relativePath: "hello-world.md"
-    params: {
-      post: {
-        post: { title: "Hello, again!", author: "content/authors/marge.md" }
-      }
-    }
-  ) {
+query {
+  getPostDocument(relativePath: "hello-world.md") {
     ... on PostDocument {
       data {
         ... on PostPost {
+          title
           author {
             ... on AuthorDocument {
               data {

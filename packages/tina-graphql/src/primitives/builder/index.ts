@@ -604,8 +604,13 @@ export class Builder {
       case 'reference':
         return astBuilder.InputValueDefinition({
           name: field.name,
-          type: await this._buildReferenceMutation(field),
+          list: field.list,
+          type: astBuilder.TYPES.String,
         })
+      // return astBuilder.InputValueDefinition({
+      //   name: field.name,
+      //   type: await this._buildReferenceMutation(field),
+      // })
     }
   }
 

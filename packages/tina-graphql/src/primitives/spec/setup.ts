@@ -40,7 +40,11 @@ export class InMemoryBridge implements Bridge {
   }
   public get = async (filepath: string) => {
     const mockData = await this.getMockData()
-    return mockData[filepath]
+    const value = mockData[filepath]
+    if (!value) {
+      throw new Error(`Unable to find record for ${filepath}`)
+    }
+    return value
   }
   public put = async (filepath: string, data: string) => {
     const mockData = await this.getMockData()
@@ -115,8 +119,8 @@ export const setupFixture = async (
     variables: {},
     database,
   })
-  if (response.errors) {
-    console.log(response.errors)
-  }
+  // if (response.errors) {
+  //   console.log(response.errors)
+  // }
   return { response, expectedReponse }
 }

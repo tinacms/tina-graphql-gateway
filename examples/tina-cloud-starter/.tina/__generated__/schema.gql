@@ -183,14 +183,10 @@ input DocumentMutation {
   marketingPages: MarketingPagesMutation
 }
 
-input PostsArticleAuthorMutation {
-  authors: AuthorsMutation
-}
-
 input PostsArticleMutation {
   title: String
   hero: String
-  author: PostsArticleAuthorMutation
+  author: String
 }
 
 input PostsMutation {

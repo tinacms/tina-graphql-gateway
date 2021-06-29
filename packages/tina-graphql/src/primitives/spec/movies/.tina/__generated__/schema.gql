@@ -179,19 +179,11 @@ input DocumentMutation {
   actor: ActorMutation
 }
 
-input MovieDirectorMutation {
-  director: DirectorMutation
-}
-
-input MovieActorsMutation {
-  actor: ActorMutation
-}
-
 input MovieMutation {
   title: String
   genre: String
-  director: MovieDirectorMutation
-  actors: MovieActorsMutation
+  director: String
+  actors: [String]
   body: String
 }
 

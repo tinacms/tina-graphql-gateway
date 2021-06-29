@@ -1,10 +1,11 @@
 {
   "data": {
-    "updateDocument": {
+    "getPostDocument": {
       "data": {
+        "title": "Hello, World!",
         "author": {
           "data": {
-            "name": "Marge Simpson"
+            "name": "Homer J Simpson"
           }
         }
       }

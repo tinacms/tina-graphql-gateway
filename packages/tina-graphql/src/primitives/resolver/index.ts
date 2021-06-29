@@ -19,6 +19,7 @@ import { NAMER } from '../ast-builder'
 import { Database, CollectionDocumentListLookup } from '../database'
 
 import type { Templateable, TinaFieldEnriched } from '../types'
+import { GraphQLResolveInfo, GraphQLError } from 'graphql'
 
 interface ResolverConfig {
   database: Database
@@ -119,10 +120,22 @@ export class Resolver {
     isMutation,
   }: {
     value: unknown
-    args: object
+    args: unknown
     collection: string
     isMutation: boolean
   }) => {
+    const collectionNames = this.tinaSchema
+      .getCollections()
+      .map((item) => item.name)
+    assertShape<string>(
+      collectionName,
+      (yup) => {
+        return yup.mixed().oneOf(collectionNames)
+      },
+      `"collection" must be one of: [${collectionNames.join(
+        ', '
+      )}] but got ${collectionName}`
+    )
     assertShape<{ relativePath: string }>(args, (yup) =>
       yup.object({ relativePath: yup.string().required() })
     )
@@ -257,11 +270,13 @@ export class Resolver {
 
           throw new Error(`Hang on`)
         case 'reference':
-          // @ts-ignore
-          if (fieldValue.id) {
-            // @ts-ignore
-            accum[fieldName] = fieldValue.id
-          }
+          accum[fieldName] = fieldValue
+          // assertShape<{ id: string }>(fieldValue, (yup) =>
+          //   yup.object({ id: yup.string().required() })
+          // )
+          // if (fieldValue.id) {
+          //   accum[fieldName] = fieldValue.id
+          // }
           break
         default:
           throw new Error(`No mutation builder for field type ${field.type}`)
