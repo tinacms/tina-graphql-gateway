@@ -84,7 +84,7 @@ const BlogPage = (props: AsyncReturnType<typeof getStaticProps>["props"]) => {
             {\`
 import dynamic from "next/dynamic";
 
-import { EditProvider, setEditing, useEditState } from "../utils/editState";
+import { EditProvider, setEditing, useEditState } from "tina-graphql-gateway";
 
 // InnerApp that handles rendering edit mode or not
 function InnerApp({ Component, pageProps }) {
@@ -92,7 +92,7 @@ function InnerApp({ Component, pageProps }) {
   if (edit) {
     // Dynamically load Tina only when in edit mode so it does not affect production
     // see https://nextjs.org/docs/advanced-features/dynamic-import#basic-usage
-    const TinaWrapper = dynamic(() => import("../.tina/tina-wrapper"));
+    const TinaWrapper = dynamic(() => import("../components/tina-wrapper"));
     return (
       <>
         <TinaWrapper {...pageProps}>
@@ -114,11 +114,11 @@ function App(props) {
   );
 }
 const ToggleButton = () => {
-  const { edit } = useEditState();
+  const { edit, setEdit } = useEditState();
   return (
     <button
       onClick={() => {
-        setEditing(!edit);
+        setEdit(!edit);
       }}
     >
       Toggle Edit State
@@ -131,7 +131,7 @@ export default App;
           </code>
         </pre>
         <p>
-          Now you will have access to the <code>useEditState</code> hook
+          Please restart your dev server (CTR + C and yarn dev) and now you will have access to the <code>useEditState</code> hook
           anywhere in your app. You will also notice that we are lazy loading
           the tina-wrapper component. This is so that no Tina code will load in
           your production bundle.
@@ -259,7 +259,7 @@ const ProductListingPage = (
 
 export default ProductListingPage;
 
-const query = \`#graphql
+const query = \\\`#graphql
 query ProuctPageQuery {
   getPagesDocument(relativePath: "content/pages/product-listing.md"){
     data {
@@ -273,7 +273,7 @@ query ProuctPageQuery {
   }
 }
 
-\`;
+\\\`;
 const client = new LocalClient();
 
 export const getStaticProps = async () => {
