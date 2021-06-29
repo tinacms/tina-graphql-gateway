@@ -13,6 +13,7 @@ limitations under the License.
 
 import { CloudinaryMediaStore } from './cloudinary-media-store'
 import { Client } from 'tina-graphql-gateway'
+
 export class TinaCloudCloudinaryMediaStore extends CloudinaryMediaStore {
   client: Client
   constructor(client: Client) {
