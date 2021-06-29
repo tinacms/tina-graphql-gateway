@@ -124,7 +124,6 @@ export const TinaCloudProvider = (
     new TinaCMS({
       enabled: true,
       sidebar: true,
-      mediaOptions: {},
     })
   if (!cms.api.tina) {
     cms.api.tina = createClient(props)
