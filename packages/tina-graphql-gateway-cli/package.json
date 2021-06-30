@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway-cli",
-  "version": "0.2.53",
+  "version": "0.2.54",
   "main": "dist/index.js",
   "files": [
     "dist/*",
