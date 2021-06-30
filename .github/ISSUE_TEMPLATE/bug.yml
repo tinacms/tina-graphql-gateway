@@ -51,6 +51,22 @@ body:
   validations:
     required: false
 - type: textarea
+  id: schema
+  attributes:
+    label: Your GraphQL Schema
+    description: Please copy and paste your schema.ts file. This will be automatically formatted into code, so no need for backticks.
+    render: javascript
+  validations:
+    required: false
+- type: textarea
+  id: query
+  attributes:
+    label: Your GraphQL Query
+    description: Please copy and paste your GraphQL query. This will be automatically formatted into code, so no need for backticks.
+    render: graphql
+  validations:
+    required: false
+- type: textarea
   attributes:
     label: Anything else?
     description: |
