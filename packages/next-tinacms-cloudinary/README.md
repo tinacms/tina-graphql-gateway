@@ -24,16 +24,27 @@ CLOUDINARY_API_SECRET=<Your Cloudinary API secret>
 
 ## Register the Media Store
 
-Now, you can register the Cloudinary Media store with the instance of Tina in your app by passing the ```TinaCloudCloudinaryMediaStore``` to the ```TinaCloudProvider``` via its ```media``` prop.
+Now, you can register the Cloudinary Media store with the instance of Tina in your app by passing the `TinaCloudCloudinaryMediaStore` to the `TinaCloudProvider` via its `media` prop.
+
+This is also where we can update our `mediaOptions` on the cms object.
 
 ```
+import { TinaCMS } from 'tinacms'
 import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { TinaCloudProvider } from 'tina-graphql-gateway'
 
 ...
+const cms = new TinaCMS({
+  ...
+  mediaOptions: {
+    pageSize: 10
+  }
+  ...
+})
 const TinaWrapper = (props) => {
   return (
     <TinaCloudProvider
+      cms={cms}
       clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
       branch="main"
       isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
