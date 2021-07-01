@@ -11,30 +11,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useMemo } from 'react'
-import { useCMS } from 'tinacms'
-import type { TinaCMS, FormOptions } from 'tinacms'
-import { Form } from 'tinacms'
+import React from 'react'
 import set from 'lodash.set'
-import merge from 'lodash.merge'
-import { wrapFieldsWithMeta, Select } from 'tinacms'
-import { createFormMachine } from './unstable-form-service'
-import { createMachine, spawn, StateSchema, assign } from 'xstate'
-import { useMachine } from '@xstate/react'
-import { formsMachine } from './state-machine'
 import gql from 'graphql-tag'
+import { useCMS, Form } from 'tinacms'
 import { print } from 'graphql'
 import { produce } from 'immer'
-import type { DocumentNode as GqlDocumentNode } from 'graphql'
 import { getIn } from 'final-form'
 
-export interface FormifyArgs {
-  formConfig: FormOptions<any>
-  createForm: (formConfig: FormOptions<any>) => Form
-  skip?: () => void
-}
+import type { FormOptions } from 'tinacms'
+import type { DocumentNode as GqlDocumentNode } from 'graphql'
+import { assertShape } from '../utils'
 
-export type formifyCallback = (args: FormifyArgs) => Form | void
+type FormValues = {
+  [queryName: string]: object
+}
+type Data = {
+  [queryName: string]: object
+}
+type NewUpdate = {
+  queryName: string
+  get: string
+  set: string
+  lookup?: string
+}
 
 export function useGraphqlForms<T extends object>({
   query,
@@ -44,28 +44,27 @@ export function useGraphqlForms<T extends object>({
 }: {
   query: (gqlTag: typeof gql) => GqlDocumentNode
   variables: object
-  onSubmit?: (args: { queryString: string; variables: object }) => void
+  onSubmit?: (args: onSubmitArgs) => void
   formify?: formifyCallback
 }): [T, Boolean] {
   const cms = useCMS()
-  const [formValues, setFormValues] = React.useState({})
-  const [formObject, setFormObject] = React.useState({})
-  const [form, setForm] = React.useState({})
-  const [data, setData] = React.useState({})
+  const [formValues, setFormValues] = React.useState<FormValues>({})
+  const [data, setData] = React.useState<Data>({})
   const [isLoading, setIsLoading] = React.useState(true)
-  const [newUpdate, setNewUpdate] =
-    React.useState<{
-      get: string
-      set: string
-      lookup?: string
-    } | null>(null)
+  const [newUpdate, setNewUpdate] = React.useState<NewUpdate | null>(null)
 
   React.useEffect(() => {
     const run = async () => {
       if (newUpdate) {
         const newValue = getIn(formValues, newUpdate.get)
-        if (formObject?.paths) {
-          const asyncUpdate = formObject.paths.find(
+        const activeForm = getIn(data, [newUpdate.queryName, 'form'].join('.'))
+        if (!activeForm) {
+          throw new Error(
+            `Unable to find form for query ${newUpdate.queryName}`
+          )
+        }
+        if (activeForm?.paths) {
+          const asyncUpdate = activeForm.paths?.find(
             (p) => p.dataPath.join('.') === newUpdate.set
           )
           if (asyncUpdate) {
@@ -81,27 +80,11 @@ export function useGraphqlForms<T extends object>({
           }
         }
         const nextState = produce(data, (draftState) => {
-          // We're in a polymorphic object, so we're populating __typename
-          // as a disambiguator, regardless of whether or not it was queried
-          // for. FIXME: This should assume newValue to be an array
+          // If lookup is provided, we're in a polymorphic object, so we should populate
+          // __typename as a disambiguator, regardless of whether or not it was queried for
+          // FIXME: This assumes newValue to be an array until blocks support non-lists
           if (newUpdate.lookup) {
-            const items = newUpdate.lookup.split('.')
-            let currentFields = form.fields
-            items.map((item, index) => {
-              const lookupName = items.slice(0, index + 1).join('.')
-              const value = getIn(
-                formValues,
-                ['getMarketingPagesDocument', 'values', lookupName].join('.')
-              )
-              if (isNaN(Number(item))) {
-                const field = currentFields.find((field) => field.name === item)
-                currentFields = field
-              } else {
-                const template = currentFields.templates[value._template]
-                currentFields = template.fields
-              }
-            })
-            const field = currentFields
+            const field = getFieldUpdate(newUpdate, activeForm, formValues)
             if (field && field.typeMap) {
               newValue.forEach((item) => {
                 if (!item.__typename) {
@@ -120,72 +103,120 @@ export function useGraphqlForms<T extends object>({
   }, [JSON.stringify(newUpdate)])
 
   const queryString = print(query(gql))
+
   React.useEffect(() => {
     cms.api.tina
       .requestWithForm(query, { variables })
       .then((payload) => {
+        setData(payload)
+        setIsLoading(false)
         Object.entries(payload).map(([queryName, result]) => {
-          setFormObject(result.form)
-          const form = new Form({
+          assertShape<{
+            values: object
+            form: FormOptions<any, any> & {
+              mutationInfo: {
+                string: string
+                includeCollection: boolean
+              }
+            }
+          }>(
+            result,
+            (yup) =>
+              yup.object({
+                values: yup.object(),
+              }),
+            `Unable to build form shape for fields at ${queryName}`
+          )
+          const formConfig = {
             id: queryName,
             label: queryName,
             initialValues: result.values,
             fields: result.form.fields,
-            onSubmit: (...stuff) => {
-              console.log(stuff)
+            onSubmit: async (payload) => {
+              const params = transformDocumentIntoMutationRequestPayload(
+                payload,
+                result.form.mutationInfo.includeCollection
+              )
+              const variables = { params }
+              const mutationString = result.form.mutationInfo.string
+              if (onSubmit) {
+                onSubmit({
+                  queryString: mutationString,
+                  mutationString,
+                  variables,
+                })
+              } else {
+                try {
+                  await cms.api.tina.request(mutationString, {
+                    variables,
+                  })
+                  cms.alerts.success('Document saved!')
+                } catch (e) {
+                  cms.alerts.error('There was a problem saving your document')
+                  console.error(e)
+                }
+              }
             },
-          })
-          setForm(form)
-          setData({ [queryName]: { data: result.data } })
-          setIsLoading(false)
-          cms.forms.add(form)
+          }
+          const createForm = (formConfig) => {
+            const form = new Form(formConfig)
+            cms.forms.add(form)
+            return form
+          }
+          const SKIPPED = 'SKIPPED'
+          let form
+          let skipped
+          const skip = () => {
+            skipped = SKIPPED
+          }
+          if (skipped) return
+
+          if (formify) {
+            form = formify({ formConfig, createForm, skip })
+          } else {
+            form = createForm(formConfig)
+          }
+
+          if (!(form instanceof Form)) {
+            if (skipped === SKIPPED) {
+              return
+            }
+            throw new Error('formify must return a form or skip()')
+          }
           const { change } = form.finalForm
           form.finalForm.change = (name, value) => {
             setNewUpdate({
+              queryName,
               get: [queryName, 'values', name].join('.'),
               set: [queryName, 'data', name].join('.'),
             })
             return change(name, value)
           }
 
-          const {
-            insert,
-            move,
-            remove,
-            ...rest
-            // concat,
-            // pop,
-            // push,
-            // removeBatch,
-            // shift,
-            // swap,
-            // unshift,
-            // update,
-          } = form.finalForm.mutators
+          const { insert, move, remove, ...rest } = form.finalForm.mutators
+          const prepareNewUpdate = (name: string, lookup?: string) => {
+            const extra = {}
+            if (lookup) {
+              extra['lookup'] = lookup
+            }
+            setNewUpdate({
+              queryName,
+              get: [queryName, 'values', name].join('.'),
+              set: [queryName, 'data', name].join('.'),
+              ...extra,
+            })
+          }
           form.finalForm.mutators = {
             insert: (...args) => {
-              const name = args[0]
-              setNewUpdate({
-                get: [queryName, 'values', name].join('.'),
-                set: [queryName, 'data', name].join('.'),
-                lookup: name,
-              })
+              prepareNewUpdate(args[0], args[0])
               insert(...args)
             },
             move: (...args) => {
-              const name = args[0]
-              setNewUpdate({
-                get: [queryName, 'values', name].join('.'),
-                set: [queryName, 'data', name].join('.'),
-              })
+              prepareNewUpdate(args[0])
               move(...args)
             },
             remove: (...args) => {
-              const name = args[0]
-              setNewUpdate({
-                get: [queryName, 'values', name].join('.'),
-                set: [queryName, 'data', name].join('.'),
-              })
+              prepareNewUpdate(args[0])
               remove(...args)
             },
             ...rest,
@@ -199,10 +230,88 @@ export function useGraphqlForms<T extends object>({
         })
       })
       .catch((e) => {
+        cms.alerts.error('There was a problem setting up forms for your query')
         console.error(e)
       })
   }, [queryString])
 
   // @ts-ignore
   return [data, isLoading]
+}
+
+const transformDocumentIntoMutationRequestPayload = (
+  document: {
+    _collection: string
+    __typename?: string
+    _template: string
+    [key: string]: unknown
+  },
+  includeCollection?: boolean
+) => {
+  const { _collection, __typename, ...rest } = document
+
+  const params = transformParams(rest)
+
+  return includeCollection ? { [_collection]: params } : params
+}
+
+const transformParams = (data: unknown) => {
+  if (['string', 'number', 'boolean'].includes(typeof data)) {
+    return data
+  }
+  if (Array.isArray(data)) {
+    return data.map((item) => transformParams(item))
+  }
+  try {
+    assertShape<{ _template: string; __typename?: string }>(data, (yup) =>
+      // @ts-ignore No idea what yup is trying to tell me:  Type 'RequiredStringSchema<string, Record<string, any>>' is not assignable to type 'AnySchema<any, any, any>
+      yup.object({ _template: yup.string().required() })
+    )
+    const { _template, __typename, ...rest } = data
+    const nested = transformParams(rest)
+    return { [_template]: nested }
+  } catch (e) {
+    const accum = {}
+    Object.entries(data).map(([keyName, value]) => {
+      accum[keyName] = transformParams(value)
+    })
+    return accum
+  }
+}
+
+// newUpdate.lookup is a field name (ie. blocks.0.hero)
+const getFieldUpdate = (newUpdate, activeForm, formValues) => {
+  const items = newUpdate.lookup.split('.')
+  let currentFields = activeForm.fields
+  items.map((item, index) => {
+    const lookupName = items.slice(0, index + 1).join('.')
+    const value = getIn(
+      formValues,
+      [newUpdate.queryName, 'values', lookupName].join('.')
+    )
+    if (isNaN(Number(item))) {
+      const field = currentFields.find((field) => field.name === item)
+      currentFields = field
+    } else {
+      const template = currentFields.templates[value._template]
+      currentFields = template.fields
+    }
+  })
+  return currentFields
+}
+
+export interface FormifyArgs {
+  formConfig: FormOptions<any>
+  createForm: (formConfig: FormOptions<any>) => Form
+  skip?: () => void
+}
+
+export type formifyCallback = (args: FormifyArgs) => Form | void
+export type onSubmitArgs = {
+  /**
+   * @deprecated queryString is actually a mutation string, use `mutationString` instead
+   */
+  queryString: string
+  mutationString: string
+  variables: object
 }

@@ -79,6 +79,7 @@ type PostsArticle {
   title: String
   hero: String
   author: PostsArticleAuthorDocument
+  body: String
 }
 
 union Posts = PostsArticle
@@ -199,6 +200,7 @@ input PostsArticleMutation {
   title: String
   hero: String
   author: String
+  body: String
 }
 
 input PostsMutation {

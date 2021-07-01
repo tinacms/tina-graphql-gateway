@@ -25,6 +25,7 @@ import {
   Visitor,
   ASTKindToNode,
   ASTNode,
+  GraphQLFieldMap,
 } from 'graphql'
 import { createSchema } from './schema'
 import { createResolver } from './resolver'
@@ -36,6 +37,7 @@ import type { TinaCloudSchemaBase } from './types'
 import { Path } from 'graphql/jsutils/Path'
 import { splitQuery2 } from 'tina-graphql-helpers'
 import { FieldName } from 'aws-sdk/clients/cloudsearch'
+import { NAMER } from './ast-builder'
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>
 type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
@@ -61,6 +63,10 @@ export const resolve = async ({
   const paths: {
     path: (string | number)[]
     queryString: string
+  }[] = []
+  const mutationPaths: {
+    path: (string | number)[]
+    mutationString: string
   }[] = []
   const res = await graphql({
     schema: graphQLSchema,
@@ -208,7 +214,6 @@ export const resolve = async ({
                     subFrags: [],
                   }
                   frags.push(frag)
-                  // console.log(fragmentDefinition)
                   visit(fragmentDefinition, fragmentSpreadVisitor(frag))
                 }
               )
@@ -305,13 +310,108 @@ export const resolve = async ({
           if (value) {
             return value
           }
-          return resolver.resolveDocument({
-            value,
-            args,
-            collection: lookup.collection,
-            isMutation,
-            info,
-          })
+          const result =
+            value ||
+            (await resolver.resolveDocument({
+              value,
+              args,
+              collection: lookup.collection,
+              isMutation,
+              info,
+            }))
+          if (!isMutation) {
+            const queryNode = info.fieldNodes.find(
+              (fn) => fn.name.value === info.fieldName
+            )
+            if (!queryNode) {
+              throw new Error(
+                `exptected to find field node for ${info.fieldName}`
+              )
+            }
+            const mutationName = NAMER.mutationName([lookup.collection])
+            const mutations = JSON.parse(
+              JSON.stringify(info.schema.getMutationType()?.getFields())
+            ) as GraphQLFieldMap<any, any>
+
+            const mutation = mutations[mutationName]
+            if (!mutation) {
+              throw new Error(`exptected to find mutation for ${mutationName}`)
+            }
+            const mutationNode = mutations[mutationName].astNode
+            const newNode: FieldNode = {
+              ...queryNode,
+              name: { kind: 'Name', value: mutation.name },
+              arguments: mutationNode?.arguments?.map((argument) => {
+                if (argument.name.value === 'relativePath') {
+                  return {
+                    kind: 'Argument',
+                    name: {
+                      kind: 'Name',
+                      value: argument.name.value,
+                    },
+                    value: {
+                      kind: 'StringValue',
+                      value: result.sys.relativePath,
+                    },
+                  }
+                }
+                return {
+                  kind: 'Argument',
+                  name: {
+                    kind: 'Name',
+                    value: argument.name.value,
+                  },
+                  value: {
+                    kind: 'Variable',
+                    name: {
+                      kind: 'Name',
+                      value: argument.name.value,
+                    },
+                  },
+                }
+              }),
+              // arguments: mutationNode?.arguments
+            }
+            const paramArgs = mutationNode?.arguments?.find(
+              (arg) => arg.name.value === 'params'
+            )
+            if (!paramArgs) {
+              throw new Error(
+                `Expected to find argument named params for mutation ${mutationName}`
+              )
+            }
+            const q: OperationDefinitionNode = {
+              kind: 'OperationDefinition',
+              operation: 'mutation',
+              name: {
+                value: 'UpdateDocument',
+                kind: 'Name',
+              },
+              variableDefinitions: [
+                {
+                  kind: 'VariableDefinition',
+                  variable: {
+                    kind: 'Variable',
+                    name: {
+                      kind: 'Name',
+                      value: 'params',
+                    },
+                  },
+                  type: paramArgs?.type,
+                },
+              ],
+              selectionSet: {
+                kind: 'SelectionSet',
+                selections: [newNode],
+              },
+            }
+            const mutationString = print(q)
+            mutationPaths.push({
+              path: ['data', ...buildPath(info.path, []), 'form'],
+              mutationString,
+            })
+          }
+          return result
 
         /**
          * Collections-specific list getter
@@ -354,7 +454,15 @@ export const resolve = async ({
       item.paths = [p]
     }
   })
-  // console.log(JSON.stringify(res, null, 2))
+  mutationPaths.forEach((p) => {
+    const item = _.get(res, p.path)
+    if (item && item.fields) {
+      item.mutationInfo = {
+        string: p.mutationString,
+        includeCollection: false,
+      }
+    }
+  })
   return res
 }
 

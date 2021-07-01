@@ -379,7 +379,6 @@ export const astBuilder = {
       ],
       (field) => field.name.value
     )
-    // definitions.map((d) => console.log(print(d)));
 
     return {
       kind: 'Document',
@@ -422,13 +421,11 @@ export const extractInlineTypes = (
       if (node.kind === 'NamedType') {
         // @ts-ignore
         if (typeof node.name.value !== 'string') {
-          // console.log("walk", node.name.value.name.value);
           // @ts-ignore
           accumulator.push(node.name.value)
           // @ts-ignore
           node.name.value = node.name.value.name.value
         }
-        // console.log(node.name.value);
       }
     }
 

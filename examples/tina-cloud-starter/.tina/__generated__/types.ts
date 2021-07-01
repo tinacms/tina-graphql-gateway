@@ -167,6 +167,7 @@ export type PostsArticle = {
   title?: Maybe<Scalars['String']>;
   hero?: Maybe<Scalars['String']>;
   author?: Maybe<PostsArticleAuthorDocument>;
+  body?: Maybe<Scalars['String']>;
 };
 
 export type Posts = PostsArticle;
@@ -335,6 +336,7 @@ export type PostsArticleMutation = {
   title?: Maybe<Scalars['String']>;
   hero?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
+  body?: Maybe<Scalars['String']>;
 };
 
 export type PostsMutation = {

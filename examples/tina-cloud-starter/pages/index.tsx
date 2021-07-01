@@ -52,6 +52,27 @@ export const query = gql`
         }
       }
     }
+    getPostsDocument(relativePath: "voteForPedro.md") {
+      data {
+        __typename
+        ... on PostsArticle {
+          title
+          hero
+          author {
+            __typename
+            ... on AuthorsDocument {
+              data {
+                __typename
+                ... on AuthorsAuthor {
+                  name
+                  avatar
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 `
 

@@ -37,6 +37,7 @@ query GetPostDocument($relativePath: String!) {
       ...on PostsArticle {
         title
         hero
+        body
         author {
           __typename
           ...on AuthorsDocument {
@@ -53,9 +54,7 @@ query GetPostDocument($relativePath: String!) {
     }
   }
 }
-
 `
-
 const client = new LocalClient()
 
 export const getStaticProps = async ({ params }) => {

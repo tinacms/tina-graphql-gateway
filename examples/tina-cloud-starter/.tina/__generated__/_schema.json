@@ -41,6 +41,17 @@
                 "article",
                 "author"
               ]
+            },
+            {
+              "type": "string",
+              "label": "Body",
+              "name": "body",
+              "isBody": true,
+              "namespace": [
+                "posts",
+                "article",
+                "body"
+              ]
             }
           ],
           "namespace": [
@@ -128,7 +139,6 @@
                       "type": "string",
                       "label": "Message Body",
                       "name": "messageBody",
-                      "component": "textarea",
                       "namespace": [
                         "marketingPages",
                         "landingPage",

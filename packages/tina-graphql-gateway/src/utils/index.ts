@@ -13,6 +13,8 @@ limitations under the License.
 
 import { Client, LocalClient } from '../client'
 export * from './editState'
+import * as yup from 'yup'
+
 export interface CreateClientProps {
   organization?: string
   clientId?: string
@@ -55,4 +57,18 @@ export const createCloudClient = (
     branch: props.branch || 'main',
     tokenStorage: 'LOCAL_STORAGE',
   })
+}
+
+export function assertShape<T extends unknown>(
+  value: unknown,
+  yupSchema: (args: typeof yup) => yup.AnySchema,
+  errorMessage?: string
+): asserts value is T {
+  const shape = yupSchema(yup)
+  try {
+    shape.validateSync(value)
+  } catch (e) {
+    const message = errorMessage || `Failed to assertShape - ${e.message}`
+    throw new Error(message)
+  }
 }

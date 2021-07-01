@@ -82,16 +82,6 @@ export class Resolver {
       .replace(collection.path, '')
       .replace(/^\/|\/$/g, '')
     const breadcrumbs = filename.split('/')
-
-    // const fieldNode = info.fieldNodes.find(
-    //   (fieldNode) => fieldNode.name.value === info.fieldName
-    // )
-    // if (!fieldNode) {
-    //   throw new Error(
-    //     `Unable to find field node for selection ${info.fieldName}`
-    //   )
-    // }
-    // console.log(JSON.stringify(fieldNode, null, 2))
     const form = {
       label: basename,
       name: basename,
@@ -171,10 +161,7 @@ export class Resolver {
               params,
               templateInfo.template
             )
-            await this.database.put(realPath, {
-              ...document,
-              ...values,
-            })
+            await this.database.put(realPath, values)
           }
           break
         case 'union':
@@ -182,11 +169,11 @@ export class Resolver {
           await sequential(templateInfo.templates, async (template) => {
             const templateParams = params[lastItem(template.namespace)]
             if (templateParams) {
-              const values = this.buildFieldMutations(templateParams, template)
-              await this.database.put(realPath, {
-                ...document,
-                ...values,
-              })
+              const values = {
+                ...this.buildFieldMutations(templateParams, template),
+                _template: lastItem(template.namespace),
+              }
+              await this.database.put(realPath, values)
             }
           })
       }
@@ -233,11 +220,21 @@ export class Resolver {
   }
 
   private buildFieldMutations = (
-    fieldParams: { [fieldName: string]: string | object },
+    fieldParams: {
+      [fieldName: string]:
+        | string
+        | { [key: string]: unknown }
+        | (string | { [key: string]: unknown })[]
+    },
     template: Templateable
   ) => {
     const accum: { [key: string]: unknown } = {}
     Object.entries(fieldParams).forEach(([fieldName, fieldValue]) => {
+      if (Array.isArray(fieldValue)) {
+        if (fieldValue.length === 0) {
+          return
+        }
+      }
       const field = template.fields.find((field) => field.name === fieldName)
       if (!field) {
         throw new Error(`Expected to find field by name ${fieldName}`)
@@ -255,16 +252,28 @@ export class Resolver {
               typeof field.fields === 'string'
                 ? this.tinaSchema.getGlobalTemplate(field.fields)
                 : field
-            accum[fieldName] = this.buildFieldMutations(
-              // @ts-ignore
-              fieldValue,
-              objectTemplate
-            )
+            if (Array.isArray(fieldValue)) {
+              accum[fieldName] = fieldValue.map((item) =>
+                // @ts-ignore FIXME Argument of type 'string | object' is not assignable to parameter of type '{ [fieldName: string]: string | object | (string | object)[]; }'
+                this.buildFieldMutations(item, objectTemplate)
+              )
+            } else {
+              accum[fieldName] = this.buildFieldMutations(
+                // @ts-ignore FIXME Argument of type 'string | object' is not assignable to parameter of type '{ [fieldName: string]: string | object | (string | object)[]; }'
+                fieldValue,
+                objectTemplate
+              )
+            }
             break
           }
           if (field.templates) {
             if (Array.isArray(fieldValue)) {
               accum[fieldName] = fieldValue.map((item) => {
+                if (typeof item === 'string') {
+                  throw new Error(
+                    `Expected object for template value for field ${field.name}`
+                  )
+                }
                 const templates = field.templates.map(
                   (templateOrTemplateName) => {
                     if (typeof templateOrTemplateName === 'string') {
@@ -283,23 +292,20 @@ export class Resolver {
                   throw new Error(`Expected to find template ${templateName}`)
                 }
                 return {
-                  _template: template.name,
+                  // @ts-ignore FIXME Argument of type 'unknown' is not assignable to parameter of type '{ [fieldName: string]: string | { [key: string]: unknown; } | (string | { [key: string]: unknown; })[]; }'
                   ...this.buildFieldMutations(item[template.name], template),
+                  _template: template.name,
                 }
               })
+            } else {
+              throw new Error(
+                'Not implement for polymorphic objects which are not lists'
+              )
             }
             break
           }
-
-          throw new Error(`Hang on`)
         case 'reference':
           accum[fieldName] = fieldValue
-          // assertShape<{ id: string }>(fieldValue, (yup) =>
-          //   yup.object({ id: yup.string().required() })
-          // )
-          // if (fieldValue.id) {
-          //   accum[fieldName] = fieldValue.id
-          // }
           break
         default:
           throw new Error(`No mutation builder for field type ${field.type}`)
@@ -350,10 +356,13 @@ export class Resolver {
             await sequential(template.fields, async (field) => {
               await this.resolveFieldData(field, item, payload)
             })
-            return {
-              _template: lastItem(template.namespace),
-              ...payload,
-            }
+            const isUnion = !!field.templates
+            return isUnion
+              ? {
+                  _template: lastItem(template.namespace),
+                  ...payload,
+                }
+              : payload
           })
         } else {
           const template = await this.tinaSchema.getTemplateForData({
@@ -377,7 +386,10 @@ export class Resolver {
     return accumulator
   }
 
-  private resolveField = async ({ namespace, ...field }: TinaFieldEnriched) => {
+  private resolveField = async ({
+    namespace,
+    ...field
+  }: TinaFieldEnriched): Promise<unknown> => {
     switch (field.type) {
       case 'boolean':
       case 'datetime':
@@ -429,7 +441,6 @@ export class Resolver {
         } else {
           throw new Error(`Unknown object for resolveField function`)
         }
-        break
       case 'reference':
         const documents = _.flatten(
           await sequential(field.collections, async (collectionName) => {
@@ -440,7 +451,6 @@ export class Resolver {
         return {
           ...field,
           component: 'select',
-          // queryString: `node() {}`,
           options: documents.map((filepath) => {
             return {
               value: filepath,

@@ -26,6 +26,12 @@
               "collections": [
                 "authors"
               ]
+            },
+            {
+              "type": "string",
+              "label": "Body",
+              "name": "body",
+              "isBody": true
             }
           ]
         }

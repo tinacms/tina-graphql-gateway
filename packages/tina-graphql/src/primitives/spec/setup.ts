@@ -148,16 +148,6 @@ export const setupAudit = async (
   return { request, expectedRequest }
 }
 
-const buildMutations = (queryString: string, documentNode: DocumentNode) => {
-  const schema = buildASTSchema(documentNode)
-  const mapping2 = splitQuery2({ queryString, schema })
-  // const mapping = splitQuery({ queryString, schema })
-  // console.log(JSON.stringify(mapping, null, 2))
-  // console.log(mapping.fragments)
-  // getNodes(queryString)
-  // const payload = transformDocumentIntoMutationRequestPayload(document, true)
-}
-
 const transformDocumentIntoMutationRequestPayload = (
   document: {
     _id: string

@@ -154,6 +154,12 @@ export default unstable_defineSchema({
               name: 'author',
               collections: ['authors'],
             },
+            {
+              type: 'string',
+              label: 'Body',
+              name: 'body',
+              isBody: true,
+            },
           ],
         },
       ],
