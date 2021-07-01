@@ -19,7 +19,7 @@ import { NAMER } from '../ast-builder'
 import { Database, CollectionDocumentListLookup } from '../database'
 
 import type { Templateable, TinaFieldEnriched } from '../types'
-import { GraphQLResolveInfo, GraphQLError } from 'graphql'
+import { GraphQLResolveInfo } from 'graphql'
 
 interface ResolverConfig {
   database: Database
@@ -60,7 +60,7 @@ export class Resolver {
       ...extraFields,
     }
   }
-  public getDocument = async (fullPath: unknown) => {
+  public getDocument = async (fullPath: unknown, info: GraphQLResolveInfo) => {
     if (typeof fullPath !== 'string') {
       throw new Error(`fullPath must be of type string for getDocument request`)
     }
@@ -70,10 +70,10 @@ export class Resolver {
       _template: string
     }>(fullPath)
     const collection = this.tinaSchema.getCollection(rawData._collection)
-    const template = await this.tinaSchema.getTemplateForData(
-      rawData,
-      collection
-    )
+    const template = await this.tinaSchema.getTemplateForData({
+      data: rawData,
+      collection,
+    })
 
     const basename = path.basename(fullPath)
     const extension = path.extname(fullPath)
@@ -83,10 +83,24 @@ export class Resolver {
       .replace(/^\/|\/$/g, '')
     const breadcrumbs = filename.split('/')
 
+    // const fieldNode = info.fieldNodes.find(
+    //   (fieldNode) => fieldNode.name.value === info.fieldName
+    // )
+    // if (!fieldNode) {
+    //   throw new Error(
+    //     `Unable to find field node for selection ${info.fieldName}`
+    //   )
+    // }
+    // console.log(JSON.stringify(fieldNode, null, 2))
     const form = {
       label: basename,
       name: basename,
-      fields: await sequential(template.fields, this.resolveField),
+      fields: await sequential(template.fields, async (field) => {
+        // fieldNode.selectionSet?.selections.find(selection => {
+        //   selection
+        // })
+        return this.resolveField(field)
+      }),
     }
     const data = {
       _collection: rawData._collection,
@@ -118,11 +132,13 @@ export class Resolver {
     args,
     collection: collectionName,
     isMutation,
+    info,
   }: {
     value: unknown
     args: unknown
     collection: string
     isMutation: boolean
+    info: GraphQLResolveInfo
   }) => {
     const collectionNames = this.tinaSchema
       .getCollections()
@@ -175,13 +191,16 @@ export class Resolver {
           })
       }
     }
-    return this.getDocument(realPath)
+    return this.getDocument(realPath, info)
   }
-  public resolveCollectionConnections = async ({ ids }: { ids: string[] }) => {
+  public resolveCollectionConnections = async (
+    { ids }: { ids: string[] },
+    info: GraphQLResolveInfo
+  ) => {
     return {
       totalCount: ids.length,
       edges: await sequential(ids, async (filepath) => {
-        const document = await this.getDocument(filepath)
+        const document = await this.getDocument(filepath, info)
         return {
           node: document,
         }
@@ -189,20 +208,23 @@ export class Resolver {
     }
   }
 
-  public resolveCollectionConnection = async ({
-    args,
-    lookup,
-  }: {
-    args: Record<string, Record<string, object>>
-    lookup: CollectionDocumentListLookup
-  }) => {
+  public resolveCollectionConnection = async (
+    {
+      args,
+      lookup,
+    }: {
+      args: Record<string, Record<string, object>>
+      lookup: CollectionDocumentListLookup
+    },
+    info: GraphQLResolveInfo
+  ) => {
     const documents = await this.database.getDocumentsForCollection(
       lookup.collection
     )
     return {
       totalCount: documents.length,
       edges: await sequential(documents, async (filepath) => {
-        const document = await this.getDocument(filepath)
+        const document = await this.getDocument(filepath, info)
         return {
           node: document,
         }
@@ -224,6 +246,7 @@ export class Resolver {
         case 'string':
         case 'boolean':
         case 'text':
+        case 'image':
           accum[fieldName] = fieldValue
           break
         case 'object':
@@ -287,9 +310,13 @@ export class Resolver {
 
   private resolveFieldData = async (
     { namespace, ...field }: TinaFieldEnriched,
-    rawData: { [key: string]: unknown },
+    rawData: unknown,
     accumulator: { [key: string]: unknown }
   ) => {
+    if (!rawData) {
+      return undefined
+    }
+    assertShape<{ [key: string]: unknown }>(rawData, (yup) => yup.object())
     switch (field.type) {
       case 'string':
         if (field.isBody) {
@@ -312,9 +339,12 @@ export class Resolver {
             yup.array().of(yup.object().required())
           )
           accumulator[field.name] = await sequential(value, async (item) => {
-            const template = await this.tinaSchema.getTemplateForData(item, {
-              namespace,
-              ...field,
+            const template = await this.tinaSchema.getTemplateForData({
+              data: item,
+              collection: {
+                namespace,
+                ...field,
+              },
             })
             const payload = {}
             await sequential(template.fields, async (field) => {
@@ -326,12 +356,12 @@ export class Resolver {
             }
           })
         } else {
-          assertShape<{ [key: string]: unknown }>(value, (yup) =>
-            yup.object().required()
-          )
-          const template = await this.tinaSchema.getTemplateForData(value, {
-            namespace,
-            ...field,
+          const template = await this.tinaSchema.getTemplateForData({
+            data: value,
+            collection: {
+              namespace,
+              ...field,
+            },
           })
           const payload = {}
           await sequential(template.fields, async (field) => {
@@ -354,8 +384,9 @@ export class Resolver {
       case 'image':
       case 'string':
         return {
-          ...field,
+          // Allows component to be overridden for scalars
           component: 'text',
+          ...field,
         }
       case 'object':
         const templateInfo = this.tinaSchema.getTemplatesForCollectable({
@@ -367,13 +398,21 @@ export class Resolver {
           return {
             ...field,
             component: field.list ? 'group-list' : 'group',
+            fields: await sequential(
+              templateInfo.template.fields,
+              async (field) => await this.resolveField(field)
+            ),
           }
         } else if (templateInfo.type === 'union') {
           const templates: { [key: string]: object } = {}
+          const typeMap: { [key: string]: string } = {}
           await sequential(templateInfo.templates, async (template) => {
+            const templateName = lastItem(template.namespace)
+            typeMap[templateName] = NAMER.dataTypeName(template.namespace)
             templates[lastItem(template.namespace)] = {
-              label: field.label,
-              key: field.name,
+              // @ts-ignore FIXME `Templateable` should have name and label properties
+              label: template.label || templateName,
+              key: templateName,
               fields: await sequential(
                 template.fields,
                 async (field) => await this.resolveField(field)
@@ -383,6 +422,7 @@ export class Resolver {
           })
           return {
             ...field,
+            typeMap,
             component: 'blocks',
             templates,
           }
@@ -400,6 +440,7 @@ export class Resolver {
         return {
           ...field,
           component: 'select',
+          // queryString: `node() {}`,
           options: documents.map((filepath) => {
             return {
               value: filepath,

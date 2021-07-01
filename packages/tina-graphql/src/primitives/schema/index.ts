@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import { addNamespaceToSchema } from '../ast-builder'
-import _ from 'lodash'
+import _, { Collection } from 'lodash'
 import { lastItem, assertShape } from '../util'
 
 import type {
@@ -22,6 +22,7 @@ import type {
   TinaCloudSchemaEnriched,
   TinaCloudSchemaBase,
   Templateable,
+  TinaCloudCollection,
 } from '../types'
 
 export const createSchema = async ({
@@ -85,7 +86,11 @@ export class TinaSchema {
   public getCollectionAndTemplateByFullPath = async (
     filepath: string,
     templateName?: string
-  ): Promise<{ collectionName: string; templateName: string }> => {
+  ): Promise<{
+    collection: TinaCloudCollection<string, string, true>
+    template: Templateable
+  }> => {
+    let template
     const collection = this.getCollections().find((collection) => {
       return filepath.startsWith(collection.path)
     })
@@ -93,10 +98,9 @@ export class TinaSchema {
       throw new Error(`Unable to find collection for file at ${filepath}`)
     }
     const templates = this.getTemplatesForCollectable(collection)
-    let templateKey
     if (templateName) {
       if (templates.type === 'union') {
-        templateKey = templates.templates.find(
+        template = templates.templates.find(
           (template) => lastItem(template.namespace) === templateName
         )
       } else {
@@ -106,18 +110,21 @@ export class TinaSchema {
     if (templates.type === 'object') {
       templateName = lastItem(templates.template.namespace)
     }
-    if (!templateName) {
+    if (!template) {
       throw new Error(
         `Something went wrong while trying to determine template for ${filepath}`
       )
     }
 
-    return { collectionName: collection.name, templateName }
+    return { collection: collection, template: template }
   }
-  public getTemplateForData = async (
-    data: object,
+  public getTemplateForData = async ({
+    data,
+    collection,
+  }: {
+    data?: unknown
     collection: Collectable
-  ): Promise<Templateable> => {
+  }): Promise<Templateable> => {
     const templateInfo = this.getTemplatesForCollectable(collection)
     switch (templateInfo.type) {
       case 'object':

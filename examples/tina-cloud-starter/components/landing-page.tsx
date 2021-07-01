@@ -21,12 +21,26 @@ export const LandingPage = (props: MarketingPagesLandingPage) => {
     <>
       {props.blocks
         ? props.blocks.map(function (block, i) {
+            // console.log('block.__typename', block)
             switch (block.__typename) {
               case 'MarketingPagesLandingPageBlocksMessage':
                 return (
                   <React.Fragment key={`block-${block.messageHeader}`}>
                     <h3>{block.messageHeader}</h3>
                     <Markdown>{block.messageBody}</Markdown>
+                    {block?.seo?.map((seoItem) => {
+                      return <h2>{seoItem.seoTitle}</h2>
+                    })}
+                    {block?.nestedPage?.map((nestedItem) => {
+                      switch (nestedItem.__typename) {
+                        case 'MarketingPagesLandingPageBlocksMessageNestedPageHero':
+                          return <h4>{nestedItem.herotitle}</h4>
+                        default:
+                          throw new Error(
+                            `You probably forgot __typename ${nestedItem.__typename}`
+                          )
+                      }
+                    })}
                   </React.Fragment>
                 )
               case 'MarketingPagesLandingPageBlocksImage':

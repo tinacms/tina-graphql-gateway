@@ -78,5 +78,12 @@
     "type": "MarketingPagesConnection",
     "resolveType": "collectionDocumentList",
     "collection": "marketingPages"
+  },
+  "MarketingPagesLandingPageBlocksMessageNestedPage": {
+    "type": "MarketingPagesLandingPageBlocksMessageNestedPage",
+    "resolveType": "unionData",
+    "typeMap": {
+      "hero": "MarketingPagesLandingPageBlocksMessageNestedPageHero"
+    }
   }
 }

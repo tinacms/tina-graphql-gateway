@@ -130,9 +130,21 @@ type AuthorsConnection implements Connection {
   edges: [AuthorsConnectionEdges]
 }
 
+type MarketingPagesLandingPageBlocksMessageSeo {
+  seoTitle: String
+}
+
+type MarketingPagesLandingPageBlocksMessageNestedPageHero {
+  herotitle: String
+}
+
+union MarketingPagesLandingPageBlocksMessageNestedPage = MarketingPagesLandingPageBlocksMessageNestedPageHero
+
 type MarketingPagesLandingPageBlocksMessage {
   messageHeader: String
   messageBody: String
+  seo: [MarketingPagesLandingPageBlocksMessageSeo]
+  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPage]
 }
 
 type MarketingPagesLandingPageBlocksImage {
@@ -202,9 +214,23 @@ input AuthorsMutation {
   author: AuthorsAuthorMutation
 }
 
+input MarketingPagesLandingPageBlocksMessageSeoMutation {
+  seoTitle: String
+}
+
+input MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation {
+  herotitle: String
+}
+
+input MarketingPagesLandingPageBlocksMessageNestedPageMutation {
+  hero: MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation
+}
+
 input MarketingPagesLandingPageBlocksMessageMutation {
   messageHeader: String
   messageBody: String
+  seo: [MarketingPagesLandingPageBlocksMessageSeoMutation]
+  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPageMutation]
 }
 
 input MarketingPagesLandingPageBlocksImageMutation {

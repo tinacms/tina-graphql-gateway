@@ -12,14 +12,33 @@ limitations under the License.
 */
 
 import _ from 'lodash'
-import { graphql, buildASTSchema, getNamedType } from 'graphql'
+import {
+  graphql,
+  buildASTSchema,
+  getNamedType,
+  print,
+  OperationDefinitionNode,
+  FieldNode,
+  visit,
+  visitWithTypeInfo,
+  FragmentDefinitionNode,
+  Visitor,
+  ASTKindToNode,
+  ASTNode,
+} from 'graphql'
 import { createSchema } from './schema'
 import { createResolver } from './resolver'
-import { assertShape } from './util'
+import { assertShape, lastItem } from './util'
 
 import type { GraphQLResolveInfo, DocumentNode } from 'graphql'
 import type { Database } from './database'
 import type { TinaCloudSchemaBase } from './types'
+import { Path } from 'graphql/jsutils/Path'
+import { splitQuery2 } from 'tina-graphql-helpers'
+import { FieldName } from 'aws-sdk/clients/cloudsearch'
+
+type VisitorType = Visitor<ASTKindToNode, ASTNode>
+type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
 
 export const resolve = async ({
   query,
@@ -39,7 +58,11 @@ export const resolve = async ({
   const tinaSchema = await createSchema({ schema: config })
   const resolver = await createResolver({ database, tinaSchema })
 
-  return graphql({
+  const paths: {
+    path: (string | number)[]
+    queryString: string
+  }[] = []
+  const res = await graphql({
     schema: graphQLSchema,
     source: query,
     variableValues: variables,
@@ -99,13 +122,136 @@ export const resolve = async ({
           assertShape<{ id: string }>(args, (yup) =>
             yup.object({ id: yup.string().required() })
           )
-          return resolver.getDocument(args.id)
+          return resolver.getDocument(args.id, info)
         case 'multiCollectionDocument':
           if (typeof value === 'string') {
             /**
              * This is a reference value (`director: /path/to/george.md`)
              */
-            return resolver.getDocument(value)
+            const fieldNode = info.fieldNodes.find(
+              (fieldNode) => fieldNode.name.value === info.fieldName
+            )
+            if (fieldNode) {
+              const p = buildPath(info.path, []).map((item) =>
+                item === 'data' ? 'form' : item
+              )
+              const p2 = buildPath(info.path, [])
+              const newNode: FieldNode = {
+                ...fieldNode,
+                name: { kind: 'Name', value: 'node' },
+                arguments: [
+                  {
+                    kind: 'Argument',
+                    name: {
+                      kind: 'Name',
+                      value: 'id',
+                    },
+                    value: {
+                      kind: 'Variable',
+                      name: {
+                        kind: 'Name',
+                        value: 'id',
+                      },
+                    },
+                  },
+                ],
+              }
+              const q: OperationDefinitionNode = {
+                kind: 'OperationDefinition',
+                operation: 'query',
+                name: {
+                  value: 'GetNode',
+                  kind: 'Name',
+                },
+                variableDefinitions: [
+                  {
+                    kind: 'VariableDefinition',
+                    variable: {
+                      kind: 'Variable',
+                      name: {
+                        kind: 'Name',
+                        value: 'id',
+                      },
+                    },
+                    type: {
+                      kind: 'NonNullType',
+                      type: {
+                        kind: 'NamedType',
+                        name: {
+                          kind: 'Name',
+                          value: 'String',
+                        },
+                      },
+                    },
+                  },
+                ],
+                selectionSet: {
+                  kind: 'SelectionSet',
+                  selections: [newNode],
+                },
+              }
+              const fragmentSpreadVisitor = (frag: Frag): VisitorType => {
+                return {
+                  leave: {
+                    FragmentSpread(node, key, parent, path) {
+                      frag.subFrags.push(node.name.value)
+                    },
+                  },
+                }
+              }
+              const frags: Frag[] = []
+              Object.entries(info.fragments).map(
+                ([fragmentName, fragmentDefinition]) => {
+                  const frag = {
+                    name: fragmentName,
+                    node: fragmentDefinition,
+                    subFrags: [],
+                  }
+                  frags.push(frag)
+                  // console.log(fragmentDefinition)
+                  visit(fragmentDefinition, fragmentSpreadVisitor(frag))
+                }
+              )
+              const n: { query: string; fragments: string[] } = {
+                query: print(fieldNode),
+                fragments: [],
+              }
+              const visitor: VisitorType = {
+                leave: {
+                  FragmentSpread(node, key, parent, path) {
+                    n.fragments.push(node.name.value)
+                  },
+                },
+              }
+              visit(fieldNode, visitor)
+              const getFrags = (
+                fragNames: string[],
+                accum: FragmentDefinitionNode[]
+              ) => {
+                fragNames.forEach((fragName) => {
+                  const frag = frags.find((f) => f.name === fragName)
+                  if (!frag) {
+                    throw new Error(`Unable to find fragment ${fragName}`)
+                  }
+                  accum.push(frag.node)
+                  if (frag.subFrags) {
+                    getFrags(frag.subFrags, accum)
+                  }
+                })
+                return accum
+              }
+              const fragss = getFrags(n.fragments, [])
+              const queryString = `${fragss
+                .map((f) => print(f))
+                .join('\n')}\n${print(q)}`
+              const meh = {
+                path: ['data', ...p.slice(0, -1)],
+                dataPath: p2,
+                queryString: queryString,
+              }
+              paths.push(meh)
+            }
+            return resolver.getDocument(value, info)
           }
           if (
             args &&
@@ -121,6 +267,7 @@ export const resolve = async ({
               args: { ...args, params: {} },
               collection: args.collection,
               isMutation,
+              info,
             })
           }
           if (['getDocument', 'updateDocument'].includes(info.fieldName)) {
@@ -132,6 +279,7 @@ export const resolve = async ({
               args,
               collection: args.collection,
               isMutation,
+              info,
             })
           }
           return value
@@ -140,12 +288,15 @@ export const resolve = async ({
          */
         case 'multiCollectionDocumentList':
           assertShape<string[]>(value, (yup) => yup.array().of(yup.string()))
-          return resolver.resolveCollectionConnections({
-            ids: value,
-          })
+          return resolver.resolveCollectionConnections(
+            {
+              ids: value,
+            },
+            info
+          )
         /**
          * Collections-specific getter
-         * eg. `getPageDocument`/`updatePageDocument`
+         * eg. `getPostDocument`/`updatePostDocument`
          *
          * if coming from a query result
          * the field will be `node`
@@ -159,6 +310,7 @@ export const resolve = async ({
             args,
             collection: lookup.collection,
             isMutation,
+            info,
           })
 
         /**
@@ -166,7 +318,7 @@ export const resolve = async ({
          * eg. `getPageList`
          */
         case 'collectionDocumentList':
-          return resolver.resolveCollectionConnection({ args, lookup })
+          return resolver.resolveCollectionConnection({ args, lookup }, info)
         /**
          * A polymorphic data set, it can be from a document's data
          * of any nested object which can be one of many shapes
@@ -195,4 +347,21 @@ export const resolve = async ({
       }
     },
   })
+
+  paths.forEach((p) => {
+    const item = _.get(res, p.path)
+    if (item && item.fields) {
+      item.paths = [p]
+    }
+  })
+  // console.log(JSON.stringify(res, null, 2))
+  return res
+}
+
+const buildPath = (path: Path, accum: (string | number)[]) => {
+  if (path.prev) {
+    buildPath(path.prev, accum)
+  }
+  accum.push(path.key)
+  return accum
 }

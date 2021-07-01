@@ -18,7 +18,7 @@ import path from 'path'
 import { NAMER } from '../ast-builder'
 import { Bridge, FilesystemBridge } from './bridge'
 import { createSchema } from '../schema'
-import { assertShape } from '../util'
+import { assertShape, lastItem } from '../util'
 
 import type { TinaSchema } from '../schema'
 import type { TinaCloudSchemaBase } from '../types'
@@ -56,15 +56,19 @@ export class Database {
         extension,
         (yup) => yup.object({})
       )
-      const { collectionName, templateName } =
+      const { collection, template } =
         await tinaSchema.getCollectionAndTemplateByFullPath(
           filepath,
           contentObject._template
         )
       return {
         ...contentObject,
-        _collection: collectionName,
-        _template: templateName,
+        _collection: collection.name,
+        _template: lastItem(template.namespace),
+        _relativePath: filepath
+          .replace(collection.path, '')
+          .replace(/^\/|\/$/g, ''),
+        _id: filepath,
       } as T
     }
   }

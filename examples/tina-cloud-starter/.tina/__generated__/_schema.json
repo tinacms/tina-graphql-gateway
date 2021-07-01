@@ -128,12 +128,84 @@
                       "type": "string",
                       "label": "Message Body",
                       "name": "messageBody",
+                      "component": "textarea",
                       "namespace": [
                         "marketingPages",
                         "landingPage",
                         "blocks",
                         "message",
                         "messageBody"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "label": "Seo",
+                      "name": "seo",
+                      "list": true,
+                      "fields": [
+                        {
+                          "type": "string",
+                          "label": "SEO title",
+                          "name": "seoTitle",
+                          "namespace": [
+                            "marketingPages",
+                            "landingPage",
+                            "blocks",
+                            "message",
+                            "seo",
+                            "seoTitle"
+                          ]
+                        }
+                      ],
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "message",
+                        "seo"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "label": "Nested Page",
+                      "name": "nestedPage",
+                      "list": true,
+                      "templates": [
+                        {
+                          "name": "hero",
+                          "label": "Hero",
+                          "fields": [
+                            {
+                              "type": "string",
+                              "label": "Hero title",
+                              "name": "herotitle",
+                              "namespace": [
+                                "marketingPages",
+                                "landingPage",
+                                "blocks",
+                                "message",
+                                "nestedPage",
+                                "hero",
+                                "herotitle"
+                              ]
+                            }
+                          ],
+                          "namespace": [
+                            "marketingPages",
+                            "landingPage",
+                            "blocks",
+                            "message",
+                            "nestedPage",
+                            "hero"
+                          ]
+                        }
+                      ],
+                      "namespace": [
+                        "marketingPages",
+                        "landingPage",
+                        "blocks",
+                        "message",
+                        "nestedPage"
                       ]
                     }
                   ],

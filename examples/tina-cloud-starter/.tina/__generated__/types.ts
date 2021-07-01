@@ -225,10 +225,24 @@ export type AuthorsConnection = Connection & {
   edges?: Maybe<Array<Maybe<AuthorsConnectionEdges>>>;
 };
 
+export type MarketingPagesLandingPageBlocksMessageSeo = {
+  __typename?: 'MarketingPagesLandingPageBlocksMessageSeo';
+  seoTitle?: Maybe<Scalars['String']>;
+};
+
+export type MarketingPagesLandingPageBlocksMessageNestedPageHero = {
+  __typename?: 'MarketingPagesLandingPageBlocksMessageNestedPageHero';
+  herotitle?: Maybe<Scalars['String']>;
+};
+
+export type MarketingPagesLandingPageBlocksMessageNestedPage = MarketingPagesLandingPageBlocksMessageNestedPageHero;
+
 export type MarketingPagesLandingPageBlocksMessage = {
   __typename?: 'MarketingPagesLandingPageBlocksMessage';
   messageHeader?: Maybe<Scalars['String']>;
   messageBody?: Maybe<Scalars['String']>;
+  seo?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageSeo>>>;
+  nestedPage?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageNestedPage>>>;
 };
 
 export type MarketingPagesLandingPageBlocksImage = {
@@ -336,9 +350,23 @@ export type AuthorsMutation = {
   author?: Maybe<AuthorsAuthorMutation>;
 };
 
+export type MarketingPagesLandingPageBlocksMessageSeoMutation = {
+  seoTitle?: Maybe<Scalars['String']>;
+};
+
+export type MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation = {
+  herotitle?: Maybe<Scalars['String']>;
+};
+
+export type MarketingPagesLandingPageBlocksMessageNestedPageMutation = {
+  hero?: Maybe<MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation>;
+};
+
 export type MarketingPagesLandingPageBlocksMessageMutation = {
   messageHeader?: Maybe<Scalars['String']>;
   messageBody?: Maybe<Scalars['String']>;
+  seo?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageSeoMutation>>>;
+  nestedPage?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageNestedPageMutation>>>;
 };
 
 export type MarketingPagesLandingPageBlocksImageMutation = {

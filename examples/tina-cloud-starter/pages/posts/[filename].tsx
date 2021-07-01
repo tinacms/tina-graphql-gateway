@@ -30,26 +30,30 @@ export default function BlogPostPage(
 }
 
 export const query = `#graphql
-  query BlogPostQuery($relativePath: String!) {
-    getPostsDocument(relativePath: $relativePath) {
-      data {
-        __typename
-        ... on Article_Doc_Data {
-          title
-          hero
-          author {
+query GetPostDocument($relativePath: String!) {
+  getPostsDocument(relativePath: $relativePath) {
+    data {
+      __typename
+      ...on PostsArticle {
+        title
+        hero
+        author {
+          __typename
+          ...on AuthorsDocument {
             data {
-              ... on Author_Doc_Data {
+              __typename
+              ...on AuthorsAuthor {
                 name
                 avatar
               }
             }
           }
-          _body
         }
       }
     }
   }
+}
+
 `
 
 const client = new LocalClient()
@@ -81,8 +85,12 @@ export const getStaticPaths = async () => {
     (gql) => gql`
       {
         getPostsList {
-          sys {
-            filename
+          edges {
+            node {
+              sys {
+                filename
+              }
+            }
           }
         }
       }
@@ -90,8 +98,8 @@ export const getStaticPaths = async () => {
     { variables: {} }
   )
   return {
-    paths: postsListData.getPostsList.map((post) => ({
-      params: { filename: post.sys.filename },
+    paths: postsListData.getPostsList.edges.map((post) => ({
+      params: { filename: post.node.sys.filename },
     })),
     fallback: false,
   }

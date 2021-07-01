@@ -210,6 +210,38 @@ export default unstable_defineSchema({
                       label: 'Message Body',
                       name: 'messageBody',
                     },
+                    {
+                      type: 'object',
+                      label: 'Seo',
+                      name: 'seo',
+                      list: true,
+                      fields: [
+                        {
+                          type: 'string',
+                          label: 'SEO title',
+                          name: 'seoTitle',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'object',
+                      label: 'Nested Page',
+                      name: 'nestedPage',
+                      list: true,
+                      templates: [
+                        {
+                          name: 'hero',
+                          label: 'Hero',
+                          fields: [
+                            {
+                              type: 'string',
+                              label: 'Hero title',
+                              name: 'herotitle',
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   ],
                 },
                 {

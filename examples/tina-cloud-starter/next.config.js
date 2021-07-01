@@ -11,6 +11,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export { friendlyName, templateTypeName, templateName } from './util'
-export { formify, splitQuery, splitQuery2 } from './queryBuilder'
-export { queryGenerator } from './dummy-generators'
+const path = require('path')
+
+module.exports = {
+  webpack: (config) => {
+    /**
+     * Enable these when you want to work with Tina locally
+     */
+    config.resolve.alias['@tinacms'] = path.resolve(
+      '../../../tinacms/packages/@tinacms'
+    )
+    config.resolve.alias['tinacms'] = require.resolve('tinacms')
+    config.resolve.alias['react-dom'] = require.resolve('react-dom')
+    config.resolve.alias['react'] = require.resolve('react')
+
+    return config
+  },
+}

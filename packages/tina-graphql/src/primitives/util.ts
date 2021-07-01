@@ -76,6 +76,6 @@ export const btoa = (string: string) => {
   return Buffer.from(string).toString('base64')
 }
 
-export const lastItem = (arr: string[]) => {
+export const lastItem = (arr: (number | string)[]) => {
   return arr[arr.length - 1]
 }

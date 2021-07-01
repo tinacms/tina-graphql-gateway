@@ -31,6 +31,8 @@ import {
   GraphQLUnionType,
   print,
   isScalarType,
+  OperationDefinitionNode,
+  FragmentDefinitionNode,
 } from 'graphql'
 import set from 'lodash.set'
 import get from 'lodash.get'
@@ -689,6 +691,196 @@ export const splitQuery = (args: {
   })
 
   return { queries, fragments: fragmentDefinitions }
+}
+
+/**
+ * The role of `splitQuery` is to look at a query and find all of the nodes
+ * that could be returned by it, and to split that information into subsets of
+ * the query's original graph. It returns the nodes being queried along with information
+ * about what fragments they're using, how to query those nodes by themselves, and
+ * finally how to mutate those nodes.
+ *
+ * The purpose of this is that while we represent our data as a Graph, it needs to be
+ * delegated to our Tina form system, which is a lower-level API that has no knowledge
+ * of our data needs, the form is focused solely on the task of submitting mutations for a
+ * given document.
+ */
+type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
+export const splitQuery2 = (args: {
+  queryString: string
+  schema: GraphQLSchema
+}) => {
+  const { schema } = args
+  const typeInfo = new TypeInfo(schema)
+  const nodes: {
+    path: readonly (string | number)[]
+    query: string
+    fragments: string[]
+  }[] = []
+  const frags: Frag[] = []
+  const queryAst = parse(args.queryString)
+  const visitor: VisitorType = {
+    leave: {
+      FragmentDefinition(node, key, parent, path) {
+        frags.push({ name: node.name.value, node, subFrags: [] })
+      },
+      Field(node, key, parent, path, ancestors) {
+        const type = typeInfo.getType()
+        if (type) {
+          const namedType = getNamedType(type)
+
+          if (namedType instanceof GraphQLUnionType) {
+            // All types of the document union should implement the
+            // node interface so just check the first one
+            const firstType = namedType.getTypes()[0]
+            if (
+              firstType
+                .getInterfaces()
+                .map((intfc) => intfc.name)
+                .includes('Node')
+            ) {
+              const newNode: FieldNode = {
+                ...node,
+                name: { kind: 'Name', value: 'node' },
+                arguments: [
+                  {
+                    kind: 'Argument',
+                    name: {
+                      kind: 'Name',
+                      value: 'id',
+                    },
+                    value: {
+                      kind: 'Variable',
+                      name: {
+                        kind: 'Name',
+                        value: 'id',
+                      },
+                    },
+                  },
+                ],
+              }
+              const q: OperationDefinitionNode = {
+                kind: 'OperationDefinition',
+                operation: 'query',
+                name: {
+                  value: 'GetNode',
+                  kind: 'Name',
+                },
+                variableDefinitions: [
+                  {
+                    kind: 'VariableDefinition',
+                    variable: {
+                      kind: 'Variable',
+                      name: {
+                        kind: 'Name',
+                        value: 'id',
+                      },
+                    },
+                    type: {
+                      kind: 'NonNullType',
+                      type: {
+                        kind: 'NamedType',
+                        name: {
+                          kind: 'Name',
+                          value: 'String',
+                        },
+                      },
+                    },
+                  },
+                ],
+                selectionSet: {
+                  kind: 'SelectionSet',
+                  selections: [newNode],
+                },
+              }
+              // console.log(parent)
+              // path.map((item, index) => {
+              //   const ancestor = ancestors[index]
+              //   if (typeof item === 'number') {
+              //     // console.log('acs', item, ancestor)
+              //   } else {
+              //     console.log('ok', ancestor[item])
+              //   }
+              // })
+              // console.log(key)
+              // const fieldName = typeInfo.getFieldDef().name
+              // ancestors.forEach((a) => {
+              //   a?.selections?.map((sel) => {
+              //     if (fieldName === sel.name.value) {
+              //       console.log(sel.name.value)
+              //     }
+              //   })
+              //   a?.selectionSet?.selections?.map((sel) => {
+              //     if (fieldName === sel.name.value) {
+              //       console.log(sel.name.value)
+              //     }
+              //   })
+              // })
+              // console.log(print(newNode))
+              // console.log(print(q))
+              nodes.push({ path, fragments: [], query: print(q) })
+            }
+          }
+        }
+      },
+    },
+  }
+  visit(queryAst, visitWithTypeInfo(typeInfo, visitor))
+
+  const fragmentSpreadVisitor = (frag: Frag): VisitorType => {
+    return {
+      leave: {
+        FragmentSpread(node, key, parent, path) {
+          frag.subFrags.push(node.name.value)
+        },
+      },
+    }
+  }
+
+  const fragmentDefinitionVisitor: VisitorType = {
+    leave: {
+      FragmentDefinition(node, key, parent, path) {
+        const f = frags.find((f) => f.name === node.name.value)
+        if (!f) {
+          throw new Error('ohno')
+        }
+        visit(node, visitWithTypeInfo(typeInfo, fragmentSpreadVisitor(f)))
+      },
+    },
+  }
+
+  nodes.map((n) => {
+    const queryAst = parse(n.query)
+    const visitor: VisitorType = {
+      leave: {
+        FragmentSpread(node, key, parent, path) {
+          n.fragments.push(node.name.value)
+        },
+      },
+    }
+    visit(queryAst, visitWithTypeInfo(typeInfo, visitor))
+  })
+  visit(queryAst, visitWithTypeInfo(typeInfo, fragmentDefinitionVisitor))
+
+  const getFrags = (fragNames: string[], accum: FragmentDefinitionNode[]) => {
+    fragNames.forEach((fragName) => {
+      const frag = frags.find((f) => f.name === fragName)
+      if (!frag) {
+        throw new Error(`Unable to find fragment ${fragName}`)
+      }
+      accum.push(frag.node)
+      if (frag.subFrags) {
+        getFrags(frag.subFrags, accum)
+      }
+    })
+    return accum
+  }
+
+  nodes.forEach((n) => {
+    const frags = getFrags(n.fragments, [])
+    // console.log(`${frags.map((f) => print(f)).join('\n')}\n${n.query}`)
+  })
+  return { nodes, frags }
 }
 
 // Checks if main array has the same values at the same indeces for a sub array

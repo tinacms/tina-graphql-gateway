@@ -5,16 +5,20 @@ query {
         ... on PostPost {
           title
           author {
-            ... on AuthorDocument {
-              data {
-                ... on AuthorAuthor {
-                  name
-                }
-              }
-            }
+            ...AuthorFragment
           }
         }
       }
+      form
     }
+  }
+}
+
+fragment Meh on AuthorAuthor {
+  name
+}
+fragment AuthorFragment on AuthorDocument {
+  data {
+    ...Meh
   }
 }
