@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "yarn tina-gql server:start -c \"yarn next-dev\"",
@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/js-cookie": "^2.2.6",
     "@types/styled-components": "^5.1.3",
-    "tina-graphql-gateway-cli": "workspace:packages/tina-graphql-gateway-cli"
+    "tina-graphql-gateway-cli": "workspace:*"
   },
   "dependencies": {
     "@tailwindcss/ui": "^0.3.0",
@@ -49,9 +49,9 @@
     "styled-components": "^5.1.3",
     "styled-jsx": "^3.2.5",
     "tailwindcss": "^1.4.6",
-    "tina-graphql": "workspace:packages/tina-graphql",
-    "tina-graphql-gateway": "workspace:packages/tina-graphql-gateway",
-    "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
+    "tina-graphql": "workspace:*",
+    "tina-graphql-gateway": "workspace:*",
+    "tina-graphql-helpers": "workspace:*",
     "tinacms": "0.31.0",
     "typescript": "^3.8.3",
     "urql": "^1.9.7",
