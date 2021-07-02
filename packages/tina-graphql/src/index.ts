@@ -21,7 +21,7 @@ import { FileSystemManager } from './datasources/filesystem-manager'
 import { clearCache as s3ClearCache, s3Cache } from './cache/s3'
 import { simpleCache, clearCache as lruClearCache } from './cache/lru'
 
-export { lruClearCache, s3ClearCache, s3Cache }
+export { lruClearCache, lruClearCache as clearCache, s3ClearCache, s3Cache }
 
 export const gql = async ({
   projectRoot,
