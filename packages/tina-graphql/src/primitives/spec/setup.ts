@@ -14,7 +14,7 @@ limitations under the License.
 import { indexDB } from '../build'
 import { resolve } from '../resolve'
 import fs from 'fs-extra'
-import { buildASTSchema, printSchema, parse, DocumentNode } from 'graphql'
+import { buildASTSchema, printSchema, print, parse } from 'graphql'
 import path from 'path'
 import fg from 'fast-glob'
 
@@ -23,7 +23,6 @@ import { createDatabase } from '../database'
 import { Database } from '../database'
 import { Bridge } from '../database/bridge'
 import { sequential } from '../util'
-import { splitQuery2, splitQuery } from 'tina-graphql-helpers'
 
 export class InMemoryBridge implements Bridge {
   public rootPath: string
@@ -124,61 +123,35 @@ export const setupFixture = async (
   if (response.errors) {
     console.log(response.errors)
   }
-  // console.log(JSON.stringify(response, null, 2))
+
+  const mutations = await Promise.all(
+    Object.entries(JSON.parse(JSON.stringify(response?.data))).map(
+      async ([queryName, result]) => {
+        const request = await fs
+          .readFileSync(
+            path.join(
+              rootPath,
+              'requests',
+              fixture,
+              'mutations',
+              queryName,
+              'request.gql'
+            )
+          )
+          .toString()
+        // console.log(result.form.mutationInfo.string)
+        // console.log(request)
+        return {
+          mutation: print(parse(result.form.mutationInfo.string)),
+          expectedMutation: print(parse(request)),
+        }
+      }
+    )
+  )
 
   return {
     response,
     expectedReponse,
-  }
-}
-
-export const setupAudit = async (
-  rootPath: string,
-  schema: TinaCloudSchema<string, string, false>,
-  fixture: { filepath: string; result: string }
-) => {
-  const { database } = await setup(rootPath, schema)
-  const document = await database.get(fixture.filepath)
-
-  // @ts-ignore
-  const request = transformDocumentIntoMutationRequestPayload(document, true)
-  const expectedRequest = await fs
-    .readFileSync(path.join(rootPath, 'audits', `${fixture.result}.gql`))
-    .toString()
-  return { request, expectedRequest }
-}
-
-const transformDocumentIntoMutationRequestPayload = (
-  document: {
-    _id: string
-    _collection: string
-    _template: string
-    [key: string]: unknown
-  },
-  includeCollection?: boolean
-) => {
-  const { _id, _relativePath, _collection, ...rest } = document
-
-  const params1 = transformParams(rest)
-
-  const params = includeCollection ? { [_collection]: params1 } : params1
-
-  const payload: { [key: string]: unknown } = {
-    params,
-    relativePath: _relativePath,
-  }
-  if (includeCollection) {
-    payload['collection'] = _collection
-  }
-
-  return payload
-}
-
-const transformParams = (data: { _template?: string }) => {
-  if (data._template) {
-    const { _template, ...rest } = data
-    return { [_template]: rest }
-  } else {
-    return data
+    mutations,
   }
 }

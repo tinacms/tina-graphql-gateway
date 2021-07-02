@@ -36,7 +36,7 @@ describe('The given configuration', () => {
   })
   fixtures.forEach((fixture) => {
     it(`${fixture} works`, async () => {
-      const { response, expectedReponse } = await setupFixture(
+      const { response, expectedReponse, mutations } = await setupFixture(
         rootPath,
         tinaSchema,
         fixture
@@ -45,6 +45,11 @@ describe('The given configuration', () => {
       expect(JSON.parse(JSON.stringify(response))).toMatchObject(
         JSON.parse(expectedReponse)
       )
+      mutations.forEach((mutationForQueryField) => {
+        expect(mutationForQueryField.mutation).toEqual(
+          mutationForQueryField.expectedMutation
+        )
+      })
     })
   })
 })

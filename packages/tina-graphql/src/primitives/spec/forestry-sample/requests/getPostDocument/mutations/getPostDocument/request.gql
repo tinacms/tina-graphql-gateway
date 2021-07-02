@@ -1,0 +1,15 @@
+mutation UpdateDocument($params: PostMutation!) {
+  updatePostDocument(relativePath: "hello-world.md", params: $params) {
+    ... on PostDocument {
+      data {
+        ... on PostPost {
+          title
+          author {
+            ...AuthorFragment
+          }
+        }
+      }
+      form
+    }
+  }
+}

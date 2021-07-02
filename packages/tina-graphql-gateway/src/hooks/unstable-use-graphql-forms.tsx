@@ -14,27 +14,14 @@ limitations under the License.
 import React from 'react'
 import set from 'lodash.set'
 import gql from 'graphql-tag'
-import { useCMS, Form } from 'tinacms'
 import { print } from 'graphql'
 import { produce } from 'immer'
 import { getIn } from 'final-form'
-
-import type { FormOptions } from 'tinacms'
-import type { DocumentNode as GqlDocumentNode } from 'graphql'
+import { useCMS, Form } from 'tinacms'
 import { assertShape } from '../utils'
 
-type FormValues = {
-  [queryName: string]: object
-}
-type Data = {
-  [queryName: string]: object
-}
-type NewUpdate = {
-  queryName: string
-  get: string
-  set: string
-  lookup?: string
-}
+import type { FormOptions } from 'tinacms'
+import type { DocumentNode } from 'graphql'
 
 export function useGraphqlForms<T extends object>({
   query,
@@ -42,7 +29,7 @@ export function useGraphqlForms<T extends object>({
   onSubmit,
   formify = null,
 }: {
-  query: (gqlTag: typeof gql) => GqlDocumentNode
+  query: (gqlTag: typeof gql) => DocumentNode
   variables: object
   onSubmit?: (args: onSubmitArgs) => void
   formify?: formifyCallback
@@ -50,6 +37,8 @@ export function useGraphqlForms<T extends object>({
   const cms = useCMS()
   const [formValues, setFormValues] = React.useState<FormValues>({})
   const [data, setData] = React.useState<Data>({})
+  const [initialData, setInitialData] = React.useState<Data>({})
+  const [pendingReset, setPendingReset] = React.useState(null)
   const [isLoading, setIsLoading] = React.useState(true)
   const [newUpdate, setNewUpdate] = React.useState<NewUpdate | null>(null)
 
@@ -79,6 +68,8 @@ export function useGraphqlForms<T extends object>({
             return
           }
         }
+        // FIXME: I don't think I'm using produce 100% correctly,
+        // on subsequent updates the `item` is immuated
         const nextState = produce(data, (draftState) => {
           // If lookup is provided, we're in a polymorphic object, so we should populate
           // __typename as a disambiguator, regardless of whether or not it was queried for
@@ -105,10 +96,18 @@ export function useGraphqlForms<T extends object>({
   const queryString = print(query(gql))
 
   React.useEffect(() => {
+    if (pendingReset) {
+      setData({ ...data, [pendingReset]: initialData[pendingReset] })
+      setPendingReset(null)
+    }
+  }, [pendingReset])
+
+  React.useEffect(() => {
     cms.api.tina
       .requestWithForm(query, { variables })
       .then((payload) => {
         setData(payload)
+        setInitialData(payload)
         setIsLoading(false)
         Object.entries(payload).map(([queryName, result]) => {
           assertShape<{
@@ -132,6 +131,9 @@ export function useGraphqlForms<T extends object>({
             label: queryName,
             initialValues: result.values,
             fields: result.form.fields,
+            reset: () => {
+              setPendingReset(queryName)
+            },
             onSubmit: async (payload) => {
               const params = transformDocumentIntoMutationRequestPayload(
                 payload,
@@ -235,8 +237,7 @@ export function useGraphqlForms<T extends object>({
       })
   }, [queryString])
 
-  // @ts-ignore
-  return [data, isLoading]
+  return [data as T, isLoading]
 }
 
 const transformDocumentIntoMutationRequestPayload = (
@@ -314,4 +315,17 @@ export type onSubmitArgs = {
   queryString: string
   mutationString: string
   variables: object
+}
+
+type FormValues = {
+  [queryName: string]: object
+}
+type Data = {
+  [queryName: string]: object
+}
+type NewUpdate = {
+  queryName: string
+  get: string
+  set: string
+  lookup?: string
 }
