@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [release]
+    branches: [main]
 
 jobs:
   build:
@@ -12,14 +12,19 @@ jobs:
         # Before merging to main, re-run the install for security purposes
         # https://yarnpkg.com/features/zero-installs/#does-it-have-security-implications
         run: yarn install --check-cache
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
       - name: Build
         run: yarn ci:build
       - name: Test
         run: yarn ci:test
-      - name: Publish
-        run: yarn ci:publish
+      - name: Create release pull request or Publish to npm
+        uses: changesets/action@master
+        # with:
+        #   version: yarn changeset version
+        #   publish: yarn ci:publish
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
-          FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }}
-          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
