@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway-cli",
-  "version": "0.2.54",
+  "version": "0.2.57",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -61,8 +61,8 @@
     "log4js": "^6.3.0",
     "normalize-path": "^3.0.0",
     "progress": "^2.0.3",
-    "tina-graphql": "workspace:packages/tina-graphql",
-    "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
+    "tina-graphql": "workspace:*",
+    "tina-graphql-helpers": "workspace:*",
     "typescript": "^4.2.2",
     "yup": "^0.32.9"
   },
