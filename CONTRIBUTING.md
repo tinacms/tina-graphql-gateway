@@ -35,16 +35,16 @@ Choose the package or packages that were affected by your work. _(Tip: you may h
 > Note: You do not need to select packages which _depend_ on changes you made in other packages, the release process will do this automatically for you later on. Just choose packages you worked on directly.
 
 
-(yarn-changeset-1)
+![](https://github.com/tinacms/tina-graphql-gateway/blob/main/meta/yarn-changeset-1.png)
 
 Choose the _type_ of version change they should get. Skipping `major` will ask you if you want to select `minor`, if you skip that it will assume `patch`.
 
-(yarn-changeset-2)
+![](https://github.com/tinacms/tina-graphql-gateway/blob/main/meta/yarn-changeset-2.png)
 
-Proceed through the prompts until you havee a new `.md` file in the `.changeset` directory. It'll look [like this]()
+Proceed through the prompts until you havee a new `.md` file in the `.changeset` directory. It'll look [like this](https://github.com/tinacms/tina-graphql-gateway/blob/348ef1e57e2e61fb9896d616aabc6f3c85d37140/.changeset/pretty-sloths-return.md)
 
-(yarn-changeset-3)
-(yarn-changeset-4)
+![](https://github.com/tinacms/tina-graphql-gateway/blob/main/meta/yarn-changeset-3.png)
+![](https://github.com/tinacms/tina-graphql-gateway/blob/main/meta/yarn-changeset-4.png)
 
 Feel free to edit this file if you want to alter your messages or which versions will be bumped.
 
