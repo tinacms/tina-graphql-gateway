@@ -13,17 +13,17 @@ limitations under the License.
 
 module.exports = {
   projects: {
-    // tinaCloudStarter: {
-    //   schema: ['./examples/tina-cloud-starter/.tina/__generated__/schema.gql'],
-    //   documents: './examples/tina-cloud-starter/**/*.{graphql,js,ts,jsx,tsx}',
-    // },
-    // pageBuilder: {
-    //   schema: [
-    //     './packages/graphql/src/spec/page-builder/.tina/__generated__/schema.gql',
-    //   ],
-    //   documents:
-    //     './packages/graphql/src/spec/page-builder/**/*.{graphql,gql,js,ts,jsx,tsx}',
-    // },
+    tinaCloudStarter: {
+      schema: ['./examples/tina-cloud-starter/.tina/__generated__/schema.gql'],
+      documents: './examples/tina-cloud-starter/**/*.{graphql,js,ts,jsx,tsx}',
+    },
+    pageBuilder: {
+      schema: [
+        './packages/tina-graphql/src/primitives/spec/page-builder/.tina/__generated__/schema.gql',
+      ],
+      documents:
+        './packages/tina-graphql/src/primitives/spec/page-builder/**/*.{graphql,gql,js,ts,jsx,tsx}',
+    },
     forestrySample: {
       schema: [
         './packages/tina-graphql/src/primitives/spec/forestry-sample/.tina/__generated__/schema.gql',
@@ -31,12 +31,12 @@ module.exports = {
       documents:
         './packages/tina-graphql/src/primitives/spec/forestry-sample/**/*.{graphql,gql,js,ts,jsx,tsx}',
     },
-    // movies: {
-    //   schema: [
-    //     './packages/graphql/src/spec/movies/.tina/__generated__/schema.gql',
-    //   ],
-    //   documents:
-    //     './packages/graphql/src/spec/movies/**/*.{graphql,gql,js,ts,jsx,tsx}',
-    // },
+    movies: {
+      schema: [
+        './packages/tina-graphql/src/primitives/spec/movies/.tina/__generated__/schema.gql',
+      ],
+      documents:
+        './packages/tina-graphql/src/primitives/spec/movies/**/*.{graphql,gql,js,ts,jsx,tsx}',
+    },
   },
 }
