@@ -18,6 +18,7 @@
     "ci:build": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=tina-tailwind-sidebar-demo  --exclude=test --exclude=demo -pt --topological-dev run build",
     "ci:test": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --exclude=tina-tailwind-sidebar-demo  --verbose run test",
     "ci:publish": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --exclude=tina-tailwind-sidebar-demo --verbose npm publish --tolerate-republish --access public",
+    "ci:publish-dev": "yarn workspaces foreach --exclude=sc --exclude=tina-cloud-starter --exclude=test --exclude=demo --exclude=tina-tailwind-sidebar-demo --verbose npm publish --tolerate-republish --tag dev --access public",
     "format": "prettier --write .",
     "postinstall": "husky install"
   },
