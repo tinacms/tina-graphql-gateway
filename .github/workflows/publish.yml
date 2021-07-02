@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
       - name: Install dependencies
         # Before merging to main, re-run the install for security purposes
         # https://yarnpkg.com/features/zero-installs/#does-it-have-security-implications
         run: yarn install --check-cache
-        with:
-          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-          fetch-depth: 0
       - name: Build
         run: yarn ci:build
       - name: Test
