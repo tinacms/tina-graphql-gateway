@@ -1,5 +1,12 @@
 # demo
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [b36de960]
+  - tina-graphql@0.1.24
+
 ## 0.1.2
 
 ### Patch Changes
