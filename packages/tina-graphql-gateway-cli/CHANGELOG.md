@@ -1,5 +1,12 @@
 # tina-graphql-gateway-cli
 
+## 0.2.58
+
+### Patch Changes
+
+- Updated dependencies [b36de960]
+  - tina-graphql@0.1.24
+
 ## 0.2.57
 
 ### Patch Changes

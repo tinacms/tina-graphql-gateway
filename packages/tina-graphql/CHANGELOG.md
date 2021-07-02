@@ -1,5 +1,11 @@
 # tina-graphql
 
+## 0.1.24
+
+### Patch Changes
+
+- b36de960: lruClearCache should just be clearCache for now
+
 ## 0.1.23
 
 ### Patch Changes
