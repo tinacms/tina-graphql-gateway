@@ -41,6 +41,16 @@ import { NAMER } from './ast-builder'
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>
 type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
+type ReferenceQuery = {
+  path: (string | number)[]
+  dataPath: (string | number)[]
+  queryString: string
+}
+type PreparedMutation = {
+  path: (string | number)[]
+  string: string
+  includeCollection: boolean
+}
 
 export const resolve = async ({
   query,
@@ -60,14 +70,8 @@ export const resolve = async ({
   const tinaSchema = await createSchema({ schema: config })
   const resolver = await createResolver({ database, tinaSchema })
 
-  const paths: {
-    path: (string | number)[]
-    queryString: string
-  }[] = []
-  const mutationPaths: {
-    path: (string | number)[]
-    mutationString: string
-  }[] = []
+  const paths: ReferenceQuery[] = []
+  const mutationPaths: PreparedMutation[] = []
   const res = await graphql({
     schema: graphQLSchema,
     source: query,
@@ -128,135 +132,17 @@ export const resolve = async ({
           assertShape<{ id: string }>(args, (yup) =>
             yup.object({ id: yup.string().required() })
           )
-          return resolver.getDocument(args.id, info)
+          return resolver.getDocument(args.id)
         case 'multiCollectionDocument':
           if (typeof value === 'string') {
             /**
              * This is a reference value (`director: /path/to/george.md`)
              */
-            const fieldNode = info.fieldNodes.find(
-              (fieldNode) => fieldNode.name.value === info.fieldName
-            )
-            if (fieldNode) {
-              const p = buildPath(info.path, []).map((item) =>
-                item === 'data' ? 'form' : item
-              )
-              const p2 = buildPath(info.path, [])
-              const newNode: FieldNode = {
-                ...fieldNode,
-                name: { kind: 'Name', value: 'node' },
-                arguments: [
-                  {
-                    kind: 'Argument',
-                    name: {
-                      kind: 'Name',
-                      value: 'id',
-                    },
-                    value: {
-                      kind: 'Variable',
-                      name: {
-                        kind: 'Name',
-                        value: 'id',
-                      },
-                    },
-                  },
-                ],
-              }
-              const q: OperationDefinitionNode = {
-                kind: 'OperationDefinition',
-                operation: 'query',
-                name: {
-                  value: 'GetNode',
-                  kind: 'Name',
-                },
-                variableDefinitions: [
-                  {
-                    kind: 'VariableDefinition',
-                    variable: {
-                      kind: 'Variable',
-                      name: {
-                        kind: 'Name',
-                        value: 'id',
-                      },
-                    },
-                    type: {
-                      kind: 'NonNullType',
-                      type: {
-                        kind: 'NamedType',
-                        name: {
-                          kind: 'Name',
-                          value: 'String',
-                        },
-                      },
-                    },
-                  },
-                ],
-                selectionSet: {
-                  kind: 'SelectionSet',
-                  selections: [newNode],
-                },
-              }
-              const fragmentSpreadVisitor = (frag: Frag): VisitorType => {
-                return {
-                  leave: {
-                    FragmentSpread(node, key, parent, path) {
-                      frag.subFrags.push(node.name.value)
-                    },
-                  },
-                }
-              }
-              const frags: Frag[] = []
-              Object.entries(info.fragments).map(
-                ([fragmentName, fragmentDefinition]) => {
-                  const frag = {
-                    name: fragmentName,
-                    node: fragmentDefinition,
-                    subFrags: [],
-                  }
-                  frags.push(frag)
-                  visit(fragmentDefinition, fragmentSpreadVisitor(frag))
-                }
-              )
-              const n: { query: string; fragments: string[] } = {
-                query: print(fieldNode),
-                fragments: [],
-              }
-              const visitor: VisitorType = {
-                leave: {
-                  FragmentSpread(node, key, parent, path) {
-                    n.fragments.push(node.name.value)
-                  },
-                },
-              }
-              visit(fieldNode, visitor)
-              const getFrags = (
-                fragNames: string[],
-                accum: FragmentDefinitionNode[]
-              ) => {
-                fragNames.forEach((fragName) => {
-                  const frag = frags.find((f) => f.name === fragName)
-                  if (!frag) {
-                    throw new Error(`Unable to find fragment ${fragName}`)
-                  }
-                  accum.push(frag.node)
-                  if (frag.subFrags) {
-                    getFrags(frag.subFrags, accum)
-                  }
-                })
-                return accum
-              }
-              const fragss = getFrags(n.fragments, [])
-              const queryString = `${fragss
-                .map((f) => print(f))
-                .join('\n')}\n${print(q)}`
-              const meh = {
-                path: ['data', ...p.slice(0, -1)],
-                dataPath: p2,
-                queryString: queryString,
-              }
-              paths.push(meh)
+            const referenceQuery = buildReferenceQuery(info)
+            if (referenceQuery) {
+              paths.push(referenceQuery)
             }
-            return resolver.getDocument(value, info)
+            return resolver.getDocument(value)
           }
           if (
             args &&
@@ -272,7 +158,6 @@ export const resolve = async ({
               args: { ...args, params: {} },
               collection: args.collection,
               isMutation,
-              info,
             })
           }
           if (['getDocument', 'updateDocument'].includes(info.fieldName)) {
@@ -284,7 +169,6 @@ export const resolve = async ({
               args,
               collection: args.collection,
               isMutation,
-              info,
             })
           }
           return value
@@ -293,12 +177,9 @@ export const resolve = async ({
          */
         case 'multiCollectionDocumentList':
           assertShape<string[]>(value, (yup) => yup.array().of(yup.string()))
-          return resolver.resolveCollectionConnections(
-            {
-              ids: value,
-            },
-            info
-          )
+          return resolver.resolveCollectionConnections({
+            ids: value,
+          })
         /**
          * Collections-specific getter
          * eg. `getPostDocument`/`updatePostDocument`
@@ -317,99 +198,15 @@ export const resolve = async ({
               args,
               collection: lookup.collection,
               isMutation,
-              info,
             }))
           if (!isMutation) {
-            const queryNode = info.fieldNodes.find(
-              (fn) => fn.name.value === info.fieldName
-            )
-            if (!queryNode) {
-              throw new Error(
-                `exptected to find field node for ${info.fieldName}`
-              )
-            }
-            const mutationName = NAMER.mutationName([lookup.collection])
-            const mutations = JSON.parse(
-              JSON.stringify(info.schema.getMutationType()?.getFields())
-            ) as GraphQLFieldMap<any, any>
-
-            const mutation = mutations[mutationName]
-            if (!mutation) {
-              throw new Error(`exptected to find mutation for ${mutationName}`)
-            }
-            const mutationNode = mutations[mutationName].astNode
-            const newNode: FieldNode = {
-              ...queryNode,
-              name: { kind: 'Name', value: mutation.name },
-              arguments: mutationNode?.arguments?.map((argument) => {
-                if (argument.name.value === 'relativePath') {
-                  return {
-                    kind: 'Argument',
-                    name: {
-                      kind: 'Name',
-                      value: argument.name.value,
-                    },
-                    value: {
-                      kind: 'StringValue',
-                      value: result.sys.relativePath,
-                    },
-                  }
-                }
-                return {
-                  kind: 'Argument',
-                  name: {
-                    kind: 'Name',
-                    value: argument.name.value,
-                  },
-                  value: {
-                    kind: 'Variable',
-                    name: {
-                      kind: 'Name',
-                      value: argument.name.value,
-                    },
-                  },
-                }
-              }),
-              // arguments: mutationNode?.arguments
-            }
-            const paramArgs = mutationNode?.arguments?.find(
-              (arg) => arg.name.value === 'params'
-            )
-            if (!paramArgs) {
-              throw new Error(
-                `Expected to find argument named params for mutation ${mutationName}`
-              )
-            }
-            const q: OperationDefinitionNode = {
-              kind: 'OperationDefinition',
-              operation: 'mutation',
-              name: {
-                value: 'UpdateDocument',
-                kind: 'Name',
-              },
-              variableDefinitions: [
-                {
-                  kind: 'VariableDefinition',
-                  variable: {
-                    kind: 'Variable',
-                    name: {
-                      kind: 'Name',
-                      value: 'params',
-                    },
-                  },
-                  type: paramArgs?.type,
-                },
-              ],
-              selectionSet: {
-                kind: 'SelectionSet',
-                selections: [newNode],
-              },
-            }
-            const mutationString = print(q)
-            mutationPaths.push({
-              path: ['data', ...buildPath(info.path, []), 'form'],
-              mutationString,
+            const mutationPath = buildMutationPath(info, {
+              collection: lookup.collection,
+              relativePath: result.sys.relativePath,
             })
+            if (mutationPath) {
+              mutationPaths.push(mutationPath)
+            }
           }
           return result
 
@@ -418,7 +215,7 @@ export const resolve = async ({
          * eg. `getPageList`
          */
         case 'collectionDocumentList':
-          return resolver.resolveCollectionConnection({ args, lookup }, info)
+          return resolver.resolveCollectionConnection({ args, lookup })
         /**
          * A polymorphic data set, it can be from a document's data
          * of any nested object which can be one of many shapes
@@ -450,17 +247,14 @@ export const resolve = async ({
 
   paths.forEach((p) => {
     const item = _.get(res, p.path)
-    if (item && item.fields) {
+    if (item) {
       item.paths = [p]
     }
   })
-  mutationPaths.forEach((p) => {
-    const item = _.get(res, p.path)
-    if (item && item.fields) {
-      item.mutationInfo = {
-        string: p.mutationString,
-        includeCollection: false,
-      }
+  mutationPaths.forEach((mutationPath) => {
+    const item = _.get(res, mutationPath.path)
+    if (item) {
+      item.mutationInfo = mutationPath
     }
   })
   return res
@@ -472,4 +266,227 @@ const buildPath = (path: Path, accum: (string | number)[]) => {
   }
   accum.push(path.key)
   return accum
+}
+
+const buildReferenceQuery = (
+  info: GraphQLResolveInfo
+  // @ts-ignore
+): ReferenceQuery | undefined => {
+  const fieldNode = info.fieldNodes.find(
+    (fieldNode) => fieldNode.name.value === info.fieldName
+  )
+  if (fieldNode) {
+    const p = buildPath(info.path, []).map((item) =>
+      item === 'data' ? 'form' : item
+    )
+    const dataPath = buildPath(info.path, [])
+    const newNode: FieldNode = {
+      ...fieldNode,
+      name: { kind: 'Name', value: 'node' },
+      arguments: [
+        {
+          kind: 'Argument',
+          name: {
+            kind: 'Name',
+            value: 'id',
+          },
+          value: {
+            kind: 'Variable',
+            name: {
+              kind: 'Name',
+              value: 'id',
+            },
+          },
+        },
+      ],
+    }
+    const q: OperationDefinitionNode = {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: {
+        value: 'GetNode',
+        kind: 'Name',
+      },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: {
+              kind: 'Name',
+              value: 'id',
+            },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: {
+                kind: 'Name',
+                value: 'String',
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [newNode],
+      },
+    }
+    const queryString = addFragmentsToQuery(info, fieldNode, q)
+    return {
+      path: ['data', ...p.slice(0, -1)],
+      dataPath,
+      queryString: queryString,
+    }
+  }
+}
+
+const buildMutationPath = (
+  info: GraphQLResolveInfo,
+  { collection, relativePath }: { collection: string; relativePath: string }
+) => {
+  const queryNode = info.fieldNodes.find(
+    (fn) => fn.name.value === info.fieldName
+  )
+  if (!queryNode) {
+    throw new Error(`exptected to find field node for ${info.fieldName}`)
+  }
+  const mutationName = NAMER.mutationName([collection])
+  const mutations = JSON.parse(
+    JSON.stringify(info.schema.getMutationType()?.getFields())
+  ) as GraphQLFieldMap<any, any>
+
+  const mutation = mutations[mutationName]
+  if (!mutation) {
+    throw new Error(`exptected to find mutation for ${mutationName}`)
+  }
+  const mutationNode = mutations[mutationName].astNode
+  const newNode: FieldNode = {
+    ...queryNode,
+    name: { kind: 'Name', value: mutation.name },
+    arguments: mutationNode?.arguments?.map((argument) => {
+      if (argument.name.value === 'relativePath') {
+        return {
+          kind: 'Argument',
+          name: {
+            kind: 'Name',
+            value: argument.name.value,
+          },
+          value: {
+            kind: 'StringValue',
+            value: relativePath,
+          },
+        }
+      }
+      return {
+        kind: 'Argument',
+        name: {
+          kind: 'Name',
+          value: argument.name.value,
+        },
+        value: {
+          kind: 'Variable',
+          name: {
+            kind: 'Name',
+            value: argument.name.value,
+          },
+        },
+      }
+    }),
+    // arguments: mutationNode?.arguments
+  }
+  const paramArgs = mutationNode?.arguments?.find(
+    (arg) => arg.name.value === 'params'
+  )
+  if (!paramArgs) {
+    throw new Error(
+      `Expected to find argument named params for mutation ${mutationName}`
+    )
+  }
+  const q: OperationDefinitionNode = {
+    kind: 'OperationDefinition',
+    operation: 'mutation',
+    name: {
+      value: 'UpdateDocument',
+      kind: 'Name',
+    },
+    variableDefinitions: [
+      {
+        kind: 'VariableDefinition',
+        variable: {
+          kind: 'Variable',
+          name: {
+            kind: 'Name',
+            value: 'params',
+          },
+        },
+        type: paramArgs?.type,
+      },
+    ],
+    selectionSet: {
+      kind: 'SelectionSet',
+      selections: [newNode],
+    },
+  }
+  const mutationString = addFragmentsToQuery(info, newNode, q)
+  return {
+    path: ['data', ...buildPath(info.path, []), 'form'],
+    string: mutationString,
+    includeCollection: false,
+  }
+}
+function addFragmentsToQuery(
+  info: GraphQLResolveInfo,
+  fieldNode: FieldNode,
+  q: OperationDefinitionNode
+) {
+  const fragmentSpreadVisitor = (frag: Frag): VisitorType => {
+    return {
+      leave: {
+        FragmentSpread(node, key, parent, path) {
+          frag.subFrags.push(node.name.value)
+        },
+      },
+    }
+  }
+  const frags: Frag[] = []
+  Object.entries(info.fragments).map(([fragmentName, fragmentDefinition]) => {
+    const frag = {
+      name: fragmentName,
+      node: fragmentDefinition,
+      subFrags: [],
+    }
+    frags.push(frag)
+    visit(fragmentDefinition, fragmentSpreadVisitor(frag))
+  })
+  const n: { query: string; fragments: string[] } = {
+    query: print(fieldNode),
+    fragments: [],
+  }
+  const visitor: VisitorType = {
+    leave: {
+      FragmentSpread(node, key, parent, path) {
+        n.fragments.push(node.name.value)
+      },
+    },
+  }
+  visit(fieldNode, visitor)
+  const getFrags = (fragNames: string[], accum: FragmentDefinitionNode[]) => {
+    fragNames.forEach((fragName) => {
+      const frag = frags.find((f) => f.name === fragName)
+      if (!frag) {
+        throw new Error(`Unable to find fragment ${fragName}`)
+      }
+      accum.push(frag.node)
+      if (frag.subFrags) {
+        getFrags(frag.subFrags, accum)
+      }
+    })
+    return accum
+  }
+  const fragss = getFrags(n.fragments, [])
+  const queryString = `${fragss.map((f) => print(f)).join('\n')}\n${print(q)}`
+  return queryString
 }

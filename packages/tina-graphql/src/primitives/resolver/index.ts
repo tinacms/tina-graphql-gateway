@@ -60,7 +60,7 @@ export class Resolver {
       ...extraFields,
     }
   }
-  public getDocument = async (fullPath: unknown, info: GraphQLResolveInfo) => {
+  public getDocument = async (fullPath: unknown) => {
     if (typeof fullPath !== 'string') {
       throw new Error(`fullPath must be of type string for getDocument request`)
     }
@@ -122,13 +122,11 @@ export class Resolver {
     args,
     collection: collectionName,
     isMutation,
-    info,
   }: {
     value: unknown
     args: unknown
     collection: string
     isMutation: boolean
-    info: GraphQLResolveInfo
   }) => {
     const collectionNames = this.tinaSchema
       .getCollections()
@@ -178,16 +176,13 @@ export class Resolver {
           })
       }
     }
-    return this.getDocument(realPath, info)
+    return this.getDocument(realPath)
   }
-  public resolveCollectionConnections = async (
-    { ids }: { ids: string[] },
-    info: GraphQLResolveInfo
-  ) => {
+  public resolveCollectionConnections = async ({ ids }: { ids: string[] }) => {
     return {
       totalCount: ids.length,
       edges: await sequential(ids, async (filepath) => {
-        const document = await this.getDocument(filepath, info)
+        const document = await this.getDocument(filepath)
         return {
           node: document,
         }
@@ -195,23 +190,20 @@ export class Resolver {
     }
   }
 
-  public resolveCollectionConnection = async (
-    {
-      args,
-      lookup,
-    }: {
-      args: Record<string, Record<string, object>>
-      lookup: CollectionDocumentListLookup
-    },
-    info: GraphQLResolveInfo
-  ) => {
+  public resolveCollectionConnection = async ({
+    args,
+    lookup,
+  }: {
+    args: Record<string, Record<string, object>>
+    lookup: CollectionDocumentListLookup
+  }) => {
     const documents = await this.database.getDocumentsForCollection(
       lookup.collection
     )
     return {
       totalCount: documents.length,
       edges: await sequential(documents, async (filepath) => {
-        const document = await this.getDocument(filepath, info)
+        const document = await this.getDocument(filepath)
         return {
           node: document,
         }

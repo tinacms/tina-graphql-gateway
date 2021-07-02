@@ -1,3 +1,11 @@
+fragment AuthorFragment on AuthorDocument {
+  data {
+    ...Meh
+  }
+}
+fragment Meh on AuthorAuthor {
+  name
+}
 mutation UpdateDocument($params: PostMutation!) {
   updatePostDocument(relativePath: "hello-world.md", params: $params) {
     ... on PostDocument {
