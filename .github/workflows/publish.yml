@@ -14,15 +14,16 @@ jobs:
       - name: Install dependencies
         # Before merging to main, re-run the install for security purposes
         # https://yarnpkg.com/features/zero-installs/#does-it-have-security-implications
-        run: yarn install --check-cache
+        # run: yarn install --check-cache
+        run: yarn install
       - name: Build
         run: yarn ci:build
       - name: Test
         run: yarn ci:test
       - name: Create release pull request or Publish to npm
         uses: changesets/action@master
-        # with:
-        #   version: yarn changeset version
+        with:
+          version: yarn changeset version
         #   publish: yarn ci:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
