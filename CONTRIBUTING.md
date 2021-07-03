@@ -52,9 +52,11 @@ Feel free to edit this file if you want to alter your messages or which versions
 
 The PR will be checked for a changeset file. You're done!
 
-However, your changes won't yet be published to NPM, remember you haven't actually bumped any package versions yet. Instead, when the PR is merged to `main`, another action will kick in. It will create a _separate_ PR which is essentially all of the active changesets in flight. So several merged PRs may result in several pending changesets.
+Once the PR is merged and has completed it's actions, you can install the changes by installing the @dev version of the package. So if there were changes to `tina-graphql` merged into `main`, you can test them out by running `yarn add tina-grahql@dev`.
 
-This PR calls `yarn changeset version`, which _deletes_ changeset files and updates `CHANGELOG.md` files in each package. This PR will stay up to date as new changesets enter the `main` branch. [Here's an example](https://github.com/tinacms/tina-graphql-gateway/pull/316) of what that looks like.
+However, your changes won't yet be published to NPM under the `@latest` tag yet. So without specifying the `@dev` tag, users won't get your latest changes. Instead, when the PR is merged to `main`, another action will kick in. It will create a _separate_ PR which is essentially all of the active changesets in flight. So several merged PRs may result in several pending changesets.
+
+This PR calls `yarn changeset version`, which _deletes_ changeset files and updates `CHANGELOG.md` files in each package. This PR will stay up to date as new changesets enter the `main` branch. [Here's an example](https://github.com/tinacms/tina-graphql-gateway/pull/316) of what that looks like. Only once this PR is merged will the latest changes be generally available.
 
 #### For maintainers: Merge the "Version Packages" PR _back_ to `main`
 
