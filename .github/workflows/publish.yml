@@ -4,7 +4,7 @@ on:
     branches: [main]
 
 jobs:
-  publish:
+  build:
     strategy:
       max-parallel: 1
       matrix:
@@ -32,6 +32,8 @@ jobs:
         if: matrix.channel == 'latest'
         with:
           version: yarn changeset version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release to @dev channel
         if: matrix.channel == 'dev'
         run: |
