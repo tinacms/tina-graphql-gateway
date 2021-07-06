@@ -1,6 +1,6 @@
 {
   "name": "next-tinacms-cloudinary",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -26,16 +26,16 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styled-components": "^5.2.0",
-    "tina-graphql-gateway": "workspace:packages/tina-graphql-gateway",
-    "tinacms": "^0.31.0"
+    "tina-graphql-gateway": "workspace:*",
+    "tinacms": "^0.42.0"
   },
   "peerDependencies": {
     "react": ">=16.8",
     "react-dom": ">=16.8",
     "react-is": "^16.13.1 || <18.0.0",
     "styled-components": "*",
-    "tina-graphql-gateway": ">=0.2.18",
-    "tinacms": "^0.31.0"
+    "tina-graphql-gateway": ">=0.2.23",
+    "tinacms": "^0.42.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

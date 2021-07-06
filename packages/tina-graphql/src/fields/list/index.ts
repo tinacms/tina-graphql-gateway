@@ -149,7 +149,7 @@ export const list = {
           : field.config?.source?.type === 'pages'
           ? 'pages'
           : 'simple'
-      let defaultItem = { value: '', label: '' }
+      let defaultItem = ''
 
       // FIXME this should be a subset type of TinaField,
       // this property doesn't need most of these fields
@@ -178,7 +178,7 @@ export const list = {
             datasource,
             field: selectField,
           })
-          defaultItem = fieldComponent.options[0]
+          defaultItem = fieldComponent?.options[0]?.value || ''
           break
         case 'simple':
           list = field as SimpleList
@@ -264,7 +264,7 @@ export const list = {
       try {
         assertIsStringArray(value, { source: 'list input' })
         let listTypeIdentifier: 'simple' | 'pages' | 'documents' = 'simple'
-        const isSimple = field.config.use_select ? false : true
+        const isSimple = field.config?.use_select ? false : true
         if (!isSimple) {
           listTypeIdentifier =
             field.config?.source?.type === 'documents'
@@ -287,6 +287,7 @@ export const list = {
             return { [field.name]: value }
         }
       } catch (e) {
+        console.log(e)
         return false
       }
     },
@@ -336,6 +337,6 @@ export type TinaListField = {
   name: string
   component: 'list'
   field: TinaField
-  defaultItem: { label: string; value: string }
+  defaultItem: string
   __typename: typeof typename
 }

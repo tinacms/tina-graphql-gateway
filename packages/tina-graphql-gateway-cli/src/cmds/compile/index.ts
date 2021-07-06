@@ -22,6 +22,7 @@ import * as _ from 'lodash'
 import type { unstable_TinaCloudSchema } from 'tina-graphql'
 import { successText, dangerText, logText } from '../../utils/theme'
 import { defaultSchema } from './defaultSchema'
+import { logger } from '../../logger'
 
 const tinaPath = path.join(process.cwd(), '.tina')
 const tinaTempPath = path.join(process.cwd(), '.tina', '__generated__', 'temp')
@@ -189,7 +190,7 @@ const buildTemplate = async (
   // with the new one, probably need something robust
   // here to ensure we're keeping things sane
   if (compiledTemplates.includes(output.name)) {
-    // console.log(`already compiled template at ${outputYmlPath}, skipping`);
+    // logger.info(`already compiled template at ${outputYmlPath}, skipping`);
     return true
   } else {
     compiledTemplates.push(output.name)
@@ -224,7 +225,7 @@ export const compile = async (_ctx, _next, { experimental }) => {
     !fs.existsSync(tinaPath) ||
     !fs.existsSync(path.join(tinaPath, 'schema.ts'))
   ) {
-    console.log(
+    logger.info(
       dangerText(`
       .tina/schema.ts not found, Creating one for you...
       See Documentation: https://tina.io/docs/tina-cloud/cli/#getting-started"
@@ -272,7 +273,7 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
       const isValidPath = await fs.exists(collection.path)
       // @ts-ignore
       if (!isValidPath) {
-        console.log(
+        logger.info(
           dangerText(
             `Collection '${collection.name}', path '${collection.path}' not found, check that path exists on your filesystem`
           )
@@ -311,13 +312,13 @@ export const compileInner = async (schemaObject: TinaCloudSchema) => {
         )
     )
   )
-  console.log(`Tina config ======> ${successText(tinaConfigPath)}`)
+  logger.info(`Tina config ======> ${successText(tinaConfigPath)}`)
   await fs.remove(tinaTempPath)
-  console.log(logText('Done Compiling...'))
+  logger.info(logText('Done Compiling...'))
 }
 
 const transpile = async (projectDir, tempDir) => {
-  console.log(logText('Transpiling...'))
+  logger.info(logText('Transpiling...'))
   // Make sure that post paths are posix (unix paths). This is necessary on windows.
   const posixProjectDir = normalize(projectDir)
   const posixTempDir = normalize(tempDir)
@@ -424,7 +425,7 @@ export const defineSchema = (config: TinaCloudSchema) => {
 
                   let error = ''
                   if (!schema) {
-                    // console.log("no schema validate", item.type);
+                    // logger.info("no schema validate", item.type);
                   } else {
                     try {
                       schema.validateSync(item)

@@ -21,7 +21,8 @@ import {
 import { genTypes } from '../query-gen'
 import { compile } from '../compile'
 import chokidar from 'chokidar'
-import { dangerText } from '../../utils/theme'
+import { successText, dangerText } from '../../utils/theme'
+import { logger } from '../../logger'
 
 interface Options {
   port?: number
@@ -39,11 +40,13 @@ export async function startServer(
   const startSubprocess = () => {
     if (typeof command === 'string') {
       const commands = command.split(' ')
-      const ps = childProcess.spawn(commands[0], [commands[1]], {
+      const firstCommand = commands[0]
+      const args = commands.slice(1) || []
+      const ps = childProcess.spawn(firstCommand, args, {
         stdio: 'inherit',
       })
       ps.on('close', (code) => {
-        console.log(`child process exited with code ${code}`)
+        logger.info(`child process exited with code ${code}`)
         process.exit(code)
       })
     }
@@ -68,18 +71,19 @@ export async function startServer(
           } else {
             schema = await buildSchema(process.cwd())
           }
+          logger.info('Generating Tina config')
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()
         } catch (e) {
-          console.log(dangerText(`${e.message}, exiting...`))
-          console.log(e)
+          logger.info(dangerText(`${e.message}, exiting...`))
+          logger.info(e)
           process.exit(0)
         }
       })
       .on('all', async (event, path) => {
         if (ready) {
-          console.log('Tina change detected, regenerating config')
+          logger.info('Tina change detected, regenerating config')
           try {
             await compile(null, null, { experimental })
             let schema
@@ -93,12 +97,12 @@ export async function startServer(
             }
             await genTypes({ schema }, () => {}, {})
           } catch (e) {
-            console.log(
+            logger.info(
               dangerText(
                 'Compilation failed with errors, server has not been restarted'
               )
             )
-            console.log(e)
+            logger.info(e.message)
           }
         }
       })
@@ -115,8 +119,8 @@ export async function startServer(
     const s = require('./server')
     state.server = await s.default(experimental)
     state.server.listen(port, () => {
-      console.log(`Started Filesystem GraphQL server on port: ${port}`)
-      console.log(`Visit the playground at http://localhost:${port}/altair/`)
+      logger.info(`Started Filesystem GraphQL server on port: ${port}`)
+      logger.info(`Visit the playground at http://localhost:${port}/altair/`)
     })
     state.server.on('connection', (socket) => {
       state.sockets.push(socket)
@@ -124,7 +128,7 @@ export async function startServer(
   }
 
   const restart = async () => {
-    console.log('Detected change to gql package, restarting...')
+    logger.info('Detected change to gql package, restarting...')
     delete require.cache[gqlPackageFile]
 
     state.sockets.forEach((socket, index) => {
@@ -134,7 +138,7 @@ export async function startServer(
     })
     state.sockets = []
     state.server.close(() => {
-      console.log('Server closed')
+      logger.info('Server closed')
       start()
     })
   }
@@ -152,7 +156,7 @@ export async function startServer(
         }
       })
   } else {
-    console.log('Detected CI environment, omitting watch commands...')
+    logger.info('Detected CI environment, omitting watch commands...')
     start()
     startSubprocess()
   }

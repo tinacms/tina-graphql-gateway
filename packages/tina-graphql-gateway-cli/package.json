@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway-cli",
-  "version": "0.2.51",
+  "version": "0.2.59",
   "main": "dist/index.js",
   "files": [
     "dist/*",
@@ -24,6 +24,8 @@
     "@types/listr": "0.14.2",
     "@types/lodash": "^4.14.157",
     "@types/lodash.get": "^4.4.6",
+    "@types/log4js": "^2.3.5",
+    "@types/progress": "^2.0.3",
     "@types/yup": "^0.29.11",
     "jest": "26.1.0",
     "ts-jest": "^26.5.3",
@@ -56,9 +58,11 @@
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.19",
     "lodash.get": "^4.4.2",
+    "log4js": "^6.3.0",
     "normalize-path": "^3.0.0",
-    "tina-graphql": "workspace:packages/tina-graphql",
-    "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
+    "progress": "^2.0.3",
+    "tina-graphql": "workspace:*",
+    "tina-graphql-helpers": "workspace:*",
     "typescript": "^4.2.2",
     "yup": "^0.32.9"
   },

@@ -15,6 +15,7 @@ import { successText } from '../../utils/theme'
 import { generateTypes } from '../../codegen'
 import { printSchema, GraphQLSchema } from 'graphql'
 import fs from 'fs-extra'
+import { logger } from '../../logger'
 
 export async function genTypes(
   { schema }: { schema: GraphQLSchema },
@@ -30,7 +31,7 @@ export async function genTypes(
 ${typescriptTypes}
 `
   )
-  console.log(`Typescript types => ${successText(typesPath)}`)
+  logger.info(`Typescript types => ${successText(typesPath)}`)
 
   const schemaString = await printSchema(schema)
   const schemaPath = process.cwd() + '/.tina/__generated__/schema.gql'
@@ -41,6 +42,6 @@ ${typescriptTypes}
 ${schemaString}
   `
   )
-  console.log(`GraphQL types ====> ${successText(schemaPath)}`)
+  logger.info(`GraphQL types ====> ${successText(schemaPath)}`)
   next()
 }

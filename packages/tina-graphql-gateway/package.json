@@ -1,6 +1,6 @@
 {
   "name": "tina-graphql-gateway",
-  "version": "0.2.20",
+  "version": "0.2.23",
   "main": "dist/index.js",
   "files": [
     "dist/*"
@@ -38,7 +38,7 @@
     "next": "9.4.2",
     "node-fetch": "^2.6.0",
     "prop-types": "15.7.2",
-    "tina-graphql-helpers": "workspace:packages/tina-graphql-helpers",
+    "tina-graphql-helpers": "workspace:*",
     "tsup": "^3.7.0",
     "typescript": "^3.9.5",
     "xstate": "^4.15.1",
