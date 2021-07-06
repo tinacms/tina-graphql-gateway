@@ -1,0 +1,255 @@
+"""References another document, used as a foreign key"""
+scalar Reference
+
+""""""
+scalar JSON
+
+type SystemInfo {
+  filename: String
+  basename: String
+  breadcrumbs(excludeExtension: Boolean): [String]
+  path: String
+  relativePath: String
+  extension: String
+  template: String
+  collection: Collection
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String!
+  endCursor: String!
+}
+
+""""""
+interface Node {
+  id: ID!
+}
+
+""""""
+interface Document {
+  id: ID!
+}
+
+"""A relay-compliant pagination connection"""
+interface Connection {
+  totalCount: Int!
+}
+
+type Query {
+  getCollection(collection: String): Collection!
+  getCollections: [Collection!]
+  node(id: String): Node!
+  getDocument(collection: String, relativePath: String): DocumentNode!
+  getDocumentList(before: String, after: String, first: Int, last: Int): DocumentConnection!
+  getPostsDocument(relativePath: String): PostsDocument!
+  getPostsList(before: String, after: String, first: Int, last: Int): PostsConnection!
+  getAuthorsDocument(relativePath: String): AuthorsDocument!
+  getAuthorsList(before: String, after: String, first: Int, last: Int): AuthorsConnection!
+  getMarketingPagesDocument(relativePath: String): MarketingPagesDocument!
+  getMarketingPagesList(before: String, after: String, first: Int, last: Int): MarketingPagesConnection!
+}
+
+type DocumentConnectionEdges {
+  cursor: String
+  node: DocumentNode
+}
+
+type DocumentConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Int!
+  edges: [DocumentConnectionEdges]
+}
+
+type Collection {
+  name: String!
+  label: String!
+  path: String!
+  format: String
+  matches: String
+  documents(before: String, after: String, first: Int, last: Int): DocumentConnection!
+}
+
+union DocumentNode = PostsDocument | AuthorsDocument | MarketingPagesDocument
+
+union PostsArticleAuthorDocument = AuthorsDocument
+
+type PostsArticle {
+  title: String
+  hero: String
+  author: PostsArticleAuthorDocument
+  body: String
+}
+
+union Posts = PostsArticle
+
+type PostsDocument implements Node {
+  id: ID!
+  sys: SystemInfo
+  data: Posts!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type PostsConnectionEdges {
+  cursor: String
+  node: PostsDocument
+}
+
+type PostsConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Int!
+  edges: [PostsConnectionEdges]
+}
+
+type AuthorsAuthor {
+  name: String
+  avatar: String
+}
+
+union Authors = AuthorsAuthor
+
+type AuthorsDocument implements Node {
+  id: ID!
+  sys: SystemInfo
+  data: Authors!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type AuthorsConnectionEdges {
+  cursor: String
+  node: AuthorsDocument
+}
+
+type AuthorsConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Int!
+  edges: [AuthorsConnectionEdges]
+}
+
+type MarketingPagesLandingPageBlocksMessageSeo {
+  seoTitle: String
+}
+
+type MarketingPagesLandingPageBlocksMessageNestedPageHero {
+  herotitle: String
+}
+
+union MarketingPagesLandingPageBlocksMessageNestedPage = MarketingPagesLandingPageBlocksMessageNestedPageHero
+
+type MarketingPagesLandingPageBlocksMessage {
+  messageHeader: String
+  messageBody: String
+  seo: [MarketingPagesLandingPageBlocksMessageSeo]
+  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPage]
+}
+
+type MarketingPagesLandingPageBlocksImage {
+  heading: String
+  imgDescription: String
+  src: String
+}
+
+union MarketingPagesLandingPageBlocks = MarketingPagesLandingPageBlocksMessage | MarketingPagesLandingPageBlocksImage
+
+type MarketingPagesLandingPage {
+  blocks: [MarketingPagesLandingPageBlocks]
+}
+
+union MarketingPages = MarketingPagesLandingPage
+
+type MarketingPagesDocument implements Node {
+  id: ID!
+  sys: SystemInfo
+  data: MarketingPages!
+  form: JSON!
+  values: JSON!
+  dataJSON: JSON!
+}
+
+type MarketingPagesConnectionEdges {
+  cursor: String
+  node: MarketingPagesDocument
+}
+
+type MarketingPagesConnection implements Connection {
+  pageInfo: PageInfo
+  totalCount: Int!
+  edges: [MarketingPagesConnectionEdges]
+}
+
+type Mutation {
+  addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
+  updateDocument(collection: String!, relativePath: String!, params: DocumentMutation!): DocumentNode!
+  updatePostsDocument(relativePath: String!, params: PostsMutation!): PostsDocument!
+  updateAuthorsDocument(relativePath: String!, params: AuthorsMutation!): AuthorsDocument!
+  updateMarketingPagesDocument(relativePath: String!, params: MarketingPagesMutation!): MarketingPagesDocument!
+}
+
+input DocumentMutation {
+  posts: PostsMutation
+  authors: AuthorsMutation
+  marketingPages: MarketingPagesMutation
+}
+
+input PostsArticleMutation {
+  title: String
+  hero: String
+  author: String
+  body: String
+}
+
+input PostsMutation {
+  article: PostsArticleMutation
+}
+
+input AuthorsAuthorMutation {
+  name: String
+  avatar: String
+}
+
+input AuthorsMutation {
+  author: AuthorsAuthorMutation
+}
+
+input MarketingPagesLandingPageBlocksMessageSeoMutation {
+  seoTitle: String
+}
+
+input MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation {
+  herotitle: String
+}
+
+input MarketingPagesLandingPageBlocksMessageNestedPageMutation {
+  hero: MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation
+}
+
+input MarketingPagesLandingPageBlocksMessageMutation {
+  messageHeader: String
+  messageBody: String
+  seo: [MarketingPagesLandingPageBlocksMessageSeoMutation]
+  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPageMutation]
+}
+
+input MarketingPagesLandingPageBlocksImageMutation {
+  heading: String
+  imgDescription: String
+  src: String
+}
+
+input MarketingPagesLandingPageBlocksMutation {
+  message: MarketingPagesLandingPageBlocksMessageMutation
+  image: MarketingPagesLandingPageBlocksImageMutation
+}
+
+input MarketingPagesLandingPageMutation {
+  blocks: [MarketingPagesLandingPageBlocksMutation]
+}
+
+input MarketingPagesMutation {
+  landingPage: MarketingPagesLandingPageMutation
+}

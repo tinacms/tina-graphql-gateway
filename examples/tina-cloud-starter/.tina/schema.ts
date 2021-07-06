@@ -11,123 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema, unstable_defineSchema } from 'tina-graphql-gateway-cli'
+import { defineSchema } from 'tina-graphql-gateway-cli'
 
-// export default defineSchema({
-//   collections: [
-//     {
-//       label: 'Blog Posts',
-//       name: 'posts',
-//       path: 'content/posts',
-//       templates: [
-//         {
-//           label: 'Article',
-//           name: 'article',
-//           fields: [
-//             {
-//               type: 'text',
-//               label: 'Title',
-//               name: 'title',
-//             },
-//             {
-//               name: 'hero',
-//               type: 'image',
-//               label: 'Hero',
-//             },
-//             {
-//               type: 'reference',
-//               label: 'Author',
-//               name: 'author',
-//               collection: 'authors',
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//     {
-//       label: 'Authors',
-//       name: 'authors',
-//       path: 'content/authors',
-//       templates: [
-//         {
-//           label: 'Author',
-//           name: 'author',
-//           fields: [
-//             {
-//               type: 'text',
-//               label: 'Name',
-//               name: 'name',
-//             },
-//             {
-//               type: 'text',
-//               label: 'Avatar',
-//               name: 'avatar',
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//     {
-//       label: 'Marketing Pages',
-//       name: 'marketingPages',
-//       path: 'content/marketing-pages',
-//       templates: [
-//         {
-//           label: 'Landing Page',
-//           name: 'landingPage',
-//           fields: [
-//             {
-//               type: 'blocks',
-//               name: 'blocks',
-//               label: 'Blocks',
-//               templates: [
-//                 {
-//                   name: 'message',
-//                   label: 'Message',
-//                   fields: [
-//                     {
-//                       type: 'text',
-//                       label: 'Message Header',
-//                       name: 'messageHeader',
-//                     },
-//                     {
-//                       type: 'textarea',
-//                       label: 'Message Body',
-//                       name: 'messageBody',
-//                     },
-//                   ],
-//                 },
-//                 {
-//                   name: 'image',
-//                   label: 'Image',
-//                   fields: [
-//                     {
-//                       type: 'text',
-//                       label: 'Heading',
-//                       name: 'heading',
-//                     },
-//                     {
-//                       type: 'textarea',
-//                       label: 'Image Description',
-//                       name: 'imgDescription',
-//                     },
-//                     {
-//                       type: 'text',
-//                       label: 'Image src',
-//                       name: 'src',
-//                     },
-//                   ],
-//                 },
-//               ],
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//   ],
-// })
-
-export default unstable_defineSchema({
+export default defineSchema({
   collections: [
     {
       label: 'Blog Posts',
@@ -139,7 +25,7 @@ export default unstable_defineSchema({
           name: 'article',
           fields: [
             {
-              type: 'string',
+              type: 'text',
               label: 'Title',
               name: 'title',
             },
@@ -152,13 +38,7 @@ export default unstable_defineSchema({
               type: 'reference',
               label: 'Author',
               name: 'author',
-              collections: ['authors'],
-            },
-            {
-              type: 'string',
-              label: 'Body',
-              name: 'body',
-              isBody: true,
+              collection: 'authors',
             },
           ],
         },
@@ -174,12 +54,12 @@ export default unstable_defineSchema({
           name: 'author',
           fields: [
             {
-              type: 'string',
+              type: 'text',
               label: 'Name',
               name: 'name',
             },
             {
-              type: 'string',
+              type: 'text',
               label: 'Avatar',
               name: 'avatar',
             },
@@ -197,56 +77,23 @@ export default unstable_defineSchema({
           name: 'landingPage',
           fields: [
             {
-              type: 'object',
+              type: 'blocks',
               name: 'blocks',
               label: 'Blocks',
-              list: true,
               templates: [
                 {
                   name: 'message',
                   label: 'Message',
                   fields: [
                     {
-                      type: 'string',
+                      type: 'text',
                       label: 'Message Header',
                       name: 'messageHeader',
                     },
                     {
-                      type: 'string',
+                      type: 'textarea',
                       label: 'Message Body',
                       name: 'messageBody',
-                    },
-                    {
-                      type: 'object',
-                      label: 'Seo',
-                      name: 'seo',
-                      list: true,
-                      fields: [
-                        {
-                          type: 'string',
-                          label: 'SEO title',
-                          name: 'seoTitle',
-                        },
-                      ],
-                    },
-                    {
-                      type: 'object',
-                      label: 'Nested Page',
-                      name: 'nestedPage',
-                      list: true,
-                      templates: [
-                        {
-                          name: 'hero',
-                          label: 'Hero',
-                          fields: [
-                            {
-                              type: 'string',
-                              label: 'Hero title',
-                              name: 'herotitle',
-                            },
-                          ],
-                        },
-                      ],
                     },
                   ],
                 },
@@ -255,17 +102,17 @@ export default unstable_defineSchema({
                   label: 'Image',
                   fields: [
                     {
-                      type: 'string',
+                      type: 'text',
                       label: 'Heading',
                       name: 'heading',
                     },
                     {
-                      type: 'string',
+                      type: 'textarea',
                       label: 'Image Description',
                       name: 'imgDescription',
                     },
                     {
-                      type: 'string',
+                      type: 'text',
                       label: 'Image src',
                       name: 'src',
                     },

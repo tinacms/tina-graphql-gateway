@@ -13,9 +13,9 @@ limitations under the License.
 
 import { LandingPage } from '../components/landing-page'
 import { Wrapper } from '../components/helper-components'
+import type { MarketingPages_Document } from '../.tina/__generated__/types'
 import { AsyncReturnType } from './posts/[filename]'
 import { LocalClient } from 'tina-graphql-gateway'
-import type { MarketingPagesDocument } from '../.tina/__generated__/types'
 
 export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
@@ -27,47 +27,24 @@ export default function HomePage(
   )
 }
 
-const gql = (strings: TemplateStringsArray) => strings
-
-export const query = gql`
+export const query = `#graphql
   query ContentQuery {
     # "index.md" is _relative_ to the "Marketing Pages" path property in your schema definition
     # you can inspect this file at "content/marketing-pages/index.md"
     getMarketingPagesDocument(relativePath: "index.md") {
       data {
         __typename
-        ... on MarketingPagesLandingPage {
+        ... on LandingPage_Doc_Data {
           blocks {
             __typename
-            ... on MarketingPagesLandingPageBlocksImage {
-              heading
-              imgDescription
-              src
-            }
-            ... on MarketingPagesLandingPageBlocksMessage {
+            ... on Message_Data {
               messageHeader
               messageBody
             }
-          }
-        }
-      }
-    }
-    getPostsDocument(relativePath: "voteForPedro.md") {
-      data {
-        __typename
-        ... on PostsArticle {
-          title
-          hero
-          author {
-            __typename
-            ... on AuthorsDocument {
-              data {
-                __typename
-                ... on AuthorsAuthor {
-                  name
-                  avatar
-                }
-              }
+            ... on Image_Data {
+              heading
+              imgDescription
+              src
             }
           }
         }
@@ -81,8 +58,8 @@ export const getStaticProps = async () => {
   return {
     props: {
       data: await client.request<{
-        getMarketingPagesDocument: MarketingPagesDocument
-      }>(query.join(''), {
+        getMarketingPagesDocument: MarketingPages_Document
+      }>(query, {
         variables: {},
       }),
       query: query,

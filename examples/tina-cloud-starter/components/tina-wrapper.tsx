@@ -13,7 +13,7 @@ limitations under the License.
 
 import { TinaCloudProvider } from 'tina-graphql-gateway'
 import React from 'react'
-import { unstable_useGraphQLForms } from 'tina-graphql-gateway'
+import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
 import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 
@@ -36,7 +36,7 @@ const TinaWrapper = (props) => {
 }
 
 const Inner = (props) => {
-  const [payload, isLoading] = unstable_useGraphQLForms({
+  const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
     variables: props.variables || {},
   })
