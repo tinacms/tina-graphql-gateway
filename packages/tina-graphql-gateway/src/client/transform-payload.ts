@@ -98,15 +98,9 @@ export const transformPayload = ({
       }
       return transformInputObject(values, accum, inputType)
     } else {
-      // @ts-ignore FIXME: PRIMITIVES
-      const { _collection, ...rest } = values
-      const payload = transformPayload2(rest, accum)
-      // FIXME: PRIMITIVES this probably needs to be supported for `updateDocument` mutation
-      if (false) {
-        return { [_collection]: payload }
-      } else {
-        return payload
-      }
+      throw new Error(
+        `Unable to transform payload, expected param arg to by an instance of GraphQLInputObjectType`
+      )
     }
   } catch (e) {
     console.log('oh no', e)
@@ -167,35 +161,5 @@ const transformInputObject = (
     })
     accum[templateNameString] = fieldTypes
   }
-  return accum
-}
-
-// FIXME: PRIMITIVES
-const transformPayload2 = (
-  obj: { _template?: string } | string | number | boolean,
-  accum: { [key: string]: unknown }
-) => {
-  if (
-    typeof obj === 'string' ||
-    typeof obj === 'number' ||
-    typeof obj === 'boolean'
-  ) {
-    return obj
-  }
-  if (obj._template) {
-    const { _template, ...rest } = obj
-    const temp = transformPayload2(rest, {})
-    accum[_template] = temp
-    return accum
-  }
-  Object.entries(obj).map(([key, value]) => {
-    if (Array.isArray(value)) {
-      console.log('its an array', value)
-      accum[key] = value.map((item) => transformPayload2(item, {}))
-    } else {
-      accum[key] = transformPayload2(value, {})
-    }
-  })
-
   return accum
 }

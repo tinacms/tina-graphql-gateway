@@ -35,8 +35,6 @@ import type { GraphQLResolveInfo, DocumentNode } from 'graphql'
 import type { Database } from './database'
 import type { TinaCloudSchemaBase } from './types'
 import { Path } from 'graphql/jsutils/Path'
-import { splitQuery2 } from 'tina-graphql-helpers'
-import { FieldName } from 'aws-sdk/clients/cloudsearch'
 import { NAMER } from './ast-builder'
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>

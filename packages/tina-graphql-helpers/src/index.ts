@@ -12,5 +12,5 @@ limitations under the License.
 */
 
 export { friendlyName, templateTypeName, templateName } from './util'
-export { formify, splitQuery, splitQuery2 } from './queryBuilder'
+export { formify, splitQuery } from './queryBuilder'
 export { queryGenerator } from './dummy-generators'
