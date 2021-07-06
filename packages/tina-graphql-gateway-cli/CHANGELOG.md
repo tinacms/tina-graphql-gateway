@@ -1,5 +1,13 @@
 # tina-graphql-gateway-cli
 
+## 0.2.60
+
+### Patch Changes
+
+- c21bda17: Allow single command arguments to be passed in the sub command for the server:start command
+- Updated dependencies [348ef1e5]
+  - tina-graphql@0.1.25
+
 ## 0.2.58
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "scripts": {
     "dev": "yarn tina-gql server:start -c \"yarn next-dev\"",
