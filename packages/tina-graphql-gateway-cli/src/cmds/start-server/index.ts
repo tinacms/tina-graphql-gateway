@@ -62,8 +62,12 @@ export async function startServer(
           })
           console.log('Generating Tina config')
           await compile(null, null, { experimental })
-          // const schema = await buildSchema(process.cwd())
-          const schema = await unstable_buildSchema(process.cwd(), database)
+          let schema
+          if (experimental) {
+            schema = await unstable_buildSchema(process.cwd(), database)
+          } else {
+            schema = await buildSchema(process.cwd())
+          }
           await genTypes({ schema }, () => {}, {})
           ready = true
           startSubprocess()
@@ -78,7 +82,15 @@ export async function startServer(
           console.log('Tina change detected, regenerating config')
           try {
             await compile(null, null, { experimental })
-            const schema = await buildSchema(process.cwd())
+            let schema
+            if (experimental) {
+              const database = await unstable_createDatabase({
+                rootPath: projectRoot,
+              })
+              schema = await unstable_buildSchema(process.cwd(), database)
+            } else {
+              schema = await buildSchema(process.cwd())
+            }
             await genTypes({ schema }, () => {}, {})
           } catch (e) {
             console.log(
@@ -86,7 +98,7 @@ export async function startServer(
                 'Compilation failed with errors, server has not been restarted'
               )
             )
-            console.log(e.message)
+            console.log(e)
           }
         }
       })
