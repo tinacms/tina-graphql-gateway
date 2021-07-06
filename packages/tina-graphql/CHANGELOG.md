@@ -1,5 +1,11 @@
 # tina-graphql
 
+## 0.1.25
+
+### Patch Changes
+
+- 348ef1e5: Testing version bumps go into a PR
+
 ## 0.1.24
 
 ### Patch Changes
