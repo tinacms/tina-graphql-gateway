@@ -35,7 +35,9 @@ export async function startServer(
   const startSubprocess = () => {
     if (typeof command === 'string') {
       const commands = command.split(' ')
-      const ps = childProcess.spawn(commands[0], [commands[1]], {
+      const firstCommand = commands[0]
+      const args = commands.slice(1) || []
+      const ps = childProcess.spawn(firstCommand, args, {
         stdio: 'inherit',
       })
       ps.on('close', (code) => {
