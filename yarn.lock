@@ -15645,7 +15645,7 @@ fsevents@~2.3.1:
     react-dom: ">=16.8"
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
-    tina-graphql-gateway: ">=0.2.18"
+    tina-graphql-gateway: ">=0.2.23"
     tinacms: ^0.42.0
   languageName: unknown
   linkType: soft
