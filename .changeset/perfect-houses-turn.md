@@ -15,19 +15,19 @@ We're going to be leaning on a more _primitive_ concept of how types are defined
 You can now provide `fields` instead of `templates` for your collection, doing so will result in a more straightforward schema definition:
 ```js
 {
-	collections: [{
-		name: "post",
-		label: "Post",
-		path: "content/posts",
-		fields: [
-			{
-				name: "title",
-				label: "Title",
-				type: "string" // read on below to learn more about _type_ changes
-			}
-		]
-		// defining `fields` and `templates` would result in a compilation error
-	}]
+  collections: [{
+    name: "post",
+    label: "Post",
+    path: "content/posts",
+    fields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "string" // read on below to learn more about _type_ changes
+      }
+    ]
+    // defining `fields` and `templates` would result in a compilation error
+  }]
 }
 ```
 
@@ -35,19 +35,19 @@ You can now provide `fields` instead of `templates` for your collection, doing s
 Previously, a collection could define multiple templates, the ambiguity introduced with this feature meant that your documents needed a `_template` field on them so we'd know which one they belonged to. It also mean having to disambiguate your queries in graphql:
 ```graphql
 getPostDocument(relativePage: $relativePath) {
-	data {
-		...on Article_Doc_Data {
-			title
-		}
-	}
+  data {
+    ...on Article_Doc_Data {
+      title
+    }
+  }
 }
 ```
 Going forward, if you use `fields` on a collection, you can omit the `_template` key and simplify your query:
 ```graphql
 getPostDocument(relativePage: $relativePath) {
-	data {
-		title
-	}
+  data {
+    title
+  }
 }
 ```
 
@@ -58,27 +58,27 @@ Types will look a little bit different, and are meant to reflect the lowest form
 
 ```js
 {
-	type: "text",
-	label: "Title",
-	name: "title"
+  type: "text",
+  label: "Title",
+  name: "title"
 }
 ```
 And if you decided you wanted to use a `textarea` field instead of `text`, you'd change it to:
 ```js
 {
-	type: "textarea",
-	label: "Title",
-	name: "title"
+  type: "textarea",
+  label: "Title",
+  name: "title"
 }
 ```
 #### Why?
 The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `component` can be used for customizing the look and behavior of the field's UI. So in the new API, you'd do this:
 ```js
 {
-	type: "string",
-	label: "Title",
-	name: "title"
-	component: "textarea" // leave blank for "text"
+  type: "string",
+  label: "Title",
+  name: "title"
+  component: "textarea" // leave blank for "text"
 }
 ```
 
@@ -96,29 +96,29 @@ If you're using custom components with Tina Cloud, you would have to have work w
 Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:
 ```js
 {
-	type: "string",
-	label: "Categories",
-	name: "categories"
-	list: true
+  type: "string",
+  label: "Categories",
+  name: "categories"
+  list: true
 }
 ```
 Additionally, enumerable lists and selects are inferred from the `options` property. The following example is represented by a `select` field:
 ```js
 {
-	type: "string",
-	label: "Categories",
-	name: "categories"
-	options: ["fitness", "movies", "music"]
+  type: "string",
+  label: "Categories",
+  name: "categories"
+  options: ["fitness", "movies", "music"]
 }
 ```
 While this, is a `checkbox` field
 ```js
 {
-	type: "string",
-	label: "Categories",
-	name: "categories"
-	list: true,
-	options: ["fitness", "movies", "music"]
+  type: "string",
+  label: "Categories",
+  name: "categories"
+  list: true,
+  options: ["fitness", "movies", "music"]
 }
 ```
 > Note we may introduce an `enum` type, but haven't discussed it thoroughly
@@ -139,19 +139,19 @@ Likewise, if you supply a `templates` field and `list: true`, you'll get the sam
 This is identical to the current `blocks` definition:
 ```js
 {
-	type: "object",
-	label: "Page Sections",
-	name: "pageSections"
-	list: true,
-	templates: [{
-		label: "Hero",
-		name: "hero",
-		fields: [{
-			label: "Title",
-			name: "title",
-			type: "string"
-		}]
-	}]
+  type: "object",
+  label: "Page Sections",
+  name: "pageSections"
+  list: true,
+  templates: [{
+    label: "Hero",
+    name: "hero",
+    fields: [{
+      label: "Title",
+      name: "title",
+      type: "string"
+    }]
+  }]
 }
 ```
 
@@ -220,25 +220,25 @@ Since markdown files sort of have an implicit "body" to them, we were automatica
 
 ```js
 {
-	collections: [{
-		name: "post",
-		label: "Post",
-		path: "content/posts",
-		fields: [
-			{
-				name: "title",
-				label: "Title",
-				type: "string"
-			}
-			{
-				name: "myBody",
-				label: "My Body",
-				type: "string",
-				component: 'textarea',
-				isBody: true
-			}
-		]
-	}]
+  collections: [{
+    name: "post",
+    label: "Post",
+    path: "content/posts",
+    fields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "string"
+      }
+      {
+        name: "myBody",
+        label: "My Body",
+        type: "string",
+        component: 'textarea',
+        isBody: true
+      }
+    ]
+  }]
 }
 ```
 This would result in a form field called `My Body` getting saved to the body of your markdown file (if you're using markdown):
