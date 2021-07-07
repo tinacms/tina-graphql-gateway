@@ -6,11 +6,11 @@
 'tina-graphql-helpers': patch
 ---
 
-## Define schema changes
+# Define schema changes
 
 We're going to be leaning on a more _primitive_ concept of how types are defined with Tina, and in doing so will be introducing some breaking changes to the way schemas are defined.
 
-### Collections now accept a `fields` _or_ `templates` property
+## Collections now accept a `fields` _or_ `templates` property
 
 You can now provide `fields` instead of `templates` for your collection, doing so will result in a more straightforward schema definition:
 ```js
@@ -31,7 +31,8 @@ You can now provide `fields` instead of `templates` for your collection, doing s
 }
 ```
 
-#### Why?
+__Why?__
+
 Previously, a collection could define multiple templates, the ambiguity introduced with this feature meant that your documents needed a `_template` field on them so we'd know which one they belonged to. It also mean having to disambiguate your queries in graphql:
 ```graphql
 getPostDocument(relativePage: $relativePath) {
@@ -52,46 +53,34 @@ getPostDocument(relativePage: $relativePath) {
 ```
 
 
-### `type` changes
+## `type` changes
 
-Types will look a little bit different, and are meant to reflect the lowest form of the shape they can represent. Moving forward, `component` will represent the UI portion of what you might expect. So as an example, for a blog post "description" field, previously you'd define it like this:
-
-```js
-{
-  type: "text",
-  label: "Title",
-  name: "title"
-}
-```
-And if you decided you wanted to use a `textarea` field instead of `text`, you'd change it to:
-```js
-{
-  type: "textarea",
-  label: "Title",
-  name: "title"
-}
-```
-#### Why?
-The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `component` can be used for customizing the look and behavior of the field's UI. So in the new API, you'd do this:
+Types will look a little bit different, and are meant to reflect the lowest form of the shape they can represent. Moving forward, `component` will represent the UI portion of what you might expect. For a blog post "description" field, you'd define it like this:
 ```js
 {
   type: "string",
-  label: "Title",
-  name: "title"
-  component: "textarea" // leave blank for "text"
+  label: "Description",
+  name: "description",
 }
 ```
+By default `string` will use the `text` field, but you can change that by specifying the `component`:
+```js
+{
+  type: "string",
+  label: "Description",
+  name: "description",
+  component: "textarea"
+}
+```
+__Why?__
 
-### All field config data is passed through to the frontend field
+The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `component` can be used for customizing the look and behavior of the field's UI.
 
-If you're using custom components with Tina Cloud, you would have to have work with the [formify](https://tina.io/docs/tina-cloud/client/#formify) API. Moving forward, you can simply supply any field information in the body of your field definition
+For now, all field config data is passed through to the frontend field, though we may introduce a namespaced "frontend" key which more accurately reflects frontend-only concerns.
 
-> Note: this works for scalar values only, so for example, you cannot define a `validate` function here.
+> Note: this works for scalar values only. For example, you cannot define a `validate` function here and instead must use the [formify](https://tina.io/docs/tina-cloud/client/#formify) API
 
-> Note: we may introduce a namespaced "frontend" key which more accurately reflects frontend-only concerns. But for now are leaving things untouched.
-
-
-### Every `type` can be a list
+## Every `type` can be a list
 
 Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:
 ```js
@@ -124,13 +113,13 @@ While this, is a `checkbox` field
 > Note we may introduce an `enum` type, but haven't discussed it thoroughly
 
 
-### Introducing the `object` type
+## Introducing the `object` type
 
 Tina currently represents the concept of an _object_ in two ways: a `group` (and `group-list`), which is a uniform collection of fields; and `blocks`, which is a polymporphic collection. Both have valid use cases, but we've also assumed that `blocks` are always represented as an _array_ of objects. Moving forward, we'll be introducing a more comporehensive type, which envelopes the behavior of both `group` and `blocks`, and since _every_ field can be a `list`, this also makes `group-list` redundant.
 
 > Note: we've previously assumed that `blocks` usage would _always_ be as an array. We'll be keeping that assumption with the `blocks` type for compatibility, but `object` will allow for non-array polymorphic objects.
 
-#### Defining and `object` type
+### Defining and `object` type
 
 An `object` type takes either a `fields` _or_ `templates` property (just like the `collections` definition). If you supply `fields`, you'll end up with what is essentially a `group` item. And if you say `list: true`, you'll have duplicated the logic for `group-list`.
 
@@ -155,7 +144,7 @@ This is identical to the current `blocks` definition:
 }
 ```
 
-### Lists will now adhere to the GraphQL connection spec
+## Lists will now adhere to the GraphQL connection spec
 
 [Read the spec](https://relay.dev/graphql/connections.htm)
 
@@ -206,16 +195,19 @@ In the new API, you'll need to step through `edges` & `nodes`:
   }
 }
 ```
-### Why?
+
+__Why?__
+
 The GraphQL connection spec opens up a more future-proof structure, allowing us to put more information in to the _connection_ itself like how many results have been returned, and how to request the next page of data.
 
 > Note: sorting and filtering is still not supported for list queries.
 
-### `_body` is no longer included by default
+## `_body` is no longer included by default
 
 There is instead an `isBody` boolean which can be added to any `string` field
 
-### Why?
+__Why?__
+
 Since markdown files sort of have an implicit "body" to them, we were automatically populated a field which represented the body of your markdown file. This wasn't that useful, and kind of annoying. Instead, just attach `isBody` to the field which you want to represent your markdown "body":
 
 ```js
@@ -251,8 +243,19 @@ title: Hello, World!
 This is the body of the file, it's edited through the "My Body" field in your form.
 ```
 
-#### References can point to more than one collection.
-Most CMSs support this, it'll result in us having to step through one additional disambiguator on the query:
+## References can point to more than one collection.
+
+Instead of a `collection` field, you must now define a `collections` field, which is an array:
+
+```js
+{
+  type: "reference",
+  label: "Author",
+  name: "author",
+  collections: ["author"]
+}
+```
+
 ```graphql
 {
   getPostDocument(relativePath: "hello.md") {
@@ -270,10 +273,9 @@ Most CMSs support this, it'll result in us having to step through one additional
   }
 ```
 
-
 ## Other breaking changes
 
-#### The `template` field on polymorphic objects (formerly _blocks_) is now `_template`
+### The `template` field on polymorphic objects (formerly _blocks_) is now `_template`
 **Old API:**
 ```md
 ---
@@ -293,7 +295,7 @@ myBlocks:
 ---
 ```
 
-#### `data` `__typename` values have changed
+### `data` `__typename` values have changed
 They now include the proper namespace to prevent naming collisions and no longer require `_Doc_Data` suffix. All generated `__typename` properties are going to be slightly different. We weren't fully namespacing fields so it wasn't possible to guarantee that no collisions would occur. The pain felt here will likely be most seen when querying and filtering through blocks. This ensures the stability of this type in the future
 ```graphql
 {
