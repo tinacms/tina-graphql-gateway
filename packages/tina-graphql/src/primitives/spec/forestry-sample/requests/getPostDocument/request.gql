@@ -14,11 +14,11 @@ query {
   }
 }
 
-fragment Meh on AuthorAuthor {
+fragment AuthorDataFragment on AuthorAuthor {
   name
 }
 fragment AuthorFragment on AuthorDocument {
   data {
-    ...Meh
+    ...AuthorDataFragment
   }
 }

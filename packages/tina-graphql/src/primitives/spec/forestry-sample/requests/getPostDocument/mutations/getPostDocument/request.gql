@@ -1,9 +1,9 @@
 fragment AuthorFragment on AuthorDocument {
   data {
-    ...Meh
+    ...AuthorDataFragment
   }
 }
-fragment Meh on AuthorAuthor {
+fragment AuthorDataFragment on AuthorAuthor {
   name
 }
 mutation UpdateDocument($params: PostMutation!) {
