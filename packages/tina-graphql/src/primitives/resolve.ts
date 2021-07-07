@@ -156,6 +156,7 @@ export const resolve = async ({
               args: { ...args, params: {} },
               collection: args.collection,
               isMutation,
+              isCreation: true,
             })
           }
           if (['getDocument', 'updateDocument'].includes(info.fieldName)) {

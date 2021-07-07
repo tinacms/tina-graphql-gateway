@@ -121,7 +121,7 @@ export const setupFixture = async (
     database,
   })
   if (response.errors) {
-    console.log(response.errors)
+    // console.log(response.errors)
   }
 
   const mutations = await Promise.all(
@@ -149,7 +149,6 @@ export const setupFixture = async (
       })
       .filter(Boolean)
   )
-  // console.log(JSON.stringify(response, null, 2))
 
   return {
     response,

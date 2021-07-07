@@ -157,6 +157,11 @@ And here is one for `group`:
 }
 ```
 
+## `dataJSON` field
+
+You can now request `dataJSON` for the entire data object as a single query key. This is great for more tedius queries like theme files where including each item in the result is cumbersome.
+
+> Note there is no typescript help for this feature for now
 
 ## Lists queries will now adhere to the GraphQL connection spec
 

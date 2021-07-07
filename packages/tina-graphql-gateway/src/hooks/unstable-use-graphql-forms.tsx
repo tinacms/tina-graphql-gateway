@@ -85,6 +85,8 @@ export function useGraphqlForms<T extends object>({
             }
           }
           set(draftState, newUpdate.set, newValue)
+          // FIXME: do it better than this, but this allows dataJSON to stay in sync
+          set(draftState, newUpdate.set.replace('data', 'dataJSON'), newValue)
         })
         setData(nextState)
         setNewUpdate(null)

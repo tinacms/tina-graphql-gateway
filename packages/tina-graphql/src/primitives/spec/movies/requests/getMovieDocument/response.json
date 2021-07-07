@@ -10,9 +10,9 @@
         },
         "extension": ".md",
         "filename": "star-wars",
-        "path": null,
+        "path": "content/movies/star-wars.md",
         "relativePath": "star-wars.md",
-        "template": null
+        "template": "movie"
       },
       "data": {
         "title": "Star Wars",

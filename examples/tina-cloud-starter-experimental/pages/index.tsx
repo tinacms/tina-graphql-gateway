@@ -21,6 +21,11 @@ export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
 ) {
   return (
+    <pre>
+      {JSON.stringify(props.data.getMarketingPagesDocument.dataJSON, null, 2)}
+    </pre>
+  )
+  return (
     <Wrapper data={props.data.getMarketingPagesDocument.data}>
       <LandingPage {...props.data.getMarketingPagesDocument.data} />
     </Wrapper>
@@ -34,6 +39,7 @@ export const query = gql`
     # "index.md" is _relative_ to the "Marketing Pages" path property in your schema definition
     # you can inspect this file at "content/marketing-pages/index.md"
     getMarketingPagesDocument(relativePath: "index.md") {
+      dataJSON
       data {
         __typename
         ... on MarketingPagesLandingPage {

@@ -21,6 +21,7 @@ const fixtures = [
   'getDocument',
   'getDirectorList',
   'addPendingDocument',
+  'addPendingDocument-existing',
   'updateDocument',
   'getDirectorDocument',
   'getCollections',
@@ -45,7 +46,9 @@ describe('The given configuration', () => {
         fixture
       )
 
-      expect(response).toEqual(JSON.parse(expectedReponse))
+      expect(JSON.parse(JSON.stringify(response))).toMatchObject(
+        JSON.parse(expectedReponse)
+      )
     })
   })
 })

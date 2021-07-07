@@ -119,6 +119,18 @@ export class Database {
     }
   }
 
+  public documentExists = async (fullpath: unknown) => {
+    try {
+      await this.getDocument(fullpath)
+    } catch (e) {
+      if (e.message === `Unable to find record for ${fullpath}`) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   public getDocumentsForCollection = async (collectionName: string) => {
     const tinaSchema = await this.getSchema()
     const collection = await tinaSchema.getCollection(collectionName)

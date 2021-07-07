@@ -17,6 +17,13 @@ module.exports = {
       schema: ['./examples/tina-cloud-starter/.tina/__generated__/schema.gql'],
       documents: './examples/tina-cloud-starter/**/*.{graphql,js,ts,jsx,tsx}',
     },
+    tinaCloudStarterExperimental: {
+      schema: [
+        './examples/tina-cloud-starter-experimental/.tina/__generated__/schema.gql',
+      ],
+      documents:
+        './examples/tina-cloud-starter-experimental/**/*.{graphql,js,ts,jsx,tsx}',
+    },
     pageBuilder: {
       schema: [
         './packages/tina-graphql/src/primitives/spec/page-builder/.tina/__generated__/schema.gql',

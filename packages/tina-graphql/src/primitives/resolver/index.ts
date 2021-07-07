@@ -19,7 +19,7 @@ import { NAMER } from '../ast-builder'
 import { Database, CollectionDocumentListLookup } from '../database'
 
 import type { Templateable, TinaFieldEnriched } from '../types'
-import { GraphQLResolveInfo } from 'graphql'
+import { GraphQLResolveInfo, GraphQLEnumType } from 'graphql'
 
 interface ResolverConfig {
   database: Database
@@ -107,9 +107,11 @@ export class Resolver {
         basename,
         filename,
         extension,
+        path: fullPath,
         relativePath,
         breadcrumbs,
         collection,
+        template: lastItem(template.namespace),
       },
       data,
       values: data,
@@ -122,11 +124,13 @@ export class Resolver {
     args,
     collection: collectionName,
     isMutation,
+    isCreation,
   }: {
     value: unknown
     args: unknown
     collection: string
     isMutation: boolean
+    isCreation?: boolean
   }) => {
     const collectionNames = this.tinaSchema
       .getCollections()
@@ -147,6 +151,11 @@ export class Resolver {
     const realPath = path.join(collection?.path, args.relativePath)
 
     if (isMutation) {
+      if (isCreation) {
+        if (await this.database.documentExists(realPath)) {
+          throw new Error(`Unable to add document, ${realPath} already exists`)
+        }
+      }
       const templateInfo =
         this.tinaSchema.getTemplatesForCollectable(collection)
       // @ts-ignore
