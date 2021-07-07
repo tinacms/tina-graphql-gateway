@@ -8,7 +8,7 @@
 
 # Define schema changes
 
-We're going to be leaning on a more _primitive_ concept of how types are defined with Tina, and in doing so will be introducing some breaking changes to the way schemas are defined.
+We're going to be leaning on a more _primitive_ concept of how types are defined with Tina, and in doing so will be introducing some breaking changes to the way schemas are defined. Read the detailed [RFC discussion](https://github.com/tinacms/rfcs/pull/18) for more on this topic, specifically the [latter portions](https://github.com/tinacms/rfcs/pull/18#issuecomment-805400313) of the discussion.
 
 ## Collections now accept a `fields` _or_ `templates` property
 
@@ -200,6 +200,8 @@ __Why?__
 
 The GraphQL connection spec opens up a more future-proof structure, allowing us to put more information in to the _connection_ itself like how many results have been returned, and how to request the next page of data.
 
+Read [a detailed explanation](https://graphql.org/learn/pagination/) of how the connection spec provides a richer set of capabilities.
+
 > Note: sorting and filtering is still not supported for list queries.
 
 ## `_body` is no longer included by default
@@ -208,7 +210,7 @@ There is instead an `isBody` boolean which can be added to any `string` field
 
 __Why?__
 
-Since markdown files sort of have an implicit "body" to them, we were automatically populated a field which represented the body of your markdown file. This wasn't that useful, and kind of annoying. Instead, just attach `isBody` to the field which you want to represent your markdown "body":
+Since markdown files sort of have an implicit "body" to them, we were automatically populating a field which represented the body of your markdown file. This wasn't that useful, and kind of annoying. Instead, just attach `isBody` to the field which you want to represent your markdown "body":
 
 ```js
 {
@@ -243,9 +245,9 @@ title: Hello, World!
 This is the body of the file, it's edited through the "My Body" field in your form.
 ```
 
-## References can point to more than one collection.
+## References now point to more than one collection.
 
-Instead of a `collection` field, you must now define a `collections` field, which is an array:
+Instead of a `collection` property, you must now define a `collections` field, which is an array:
 
 ```js
 {
