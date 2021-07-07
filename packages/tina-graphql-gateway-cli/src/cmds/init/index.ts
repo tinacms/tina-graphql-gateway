@@ -29,6 +29,7 @@ import {
   AppJsContent,
 } from './setup-files'
 import { logger } from '../../logger'
+import chalk from 'chalk'
 
 /**
  * Executes a shell command and return it as a Promise.
@@ -55,7 +56,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function installDeps(ctx: any, next: () => void, options) {
   const bar = new Progress(
-    'Installing Tina packages. This might take a moment. :prog',
+    'Installing Tina packages. This might take a moment... :prog',
     2
   )
   const deps = [
@@ -112,7 +113,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 
   if (!fs.pathExistsSync(appPath) && !fs.pathExistsSync(appPathTS)) {
     // if they don't have a _app.js or an _app.tsx just make one
-    logger.info(logText('Adding an _app.js ...'))
+    logger.info(logText('Adding _app.js ... ✅'))
     fs.writeFileSync(appPath, AppJsContent)
   } else {
     // Ask the user if they want to update there _app.js
@@ -122,7 +123,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
       message: 'do you want us to override your _app.js?',
     })
     if (override.res) {
-      logger.info(logText('Adding _app.js ...'))
+      logger.info(logText('Adding _app.js ... ✅'))
       fs.writeFileSync(appPath, AppJsContent)
     } else {
       wrapper = true
@@ -166,13 +167,13 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 
 export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
-  logger.info(`Tina setup  ✅
-\t Start your dev server with ${cmdText(
-    'yarn tina-dev'
+  logger.info(`Tina setup ${chalk.underline.green('done')}  ✅
+\t Start your dev server with ${successText(
+    `yarn tina-dev`
   )} and go to http://localhost:3000/demo/blog/HelloWorld to ${successText(
     'check it out the page that was created for you'
   )}
-Enjoy Tina!
+Enjoy Tina 🦙 !
 `)
   next()
 }
