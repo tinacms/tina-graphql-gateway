@@ -46,7 +46,9 @@ describe('The given configuration', () => {
         JSON.parse(expectedReponse)
       )
       mutations.forEach((mutationForQueryField) => {
+        // @ts-ignore
         expect(mutationForQueryField.mutation).toEqual(
+          // @ts-ignore
           mutationForQueryField.expectedMutation
         )
       })

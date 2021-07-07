@@ -14,7 +14,8 @@ limitations under the License.
 module.exports = {
   verbose: true,
   transform: {
-    '.(ts|tsx)': './esr-jest',
+    // '.(ts|tsx)': 'esbuild-runner/jest',
+    '.(ts|tsx)': 'ts-jest',
   },
   testRegex: '(\\.spec)\\.(ts|tsx|js)$',
   modulePaths: ['<rootDir>/dir/', '<rootDir>/node_modules/'],

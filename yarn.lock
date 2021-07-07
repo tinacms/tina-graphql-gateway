@@ -4556,15 +4556,15 @@ __metadata:
   linkType: hard
 
 "@types/babel__core@npm:^7.1.14":
-  version: 7.1.14
-  resolution: "@types/babel__core@npm:7.1.14"
+  version: 7.1.15
+  resolution: "@types/babel__core@npm:7.1.15"
   dependencies:
     "@babel/parser": ^7.1.0
     "@babel/types": ^7.0.0
     "@types/babel__generator": "*"
     "@types/babel__template": "*"
     "@types/babel__traverse": "*"
-  checksum: e0212770e1cd520b8ad241642e9f99ef20b5c609c157ffe154c42e136c85f3c3f598ad7bfd452fda8abb304c483d6bce92de0b8ed0612f9f1c57b6c4a18da7b3
+  checksum: a9e93975a647b2037c624abffab43bdfa434eb3ffee343a94d649d44f802281ffd6044b8bcfe0b8e4a47d9c1759d4b6e6745b540cc8793d504f805adae9fcd52
   languageName: node
   linkType: hard
 
@@ -5098,9 +5098,9 @@ __metadata:
   linkType: hard
 
 "@types/prettier@npm:^2.1.5":
-  version: 2.3.1
-  resolution: "@types/prettier@npm:2.3.1"
-  checksum: 62ddbb1ba05d0df97fe49536e0d5409ea76d45cd2f6de062ff351d049e667b77010d2e912733d5d3255829fa1958c684a059e619f9d81e2ba9f27a6204a06149
+  version: 2.3.2
+  resolution: "@types/prettier@npm:2.3.2"
+  checksum: 7b425386aaf3b03fa63382ed1aceff367477ef9a52a2705978bfb1495fa1d8795316e1ab84671f6c8c5920de59a33d1567d837b9eb033996983efdfdbce84cb3
   languageName: node
   linkType: hard
 
@@ -10148,9 +10148,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-runner@npm:2.1.0":
-  version: 2.1.0
-  resolution: "esbuild-runner@npm:2.1.0"
+"esbuild-runner@npm:2.2.0":
+  version: 2.2.0
+  resolution: "esbuild-runner@npm:2.2.0"
   dependencies:
     source-map-support: 0.5.19
     tslib: 2.2.0
@@ -10158,7 +10158,7 @@ __metadata:
     esbuild: "*"
   bin:
     esr: bin/esr.js
-  checksum: c7f6e40e7cb728fd966cfdd4419a5951e663d1fb0004ab8a16e75dfac46dc583a3907041a65ddb2dcbbe0637864cf71890598ef896aa218faa3b191b307f97b9
+  checksum: d291a2e385927fcd2b67ec45f3df56aafce15acf7f6dcdad593b79e6a97793f8cf2417b83f8bb8bf4a75d387601e45b69c3b7c4e626155a0cdbf3f86c8ef5d12
   languageName: node
   linkType: hard
 
@@ -22979,7 +22979,7 @@ fsevents@^1.2.7:
     dataloader: ^2.0.0
     date-fns: ^2.21.1
     esbuild: 0.12.10
-    esbuild-runner: 2.1.0
+    esbuild-runner: 2.2.0
     fast-glob: ^3.2.5
     fs-extra: ^9.0.1
     graphql: ^15.3.0
@@ -25130,8 +25130,8 @@ typescript@^4.2.3:
   linkType: hard
 
 "ws@npm:^7.4.5":
-  version: 7.5.1
-  resolution: "ws@npm:7.5.1"
+  version: 7.5.2
+  resolution: "ws@npm:7.5.2"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ^5.0.2
@@ -25140,7 +25140,7 @@ typescript@^4.2.3:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: e56541a73cac1d5b4b5e81ddd7e9925e84e45abaab6f3ee5e088e0089b5518f862d8429897243e12482b118971ad8a9a75b1d4900769bce3877878a0a7470043
+  checksum: 45eccd77921681f3cae0d646813b5c6aad40e11f90a57e7070a5ceed1ff27629d23034cb223bf77cc6de41a8a2591faa2635558bb5ba9e280edccbc088655770
   languageName: node
   linkType: hard
 

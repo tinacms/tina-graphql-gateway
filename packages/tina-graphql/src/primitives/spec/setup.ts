@@ -140,6 +140,7 @@ export const setupFixture = async (
           // console.log(result.form.mutationInfo.string)
           // console.log(request)
           return {
+            // @ts-ignore
             mutation: print(parse(result.form.mutationInfo.string)),
             expectedMutation: print(parse(request)),
           }
