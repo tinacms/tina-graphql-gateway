@@ -1,0 +1,310 @@
+---
+'tina-graphql': minor
+'tina-graphql-gateway': minor
+'tina-graphql-gateway-cli': minor
+'tina-cloud-starter-experimental': patch
+'tina-graphql-helpers': patch
+---
+
+## Define schema changes
+
+We're going to be leaning on a more _primitive_ concept of how types are defined with Tina, and in doing so will be introducing some breaking changes to the way schemas are defined.
+
+### Collections now accept a `fields` _or_ `templates` property
+
+You can now provide `fields` instead of `templates` for your collection, doing so will result in a more straightforward schema definition:
+```js
+{
+	collections: [{
+		name: "post",
+		label: "Post",
+		path: "content/posts",
+		fields: [
+			{
+				name: "title",
+				label: "Title",
+				type: "string" // read on below to learn more about _type_ changes
+			}
+		]
+		// defining `fields` and `templates` would result in a compilation error
+	}]
+}
+```
+
+#### Why?
+Previously, a collection could define multiple templates, the ambiguity introduced with this feature meant that your documents needed a `_template` field on them so we'd know which one they belonged to. It also mean having to disambiguate your queries in graphql:
+```graphql
+getPostDocument(relativePage: $relativePath) {
+	data {
+		...on Article_Doc_Data {
+			title
+		}
+	}
+}
+```
+Going forward, if you use `fields` on a collection, you can omit the `_template` key and simplify your query:
+```graphql
+getPostDocument(relativePage: $relativePath) {
+	data {
+		title
+	}
+}
+```
+
+
+### `type` changes
+
+Types will look a little bit different, and are meant to reflect the lowest form of the shape they can represent. Moving forward, `component` will represent the UI portion of what you might expect. So as an example, for a blog post "description" field, previously you'd define it like this:
+
+```js
+{
+	type: "text",
+	label: "Title",
+	name: "title"
+}
+```
+And if you decided you wanted to use a `textarea` field instead of `text`, you'd change it to:
+```js
+{
+	type: "textarea",
+	label: "Title",
+	name: "title"
+}
+```
+#### Why?
+The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `component` can be used for customizing the look and behavior of the field's UI. So in the new API, you'd do this:
+```js
+{
+	type: "string",
+	label: "Title",
+	name: "title"
+	component: "textarea" // leave blank for "text"
+}
+```
+
+### All field config data is passed through to the frontend field
+
+If you're using custom components with Tina Cloud, you would have to have work with the [formify](https://tina.io/docs/tina-cloud/client/#formify) API. Moving forward, you can simply supply any field information in the body of your field definition
+
+> Note: this works for scalar values only, so for example, you cannot define a `validate` function here.
+
+> Note: we may introduce a namespaced "frontend" key which more accurately reflects frontend-only concerns. But for now are leaving things untouched.
+
+
+### Every `type` can be a list
+
+Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:
+```js
+{
+	type: "string",
+	label: "Categories",
+	name: "categories"
+	list: true
+}
+```
+Additionally, enumerable lists and selects are inferred from the `options` property. The following example is represented by a `select` field:
+```js
+{
+	type: "string",
+	label: "Categories",
+	name: "categories"
+	options: ["fitness", "movies", "music"]
+}
+```
+While this, is a `checkbox` field
+```js
+{
+	type: "string",
+	label: "Categories",
+	name: "categories"
+	list: true,
+	options: ["fitness", "movies", "music"]
+}
+```
+> Note we may introduce an `enum` type, but haven't discussed it thoroughly
+
+
+### Introducing the `object` type
+
+Tina currently represents the concept of an _object_ in two ways: a `group` (and `group-list`), which is a uniform collection of fields; and `blocks`, which is a polymporphic collection. Both have valid use cases, but we've also assumed that `blocks` are always represented as an _array_ of objects. Moving forward, we'll be introducing a more comporehensive type, which envelopes the behavior of both `group` and `blocks`, and since _every_ field can be a `list`, this also makes `group-list` redundant.
+
+> Note: we've previously assumed that `blocks` usage would _always_ be as an array. We'll be keeping that assumption with the `blocks` type for compatibility, but `object` will allow for non-array polymorphic objects.
+
+#### Defining and `object` type
+
+An `object` type takes either a `fields` _or_ `templates` property (just like the `collections` definition). If you supply `fields`, you'll end up with what is essentially a `group` item. And if you say `list: true`, you'll have duplicated the logic for `group-list`.
+
+Likewise, if you supply a `templates` field and `list: true`, you'll get the same API as `blocks`. However you can also say `list: false` (or omit it entirely), and you'll have a polymorphic object which is _not_ an array.
+
+This is identical to the current `blocks` definition:
+```js
+{
+	type: "object",
+	label: "Page Sections",
+	name: "pageSections"
+	list: true,
+	templates: [{
+		label: "Hero",
+		name: "hero",
+		fields: [{
+			label: "Title",
+			name: "title",
+			type: "string"
+		}]
+	}]
+}
+```
+
+### Lists will now adhere to the GraphQL connection spec
+
+[Read the spec](https://relay.dev/graphql/connections.htm)
+
+Previously, lists would return a simple array of items:
+```graphql
+{
+  getPostsList {
+    id
+  }
+}
+```
+Which would result in:
+```json
+{
+  "data": {
+    "getPostsList": [
+      {
+        "id": "content/posts/voteForPedro.md"
+      }
+    ]
+  }
+}
+```
+In the new API, you'll need to step through `edges` & `nodes`:
+```graphql
+{
+  getPostsList {
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
+```
+```json
+{
+  "data": {
+    "getPostsList": {
+      "edges": [
+        {
+          "node": {
+            "id": "content/posts/voteForPedro.md"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+### Why?
+The GraphQL connection spec opens up a more future-proof structure, allowing us to put more information in to the _connection_ itself like how many results have been returned, and how to request the next page of data.
+
+> Note: sorting and filtering is still not supported for list queries.
+
+### `_body` is no longer included by default
+
+There is instead an `isBody` boolean which can be added to any `string` field
+
+### Why?
+Since markdown files sort of have an implicit "body" to them, we were automatically populated a field which represented the body of your markdown file. This wasn't that useful, and kind of annoying. Instead, just attach `isBody` to the field which you want to represent your markdown "body":
+
+```js
+{
+	collections: [{
+		name: "post",
+		label: "Post",
+		path: "content/posts",
+		fields: [
+			{
+				name: "title",
+				label: "Title",
+				type: "string"
+			}
+			{
+				name: "myBody",
+				label: "My Body",
+				type: "string",
+				component: 'textarea',
+				isBody: true
+			}
+		]
+	}]
+}
+```
+This would result in a form field called `My Body` getting saved to the body of your markdown file (if you're using markdown):
+
+```md
+---
+title: Hello, World!
+---
+
+This is the body of the file, it's edited through the "My Body" field in your form.
+```
+
+#### References can point to more than one collection.
+Most CMSs support this, it'll result in us having to step through one additional disambiguator on the query:
+```graphql
+{
+  getPostDocument(relativePath: "hello.md") {
+    data {
+      title
+      author {
+        ...on Author_Document {
+          name
+        }
+        ...on Post_Document {
+          title
+        }
+      }
+    }
+  }
+```
+
+
+## Other breaking changes
+
+#### The `template` field on polymorphic objects (formerly _blocks_) is now `_template`
+**Old API:**
+```md
+---
+...
+myBlocks:
+  - template: hero
+    title: Hello
+---
+```
+**New API:**
+```md
+---
+...
+myBlocks:
+  - _template: hero
+    title: Hello
+---
+```
+
+#### `data` `__typename` values have changed
+They now include the proper namespace to prevent naming collisions and no longer require `_Doc_Data` suffix. All generated `__typename` properties are going to be slightly different. We weren't fully namespacing fields so it wasn't possible to guarantee that no collisions would occur. The pain felt here will likely be most seen when querying and filtering through blocks. This ensures the stability of this type in the future
+```graphql
+{
+  getPageDocument(relativePath: "home.md") {
+    data {
+      title
+      myBlocks {
+        ...on Page_Hero_Data {  # previously this would have been Hero_Data
+          # ...
+        }
+      }
+    }
+  }
+```
