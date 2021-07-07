@@ -24,7 +24,7 @@ interface CreateContentButtonOptions {
   fields: any[]
   collections: CollectionShape[]
   onNewDocument: OnNewDocument
-  onChange: (values: any, form: any) => void
+  onChange: (values: any) => void
   initialValues: any
 }
 
@@ -51,7 +51,7 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
   __type: 'content-creator' = 'content-creator'
   fields: AddContentPlugin<FormShape>['fields']
   onNewDocument: OnNewDocument
-  onChange: (values: any, form: any) => void
+  onChange: (values: any) => void
   name: string
   collections: CollectionShape[]
   initialValues: any
