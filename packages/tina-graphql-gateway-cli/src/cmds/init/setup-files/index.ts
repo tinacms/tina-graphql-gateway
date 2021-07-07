@@ -70,10 +70,10 @@ const BlogPage = (props: AsyncReturnType<typeof getStaticProps>["props"]) => {
         }}
       >
         <p>
-          Hello! and thanks for bootstrapping a Tina App! Before you do anything
-          click on the pencil icon in the bottom left hand corner. You can now
-          edit this content in real time! Click save and notice that you have
-          update the Hello world blog post in the local file system.
+        Hello! and thanks for bootstrapping a Tina App! Before you do anything
+        click on "toggle edit state" button and a pencil icon in the bottom left hand corner will appear. You can now
+        edit this content in real time! Click save and notice that you have
+        update the Hello world blog post in the local file system.
         </p>
         <h2>Next steeps</h2>
         <h3>Wrap your App in "Edit State" (CLI probably have done this for you)</h3>
@@ -403,7 +403,7 @@ export const getStaticPaths = async () => {
     fallback: false,
   };
 };
-${wrapper ? '' : 'export default blogPage'}
+${wrapper ? '' : 'export default BlogPage'}
 `
 
 export const TinaWrapper = `
