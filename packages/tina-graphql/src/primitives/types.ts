@@ -173,6 +173,12 @@ interface TinaField {
   label: string
   description?: string
   list?: boolean
+  /**
+   * Any items passed to the UI field will be passed to the underlying field.
+   * NOTE: only serializable values are supported, so functions like `validate`
+   * will be ignored.
+   */
+  ui?: object
 }
 
 type ScalarType<WithNamespace extends boolean> = WithNamespace extends true
@@ -261,7 +267,7 @@ interface ObjectTemplatesInner<
    */
   templates: (
     | DontInfer<GlobalTemplateName>
-    | Template<GlobalTemplateName, CollectionName, WithNamespace>
+    | Template<GlobalTemplateName, CollectionName, WithNamespace, true>
   )[]
   fields?: undefined
 }
@@ -383,7 +389,8 @@ export type TinaCloudTemplateEnriched = GlobalTemplate<string, string, true>
 type Template<
   GlobalTemplateName extends string,
   CollectionName extends string,
-  WithNamespace extends boolean
+  WithNamespace extends boolean,
+  AllowUI extends boolean
 > = WithNamespace extends true
   ? {
       label: string

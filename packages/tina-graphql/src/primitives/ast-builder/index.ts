@@ -473,7 +473,7 @@ export function addNamespaceToSchema<T extends object | string>(
 
   // @ts-ignore
   const newNode: {
-    [key in keyof T]: (T & { namespace: string[] }) | string
+    [key in keyof T]: (T & { namespace?: string[] }) | string
   } = maybeNode
   // Traverse node's properties first
   const keys = Object.keys(maybeNode)
@@ -482,12 +482,20 @@ export function addNamespaceToSchema<T extends object | string>(
     if (Array.isArray(m)) {
       // @ts-ignore
       newNode[key] = m.map((element) => {
+        if (!element.hasOwnProperty('name')) {
+          return element
+        }
         const value = element.name || element.value // options field accepts an object with `value`  instead of `name`
         return addNamespaceToSchema(element, [...namespace, value])
       })
     } else {
-      // @ts-ignore
-      newNode[key] = addNamespaceToSchema(m, [...namespace, m.name])
+      if (!m.hasOwnProperty('name')) {
+        // @ts-ignore
+        newNode[key] = m
+      } else {
+        // @ts-ignore
+        newNode[key] = addNamespaceToSchema(m, [...namespace, m.name])
+      }
     }
   })
   // @ts-ignore

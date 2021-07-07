@@ -40,6 +40,14 @@
           "label": "Body",
           "name": "body",
           "isBody": true,
+          "ui": {
+            "component": "textarea",
+            "namespace": [
+              "posts",
+              "body",
+              null
+            ]
+          },
           "namespace": [
             "posts",
             "body"

@@ -133,6 +133,7 @@ export function useGraphqlForms<T extends object>({
             label: queryName,
             initialValues: result.values,
             fields: result.form.fields,
+
             reset: () => {
               setPendingReset(queryName)
             },

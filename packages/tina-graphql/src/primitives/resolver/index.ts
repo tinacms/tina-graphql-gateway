@@ -390,6 +390,7 @@ export class Resolver {
     namespace,
     ...field
   }: TinaFieldEnriched): Promise<unknown> => {
+    const extraFields = field.ui || {}
     switch (field.type) {
       case 'boolean':
       case 'datetime':
@@ -399,6 +400,7 @@ export class Resolver {
           // Allows component to be overridden for scalars
           component: 'text',
           ...field,
+          ...extraFields,
         }
       case 'object':
         const templateInfo = this.tinaSchema.getTemplatesForCollectable({
@@ -414,11 +416,13 @@ export class Resolver {
               templateInfo.template.fields,
               async (field) => await this.resolveField(field)
             ),
+            ...extraFields,
           }
         } else if (templateInfo.type === 'union') {
           const templates: { [key: string]: object } = {}
           const typeMap: { [key: string]: string } = {}
           await sequential(templateInfo.templates, async (template) => {
+            const extraFields = template.ui || {}
             const templateName = lastItem(template.namespace)
             typeMap[templateName] = NAMER.dataTypeName(template.namespace)
             templates[lastItem(template.namespace)] = {
@@ -429,6 +433,7 @@ export class Resolver {
                 template.fields,
                 async (field) => await this.resolveField(field)
               ),
+              ...extraFields,
             }
             return true
           })
@@ -437,6 +442,7 @@ export class Resolver {
             typeMap,
             component: 'blocks',
             templates,
+            ...extraFields,
           }
         } else {
           throw new Error(`Unknown object for resolveField function`)
@@ -457,6 +463,7 @@ export class Resolver {
               label: filepath,
             }
           }),
+          ...extraFields,
         }
       default:
         throw new Error(`Unknown field type ${field.type}`)
