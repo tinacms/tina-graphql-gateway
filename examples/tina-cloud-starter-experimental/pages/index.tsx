@@ -21,12 +21,7 @@ export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
 ) {
   return (
-    <pre>
-      {JSON.stringify(props.data.getMarketingPagesDocument.dataJSON, null, 2)}
-    </pre>
-  )
-  return (
-    <Wrapper data={props.data.getMarketingPagesDocument.data}>
+    <Wrapper data={props.data.getMarketingPagesDocument.dataJSON}>
       <LandingPage {...props.data.getMarketingPagesDocument.data} />
     </Wrapper>
   )
