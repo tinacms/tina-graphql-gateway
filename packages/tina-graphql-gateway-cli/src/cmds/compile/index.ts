@@ -219,7 +219,6 @@ let compiledTemplates = []
 
 export const compile = async () => {
   logger.info(logText('Compiling...'))
-  logger.info(logText('test...'))
   // FIXME: This assume it is a schema.ts file
   if (
     !fs.existsSync(tinaPath) ||

@@ -9884,6 +9884,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@types/prompts", [
+        ["npm:2.4.0", {
+          "packageLocation": "./.yarn/cache/@types-prompts-npm-2.4.0-5b5caba459-9d5b490dba.zip/node_modules/@types/prompts/",
+          "packageDependencies": [
+            ["@types/prompts", "npm:2.4.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@types/prop-types", [
         ["npm:15.7.3", {
           "packageLocation": "./.yarn/cache/@types-prop-types-npm-15.7.3-084e0015c6-bd0eab69d5.zip/node_modules/@types/prop-types/",
@@ -25211,6 +25220,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["sisteransi", "npm:1.0.5"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:2.4.1", {
+          "packageLocation": "./.yarn/cache/prompts-npm-2.4.1-dd3df3be17-705eae8c35.zip/node_modules/prompts/",
+          "packageDependencies": [
+            ["prompts", "npm:2.4.1"],
+            ["kleur", "npm:3.0.3"],
+            ["sisteransi", "npm:1.0.5"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["prop-types", [
@@ -30663,6 +30681,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash.get", "npm:4.4.6"],
             ["@types/log4js", "npm:2.3.5"],
             ["@types/progress", "npm:2.0.3"],
+            ["@types/prompts", "npm:2.4.0"],
             ["@types/yup", "npm:0.29.11"],
             ["ajv", "npm:6.12.3"],
             ["altair-express-middleware", "npm:4.0.6"],
@@ -30684,6 +30703,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["log4js", "npm:6.3.0"],
             ["normalize-path", "npm:3.0.0"],
             ["progress", "npm:2.0.3"],
+            ["prompts", "npm:2.4.1"],
             ["tina-graphql", "workspace:packages/tina-graphql"],
             ["tina-graphql-helpers", "workspace:packages/tina-graphql-helpers"],
             ["ts-jest", "virtual:a722c7d3ce2b8affe9d77374b299e3e86c9e2e410ae49fc16482f2b404f8238e91488a64649ef452edcd1202a92da0e7883fbb56fd4d35f3ad5f6cf5921f0783#npm:26.5.3"],
