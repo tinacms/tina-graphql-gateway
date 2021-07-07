@@ -19,7 +19,7 @@ _template: article
 This is your first post!
 `
 
-export const nextPostPage = `
+export const nextPostPage = ({ wrapper = false }: { wrapper: boolean }) => `
 import { LocalClient, EditProvider } from "tina-graphql-gateway";
 import type { Posts_Document } from "../../../.tina/__generated__/types";
 import TinaWrapper from "../../../components/tina-wrapper";
@@ -28,7 +28,9 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
   T extends (...args: any) => Promise<infer R> ? R : any;
 
 // Use the props returned by get static props (this can be deleted when the edit provider and tina-wrapper are moved to _app.js)
-export default function BlogPostPageWrapper(
+${
+  wrapper
+    ? `export default function BlogPostPageWrapper(
   props: AsyncReturnType<typeof getStaticProps>["props"]
 ) {
   return (
@@ -46,6 +48,9 @@ export default function BlogPostPageWrapper(
 }
 
 // This will become the default export
+`
+    : ''
+}
 const BlogPage = (props: AsyncReturnType<typeof getStaticProps>["props"]) => {
   return (
     <div>
@@ -65,13 +70,13 @@ const BlogPage = (props: AsyncReturnType<typeof getStaticProps>["props"]) => {
         }}
       >
         <p>
-          Hello! and thanks for bootstrapping a Tina App! Before you do anything
-          click on the pencil icon in the bottom left hand corner. You can now
-          edit this content in real time! Click save and notice that you have
-          update the Hello world blog post in the local file system.
+        Hello! and thanks for bootstrapping a Tina App! Before you do anything
+        click on "toggle edit state" button and a pencil icon in the bottom left hand corner will appear. You can now
+        edit this content in real time! Click save and notice that you have
+        update the Hello world blog post in the local file system.
         </p>
         <h2>Next steeps</h2>
-        <h3>Wrap your App in "Edit State"</h3>
+        <h3>Wrap your App in "Edit State" (CLI probably have done this for you)</h3>
         <p>
           To do this add the following to your pages/_app.js. (or create this
           file if it is not present in your project)
@@ -398,6 +403,7 @@ export const getStaticPaths = async () => {
     fallback: false,
   };
 };
+${wrapper ? '' : 'export default BlogPage'}
 `
 
 export const TinaWrapper = `
@@ -447,3 +453,50 @@ const Inner = (props) => {
 export default TinaWrapper;
 
 `
+
+export const AppJsContent = `
+import dynamic from "next/dynamic";
+
+import { EditProvider, setEditing, useEditState } from "tina-graphql-gateway";
+
+// InnerApp that handles rendering edit mode or not
+function InnerApp({ Component, pageProps }) {
+  const { edit } = useEditState();
+  if (edit) {
+    // Dynamically load Tina only when in edit mode so it does not affect production
+    // see https://nextjs.org/docs/advanced-features/dynamic-import#basic-usage
+    const TinaWrapper = dynamic(() => import("../components/tina-wrapper"));
+    return (
+      <>
+        <TinaWrapper {...pageProps}>
+          {(props) => <Component {...props} />}
+        </TinaWrapper>
+      </>
+    );
+  }
+  return <Component {...pageProps} />;
+}
+
+// Our app is wrapped with edit provider
+function App(props) {
+  return (
+    <EditProvider>
+      <ToggleButton />
+      <InnerApp {...props} />
+    </EditProvider>
+  );
+}
+const ToggleButton = () => {
+  const { edit, setEdit } = useEditState();
+  return (
+    <button
+      onClick={() => {
+        setEdit(!edit);
+      }}
+    >
+      Toggle Edit State
+    </button>
+  );
+};
+
+export default App;`
