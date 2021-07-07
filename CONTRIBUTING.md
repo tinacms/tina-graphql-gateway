@@ -68,6 +68,8 @@ Previous PRs to main would _not_ have triggered NPM packages to be published bec
 
 To install this version `yarn add my-package@beta`. For users you do `yarn add my-package`, they won't get your beta version.
 
+> Warning: make sure you are logged in by running `yarn npm whoami`, and run `yarn npm login` if you weren't authenticated
+
 > Hint: there's no special meaning to the term `beta`, you can use whatever keyword you want
 
 ## Working with the GitHub Manager locally
