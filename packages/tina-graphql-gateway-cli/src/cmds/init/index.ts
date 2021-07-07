@@ -55,7 +55,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function installDeps(ctx: any, next: () => void, options) {
   const bar = new Progress(
-    'Install Tina Dependencies... (This may take a minute) :prog',
+    'Installing Tina packages. This might take a moment. :prog',
     2
   )
   const deps = [
