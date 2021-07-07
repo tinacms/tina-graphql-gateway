@@ -12,12 +12,9 @@ limitations under the License.
 */
 
 import ReactMarkdown from 'react-markdown'
-import type {
-  Authors_Document,
-  Article_Doc_Data,
-} from '../.tina/__generated__/types'
+import type { AuthorsDocument, Posts } from '../.tina/__generated__/types'
 
-export const BlogPost = (props: Article_Doc_Data) => {
+export const BlogPost = (props: Posts) => {
   return (
     <>
       <h1>{props.title}</h1>
@@ -28,7 +25,7 @@ export const BlogPost = (props: Article_Doc_Data) => {
   )
 }
 
-const AuthorSnippet = (props: { author: Authors_Document }) => {
+const AuthorSnippet = (props: { author: AuthorsDocument }) => {
   return (
     <div className="snippet">
       {props.author && (

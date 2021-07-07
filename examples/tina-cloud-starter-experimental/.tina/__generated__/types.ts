@@ -160,17 +160,15 @@ export type CollectionDocumentsArgs = {
 
 export type DocumentNode = PostsDocument | AuthorsDocument | MarketingPagesDocument;
 
-export type PostsArticleAuthorDocument = AuthorsDocument;
+export type PostsAuthorDocument = AuthorsDocument;
 
-export type PostsArticle = {
-  __typename?: 'PostsArticle';
+export type Posts = {
+  __typename?: 'Posts';
   title?: Maybe<Scalars['String']>;
   hero?: Maybe<Scalars['String']>;
-  author?: Maybe<PostsArticleAuthorDocument>;
+  author?: Maybe<PostsAuthorDocument>;
   body?: Maybe<Scalars['String']>;
 };
-
-export type Posts = PostsArticle;
 
 export type PostsDocument = Node & {
   __typename?: 'PostsDocument';
@@ -195,13 +193,11 @@ export type PostsConnection = Connection & {
   edges?: Maybe<Array<Maybe<PostsConnectionEdges>>>;
 };
 
-export type AuthorsAuthor = {
-  __typename?: 'AuthorsAuthor';
+export type Authors = {
+  __typename?: 'Authors';
   name?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
 };
-
-export type Authors = AuthorsAuthor;
 
 export type AuthorsDocument = Node & {
   __typename?: 'AuthorsDocument';
@@ -226,41 +222,39 @@ export type AuthorsConnection = Connection & {
   edges?: Maybe<Array<Maybe<AuthorsConnectionEdges>>>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageSeo = {
-  __typename?: 'MarketingPagesLandingPageBlocksMessageSeo';
+export type MarketingPagesBlocksMessageSeo = {
+  __typename?: 'MarketingPagesBlocksMessageSeo';
   seoTitle?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageNestedPageHero = {
-  __typename?: 'MarketingPagesLandingPageBlocksMessageNestedPageHero';
+export type MarketingPagesBlocksMessageNestedPageHero = {
+  __typename?: 'MarketingPagesBlocksMessageNestedPageHero';
   herotitle?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageNestedPage = MarketingPagesLandingPageBlocksMessageNestedPageHero;
+export type MarketingPagesBlocksMessageNestedPage = MarketingPagesBlocksMessageNestedPageHero;
 
-export type MarketingPagesLandingPageBlocksMessage = {
-  __typename?: 'MarketingPagesLandingPageBlocksMessage';
+export type MarketingPagesBlocksMessage = {
+  __typename?: 'MarketingPagesBlocksMessage';
   messageHeader?: Maybe<Scalars['String']>;
   messageBody?: Maybe<Scalars['String']>;
-  seo?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageSeo>>>;
-  nestedPage?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageNestedPage>>>;
+  seo?: Maybe<Array<Maybe<MarketingPagesBlocksMessageSeo>>>;
+  nestedPage?: Maybe<Array<Maybe<MarketingPagesBlocksMessageNestedPage>>>;
 };
 
-export type MarketingPagesLandingPageBlocksImage = {
-  __typename?: 'MarketingPagesLandingPageBlocksImage';
+export type MarketingPagesBlocksImage = {
+  __typename?: 'MarketingPagesBlocksImage';
   heading?: Maybe<Scalars['String']>;
   imgDescription?: Maybe<Scalars['String']>;
   src?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocks = MarketingPagesLandingPageBlocksMessage | MarketingPagesLandingPageBlocksImage;
+export type MarketingPagesBlocks = MarketingPagesBlocksMessage | MarketingPagesBlocksImage;
 
-export type MarketingPagesLandingPage = {
-  __typename?: 'MarketingPagesLandingPage';
-  blocks?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocks>>>;
+export type MarketingPages = {
+  __typename?: 'MarketingPages';
+  blocks?: Maybe<Array<Maybe<MarketingPagesBlocks>>>;
 };
-
-export type MarketingPages = MarketingPagesLandingPage;
 
 export type MarketingPagesDocument = Node & {
   __typename?: 'MarketingPagesDocument';
@@ -332,62 +326,50 @@ export type DocumentMutation = {
   marketingPages?: Maybe<MarketingPagesMutation>;
 };
 
-export type PostsArticleMutation = {
+export type PostsMutation = {
   title?: Maybe<Scalars['String']>;
   hero?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;
 };
 
-export type PostsMutation = {
-  article?: Maybe<PostsArticleMutation>;
-};
-
-export type AuthorsAuthorMutation = {
+export type AuthorsMutation = {
   name?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
 };
 
-export type AuthorsMutation = {
-  author?: Maybe<AuthorsAuthorMutation>;
-};
-
-export type MarketingPagesLandingPageBlocksMessageSeoMutation = {
+export type MarketingPagesBlocksMessageSeoMutation = {
   seoTitle?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation = {
+export type MarketingPagesBlocksMessageNestedPageHeroMutation = {
   herotitle?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageNestedPageMutation = {
-  hero?: Maybe<MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation>;
+export type MarketingPagesBlocksMessageNestedPageMutation = {
+  hero?: Maybe<MarketingPagesBlocksMessageNestedPageHeroMutation>;
 };
 
-export type MarketingPagesLandingPageBlocksMessageMutation = {
+export type MarketingPagesBlocksMessageMutation = {
   messageHeader?: Maybe<Scalars['String']>;
   messageBody?: Maybe<Scalars['String']>;
-  seo?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageSeoMutation>>>;
-  nestedPage?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMessageNestedPageMutation>>>;
+  seo?: Maybe<Array<Maybe<MarketingPagesBlocksMessageSeoMutation>>>;
+  nestedPage?: Maybe<Array<Maybe<MarketingPagesBlocksMessageNestedPageMutation>>>;
 };
 
-export type MarketingPagesLandingPageBlocksImageMutation = {
+export type MarketingPagesBlocksImageMutation = {
   heading?: Maybe<Scalars['String']>;
   imgDescription?: Maybe<Scalars['String']>;
   src?: Maybe<Scalars['String']>;
 };
 
-export type MarketingPagesLandingPageBlocksMutation = {
-  message?: Maybe<MarketingPagesLandingPageBlocksMessageMutation>;
-  image?: Maybe<MarketingPagesLandingPageBlocksImageMutation>;
-};
-
-export type MarketingPagesLandingPageMutation = {
-  blocks?: Maybe<Array<Maybe<MarketingPagesLandingPageBlocksMutation>>>;
+export type MarketingPagesBlocksMutation = {
+  message?: Maybe<MarketingPagesBlocksMessageMutation>;
+  image?: Maybe<MarketingPagesBlocksImageMutation>;
 };
 
 export type MarketingPagesMutation = {
-  landingPage?: Maybe<MarketingPagesLandingPageMutation>;
+  blocks?: Maybe<Array<Maybe<MarketingPagesBlocksMutation>>>;
 };
 
 

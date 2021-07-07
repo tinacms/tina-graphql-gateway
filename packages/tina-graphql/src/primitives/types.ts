@@ -21,11 +21,11 @@ export interface TinaCloudSchema<
     CollectionName,
     WithNamespace
   >[]
-  documents?: TinaCloudCollection<
-    GlobalTemplateName,
-    CollectionName,
-    WithNamespace
-  >[]
+  // documents?: TinaCloudCollection<
+  //   GlobalTemplateName,
+  //   CollectionName,
+  //   WithNamespace
+  // >[]
   collections: TinaCloudCollection<
     GlobalTemplateName,
     CollectionName,
@@ -45,7 +45,7 @@ export interface TinaCloudSchemaWithNamespace<
   CollectionName extends string
 > {
   templates?: GlobalTemplate<GlobalTemplateName, CollectionName, true>[]
-  documents?: TinaCloudCollection<GlobalTemplateName, CollectionName, true>[]
+  // documents?: TinaCloudCollection<GlobalTemplateName, CollectionName, true>[]
   collections: TinaCloudCollection<GlobalTemplateName, CollectionName, true>[]
   namespace: string[]
 }

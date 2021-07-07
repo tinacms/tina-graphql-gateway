@@ -133,34 +133,28 @@ export default unstable_defineSchema({
       label: 'Blog Posts',
       name: 'posts',
       path: 'content/posts',
-      templates: [
+      fields: [
         {
-          label: 'Article',
-          name: 'article',
-          fields: [
-            {
-              type: 'string',
-              label: 'Title',
-              name: 'title',
-            },
-            {
-              name: 'hero',
-              type: 'image',
-              label: 'Hero',
-            },
-            {
-              type: 'reference',
-              label: 'Author',
-              name: 'author',
-              collections: ['authors'],
-            },
-            {
-              type: 'string',
-              label: 'Body',
-              name: 'body',
-              isBody: true,
-            },
-          ],
+          type: 'string',
+          label: 'Title',
+          name: 'title',
+        },
+        {
+          name: 'hero',
+          type: 'image',
+          label: 'Hero',
+        },
+        {
+          type: 'reference',
+          label: 'Author',
+          name: 'author',
+          collections: ['authors'],
+        },
+        {
+          type: 'string',
+          label: 'Body',
+          name: 'body',
+          isBody: true,
         },
       ],
     },
@@ -168,22 +162,16 @@ export default unstable_defineSchema({
       label: 'Authors',
       name: 'authors',
       path: 'content/authors',
-      templates: [
+      fields: [
         {
-          label: 'Author',
-          name: 'author',
-          fields: [
-            {
-              type: 'string',
-              label: 'Name',
-              name: 'name',
-            },
-            {
-              type: 'string',
-              label: 'Avatar',
-              name: 'avatar',
-            },
-          ],
+          type: 'string',
+          label: 'Name',
+          name: 'name',
+        },
+        {
+          type: 'string',
+          label: 'Avatar',
+          name: 'avatar',
         },
       ],
     },
@@ -191,85 +179,79 @@ export default unstable_defineSchema({
       label: 'Marketing Pages',
       name: 'marketingPages',
       path: 'content/marketing-pages',
-      templates: [
+      fields: [
         {
-          label: 'Landing Page',
-          name: 'landingPage',
-          fields: [
+          type: 'object',
+          name: 'blocks',
+          label: 'Blocks',
+          list: true,
+          templates: [
             {
-              type: 'object',
-              name: 'blocks',
-              label: 'Blocks',
-              list: true,
-              templates: [
+              name: 'message',
+              label: 'Message',
+              fields: [
                 {
-                  name: 'message',
-                  label: 'Message',
+                  type: 'string',
+                  label: 'Message Header',
+                  name: 'messageHeader',
+                },
+                {
+                  type: 'string',
+                  label: 'Message Body',
+                  name: 'messageBody',
+                },
+                {
+                  type: 'object',
+                  label: 'Seo',
+                  name: 'seo',
+                  list: true,
                   fields: [
                     {
                       type: 'string',
-                      label: 'Message Header',
-                      name: 'messageHeader',
+                      label: 'SEO title',
+                      name: 'seoTitle',
                     },
+                  ],
+                },
+                {
+                  type: 'object',
+                  label: 'Nested Page',
+                  name: 'nestedPage',
+                  list: true,
+                  templates: [
                     {
-                      type: 'string',
-                      label: 'Message Body',
-                      name: 'messageBody',
-                    },
-                    {
-                      type: 'object',
-                      label: 'Seo',
-                      name: 'seo',
-                      list: true,
+                      name: 'hero',
+                      label: 'Hero',
                       fields: [
                         {
                           type: 'string',
-                          label: 'SEO title',
-                          name: 'seoTitle',
-                        },
-                      ],
-                    },
-                    {
-                      type: 'object',
-                      label: 'Nested Page',
-                      name: 'nestedPage',
-                      list: true,
-                      templates: [
-                        {
-                          name: 'hero',
-                          label: 'Hero',
-                          fields: [
-                            {
-                              type: 'string',
-                              label: 'Hero title',
-                              name: 'herotitle',
-                            },
-                          ],
+                          label: 'Hero title',
+                          name: 'herotitle',
                         },
                       ],
                     },
                   ],
                 },
+              ],
+            },
+            {
+              name: 'image',
+              label: 'Image',
+              fields: [
                 {
-                  name: 'image',
-                  label: 'Image',
-                  fields: [
-                    {
-                      type: 'string',
-                      label: 'Heading',
-                      name: 'heading',
-                    },
-                    {
-                      type: 'string',
-                      label: 'Image Description',
-                      name: 'imgDescription',
-                    },
-                    {
-                      type: 'string',
-                      label: 'Image src',
-                      name: 'src',
-                    },
-                  ],
+                  type: 'string',
+                  label: 'Heading',
+                  name: 'heading',
+                },
+                {
+                  type: 'string',
+                  label: 'Image Description',
+                  name: 'imgDescription',
+                },
+                {
+                  type: 'string',
+                  label: 'Image src',
+                  name: 'src',
                 },
               ],
             },

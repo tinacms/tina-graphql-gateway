@@ -33,9 +33,10 @@ import { assertShape, lastItem } from './util'
 
 import type { GraphQLResolveInfo, DocumentNode } from 'graphql'
 import type { Database } from './database'
-import type { TinaCloudSchemaBase } from './types'
+import type { TinaCloudSchemaBase, TinaCloudCollection } from './types'
 import { Path } from 'graphql/jsutils/Path'
 import { NAMER } from './ast-builder'
+import { tinaSchema } from './spec/forestry-sample/.tina/schema'
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>
 type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
@@ -200,7 +201,7 @@ export const resolve = async ({
             }))
           if (!isMutation) {
             const mutationPath = buildMutationPath(info, {
-              collection: lookup.collection,
+              collection: tinaSchema.getCollection(lookup.collection),
               relativePath: result.sys.relativePath,
             })
             if (mutationPath) {
@@ -344,7 +345,13 @@ const buildReferenceQuery = (
 
 const buildMutationPath = (
   info: GraphQLResolveInfo,
-  { collection, relativePath }: { collection: string; relativePath: string }
+  {
+    collection,
+    relativePath,
+  }: {
+    collection: TinaCloudCollection<string, string, false>
+    relativePath: string
+  }
 ) => {
   const queryNode = info.fieldNodes.find(
     (fn) => fn.name.value === info.fieldName
@@ -352,7 +359,7 @@ const buildMutationPath = (
   if (!queryNode) {
     throw new Error(`exptected to find field node for ${info.fieldName}`)
   }
-  const mutationName = NAMER.mutationName([collection])
+  const mutationName = NAMER.mutationName([collection.name])
   const mutations = JSON.parse(
     JSON.stringify(info.schema.getMutationType()?.getFields())
   ) as GraphQLFieldMap<any, any>
@@ -434,6 +441,7 @@ const buildMutationPath = (
     path: ['data', ...buildPath(info.path, []), 'form'],
     string: mutationString,
     includeCollection: false,
+    includeTemplate: !!collection.templates,
   }
 }
 function addFragmentsToQuery(

@@ -73,16 +73,14 @@ type Collection {
 
 union DocumentNode = PostsDocument | AuthorsDocument | MarketingPagesDocument
 
-union PostsArticleAuthorDocument = AuthorsDocument
+union PostsAuthorDocument = AuthorsDocument
 
-type PostsArticle {
+type Posts {
   title: String
   hero: String
-  author: PostsArticleAuthorDocument
+  author: PostsAuthorDocument
   body: String
 }
-
-union Posts = PostsArticle
 
 type PostsDocument implements Node {
   id: ID!
@@ -104,12 +102,10 @@ type PostsConnection implements Connection {
   edges: [PostsConnectionEdges]
 }
 
-type AuthorsAuthor {
+type Authors {
   name: String
   avatar: String
 }
-
-union Authors = AuthorsAuthor
 
 type AuthorsDocument implements Node {
   id: ID!
@@ -131,36 +127,34 @@ type AuthorsConnection implements Connection {
   edges: [AuthorsConnectionEdges]
 }
 
-type MarketingPagesLandingPageBlocksMessageSeo {
+type MarketingPagesBlocksMessageSeo {
   seoTitle: String
 }
 
-type MarketingPagesLandingPageBlocksMessageNestedPageHero {
+type MarketingPagesBlocksMessageNestedPageHero {
   herotitle: String
 }
 
-union MarketingPagesLandingPageBlocksMessageNestedPage = MarketingPagesLandingPageBlocksMessageNestedPageHero
+union MarketingPagesBlocksMessageNestedPage = MarketingPagesBlocksMessageNestedPageHero
 
-type MarketingPagesLandingPageBlocksMessage {
+type MarketingPagesBlocksMessage {
   messageHeader: String
   messageBody: String
-  seo: [MarketingPagesLandingPageBlocksMessageSeo]
-  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPage]
+  seo: [MarketingPagesBlocksMessageSeo]
+  nestedPage: [MarketingPagesBlocksMessageNestedPage]
 }
 
-type MarketingPagesLandingPageBlocksImage {
+type MarketingPagesBlocksImage {
   heading: String
   imgDescription: String
   src: String
 }
 
-union MarketingPagesLandingPageBlocks = MarketingPagesLandingPageBlocksMessage | MarketingPagesLandingPageBlocksImage
+union MarketingPagesBlocks = MarketingPagesBlocksMessage | MarketingPagesBlocksImage
 
-type MarketingPagesLandingPage {
-  blocks: [MarketingPagesLandingPageBlocks]
+type MarketingPages {
+  blocks: [MarketingPagesBlocks]
 }
-
-union MarketingPages = MarketingPagesLandingPage
 
 type MarketingPagesDocument implements Node {
   id: ID!
@@ -196,60 +190,48 @@ input DocumentMutation {
   marketingPages: MarketingPagesMutation
 }
 
-input PostsArticleMutation {
+input PostsMutation {
   title: String
   hero: String
   author: String
   body: String
 }
 
-input PostsMutation {
-  article: PostsArticleMutation
-}
-
-input AuthorsAuthorMutation {
+input AuthorsMutation {
   name: String
   avatar: String
 }
 
-input AuthorsMutation {
-  author: AuthorsAuthorMutation
-}
-
-input MarketingPagesLandingPageBlocksMessageSeoMutation {
+input MarketingPagesBlocksMessageSeoMutation {
   seoTitle: String
 }
 
-input MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation {
+input MarketingPagesBlocksMessageNestedPageHeroMutation {
   herotitle: String
 }
 
-input MarketingPagesLandingPageBlocksMessageNestedPageMutation {
-  hero: MarketingPagesLandingPageBlocksMessageNestedPageHeroMutation
+input MarketingPagesBlocksMessageNestedPageMutation {
+  hero: MarketingPagesBlocksMessageNestedPageHeroMutation
 }
 
-input MarketingPagesLandingPageBlocksMessageMutation {
+input MarketingPagesBlocksMessageMutation {
   messageHeader: String
   messageBody: String
-  seo: [MarketingPagesLandingPageBlocksMessageSeoMutation]
-  nestedPage: [MarketingPagesLandingPageBlocksMessageNestedPageMutation]
+  seo: [MarketingPagesBlocksMessageSeoMutation]
+  nestedPage: [MarketingPagesBlocksMessageNestedPageMutation]
 }
 
-input MarketingPagesLandingPageBlocksImageMutation {
+input MarketingPagesBlocksImageMutation {
   heading: String
   imgDescription: String
   src: String
 }
 
-input MarketingPagesLandingPageBlocksMutation {
-  message: MarketingPagesLandingPageBlocksMessageMutation
-  image: MarketingPagesLandingPageBlocksImageMutation
-}
-
-input MarketingPagesLandingPageMutation {
-  blocks: [MarketingPagesLandingPageBlocksMutation]
+input MarketingPagesBlocksMutation {
+  message: MarketingPagesBlocksMessageMutation
+  image: MarketingPagesBlocksImageMutation
 }
 
 input MarketingPagesMutation {
-  landingPage: MarketingPagesLandingPageMutation
+  blocks: [MarketingPagesBlocksMutation]
 }

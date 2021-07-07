@@ -12,7 +12,10 @@ limitations under the License.
 */
 
 import { BlogPost } from '../../components/post'
-import type { Posts_Document } from '../../.tina/__generated__/types'
+import type {
+  PostsConnection,
+  PostsDocument,
+} from '../../.tina/__generated__/types'
 import { Wrapper } from '../../components/helper-components'
 import { LocalClient } from 'tina-graphql-gateway'
 
@@ -29,31 +32,27 @@ export default function BlogPostPage(
   )
 }
 
-export const query = `#graphql
-query GetPostDocument($relativePath: String!) {
-  getPostsDocument(relativePath: $relativePath) {
-    data {
-      __typename
-      ...on PostsArticle {
+const gql = (strings: TemplateStringsArray) => strings
+export const query = gql`
+  #graphql
+  query GetPostDocument($relativePath: String!) {
+    getPostsDocument(relativePath: $relativePath) {
+      data {
         title
         hero
         body
         author {
           __typename
-          ...on AuthorsDocument {
+          ... on AuthorsDocument {
             data {
-              __typename
-              ...on AuthorsAuthor {
-                name
-                avatar
-              }
+              name
+              avatar
             }
           }
         }
       }
     }
   }
-}
 `
 const client = new LocalClient()
 
@@ -61,9 +60,12 @@ export const getStaticProps = async ({ params }) => {
   const variables = { relativePath: `${params.filename}.md` }
   return {
     props: {
-      data: await client.request<{ getPostsDocument: Posts_Document }>(query, {
-        variables,
-      }),
+      data: await client.request<{ getPostsDocument: PostsDocument }>(
+        (gql) => gql(query),
+        {
+          variables,
+        }
+      ),
       variables,
       query,
     },
@@ -79,7 +81,7 @@ export const getStaticProps = async ({ params }) => {
  */
 export const getStaticPaths = async () => {
   const postsListData = await client.request<{
-    getPostsList: Posts_Document[]
+    getPostsList: PostsConnection
   }>(
     (gql) => gql`
       {

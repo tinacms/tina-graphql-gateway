@@ -85,5 +85,31 @@
     "typeMap": {
       "hero": "MarketingPagesLandingPageBlocksMessageNestedPageHero"
     }
+  },
+  "PostsAuthorDocument": {
+    "type": "PostsAuthorDocument",
+    "resolveType": "multiCollectionDocument"
+  },
+  "MarketingPagesBlocksMessageNestedPage": {
+    "type": "MarketingPagesBlocksMessageNestedPage",
+    "resolveType": "unionData",
+    "typeMap": {
+      "hero": "MarketingPagesBlocksMessageNestedPageHero"
+    }
+  },
+  "MarketingPagesBlocks": {
+    "type": "MarketingPagesBlocks",
+    "resolveType": "unionData",
+    "typeMap": {
+      "message": "MarketingPagesBlocksMessage",
+      "image": "MarketingPagesBlocksImage"
+    }
+  },
+  "MessageNestedPage": {
+    "type": "MessageNestedPage",
+    "resolveType": "unionData",
+    "typeMap": {
+      "hero": "MessageNestedPageHero"
+    }
   }
 }

@@ -36,38 +36,32 @@ export const query = gql`
     getMarketingPagesDocument(relativePath: "index.md") {
       dataJSON
       data {
-        __typename
-        ... on MarketingPagesLandingPage {
-          blocks {
-            __typename
-            ... on MarketingPagesLandingPageBlocksImage {
-              heading
-              imgDescription
-              src
-            }
-            ... on MarketingPagesLandingPageBlocksMessage {
-              messageHeader
-              messageBody
-            }
+        blocks {
+          __typename
+          ... on MarketingPagesBlocksImage {
+            heading
+            imgDescription
+            src
+          }
+          ... on MarketingPagesBlocksMessage {
+            messageHeader
+            messageBody
           }
         }
       }
     }
     getPostsDocument(relativePath: "voteForPedro.md") {
       data {
-        __typename
-        ... on PostsArticle {
-          title
-          hero
-          author {
-            __typename
-            ... on AuthorsDocument {
-              data {
-                __typename
-                ... on AuthorsAuthor {
-                  name
-                  avatar
-                }
+        title
+        hero
+        author {
+          __typename
+          ... on AuthorsDocument {
+            data {
+              __typename
+              ... on Authors {
+                name
+                avatar
               }
             }
           }

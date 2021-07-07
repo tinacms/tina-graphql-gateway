@@ -98,13 +98,20 @@ export class TinaSchema {
       throw new Error(`Unable to find collection for file at ${filepath}`)
     }
     const templates = this.getTemplatesForCollectable(collection)
-    if (templateName) {
-      if (templates.type === 'union') {
+    if (templates.type === 'union') {
+      if (templateName) {
         template = templates.templates.find(
           (template) => lastItem(template.namespace) === templateName
         )
+        if (!template) {
+          throw new Error(
+            `Unable to determine template for item at ${filepath}`
+          )
+        }
       } else {
-        throw new Error(`Unable to determine template for item at ${filepath}`)
+        throw new Error(
+          `Unable to determine template for item at ${filepath}, no template name provided for collection with multiple templates`
+        )
       }
     }
     if (templates.type === 'object') {

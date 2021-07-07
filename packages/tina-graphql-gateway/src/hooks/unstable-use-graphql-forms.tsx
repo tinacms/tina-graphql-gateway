@@ -139,7 +139,7 @@ export function useGraphqlForms<T extends object>({
             onSubmit: async (payload) => {
               const params = transformDocumentIntoMutationRequestPayload(
                 payload,
-                result.form.mutationInfo.includeCollection
+                result.form.mutationInfo
               )
               const variables = { params }
               const mutationString = result.form.mutationInfo.string
@@ -249,13 +249,19 @@ const transformDocumentIntoMutationRequestPayload = (
     _template: string
     [key: string]: unknown
   },
-  includeCollection?: boolean
+  /** Whether to include the collection and template names as top-level keys in the payload */
+  instructions: { includeCollection?: boolean; includeTemplate?: boolean }
 ) => {
-  const { _collection, __typename, ...rest } = document
+  const { _collection, __typename, _template, ...rest } = document
 
   const params = transformParams(rest)
+  const paramsWithTemplate = instructions.includeTemplate
+    ? { [_template]: params }
+    : params
 
-  return includeCollection ? { [_collection]: params } : params
+  return instructions.includeCollection
+    ? { [_collection]: paramsWithTemplate }
+    : paramsWithTemplate
 }
 
 const transformParams = (data: unknown) => {
