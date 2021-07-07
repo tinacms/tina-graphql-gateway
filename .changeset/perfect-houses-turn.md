@@ -115,13 +115,13 @@ While this, is a `checkbox` field
 
 ## Introducing the `object` type
 
-Tina currently represents the concept of an _object_ in two ways: a `group` (and `group-list`), which is a uniform collection of fields; and `blocks`, which is a polymporphic collection. Both have valid use cases, but we've also assumed that `blocks` are always represented as an _array_ of objects. Moving forward, we'll be introducing a more comporehensive type, which envelopes the behavior of both `group` and `blocks`, and since _every_ field can be a `list`, this also makes `group-list` redundant.
+Tina currently represents the concept of an _object_ in two ways: a `group` (and `group-list`), which is a uniform collection of fields; and `blocks`, which is a polymporphic collection. Moving forward, we'll be introducing a more comporehensive type, which envelopes the behavior of both `group` and `blocks`, and since _every_ field can be a `list`, this also makes `group-list` redundant.
 
 > Note: we've previously assumed that `blocks` usage would _always_ be as an array. We'll be keeping that assumption with the `blocks` type for compatibility, but `object` will allow for non-array polymorphic objects.
 
-### Defining and `object` type
+### Defining an `object` type
 
-An `object` type takes either a `fields` _or_ `templates` property (just like the `collections` definition). If you supply `fields`, you'll end up with what is essentially a `group` item. And if you say `list: true`, you'll have duplicated the logic for `group-list`.
+An `object` type takes either a `fields` _or_ `templates` property (just like the `collections` definition). If you supply `fields`, you'll end up with what is essentially a `group` item. And if you say `list: true`, you'll have what used to be a `group-list` definition.
 
 Likewise, if you supply a `templates` field and `list: true`, you'll get the same API as `blocks`. However you can also say `list: false` (or omit it entirely), and you'll have a polymorphic object which is _not_ an array.
 
@@ -130,7 +130,7 @@ This is identical to the current `blocks` definition:
 {
   type: "object",
   label: "Page Sections",
-  name: "pageSections"
+  name: "pageSections",
   list: true,
   templates: [{
     label: "Hero",
@@ -143,8 +143,22 @@ This is identical to the current `blocks` definition:
   }]
 }
 ```
+And here is one for `group`:
+```js
+{
+  type: "object",
+  label: "Hero",
+  name: "hero",
+  fields: [{
+    label: "Title",
+    name: "title",
+    type: "string"
+  }]
+}
+```
 
-## Lists will now adhere to the GraphQL connection spec
+
+## Lists queries will now adhere to the GraphQL connection spec
 
 [Read the spec](https://relay.dev/graphql/connections.htm)
 
