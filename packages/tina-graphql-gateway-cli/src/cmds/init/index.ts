@@ -54,7 +54,10 @@ export async function initTina(ctx: any, next: () => void, options) {
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function installDeps(ctx: any, next: () => void, options) {
-  const bar = new Progress('Install Tina Dependencies... :prog', 2)
+  const bar = new Progress(
+    'Install Tina Dependencies... (This may take a minute) :prog',
+    2
+  )
   const deps = [
     'tinacms',
     'styled-components',
