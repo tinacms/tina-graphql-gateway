@@ -1,5 +1,12 @@
 # test
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [348ef1e5]
+  - tina-graphql@0.1.25
+
 ## 0.1.3
 
 ### Patch Changes
