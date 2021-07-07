@@ -108,7 +108,7 @@ export class TinaSchema {
       }
     }
     if (templates.type === 'object') {
-      templateName = lastItem(templates.template.namespace)
+      template = templates.template
     }
     if (!template) {
       throw new Error(

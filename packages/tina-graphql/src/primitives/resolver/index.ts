@@ -147,7 +147,6 @@ export class Resolver {
     const realPath = path.join(collection?.path, args.relativePath)
 
     if (isMutation) {
-      const document = await this.database.get(realPath)
       const templateInfo =
         this.tinaSchema.getTemplatesForCollectable(collection)
       // @ts-ignore
