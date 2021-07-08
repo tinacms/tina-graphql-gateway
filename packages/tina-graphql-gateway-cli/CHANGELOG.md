@@ -1,5 +1,11 @@
 # tina-graphql-gateway-cli
 
+## 0.3.0
+
+### Minor Changes
+
+- fa3967b3: tina-gql init command now updates the users package.json with tina-dev scripts and adds a \_app.js files into the users project
+
 ## 0.2.60
 
 ### Patch Changes
