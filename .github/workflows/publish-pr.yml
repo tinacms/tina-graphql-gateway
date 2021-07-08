@@ -2,7 +2,7 @@ name: Publish PR as tagged release
 on:
   pull_request:
     branches:
-    - '@dev/**'
+    - jeff
 
 jobs:
   build:
