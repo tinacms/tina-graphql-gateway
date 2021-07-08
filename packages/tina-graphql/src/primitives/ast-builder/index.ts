@@ -25,7 +25,7 @@ import {
   InputObjectTypeDefinitionNode,
   DocumentNode,
 } from 'graphql'
-import _, { values } from 'lodash'
+import _ from 'lodash'
 
 /**
  * the `gql` module provides functions and types which can be

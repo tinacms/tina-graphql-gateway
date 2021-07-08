@@ -16,7 +16,7 @@ import { resolve } from './resolve'
 import fs from 'fs-extra'
 import path from 'path'
 import type { Database } from './database'
-import { print, buildASTSchema, printSchema } from 'graphql'
+import { buildASTSchema, printSchema } from 'graphql'
 
 export { createDatabase } from './database'
 export { indexDB, resolve }

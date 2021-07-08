@@ -19,8 +19,6 @@ import { NAMER } from '../ast-builder'
 import { Database, CollectionDocumentListLookup } from '../database'
 
 import type { Templateable, TinaFieldEnriched } from '../types'
-import { GraphQLResolveInfo, GraphQLEnumType } from 'graphql'
-
 interface ResolverConfig {
   database: Database
   tinaSchema: TinaSchema

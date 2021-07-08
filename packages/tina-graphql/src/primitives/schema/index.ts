@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import { addNamespaceToSchema } from '../ast-builder'
-import _, { Collection } from 'lodash'
+import _ from 'lodash'
 import { lastItem, assertShape } from '../util'
 
 import type {
@@ -87,7 +87,7 @@ export class TinaSchema {
     filepath: string,
     templateName?: string
   ): Promise<{
-    collection: TinaCloudCollection<string, string, true>
+    collection: TinaCloudCollection<true>
     template: Templateable
   }> => {
     let template

@@ -20,7 +20,6 @@ import {
   OperationDefinitionNode,
   FieldNode,
   visit,
-  visitWithTypeInfo,
   FragmentDefinitionNode,
   Visitor,
   ASTKindToNode,
@@ -349,7 +348,7 @@ const buildMutationPath = (
     collection,
     relativePath,
   }: {
-    collection: TinaCloudCollection<string, string, false>
+    collection: TinaCloudCollection<false>
     relativePath: string
   }
 ) => {
@@ -401,7 +400,6 @@ const buildMutationPath = (
         },
       }
     }),
-    // arguments: mutationNode?.arguments
   }
   const paramArgs = mutationNode?.arguments?.find(
     (arg) => arg.name.value === 'params'
@@ -452,7 +450,7 @@ function addFragmentsToQuery(
   const fragmentSpreadVisitor = (frag: Frag): VisitorType => {
     return {
       leave: {
-        FragmentSpread(node, key, parent, path) {
+        FragmentSpread(node) {
           frag.subFrags.push(node.name.value)
         },
       },
@@ -474,7 +472,7 @@ function addFragmentsToQuery(
   }
   const visitor: VisitorType = {
     leave: {
-      FragmentSpread(node, key, parent, path) {
+      FragmentSpread(node) {
         n.fragments.push(node.name.value)
       },
     },

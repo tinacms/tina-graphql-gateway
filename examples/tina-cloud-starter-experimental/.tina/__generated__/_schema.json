@@ -41,12 +41,7 @@
           "name": "body",
           "isBody": true,
           "ui": {
-            "component": "textarea",
-            "namespace": [
-              "posts",
-              "body",
-              null
-            ]
+            "component": "textarea"
           },
           "namespace": [
             "posts",
