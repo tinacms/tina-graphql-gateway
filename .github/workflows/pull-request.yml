@@ -2,6 +2,11 @@ name: Pull Request
 on: [pull_request]
 
 jobs:
+  tinkering:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, "primitive")
+    steps:
+    - run: echo "I only run if the branch has primitive in its name!"
   build:
     runs-on: ubuntu-latest
     steps:
