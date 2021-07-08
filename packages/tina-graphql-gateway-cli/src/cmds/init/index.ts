@@ -10,13 +10,26 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import fs from 'fs-extra'
+import fs, { readFileSync, writeFileSync } from 'fs-extra'
 import p from 'path'
 import Progress from 'progress'
+import prompts from 'prompts'
 
-import { successText, logText, cmdText, warnText } from '../../utils/theme'
-import { blogPost, nextPostPage, TinaWrapper } from './setup-files'
+import {
+  successText,
+  logText,
+  cmdText,
+  warnText,
+  dangerText,
+} from '../../utils/theme'
+import {
+  blogPost,
+  nextPostPage,
+  TinaWrapper,
+  AppJsContent,
+} from './setup-files'
 import { logger } from '../../logger'
+import chalk from 'chalk'
 
 /**
  * Executes a shell command and return it as a Promise.
@@ -42,7 +55,10 @@ export async function initTina(ctx: any, next: () => void, options) {
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function installDeps(ctx: any, next: () => void, options) {
-  const bar = new Progress('Install Tina Dependencies... :prog', 2)
+  const bar = new Progress(
+    'Installing Tina packages. This might take a moment... :prog',
+    2
+  )
   const deps = [
     'tinacms',
     'styled-components',
@@ -72,14 +88,13 @@ const TinaWrapperPath = p.join(TinaWrapperPathDir, 'tina-wrapper.tsx')
 const blogContentPath = p.join(baseDir, 'content', 'posts')
 const blogPostPath = p.join(blogContentPath, 'HelloWorld.md')
 export async function tinaSetup(ctx: any, next: () => void, options) {
-  logger.level = 'info'
+  const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
 
   // 1. Create a content/blog Folder and add one or two blog posts
   if (!fs.pathExistsSync(blogPostPath)) {
     logger.info(logText('Adding a content folder...'))
     fs.mkdirpSync(blogContentPath)
     fs.writeFileSync(blogPostPath, blogPost)
-    // logger.info(`✅ Setup your first post in ${blogPostPath}`)
   }
 
   // 2. Create a Tina Wrapper
@@ -88,44 +103,77 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     fs.mkdirpSync(TinaWrapperPathDir)
     fs.writeFileSync(TinaWrapperPath, TinaWrapper)
   }
+  logger.level = 'info'
+
+  // 3. Create an _app.js
+  const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
+  const appPath = p.join(pagesPath, '_app.js')
+  const appPathTS = p.join(pagesPath, '_app.tsx')
+  let wrapper = false
+
+  if (!fs.pathExistsSync(appPath) && !fs.pathExistsSync(appPathTS)) {
+    // if they don't have a _app.js or an _app.tsx just make one
+    logger.info(logText('Adding _app.js ... ✅'))
+    fs.writeFileSync(appPath, AppJsContent)
+  } else {
+    // Ask the user if they want to update there _app.js
+    const override = await prompts({
+      name: 'res',
+      type: 'confirm',
+      message: 'do you want us to override your _app.js?',
+    })
+    if (override.res) {
+      logger.info(logText('Adding _app.js ... ✅'))
+      fs.writeFileSync(appPath, AppJsContent)
+    } else {
+      wrapper = true
+      logger.info(
+        dangerText(
+          'you will have to wrap your app in a tina-wrapper component. For more information see generated file'
+        )
+      )
+    }
+  }
 
   // 3. Create a /page/blog/[slug].tsx file with all of the Tina pieces wrapped up in one file
-  const useingSrc = fs.pathExistsSync(p.join(baseDir, 'src'))
-  const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
+
   const tinaBlogPagePath = p.join(pagesPath, 'demo', 'blog')
   const tinaBlogPagePathFile = p.join(tinaBlogPagePath, '[filename].tsx')
   if (!fs.pathExistsSync(tinaBlogPagePathFile)) {
     fs.mkdirpSync(tinaBlogPagePath)
-    fs.writeFileSync(tinaBlogPagePathFile, nextPostPage)
-    // logger.info(`✅ Setup a blog page in ${tinaBlogPagePathFile}`)
+    fs.writeFileSync(tinaBlogPagePathFile, nextPostPage({ wrapper }))
   }
   logger.info('Adding a content folder... ✅')
+  // 4. update the users package.json
+  const packagePath = p.join(baseDir, 'package.json')
+  const pack = JSON.parse(readFileSync(packagePath).toString())
+  const oldScripts = pack.scripts || {}
+  const newPack = JSON.stringify(
+    {
+      ...pack,
+      scripts: {
+        ...oldScripts,
+        'tina-dev': 'yarn tina-gql server:start -c "next dev"',
+        'tina-build': 'yarn tina-gql server:start -c "next build"',
+        'tina-start': 'yarn tina-gql server:start -c "next start"',
+      },
+    },
+    null,
+    2
+  )
+  writeFileSync(packagePath, newPack)
   next()
 }
-// const tinaCloudText = `Add Tina Cloud as a Backend
-// \t1. Register at https://auth.tina.io
-// \t2. Update .env file
-// NEXT_PUBLIC_ORGANIZATION_NAME=<get this from the organization you create at auth.tina.io>
-// NEXT_PUBLIC_TINA_CLIENT_ID=<get this from the app you create at auth.tina.io>
-// NEXT_PUBLIC_USE_LOCAL_CLIENT=0
-// `
+
 export async function successMessage(ctx: any, next: () => void, options) {
   const baseDir = process.cwd()
-  logger.info(`Tina setup  ✅
-
-Before you get started:
-
-\t1. ${warnText('please add the following scripts to your package.json')}
-"dev": "yarn tina-gql server:start -c \\"next dev\\"",
-"build": "yarn tina-gql server:start -c \\"next build\\"",
-"start": "yarn tina-gql server:start -c \\"next start\\""
-
-\t2. Start your dev server with ${cmdText(
-    'yarn dev'
+  logger.info(`Tina setup ${chalk.underline.green('done')}  ✅
+\t Start your dev server with ${successText(
+    `yarn tina-dev`
   )} and go to http://localhost:3000/demo/blog/HelloWorld to ${successText(
     'check it out the page that was created for you'
   )}
-Enjoy Tina!
+Enjoy Tina 🦙 !
 `)
   next()
 }

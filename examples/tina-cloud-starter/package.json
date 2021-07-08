@@ -1,6 +1,6 @@
 {
   "name": "tina-cloud-starter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "dev": "yarn tina-gql server:start -c \"next dev\"",
@@ -28,7 +28,7 @@
     "styled-jsx": "^3.2.5",
     "tina-cloud-next": "workspace:*",
     "tina-graphql-gateway": "workspace:*",
-    "tinacms": "^0.31.0",
+    "tinacms": "^0.42.1",
     "typescript": "^3.8.3"
   }
 }

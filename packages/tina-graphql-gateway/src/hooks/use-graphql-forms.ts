@@ -163,8 +163,18 @@ export const useDocumentCreatorPlugin = (
   filterCollections?: FilterCollections
 ) => {
   const cms = useCMS()
+  const [values, setValues] = React.useState<{
+    collection?: string
+    template?: string
+    relativePath?: string
+  }>({})
+  const [plugin, setPlugin] = React.useState(null)
+
   React.useEffect(() => {
     const run = async () => {
+      /**
+       * Query for Collections and Templates
+       */
       const res = await cms.api.tina.request(
         (gql) => gql`
           {
@@ -172,54 +182,65 @@ export const useDocumentCreatorPlugin = (
               label
               slug
               format
+              templates
             }
           }
         `,
         { variables: {} }
       )
 
-      const emptyOption = { value: '', label: 'Choose Collection' }
-      const options: { label: string; value: string }[] = []
+      /**
+       * Build Collection Options
+       */
+      const allCollectionOptions: { label: string; value: string }[] = []
       res.getCollections.forEach((collection) => {
         const value = collection.slug
         const label = `${collection.label}`
-        options.push({ value, label })
+        allCollectionOptions.push({ value, label })
       })
 
+      let collectionOptions
       if (filterCollections && typeof filterCollections === 'function') {
-        const filtered = filterCollections(options)
-        return [emptyOption, ...filtered]
+        const filtered = filterCollections(allCollectionOptions)
+        collectionOptions = [
+          { value: '', label: 'Choose Collection' },
+          ...filtered,
+        ]
+      } else {
+        collectionOptions = [
+          { value: '', label: 'Choose Collection' },
+          ...allCollectionOptions,
+        ]
       }
 
-      const collectionOptions = [emptyOption, ...options]
+      /**
+       * Build Template Options
+       */
+      const templateOptions: { label: string; value: string }[] = [
+        { value: '', label: 'Choose Template' },
+      ]
 
-      const getCollectionTemplateOptions = async (collection: String) => {
-        if (!collection) {
-          return []
-        }
-        const res = await cms.api.tina.request(
-          (gql) => gql`
-            query CollectionQuery($collection: String) {
-              getCollection(collection: $collection) {
-                templates
-              }
-            }
-          `,
-          { variables: { collection } }
+      if (values.collection) {
+        const filteredCollection = res.getCollections.find(
+          (c) => c.slug === values.collection
         )
-        const options = [{ value: '', label: 'Choose Template' }]
-        res.getCollection?.templates?.forEach((template) => {
-          const value = `${collection}.${template}`
-          const label = `${template}`
-          options.push({ value, label })
+        filteredCollection.templates.forEach((template) => {
+          templateOptions.push({ value: template, label: template })
         })
-        return options
       }
 
-      cms.plugins.add(
+      /**
+       * Build 'Add Document' Form
+       */
+      setPlugin(
         new ContentCreatorPlugin({
+          label: 'Add Document',
           onNewDocument: onNewDocument,
           collections: res.getCollections,
+          onChange: async ({ values }) => {
+            setValues(values)
+          },
+          initialValues: values,
           fields: [
             {
               component: 'select',
@@ -227,43 +248,24 @@ export const useDocumentCreatorPlugin = (
               label: 'Collection',
               description: 'Select the collection.',
               options: collectionOptions,
-              validate: async (value: any) => {
+              validate: async (value: any, allValues: any, meta: any) => {
                 if (!value) {
-                  return 'Required'
+                  return true
                 }
               },
             },
             {
               component: 'select',
-              name: 'collectionTemplate',
+              name: 'template',
               label: 'Template',
               description: 'Select the template.',
-              options: [],
-              validate: async (
-                value: any,
-                allValues: any,
-                meta: any,
-                field: any
-              ) => {
-                const collection = allValues?.collection
-                const previousCollection = value
-                  ? value.split('.')[0]
-                  : undefined
-
-                if (!collection) {
-                  field.options = []
-                  meta.change('')
-                  return 'Required'
-                }
-
-                if (collection !== previousCollection) {
-                  field.options = await getCollectionTemplateOptions(collection)
-                  meta.change('')
-                  return 'Required'
-                }
-
+              options: templateOptions,
+              validate: async (value: any, allValues: any, meta: any) => {
                 if (!value) {
-                  return 'Required'
+                  if (meta.dirty) {
+                    return 'Required'
+                  }
+                  return true
                 }
               },
             },
@@ -273,9 +275,12 @@ export const useDocumentCreatorPlugin = (
               label: 'Name',
               description: `A unique name for the content. Example: "newPost" or "blog_022021`,
               placeholder: 'newPost',
-              validate: (value: any) => {
+              validate: (value: any, allValues: any, meta: any) => {
                 if (!value) {
-                  return 'Required'
+                  if (meta.dirty) {
+                    return 'Required'
+                  }
+                  return true
                 }
 
                 /**
@@ -290,13 +295,24 @@ export const useDocumentCreatorPlugin = (
               },
             },
           ],
-          label: 'Add Document',
         })
       )
     }
 
     run()
-  }, [cms])
+  }, [cms, values?.collection])
+
+  React.useEffect(() => {
+    if (plugin) {
+      cms.plugins.add(plugin)
+    }
+
+    return () => {
+      if (plugin) {
+        cms.plugins.remove(plugin)
+      }
+    }
+  }, [plugin])
 }
 
 function useRegisterFormsAndSyncPayload<T extends object>({
