@@ -13,7 +13,7 @@ limitations under the License.
 
 import { TinaCloudSchema } from '../../../types'
 
-const tinaSchema: TinaCloudSchema<string, string, false> = {
+const tinaSchema: TinaCloudSchema<false> = {
   collections: [
     {
       label: 'Page',
