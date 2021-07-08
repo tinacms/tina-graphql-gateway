@@ -22,6 +22,7 @@ import { assertShape, lastItem } from '../util'
 
 import type { TinaSchema } from '../schema'
 import type { TinaCloudSchemaBase } from '../types'
+import { DocumentNode } from 'graphql'
 
 type CreateDatabase = { rootPath: string; bridge?: Bridge }
 
@@ -36,6 +37,9 @@ export class Database {
   public bridge: Bridge
   public rootPath: string
   private tinaShema: TinaSchema | undefined
+  private _lookup: { [returnType: string]: LookupMapType } | undefined
+  private _graphql: DocumentNode | undefined
+  private _tinaSchema: TinaCloudSchemaBase | undefined
   constructor(public config: CreateDatabase) {
     this.bridge = config.bridge || new FilesystemBridge(config.rootPath)
     this.rootPath = config.rootPath
@@ -98,10 +102,27 @@ export class Database {
   }
 
   public getLookup = async (returnType: string): Promise<LookupMapType> => {
-    const lookup = await this.get<{ [returnType: string]: LookupMapType }>(
-      '_lookup'
-    )
-    return lookup[returnType]
+    if (!this._lookup) {
+      const _lookup = await this.get<{ [returnType: string]: LookupMapType }>(
+        '_lookup'
+      )
+      this._lookup = _lookup
+    }
+    return this._lookup[returnType]
+  }
+  public getGraphQLSchema = async (): Promise<DocumentNode> => {
+    if (!this._graphql) {
+      const _graphql = await this.get<DocumentNode>('_graphql')
+      this._graphql = _graphql
+    }
+    return this._graphql
+  }
+  public getTinaSchema = async (): Promise<TinaCloudSchemaBase> => {
+    if (!this._tinaSchema) {
+      const _tinaSchema = await this.get<TinaCloudSchemaBase>('_schema')
+      this._tinaSchema = _tinaSchema
+    }
+    return this._tinaSchema
   }
 
   public getDocument = async (fullPath: unknown) => {

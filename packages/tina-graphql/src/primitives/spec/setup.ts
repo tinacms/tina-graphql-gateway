@@ -84,7 +84,7 @@ export const setup = async (
     bridge,
   })
   await indexDB({ database, config: schema })
-  const schemaString = await database.get('_graphql')
+  const schemaString = await database.getGraphQLSchema()
   // @ts-ignore
   const graphQLSchemaString = printSchema(buildASTSchema(schemaString))
   await fs.outputFileSync(
@@ -103,7 +103,7 @@ export const setup = async (
 
 export const setupFixture = async (
   rootPath: string,
-  schema: TinaCloudSchema<string, string, false>,
+  schema: TinaCloudSchema<false>,
   fixture: string
 ) => {
   const { database } = await setup(rootPath, schema)

@@ -28,14 +28,13 @@ import {
 } from 'graphql'
 import { createSchema } from './schema'
 import { createResolver } from './resolver'
-import { assertShape, lastItem } from './util'
+import { assertShape } from './util'
 
-import type { GraphQLResolveInfo, DocumentNode } from 'graphql'
+import type { GraphQLResolveInfo } from 'graphql'
 import type { Database } from './database'
-import type { TinaCloudSchemaBase, TinaCloudCollection } from './types'
+import type { TinaCloudCollection } from './types'
 import { Path } from 'graphql/jsutils/Path'
 import { NAMER } from './ast-builder'
-import { tinaSchema } from './spec/forestry-sample/.tina/schema'
 
 type VisitorType = Visitor<ASTKindToNode, ASTNode>
 type Frag = { name: string; node: FragmentDefinitionNode; subFrags: string[] }
@@ -61,10 +60,10 @@ export const resolve = async ({
   variables: object
   database: Database
 }) => {
-  const graphQLSchemaAst = await database.get<DocumentNode>('_graphql')
+  const graphQLSchemaAst = await database.getGraphQLSchema()
   const graphQLSchema = buildASTSchema(graphQLSchemaAst)
 
-  const config = (await database.get('_schema')) as TinaCloudSchemaBase
+  const config = await database.getTinaSchema()
   const tinaSchema = await createSchema({ schema: config })
   const resolver = await createResolver({ database, tinaSchema })
 

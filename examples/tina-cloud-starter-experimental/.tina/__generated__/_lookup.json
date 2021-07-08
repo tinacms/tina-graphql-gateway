@@ -16,16 +16,9 @@
     "type": "DocumentNode",
     "resolveType": "multiCollectionDocument"
   },
-  "PostsArticleAuthorDocument": {
-    "type": "PostsArticleAuthorDocument",
+  "PostsAuthorDocument": {
+    "type": "PostsAuthorDocument",
     "resolveType": "multiCollectionDocument"
-  },
-  "Posts": {
-    "type": "Posts",
-    "resolveType": "unionData",
-    "typeMap": {
-      "article": "PostsArticle"
-    }
   },
   "PostsDocument": {
     "type": "PostsDocument",
@@ -37,13 +30,6 @@
     "resolveType": "collectionDocumentList",
     "collection": "posts"
   },
-  "Authors": {
-    "type": "Authors",
-    "resolveType": "unionData",
-    "typeMap": {
-      "author": "AuthorsAuthor"
-    }
-  },
   "AuthorsDocument": {
     "type": "AuthorsDocument",
     "resolveType": "collectionDocument",
@@ -53,42 +39,6 @@
     "type": "AuthorsConnection",
     "resolveType": "collectionDocumentList",
     "collection": "authors"
-  },
-  "MarketingPagesLandingPageBlocks": {
-    "type": "MarketingPagesLandingPageBlocks",
-    "resolveType": "unionData",
-    "typeMap": {
-      "message": "MarketingPagesLandingPageBlocksMessage",
-      "image": "MarketingPagesLandingPageBlocksImage"
-    }
-  },
-  "MarketingPages": {
-    "type": "MarketingPages",
-    "resolveType": "unionData",
-    "typeMap": {
-      "landingPage": "MarketingPagesLandingPage"
-    }
-  },
-  "MarketingPagesDocument": {
-    "type": "MarketingPagesDocument",
-    "resolveType": "collectionDocument",
-    "collection": "marketingPages"
-  },
-  "MarketingPagesConnection": {
-    "type": "MarketingPagesConnection",
-    "resolveType": "collectionDocumentList",
-    "collection": "marketingPages"
-  },
-  "MarketingPagesLandingPageBlocksMessageNestedPage": {
-    "type": "MarketingPagesLandingPageBlocksMessageNestedPage",
-    "resolveType": "unionData",
-    "typeMap": {
-      "hero": "MarketingPagesLandingPageBlocksMessageNestedPageHero"
-    }
-  },
-  "PostsAuthorDocument": {
-    "type": "PostsAuthorDocument",
-    "resolveType": "multiCollectionDocument"
   },
   "MarketingPagesBlocksMessageNestedPage": {
     "type": "MarketingPagesBlocksMessageNestedPage",
@@ -105,11 +55,14 @@
       "image": "MarketingPagesBlocksImage"
     }
   },
-  "MessageNestedPage": {
-    "type": "MessageNestedPage",
-    "resolveType": "unionData",
-    "typeMap": {
-      "hero": "MessageNestedPageHero"
-    }
+  "MarketingPagesDocument": {
+    "type": "MarketingPagesDocument",
+    "resolveType": "collectionDocument",
+    "collection": "marketingPages"
+  },
+  "MarketingPagesConnection": {
+    "type": "MarketingPagesConnection",
+    "resolveType": "collectionDocumentList",
+    "collection": "marketingPages"
   }
 }

@@ -21,7 +21,7 @@ import {
 import { genTypes } from '../query-gen'
 import { compile } from '../compile'
 import chokidar from 'chokidar'
-import { successText, dangerText } from '../../utils/theme'
+import { dangerText } from '../../utils/theme'
 import { logger } from '../../logger'
 
 interface Options {

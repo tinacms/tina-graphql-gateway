@@ -15,12 +15,11 @@ import { indexDB } from './build'
 import { resolve } from './resolve'
 import fs from 'fs-extra'
 import path from 'path'
+import { buildASTSchema } from 'graphql'
 import type { Database } from './database'
-import { buildASTSchema, printSchema } from 'graphql'
 
 export { createDatabase } from './database'
 export { indexDB, resolve }
-
 export type { TinaCloudSchema } from './types'
 
 export const gql = async ({
@@ -34,23 +33,6 @@ export const gql = async ({
   variables: object
   database: Database
 }) => {
-  const config = await fs
-    .readFileSync(
-      path.join(projectRoot, '.tina', '__generated__', 'config', 'schema.json')
-    )
-    .toString()
-  await indexDB({
-    database,
-    config: JSON.parse(config),
-  })
-  const gqlAst = await database.get('_graphql')
-  // @ts-ignore
-  const schemaString = printSchema(buildASTSchema(gqlAst))
-
-  await fs.writeFileSync(
-    path.join(projectRoot, '.tina', '__generated__', 'schema.gql'),
-    schemaString
-  )
   return resolve({
     rootPath: projectRoot,
     database,
@@ -66,7 +48,6 @@ export const buildSchema = async (rootPath: string, database: Database) => {
     )
     .toString()
   await indexDB({ database, config: JSON.parse(config) })
-  const gqlAst = await database.get('_graphql')
-  // @ts-ignore
+  const gqlAst = await database.getGraphQLSchema()
   return buildASTSchema(gqlAst)
 }

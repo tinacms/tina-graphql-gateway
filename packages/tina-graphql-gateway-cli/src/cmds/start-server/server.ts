@@ -18,6 +18,7 @@ import express from 'express'
 import { altairExpress } from 'altair-express-middleware'
 // @ts-ignore
 import bodyParser from 'body-parser'
+import { GithubBridge } from 'tina-graphql'
 
 const gqlServer = async (experimental: boolean = false) => {
   // This is lazily required so we can update the module
@@ -51,12 +52,20 @@ query MyQuery {
     })
   )
 
+  const gh = new GithubBridge({
+    accessToken: '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',
+    owner: 'tinacms',
+    repo: 'tina-graphql-gateway',
+    rootPath: 'examples/tina-cloud-starter-experimental',
+    ref: 'primitive-types-4',
+  })
+  const database = await gqlPackage.unstable_createDatabase({
+    rootPath: projectRoot,
+    bridge: gh,
+  })
   app.post('/graphql', async (req, res) => {
     if (experimental) {
       const { query, variables } = req.body
-      const database = await gqlPackage.unstable_createDatabase({
-        rootPath: projectRoot,
-      })
       const result = await gqlPackage.unstable_gql({
         projectRoot,
         query,

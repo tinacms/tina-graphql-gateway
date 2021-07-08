@@ -366,7 +366,7 @@ class ValidationError extends Error {
 }
 
 export const unstable_defineSchema = (
-  config: unstable_TinaCloudSchema<string, string, false>
+  config: unstable_TinaCloudSchema<false>
 ) => {
   return config
 }

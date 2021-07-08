@@ -21,6 +21,7 @@ import { FileSystemManager } from './datasources/filesystem-manager'
 import { clearCache as s3ClearCache, s3Cache } from './cache/s3'
 import { simpleCache, clearCache as lruClearCache } from './cache/lru'
 
+export { GithubBridge } from './primitives/database/github'
 export {
   gql as unstable_gql,
   buildSchema as unstable_buildSchema,
