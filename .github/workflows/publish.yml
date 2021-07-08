@@ -27,13 +27,6 @@ jobs:
         run: yarn ci:build
       - name: Test
         run: yarn ci:test
-      - name: Create release pull request
-        uses: changesets/action@master
-        if: matrix.channel == 'latest'
-        with:
-          version: yarn changeset version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release to @dev channel
         if: matrix.channel == 'dev'
         run: |
@@ -43,7 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
           FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }}
-          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
+          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}  
       - name: Publish
         if: matrix.channel == 'latest'
         run: yarn ci:publish
@@ -52,3 +45,10 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
           FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }}
           FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
+      - name: Create release pull request
+        uses: changesets/action@master
+        if: matrix.channel == 'latest'
+        with:
+          version: yarn changeset version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
