@@ -70,7 +70,7 @@ export class InMemoryBridge implements Bridge {
 
 export const setup = async (
   rootPath: string,
-  schema: TinaCloudSchema<string, string, false>,
+  schema: TinaCloudSchema<false>,
   updateSnapshot?: boolean
 ): Promise<{
   database: Database
