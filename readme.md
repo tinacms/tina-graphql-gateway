@@ -1,7 +1,5 @@
 # _tina-grapqhl-gateway_
 
----
-
 This monorepo contains the _tina-graphql-gateway_ and _tina-graphql-gateway-cli_ packages, which enable [Tina](https://tina.io)-powered websites to use Tina's hosted Content API.
 
 ## Structure
