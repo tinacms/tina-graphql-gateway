@@ -1,5 +1,11 @@
 # tina-graphql-gateway-cli
 
+## 0.3.1
+
+### Patch Changes
+
+- ebe77b21: added iframe to tina init generate page
+
 ## 0.3.0
 
 ### Minor Changes
