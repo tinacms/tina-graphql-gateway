@@ -1,5 +1,11 @@
 # tina-graphql-gateway
 
+## 0.3.0
+
+### Minor Changes
+
+- 96ee3eb1: Revisited useDocumentCreatorPlugin to improve the UX
+
 ## 0.2.23
 
 ### Patch Changes
