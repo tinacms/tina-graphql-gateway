@@ -446,10 +446,6 @@ const buildSectionDefinitions = (
           type: friendlyName(name, { suffix: 'Data' }),
         }),
         gql.FieldDefinition({
-          name: 'dataJSON',
-          type: gql.TYPES.JSONObject,
-        }),
-        gql.FieldDefinition({
           name: 'values',
           type: friendlyName(name, { suffix: 'Values' }),
         }),
