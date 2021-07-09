@@ -14,7 +14,6 @@ limitations under the License.
 import { Command } from '../command'
 import { chain } from '../middleware'
 import { genTypes, attachSchema } from './query-gen'
-import { audit, migrate, dump } from './audit'
 import { startServer } from './start-server'
 import { compile } from './compile'
 import { initTina, installDeps, tinaSetup, successMessage } from './init'

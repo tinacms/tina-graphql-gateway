@@ -65,10 +65,13 @@ type DocumentConnection implements Connection {
 
 type Collection {
   name: String!
+  slug: String!
   label: String!
   path: String!
   format: String
   matches: String
+  templates: [JSON]
+  fields: [JSON]
   documents(before: String, after: String, first: Int, last: Int): DocumentConnection!
 }
 

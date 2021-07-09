@@ -18,7 +18,6 @@ import express from 'express'
 import { altairExpress } from 'altair-express-middleware'
 // @ts-ignore
 import bodyParser from 'body-parser'
-import { GithubBridge } from 'tina-graphql'
 
 const gqlServer = async (experimental: boolean = false) => {
   // This is lazily required so we can update the module
@@ -30,7 +29,6 @@ const gqlServer = async (experimental: boolean = false) => {
   app.use(cors())
   app.use(bodyParser.json())
 
-  let projectRoot = path.join(process.cwd())
   app.use(
     '/altair',
     altairExpress({
@@ -52,33 +50,23 @@ query MyQuery {
     })
   )
 
-  const gh = new GithubBridge({
-    accessToken: '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',
-    owner: 'tinacms',
-    repo: 'tina-graphql-gateway',
-    rootPath: 'examples/tina-cloud-starter-experimental',
-    ref: 'primitive-types-4',
-  })
-  const database = await gqlPackage.unstable_createDatabase({
-    rootPath: projectRoot,
-    bridge: gh,
-  })
+  const rootPath = path.join(process.cwd())
   app.post('/graphql', async (req, res) => {
     if (experimental) {
       const { query, variables } = req.body
       const result = await gqlPackage.unstable_gql({
-        projectRoot,
+        rootPath,
         query,
         variables,
-        database,
       })
-      if (result.errors) {
-        console.log(result.errors)
-      }
       return res.json(result)
     } else {
       const { query, variables } = req.body
-      const result = await gqlPackage.gql({ projectRoot, query, variables })
+      const result = await gqlPackage.gql({
+        projectRoot: rootPath,
+        query,
+        variables,
+      })
       return res.json(result)
     }
   })

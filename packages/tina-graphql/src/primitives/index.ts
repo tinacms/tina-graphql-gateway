@@ -11,42 +11,81 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { indexDB } from './build'
-import { resolve } from './resolve'
 import fs from 'fs-extra'
 import path from 'path'
+import { indexDB } from './build'
+import { resolve } from './resolve'
 import { buildASTSchema } from 'graphql'
-import type { Database } from './database'
+import { GithubBridge } from './database/github'
+import { simpleCache } from '../cache/lru'
+import { createDatabase } from './database'
 
-export { createDatabase } from './database'
-export { indexDB, resolve }
+export { createDatabase }
 export type { TinaCloudSchema } from './types'
 
 export const gql = async ({
-  projectRoot,
+  rootPath,
   query,
   variables,
-  database,
 }: {
-  projectRoot: string
+  rootPath: string
   query: string
   variables: object
-  database: Database
 }) => {
+  const database = await createDatabase({
+    rootPath,
+  })
+
   return resolve({
-    rootPath: projectRoot,
     database,
     query,
     variables,
   })
 }
 
-export const buildSchema = async (rootPath: string, database: Database) => {
+export const githubRoute = async ({
+  rootPath = '',
+  query,
+  variables,
+  cacheType = simpleCache,
+  branch,
+  ...githubArgs
+}: {
+  accessToken: string
+  owner: string
+  repo: string
+  query: string
+  variables: object
+  rootPath?: string
+  branch: string
+  cacheType?: typeof simpleCache
+}) => {
+  const gh = new GithubBridge({
+    rootPath,
+    ref: branch,
+    cache: cacheType,
+    ...githubArgs,
+  })
+  const database = await createDatabase({
+    bridge: gh,
+  })
+  return resolve({
+    database,
+    query,
+    variables,
+  })
+}
+
+export const buildSchema = async (rootPath: string) => {
   const config = await fs
     .readFileSync(
       path.join(rootPath, '.tina', '__generated__', 'config', 'schema.json')
     )
     .toString()
+  const database = await createDatabase({
+    rootPath,
+  })
+
   await indexDB({ database, config: JSON.parse(config) })
   const gqlAst = await database.getGraphQLSchema()
   return buildASTSchema(gqlAst)

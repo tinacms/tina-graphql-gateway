@@ -58,7 +58,21 @@ export class TinaSchema {
     if (!collection) {
       throw new Error(`Expected to find collection named ${collectionName}`)
     }
-    return collection
+    const extraFields: { [key: string]: object[] } = {}
+    const templateInfo = this.getTemplatesForCollectable(collection)
+    switch (templateInfo.type) {
+      case 'object':
+        extraFields['fields'] = templateInfo.template.fields
+        break
+      case 'union':
+        extraFields['templates'] = templateInfo.templates
+        break
+    }
+    return {
+      slug: collection.name,
+      ...extraFields,
+      ...collection,
+    }
   }
   public getCollections = () => {
     return this.schema.collections || []

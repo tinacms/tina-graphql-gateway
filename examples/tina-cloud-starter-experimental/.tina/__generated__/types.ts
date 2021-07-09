@@ -143,10 +143,13 @@ export type DocumentConnection = Connection & {
 export type Collection = {
   __typename?: 'Collection';
   name: Scalars['String'];
+  slug: Scalars['String'];
   label: Scalars['String'];
   path: Scalars['String'];
   format?: Maybe<Scalars['String']>;
   matches?: Maybe<Scalars['String']>;
+  templates?: Maybe<Array<Maybe<Scalars['JSON']>>>;
+  fields?: Maybe<Array<Maybe<Scalars['JSON']>>>;
   documents: DocumentConnection;
 };
 

@@ -51,61 +51,49 @@ export async function startServer(
       })
     }
   }
-  let projectRoot = path.join(process.cwd())
+  const rootPath = process.cwd()
   let ready = false
   if (!process.env.CI) {
     chokidar
-      .watch(`${projectRoot}/**/*.ts`, {
-        ignored: `${path.resolve(projectRoot)}/.tina/__generated__/**/*`,
+      .watch(`${rootPath}/**/*.ts`, {
+        ignored: `${path.resolve(rootPath)}/.tina/__generated__/**/*`,
       })
       .on('ready', async () => {
+        console.log('Generating Tina config')
         try {
-          const database = await unstable_createDatabase({
-            rootPath: projectRoot,
-          })
-          console.log('Generating Tina config')
-          await compile(null, null, { experimental })
-          let schema
-          if (experimental) {
-            schema = await unstable_buildSchema(process.cwd(), database)
-          } else {
-            schema = await buildSchema(process.cwd())
-          }
-          logger.info('Generating Tina config')
-          await genTypes({ schema }, () => {}, {})
+          await build()
           ready = true
           startSubprocess()
         } catch (e) {
-          logger.info(dangerText(`${e.message}, exiting...`))
-          logger.info(e)
+          logger.info(dangerText(`${e.message}`))
           process.exit(0)
         }
       })
-      .on('all', async (event, path) => {
+      .on('all', async () => {
         if (ready) {
           logger.info('Tina change detected, regenerating config')
           try {
-            await compile(null, null, { experimental })
-            let schema
-            if (experimental) {
-              const database = await unstable_createDatabase({
-                rootPath: projectRoot,
-              })
-              schema = await unstable_buildSchema(process.cwd(), database)
-            } else {
-              schema = await buildSchema(process.cwd())
-            }
-            await genTypes({ schema }, () => {}, {})
+            await build()
           } catch (e) {
             logger.info(
               dangerText(
-                'Compilation failed with errors, server has not been restarted'
+                'Compilation failed with errors. Server has not been restarted.'
               )
             )
-            logger.info(e.message)
           }
         }
       })
+  }
+
+  const build = async () => {
+    await compile(null, null, { experimental })
+    let schema
+    if (experimental) {
+      schema = await unstable_buildSchema(rootPath)
+    } else {
+      schema = await buildSchema(rootPath)
+    }
+    await genTypes({ schema }, () => {}, {})
   }
 
   const state = {
@@ -131,7 +119,7 @@ export async function startServer(
     logger.info('Detected change to gql package, restarting...')
     delete require.cache[gqlPackageFile]
 
-    state.sockets.forEach((socket, index) => {
+    state.sockets.forEach((socket) => {
       if (socket.destroyed === false) {
         socket.destroy()
       }

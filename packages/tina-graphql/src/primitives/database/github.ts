@@ -16,6 +16,7 @@ import path from 'path'
 import { Octokit } from '@octokit/rest'
 import { Bridge } from './bridge'
 import LRU from 'lru-cache'
+import { GraphQLError } from 'graphql'
 
 type GithubManagerInit = {
   rootPath: string
@@ -61,13 +62,14 @@ export class GithubBridge implements Bridge {
     return `${this.repoConfig.owner}/${this.repoConfig.repo}/${this.repoConfig.ref}/${key}`
   }
   private readDir = async (filepath: string): Promise<string[]> => {
+    const fullPath = path.join(this.rootPath, filepath)
     return _.flatten(
       (
-        await this.cache.get(this.generateKey(filepath), async () =>
+        await this.cache.get(this.generateKey(fullPath), async () =>
           this.appOctoKit.repos
             .getContent({
               ...this.repoConfig,
-              path: path.join(this.rootPath, filepath),
+              path: fullPath,
             })
             .then(async (response) => {
               if (Array.isArray(response.data)) {
@@ -115,8 +117,12 @@ export class GithubBridge implements Bridge {
           return Buffer.from(response.data.content, 'base64').toString()
         })
         .catch((e) => {
-          console.log(e)
-          throw new Error(`Unable to find record for ${filepath}`)
+          if (e.status === 401) {
+            throw new GraphQLError(
+              `Unauthorized request to Github for repo ${this.repoConfig.owner}/${this.repoConfig.repo} please ensure your access token is valid.`
+            )
+          }
+          throw new GraphQLError(`Unable to find record for ${filepath}`)
         })
     })
   }

@@ -26,6 +26,7 @@ export {
   gql as unstable_gql,
   buildSchema as unstable_buildSchema,
   createDatabase as unstable_createDatabase,
+  githubRoute as unstable_githubRoute,
 } from './primitives'
 export type { TinaCloudSchema as unstable_TinaCloudSchema } from './primitives'
 export { lruClearCache, lruClearCache as clearCache, s3ClearCache, s3Cache }

@@ -24,7 +24,7 @@ import type { TinaSchema } from '../schema'
 import type { TinaCloudSchemaBase } from '../types'
 import { DocumentNode } from 'graphql'
 
-type CreateDatabase = { rootPath: string; bridge?: Bridge }
+type CreateDatabase = { rootPath?: string; bridge?: Bridge }
 
 export const createDatabase = async (config: CreateDatabase) => {
   return new Database(config)
@@ -35,14 +35,12 @@ const GENERATED_FOLDER = path.join('.tina', '__generated__')
 
 export class Database {
   public bridge: Bridge
-  public rootPath: string
-  private tinaShema: TinaSchema | undefined
+  private tinaSchema: TinaSchema | undefined
   private _lookup: { [returnType: string]: LookupMapType } | undefined
   private _graphql: DocumentNode | undefined
   private _tinaSchema: TinaCloudSchemaBase | undefined
   constructor(public config: CreateDatabase) {
-    this.bridge = config.bridge || new FilesystemBridge(config.rootPath)
-    this.rootPath = config.rootPath
+    this.bridge = config.bridge || new FilesystemBridge(config.rootPath || '')
   }
 
   public get = async <T extends object>(filepath: string): Promise<T> => {
@@ -125,6 +123,15 @@ export class Database {
     return this._tinaSchema
   }
 
+  private getSchema = async () => {
+    if (this.tinaSchema) {
+      return this.tinaSchema
+    }
+    const schema = await this.getTinaSchema()
+    this.tinaSchema = await createSchema({ schema })
+    return this.tinaSchema
+  }
+
   public getDocument = async (fullPath: unknown) => {
     if (typeof fullPath !== 'string') {
       throw new Error(`fullPath must be of type string for getDocument request`)
@@ -166,15 +173,6 @@ export class Database {
       lookupMap = {}
     }
     await this.put('_lookup', { ...lookupMap, [lookup.type]: lookup })
-  }
-
-  private getSchema = async () => {
-    if (this.tinaShema) {
-      return this.tinaShema
-    }
-    const schema = await this.get<TinaCloudSchemaBase>('_schema')
-    this.tinaShema = await createSchema({ schema })
-    return this.tinaShema
   }
 
   private stringifyFile = (

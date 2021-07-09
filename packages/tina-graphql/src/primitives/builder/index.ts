@@ -97,6 +97,11 @@ export class Builder {
           type: astBuilder.TYPES.String,
         }),
         astBuilder.FieldDefinition({
+          name: 'slug',
+          required: true,
+          type: astBuilder.TYPES.String,
+        }),
+        astBuilder.FieldDefinition({
           name: 'label',
           required: true,
           type: astBuilder.TYPES.String,
@@ -116,16 +121,16 @@ export class Builder {
           required: false,
           type: astBuilder.TYPES.String,
         }),
-        // astBuilder.FieldDefinition({
-        //   name: "templates",
-        //   list: true,
-        //   type: astBuilder.TYPES.String,
-        // }),
-        // astBuilder.FieldDefinition({
-        //   name: "fields",
-        //   list: true,
-        //   type: astBuilder.TYPES.String,
-        // }),
+        astBuilder.FieldDefinition({
+          name: 'templates',
+          list: true,
+          type: 'JSON',
+        }),
+        astBuilder.FieldDefinition({
+          name: 'fields',
+          list: true,
+          type: 'JSON',
+        }),
         documentsType,
       ],
     })
