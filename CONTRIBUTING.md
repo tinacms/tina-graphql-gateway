@@ -52,9 +52,9 @@ Feel free to edit this file if you want to alter your messages or which versions
 
 The PR will be checked for a changeset file. You're done!
 
-Once the PR is merged and has completed it's actions, you can install the changes by installing the @dev version of the package. So if there were changes to `tina-graphql` merged into `main`, you can test them out by running `yarn add tina-grahql@dev`.
+Once the PR is merged and has completed it's actions, you can install the changes by installing the @dev version of the package. So if there were changes to `tina-graphql` merged into `main`, you can test them out by running `yarn add tina-grahql@beta`.
 
-However, your changes won't yet be published to NPM under the `@latest` tag yet. So without specifying the `@dev` tag, users won't get your latest changes. Instead, when the PR is merged to `main`, another action will kick in. It will create a _separate_ PR which is essentially all of the active changesets in flight. So several merged PRs may result in several pending changesets.
+However, your changes won't yet be published to NPM under the `@latest` tag yet. So without specifying the `@beta` tag, users won't get your latest changes. Instead, when the PR is merged to `main`, another action will kick in. It will create a _separate_ PR which is essentially all of the active changesets in flight. So several merged PRs may result in several pending changesets.
 
 This PR calls `yarn changeset version`, which _deletes_ changeset files and updates `CHANGELOG.md` files in each package. This PR will stay up to date as new changesets enter the `main` branch. [Here's an example](https://github.com/tinacms/tina-graphql-gateway/pull/316) of what that looks like. Only once this PR is merged will the latest changes be generally available.
 
@@ -62,15 +62,17 @@ This PR calls `yarn changeset version`, which _deletes_ changeset files and upda
 
 Previous PRs to main would _not_ have triggered NPM packages to be published because their `versions` haven't been bumped. That's the purpose of the "Version Package" action. So these merges will now have updated `versions`, resulting in publishes to NPM.
 
-## Creating a beta release
+## Creating a dev release
 
-`cd` into the package you want to release, append `-beta` to the `version` in it's `package.json`. Run `yarn version prerelease`, which will bump your version in the `package.json`. So if you had `0.1.1-beta`, it would become `0.1.1-beta.1`. Next, run `yarn npm publish --tag beta`.
+Ensure you have created a changeset and have a clean `git` working directory
 
-To install this version `yarn add my-package@beta`. For users you do `yarn add my-package`, they won't get your beta version.
+Run `yarn changeset version --snapshot`
 
-> Warning: make sure you are logged in by running `yarn npm whoami`, and run `yarn npm login` if you weren't authenticated
+Run `yarn ci:publish-dev`
 
-> Hint: there's no special meaning to the term `beta`, you can use whatever keyword you want
+If you have 2FA, this will prompt you to enter you one-time code for each package you publish.
+
+Run `git co -- .` This will clear out the versioning changes
 
 ## Working with the GitHub Manager locally
 

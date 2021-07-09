@@ -19,7 +19,7 @@
     "ci:test": "yarn workspaces foreach --no-private --verbose run test",
     "ci:publish": "yarn workspaces foreach --no-private --verbose npm publish --tolerate-republish --access public",
     "ci:publish-dev": "yarn workspaces foreach --no-private --verbose npm publish --tolerate-republish --tag dev --access public",
-    "ci:publish-beta": "yarn workspaces foreach --no-private --verbose npm publish --tolerate-republish --tag dev --access public",
+    "ci:publish-beta": "yarn workspaces foreach --no-private --verbose npm publish --tolerate-republish --tag beta --access public",
     "format": "prettier --write .",
     "postinstall": "husky install"
   },
