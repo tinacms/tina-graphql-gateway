@@ -33,13 +33,10 @@ export const createClient = ({
 export const createCloudClient = (
   props: Omit<CreateClientProps, 'isLocalClient'>
 ) => {
-  const organization = props.organization
   const clientId = props.clientId
 
   const missingProps: string[] = []
-  if (!organization) {
-    missingProps.push('organization')
-  }
+
   if (!clientId) {
     missingProps.push('clientId')
   }
@@ -50,7 +47,6 @@ export const createCloudClient = (
   }
 
   return new Client({
-    organizationId: organization,
     clientId,
     branch: props.branch || 'main',
     tokenStorage: 'LOCAL_STORAGE',
