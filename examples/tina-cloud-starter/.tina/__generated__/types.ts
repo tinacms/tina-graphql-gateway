@@ -177,6 +177,7 @@ export type Posts_Document = Node & Document & {
   id: Scalars['ID'];
   sys?: Maybe<SystemInfo>;
   data?: Maybe<Posts_Data>;
+  dataJSON?: Maybe<Scalars['JSONObject']>;
   values?: Maybe<Posts_Values>;
   form?: Maybe<Posts_Form>;
 };
@@ -262,6 +263,7 @@ export type Authors_Document = Node & Document & {
   id: Scalars['ID'];
   sys?: Maybe<SystemInfo>;
   data?: Maybe<Authors_Data>;
+  dataJSON?: Maybe<Scalars['JSONObject']>;
   values?: Maybe<Authors_Values>;
   form?: Maybe<Authors_Form>;
 };
@@ -311,6 +313,7 @@ export type MarketingPages_Document = Node & Document & {
   id: Scalars['ID'];
   sys?: Maybe<SystemInfo>;
   data?: Maybe<MarketingPages_Data>;
+  dataJSON?: Maybe<Scalars['JSONObject']>;
   values?: Maybe<MarketingPages_Values>;
   form?: Maybe<MarketingPages_Form>;
 };

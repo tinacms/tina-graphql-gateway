@@ -337,6 +337,7 @@ ${mutation}
         })
         context.cms.alerts.info('Document saved!')
       } catch (e) {
+        console.error(e)
         context.cms.alerts.info(e.message)
       }
     },
