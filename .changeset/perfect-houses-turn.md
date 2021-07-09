@@ -87,7 +87,7 @@ Previously, we had a `list` field, which allowed you to supply a `field` propert
 {
   type: "string",
   label: "Categories",
-  name: "categories"
+  name: "categories",
   list: true
 }
 ```
@@ -96,7 +96,7 @@ Additionally, enumerable lists and selects are inferred from the `options` prope
 {
   type: "string",
   label: "Categories",
-  name: "categories"
+  name: "categories",
   options: ["fitness", "movies", "music"]
 }
 ```
@@ -162,6 +162,26 @@ And here is one for `group`:
 You can now request `dataJSON` for the entire data object as a single query key. This is great for more tedius queries like theme files where including each item in the result is cumbersome.
 
 > Note there is no typescript help for this feature for now
+
+```graphql
+getThemeDocument(relativePath: $relativePath) {
+  dataJSON
+}
+```
+
+```json
+{
+  "getThemeDocument": {
+    "dataJSON": {
+      "every": "field",
+      "in": {
+        "the": "document",
+      },
+      "is": "returned"
+    }
+  }
+}
+```
 
 ## Lists queries will now adhere to the GraphQL connection spec
 
