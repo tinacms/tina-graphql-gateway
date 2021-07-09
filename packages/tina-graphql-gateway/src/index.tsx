@@ -32,63 +32,6 @@ function graphql(strings: TemplateStringsArray) {
 }
 export { graphql }
 
-// InnerApp that handles rendering edit mode or not
-function InnerApp({ Component, pageProps }) {
-  const { edit } = useEditState()
-  if (edit) {
-    // Dynamically load Tina only when in edit mode so it does not affect production
-    // see https://nextjs.org/docs/advanced-features/dynamic-import#basic-usage
-    return (
-      <>
-        <TinaWrapper {...pageProps}>
-          {(props) => <Component {...props} />}
-        </TinaWrapper>
-        <EditToggle isInEditMode={true} />
-      </>
-    )
-  }
-  return (
-    <>
-      <Component {...pageProps} />
-      <EditToggle isInEditMode={true} />
-    </>
-  )
-}
-
-const EditToggle = (isInEditMode) => {
-  const { edit, setEdit } = useEditState()
-  return (
-    <>
-      {(Number(process.env.NEXT_PUBLIC_SHOW_EDIT_BTN) || edit) && (
-        <>
-          <button
-            onClick={() => {
-              setEdit(!edit)
-            }}
-            className="editLink"
-          >
-            {edit ? 'Exit edit mode' : 'Enter edit mode'}
-          </button>
-        </>
-      )}
-    </>
-  )
-}
-
-const Tina = ({ children, ...props }) => {
-  return (
-    <TinaCloudProvider
-      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
-      branch="main"
-      isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
-      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      // mediaStore={TinaCloudCloudinaryMediaStore}
-    >
-      <SetupHooks {...props}>{children}</SetupHooks>
-    </TinaCloudProvider>
-  )
-}
-
 const SetupHooks = (props) => {
   const [payload, isLoading] = useGraphqlForms({
     query: (gql) => gql(props.query),
@@ -106,6 +49,20 @@ const SetupHooks = (props) => {
   )
 }
 
+const Tina = ({
+  children,
+  config,
+  ...props
+}: {
+  children: React.ReactNode
+  config: Parameters<typeof TinaCloudProvider>
+}) => {
+  return (
+    <TinaCloudProvider {...config}>
+      <SetupHooks {...props}>{children}</SetupHooks>
+    </TinaCloudProvider>
+  )
+}
 export default Tina
 
 export const TinaEditProvider = (props) => {
@@ -123,39 +80,4 @@ const TinaEditProviderInner = ({ children, editMode }) => {
   }
 
   return children
-}
-
-/**
- * This gets loaded dynamically in "pages/_app.js"
- * if you're on a route that starts with "/admin"
- */
-const TinaWrapper = (props) => {
-  return (
-    <TinaCloudProvider
-      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
-      branch="main"
-      isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
-      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      // mediaStore={TinaCloudCloudinaryMediaStore}
-    >
-      <Inner {...props} />
-    </TinaCloudProvider>
-  )
-}
-
-const Inner = (props) => {
-  const [payload, isLoading] = useGraphqlForms({
-    query: (gql) => gql(props.query),
-    variables: props.variables || {},
-  })
-  return (
-    <>
-      {isLoading ? (
-        <div>Loading...{props.children(props)}</div>
-      ) : (
-        // pass the new edit state data to the child
-        props.children({ ...props, data: payload })
-      )}
-    </>
-  )
 }

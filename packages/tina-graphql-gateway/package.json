@@ -8,8 +8,8 @@
   "typings": "dist/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.tsx --format cjs --dts",
-    "watch": "yarn tsup src/index.tsx --watch --format cjs --dts",
+    "build": "yarn tsup src/index.tsx src/light.tsx --format cjs --dts",
+    "watch": "yarn tsup src/index.tsx src/light.tsx --watch --format cjs --dts",
     "tar": "yarn pack --out ../../builds/%s-%v.tgz",
     "graphiql": "next dev -p 3001"
   },

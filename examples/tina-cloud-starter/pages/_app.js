@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import dynamic from 'next/dynamic'
-import { TinaEditProvider } from 'tina-graphql-gateway'
+import { TinaEditProvider } from 'tina-graphql-gateway/dist/light'
 const Tina = dynamic(() => import('tina-graphql-gateway'), { ssr: false })
 
 // Our app is wrapped with edit provider
@@ -20,7 +20,18 @@ function App({ Component, pageProps }) {
   return (
     <TinaEditProvider
       editMode={
-        <Tina {...pageProps}>
+        <Tina
+          config={{
+            branch: 'main',
+            clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID,
+            organization: process.env.NEXT_PUBLIC_ORGANIZATION_NAME,
+            isLocalClient: Boolean(
+              Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT)
+            ),
+            mediaStore: TinaCloudCloudinaryMediaStore,
+          }}
+          {...pageProps}
+        >
           {(livePageProps) => <Component {...livePageProps} />}
         </Tina>
       }
