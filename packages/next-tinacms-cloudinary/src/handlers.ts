@@ -131,8 +131,23 @@ async function listMedia(req: NextApiRequest, res: NextApiResponse) {
     })
   } catch (e) {
     res.status(500)
-    res.json({ e })
+    const message = findErrorMessage(e)
+    console.log(message)
+    res.json({ e: message })
   }
+}
+
+/**
+ * we're getting inconsistent errors in this try-catch
+ * sometimes we just get a string, sometimes we get the whole response.
+ * I suspect this is coming from Cloudinary SDK so let's just try to
+ * normalize it into a string here.
+ */
+const findErrorMessage = (e: any) => {
+  if (typeof e == 'string') return e
+  if (e.message) return e.message
+  if (e.error && e.error.message) return e.error.message
+  return 'an error occurred'
 }
 
 async function deleteAsset(req: NextApiRequest, res: NextApiResponse) {
