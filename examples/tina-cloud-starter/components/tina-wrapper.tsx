@@ -11,39 +11,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { TinaCloudProvider } from 'tina-graphql-gateway'
 import React from 'react'
-import { TinaCMS } from 'tinacms'
-import { TinaCloudAuthWall } from 'tina-graphql-gateway'
-import { SidebarPlaceholder } from './helper-components'
-import { createClient } from '../utils'
 import { useGraphqlForms } from 'tina-graphql-gateway'
-import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 import { LoadingPage } from './Spinner'
-const client = createClient()
+import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
  * if you're on a route that starts with "/admin"
  */
 const TinaWrapper = (props) => {
-  const cms = React.useMemo(() => {
-    return new TinaCMS({
-      apis: {
-        tina: client,
-      },
-      sidebar: {
-        placeholder: SidebarPlaceholder,
-      },
-      enabled: true,
-    })
-  }, [])
-
-  cms.media.store = new TinaCloudCloudinaryMediaStore(client)
-
   return (
-    <TinaCloudAuthWall cms={cms}>
+    <TinaCloudProvider
+      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      branch="main"
+      isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
+      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+      mediaStore={TinaCloudCloudinaryMediaStore}
+    >
       <Inner {...props} />
-    </TinaCloudAuthWall>
+    </TinaCloudProvider>
   )
 }
 
@@ -55,16 +43,7 @@ const Inner = (props) => {
   return (
     <>
       {isLoading ? (
-        <>
-          <LoadingPage />
-          <div
-            style={{
-              pointerEvents: 'none',
-            }}
-          >
-            {props.children(props)}
-          </div>
-        </>
+        <LoadingPage>{props.children(props)}</LoadingPage>
       ) : (
         // pass the new edit state data to the child
         props.children({ ...props, data: payload })

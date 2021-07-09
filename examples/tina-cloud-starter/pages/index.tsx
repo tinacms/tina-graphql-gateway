@@ -14,20 +14,16 @@ limitations under the License.
 import { LandingPage } from '../components/landing-page'
 import { Wrapper } from '../components/helper-components'
 import type { MarketingPages_Document } from '../.tina/__generated__/types'
-import { createLocalClient, AsyncReturnType } from '../utils'
-import { useEffect } from 'react'
-import { useCMS } from 'tinacms'
-import { Client } from 'tina-graphql-gateway'
+import { AsyncReturnType } from './posts/[filename]'
+import { LocalClient } from 'tina-graphql-gateway'
 
 export default function HomePage(
   props: AsyncReturnType<typeof getStaticProps>['props']
 ) {
   return (
-    <>
-      <Wrapper data={props.data.getMarketingPagesDocument.data}>
-        <LandingPage {...props.data.getMarketingPagesDocument.data} />
-      </Wrapper>
-    </>
+    <Wrapper data={props.data.getMarketingPagesDocument.data}>
+      <LandingPage {...props.data.getMarketingPagesDocument.data} />
+    </Wrapper>
   )
 }
 
@@ -57,8 +53,8 @@ export const query = `#graphql
   }
 `
 
+const client = new LocalClient()
 export const getStaticProps = async () => {
-  const client = createLocalClient()
   return {
     props: {
       data: await client.request<{

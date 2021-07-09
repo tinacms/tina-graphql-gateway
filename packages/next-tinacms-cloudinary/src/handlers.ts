@@ -84,13 +84,18 @@ async function uploadMedia(req: NextApiRequest, res: NextApiResponse) {
 
 async function listMedia(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { directory = '""', limit = 500 } = req.query as MediaListOptions
+    const {
+      directory = '""',
+      limit = 500,
+      offset,
+    } = req.query as MediaListOptions
 
     let query = `folder=${directory}`
 
     let response = await cloudinary.search
       .expression(query)
       .max_results(limit)
+      .next_cursor(offset as string)
       .execute()
 
     let files = response.resources.map(cloudinaryToTina)
@@ -122,6 +127,7 @@ async function listMedia(req: NextApiRequest, res: NextApiResponse) {
 
     res.json({
       items: [...folders, ...files],
+      offset: response.next_cursor,
     })
   } catch (e) {
     res.status(500)

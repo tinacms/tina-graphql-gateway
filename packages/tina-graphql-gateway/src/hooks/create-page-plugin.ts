@@ -24,11 +24,13 @@ interface CreateContentButtonOptions {
   fields: any[]
   collections: CollectionShape[]
   onNewDocument: OnNewDocument
+  onChange: (values: any) => void
+  initialValues: any
 }
 
 type FormShape = {
   collection: string
-  collectionTemplate: string
+  template: string
   relativePath: string
 }
 
@@ -49,30 +51,24 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
   __type: 'content-creator' = 'content-creator'
   fields: AddContentPlugin<FormShape>['fields']
   onNewDocument: OnNewDocument
+  onChange: (values: any) => void
   name: string
   collections: CollectionShape[]
+  initialValues: any
 
   constructor(options: CreateContentButtonOptions) {
     this.fields = options.fields
     this.name = options.label
     this.onNewDocument = options.onNewDocument
     this.collections = options.collections
+    this.onChange = options.onChange
+    this.initialValues = options.initialValues
   }
 
   async onSubmit(
-    { collectionTemplate, relativePath }: FormShape,
+    { collection, template, relativePath }: FormShape,
     cms: TinaCMS
   ) {
-    /**
-     * Split collectionTemplate into `collection` and `template`
-     */
-    const [collection, template] = collectionTemplate
-      ? collectionTemplate.split('.')
-      : this.fields
-          .find((field) => field.name === 'collectionTemplate')
-          // @ts-ignore - FIXME: we need a way to supply an initial value https://github.com/tinacms/tinacms/issues/1715
-          .options[0].value.split('.')
-
     const selectedCollection = this.collections.find(
       (collectionItem) => collectionItem.slug === collection
     )

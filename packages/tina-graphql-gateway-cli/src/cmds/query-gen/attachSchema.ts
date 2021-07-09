@@ -13,9 +13,10 @@ limitations under the License.
 
 import { buildSchema } from 'tina-graphql'
 import { logText } from '../../utils/theme'
+import { logger } from '../../logger'
 
 export async function attachSchema(ctx: any, next: () => void, options) {
-  console.log(logText('Building schema...'))
+  logger.info(logText('Building schema...'))
   const rootPath = process.cwd()
   const schema = await buildSchema(rootPath)
 

@@ -18,11 +18,10 @@ import { buildASTSchema } from 'graphql'
 import { createDatasource } from './datasources/data-manager'
 import { GithubManager } from './datasources/github-manager'
 import { FileSystemManager } from './datasources/filesystem-manager'
-import { clearCache as s3ClearCache } from './cache/s3'
+import { clearCache as s3ClearCache, s3Cache } from './cache/s3'
 import { simpleCache, clearCache as lruClearCache } from './cache/lru'
-import { Cache } from './cache'
 
-export { lruClearCache, s3ClearCache }
+export { lruClearCache, lruClearCache as clearCache, s3ClearCache, s3Cache }
 
 export const gql = async ({
   projectRoot,
