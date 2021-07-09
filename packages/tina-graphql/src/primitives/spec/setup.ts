@@ -115,7 +115,6 @@ export const setupFixture = async (
     .toString()
 
   const response = await resolve({
-    rootPath,
     query: request,
     variables: {},
     database,
