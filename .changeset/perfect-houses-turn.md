@@ -55,7 +55,7 @@ getPostDocument(relativePage: $relativePath) {
 
 ## `type` changes
 
-Types will look a little bit different, and are meant to reflect the lowest form of the shape they can represent. Moving forward, `component` will represent the UI portion of what you might expect. For a blog post "description" field, you'd define it like this:
+Types will look a little bit different, and are meant to reflect the lowest form of the shape they can represent. Moving forward, the `ui`  field will represent the UI portion of what you might expect. For a blog post "description" field, you'd define it like this:
 ```js
 {
   type: "string",
@@ -69,17 +69,63 @@ By default `string` will use the `text` field, but you can change that by specif
   type: "string",
   label: "Description",
   name: "description",
-  component: "textarea"
+  ui: {
+    component: "textarea"
+  }
 }
 ```
+For the most part, the UI properties are added to the field and adhere to the existing capabilities of Tina's core [field plugins](https://tina.io/docs/fields/). But there's nothing stopping you from providing your own components -- just be sure to register those with the CMS object on the frontend:
+
+```js
+{
+  type: "string",
+  label: "Description",
+  name: "description",
+  ui: {
+    component: "myMapField"
+    someAdditionalMapConfig: 'some-value'
+  }
+}
+```
+
+[Register](https://tina.io/docs/fields/custom-fields/#registering-the-plugin) your `myMapField` with Tina:
+```js
+cms.fields.add({
+  name: 'myMapField',
+  Component: MapPicker,
+})
+```
+
+### One important gotcha
+
+Every property in the `defineSchema` API must be serlializable. Meaning functions will not work. For example, there's no way to define a `validate` or `parse` function at this level. However, you can either use the [formify](https://tina.io/docs/tina-cloud/client/#formify) API to get access to the Tina form, or provide your own logic by specifying a plugin of your choice:
+```js
+{
+  type: "string",
+  label: "Description",
+  name: "description",
+  ui: {
+    component: "myText"
+  }
+}
+```
+
+And then when you register the plugin, provide your custom logic here:
+```js
+import { TextFieldPlugin } from 'tinacms'
+
+// ...
+
+cms.fields.add({
+  ...TextFieldPlugin, // spread existing text plugin
+  name: 'myText',
+  validate: (value) => {someValidationLogic(value)}
+})
+```
+
 __Why?__
 
-The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `component` can be used for customizing the look and behavior of the field's UI.
-
-For now, all field config data is passed through to the frontend field, though we may introduce a namespaced "frontend" key which more accurately reflects frontend-only concerns.
-
-> Note: this works for scalar values only. For example, you cannot define a `validate` function here and instead must use the [formify](https://tina.io/docs/tina-cloud/client/#formify) API
-
+The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `ui` can be used for customizing the look and behavior of the field's UI.
 ## Every `type` can be a list
 
 Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:
