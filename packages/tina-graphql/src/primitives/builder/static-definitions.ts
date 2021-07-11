@@ -28,17 +28,17 @@ const interfaceDefinitions = [
       }),
     ],
   }),
-  astBuilder.InterfaceTypeDefinition({
-    name: 'Document',
-    fields: [
-      // astBuilder.FieldDefinition({ name: "sys", type: astBuilder.TYPES.SystemInfo }),
-      astBuilder.FieldDefinition({
-        name: 'id',
-        type: astBuilder.TYPES.ID,
-        required: true,
-      }),
-    ],
-  }),
+  // astBuilder.InterfaceTypeDefinition({
+  //   name: 'Document',
+  //   fields: [
+  //     // astBuilder.FieldDefinition({ name: "sys", type: astBuilder.TYPES.SystemInfo }),
+  //     astBuilder.FieldDefinition({
+  //       name: 'id',
+  //       type: astBuilder.TYPES.ID,
+  //       required: true,
+  //     }),
+  //   ],
+  // }),
   astBuilder.InterfaceTypeDefinition({
     name: 'Connection',
     description: 'A relay-compliant pagination connection',

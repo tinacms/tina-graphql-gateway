@@ -321,24 +321,23 @@ export class Resolver {
       return undefined
     }
     assertShape<{ [key: string]: unknown }>(rawData, (yup) => yup.object())
+    const value = rawData[field.name]
     switch (field.type) {
       case 'string':
-        if (field.isBody) {
-          accumulator[field.name] = rawData._body
-        } else {
-          accumulator[field.name] = rawData[field.name]
-        }
+        accumulator[field.name] = field.isBody ? rawData._body : value
         break
       case 'boolean':
       case 'datetime':
       case 'reference':
       case 'image':
-        accumulator[field.name] = rawData[field.name]
+        accumulator[field.name] = value
         break
       case 'object':
-        const value = rawData[field.name]
-
         if (field.list) {
+          if (!value) {
+            return
+          }
+
           assertShape<{ [key: string]: unknown }[]>(value, (yup) =>
             yup.array().of(yup.object().required())
           )
@@ -363,6 +362,9 @@ export class Resolver {
               : payload
           })
         } else {
+          if (!value) {
+            return
+          }
           const template = await this.tinaSchema.getTemplateForData({
             data: value,
             collection: {

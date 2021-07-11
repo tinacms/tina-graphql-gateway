@@ -126,6 +126,83 @@ cms.fields.add({
 __Why?__
 
 The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `ui` can be used for customizing the look and behavior of the field's UI.
+
+## Defensive coding in Tina
+
+When working with GraphQL, there are 2 reasons a property may not be present.
+
+1. The data is not a required property. That is to say, if I have a blog post document, and "category" is an optional field, we'll need to make sure we factor that into how we render our page:
+
+```tsx
+const MyPage = (props) => {
+  return (
+    <>
+      <h2>{props.getPostDocument.data.title}</h2>
+      <MyCategoryComponent>{props.getPostDocument.data?.category}</MyCategoryComponent>
+    </>
+  )
+}
+```
+
+2. The query did not ask for that field:
+```graphql
+{
+  getPostDocument {
+    data {
+      title
+    }
+  }
+}
+```
+
+But with Tina, there's a 3rd scenario: the document may be in an invalid state. Meaning, we could mark the field as `required` _and_ query for the appropriate field, and _still_ not have the expected shape of data. Due to the contextual nature of Tina, it's very common to be in an intermediate state, where your data is incomplete simply because you're still working on it. Most APIs would throw an error when a document is in an invalid state. Or, more likely, you couldn't even request it.
+
+## `required: true` will result in a required GraphQL Type
+
+
+For non-lists', it __must__ be accompanied by a `defaultValue` property.
+
+### Why does this rule only apply to non-listable fields?
+
+When something is an array, it can be valid even when empty. When something is a scalar value or an object, it is not valid as `null` or `undefined`. TODO: deep-dive on this topic
+
+### Deeper explanation
+
+The `defaultValue` property is only allowable for edit-mode requests (or possibly edit-mode __branches__)
+
+When specifying a field as `required: true`, the generated type will be required from GraphQL. This may sound like an obvious decision, but consider the ramications of a Tina-enabled website, where data may be presented in an incomplete state. Let's say you have a `page` collection, and one of it's properties is an `seo` object:
+```ts
+defineSchema({
+  collections: [{
+    label: 'Page',
+    name: 'page',
+    fields: [{
+      label: 'Page',
+      name: 'page',
+      type: 'string'
+      required: true
+    }, {
+      label: 'SEO',
+      name: 'seo',
+      type: 'object',
+      required: true,
+      fields: [{
+        label: "Open Graph Title",
+        name: 'ogTitle',
+        type: 'string'
+      }]
+    }]
+  }]
+})
+```
+
+It may be desirable for you to add a new _page_ document with the content creator. However, when you go to create the page, you won't want to edit all of the fields from the content creator modal. Instead, you'd like to create the page, redirect to it on your site and edit it contextually. We intentionally limit the options on the content creator because this is the very reason Tina is so great for editors, you shouldn't be required to provide a "title" field until you can see how it would be rendered. But this presents a chicken and egg scenario. If you want to be _certain_ that `title` is always present in your data, how can you visit that page in an edit state without "defensive coding" (ie. `getPageDocument.data?.title`).
+
+Similarly, your SEO object will likely break without some data, so we're introducing a `defaultValue` configuration. Which will only be enabled for edit-mode requests.
+
+> Note: `defaultValue` is different from `defaultItem`, `defaultItem` is for listable fields, both are valuable and can be used in conjunction with each other. `defaultValue` is not only a frontend concern, it's the acknowledgement that Tina's GraphQL API is a bit different in that in needs to be able to serve slightly invalid data.
+
+
 ## Every `type` can be a list
 
 Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:

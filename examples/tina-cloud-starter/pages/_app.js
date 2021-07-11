@@ -28,7 +28,7 @@ function App({ Component, pageProps }) {
             isLocalClient: Boolean(
               Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT)
             ),
-            mediaStore: TinaCloudCloudinaryMediaStore,
+            // mediaStore: TinaCloudCloudinaryMediaStore,
           }}
           {...pageProps}
         >

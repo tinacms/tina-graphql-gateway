@@ -95,6 +95,7 @@ interface TinaField {
   name: string
   label: string
   description?: string
+  required?: boolean
   list?: boolean
   /**
    * Any items passed to the UI field will be passed to the underlying field.

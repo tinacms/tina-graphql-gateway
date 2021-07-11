@@ -214,10 +214,13 @@ export const astBuilder = {
         res = {
           ...def,
           type: {
-            kind: 'ListType' as const,
+            kind: 'NonNullType' as const,
             type: {
-              kind: 'NonNullType',
-              type: namedType,
+              kind: 'ListType' as const,
+              type: {
+                kind: 'NonNullType',
+                type: namedType,
+              },
             },
           },
         }
