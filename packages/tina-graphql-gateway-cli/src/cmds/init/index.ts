@@ -27,6 +27,7 @@ import {
   nextPostPage,
   TinaWrapper,
   AppJsContent,
+  adminPage,
 } from './setup-files'
 import { logger } from '../../logger'
 import chalk from 'chalk'
@@ -162,6 +163,22 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     2
   )
   writeFileSync(packagePath, newPack)
+
+  // update the users /admin path
+  const adminPath = p.join(pagesPath, 'admin.tsx')
+  if (!adminPath) {
+    fs.writeFileSync(adminPath, adminPage)
+  } else {
+    const res = await prompts({
+      name: 'name',
+      type: 'text',
+      message: warnText(
+        'Whoops... looks like you already have an Admin.tsx. What would you like the route to be named that enters edit mode?(Click enter for `admin`): '
+      ),
+    })
+    const adminName = res.name || 'admin'
+    fs.writeFileSync(p.join(pagesPath, adminName + '.tsx'), adminPage)
+  }
   next()
 }
 
