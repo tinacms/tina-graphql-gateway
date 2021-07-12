@@ -157,8 +157,34 @@ const MyPage = (props) => {
 
 But with Tina, there's a 3rd scenario: the document may be in an invalid state. Meaning, we could mark the field as `required` _and_ query for the appropriate field, and _still_ not have the expected shape of data. Due to the contextual nature of Tina, it's very common to be in an intermediate state, where your data is incomplete simply because you're still working on it. Most APIs would throw an error when a document is in an invalid state. Or, more likely, you couldn't even request it.
 
-## `required: true` will result in a required GraphQL Type
+## Undefined list fields will return `null`
 
+Previously an listable field which wasn't defined in the document was treated as an emptry array. So for example:
+
+```md
+---
+title: "Hello, World"
+categories:
+  - sports
+  - movies
+---
+```
+The responsee would be `categories: ['sports', 'movies']`. If you omit the items, but kept the empty array:
+```md
+---
+title: "Hello, World"
+categories: []
+---
+```
+The responsee would be `categories: []`. If you omit the field entirely:
+```md
+---
+title: "Hello, World"
+---
+```
+The response will be `categories: null`. Previously this would have been `[]`, which was incorrect.
+
+## `required: true` will result in a required GraphQL Type
 
 For non-lists', it __must__ be accompanied by a `defaultValue` property.
 

@@ -376,7 +376,13 @@ export class Resolver {
           await sequential(template.fields, async (field) => {
             await this.resolveFieldData(field, value, payload)
           })
-          accumulator[field.name] = payload
+          const isUnion = !!field.templates
+          accumulator[field.name] = isUnion
+            ? {
+                _template: lastItem(template.namespace),
+                ...payload,
+              }
+            : payload
         }
 
         break

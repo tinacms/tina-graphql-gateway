@@ -249,11 +249,13 @@ type Template<WithNamespace extends boolean> = WithNamespace extends true
       label: string
       name: string
       fields: TinaFieldInner<WithNamespace>[]
+      ui?: object
       namespace: WithNamespace extends true ? string[] : undefined
     }
   : {
       label: string
       name: string
+      ui?: object
       fields: TinaFieldInner<WithNamespace>[]
     }
 
