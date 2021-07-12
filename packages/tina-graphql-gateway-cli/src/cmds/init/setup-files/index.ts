@@ -11,6 +11,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+export const adminPage = `import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useEditState } from "tina-graphql-gateway";
+
+const GoToEditPage: React.FC = () => {
+  const { setEdit } = useEditState();
+  const router = useRouter();
+  useEffect(() => {
+    setEdit(true);
+    router.back();
+  }, []);
+  return <div>Entering edit mode..</div>;
+};
+
+export default GoToEditPage;
+`
+
 export const blogPost = `---
 title: Vote For Pedro
 _template: article
