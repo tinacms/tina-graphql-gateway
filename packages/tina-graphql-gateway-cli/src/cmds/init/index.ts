@@ -173,7 +173,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
       name: 'name',
       type: 'text',
       message: warnText(
-        'Whoops... looks like you already have an Admin.tsx. What would you like the the route to be named that enters edit mode?(Click enter for `admin`): '
+        'Whoops... looks like you already have an Admin.tsx. What would you like the route to be named that enters edit mode?(Click enter for `admin`): '
       ),
     })
     const adminName = res.name || 'admin'
