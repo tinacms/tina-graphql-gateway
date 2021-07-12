@@ -176,7 +176,7 @@ export const resolve = async ({
           case 'multiCollectionDocumentList':
             assertShape<string[]>(value, (yup) => yup.array().of(yup.string()))
             return resolver.resolveCollectionConnections({
-              ids: value,
+              ids: value || [],
             })
           /**
            * Collections-specific getter

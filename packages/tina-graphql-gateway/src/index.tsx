@@ -13,6 +13,7 @@ limitations under the License.
 
 import React from 'react'
 import { useGraphqlForms as unstable_useGraphQLForms } from './hooks/unstable-use-graphql-forms'
+import type { TinaCMS } from 'tinacms'
 export * from './client'
 export * from './auth'
 export * from './hooks/use-graphql-forms'
@@ -49,14 +50,16 @@ const SetupHooks = (props) => {
 
 const Tina = ({
   children,
+  cms,
   config,
   ...props
 }: {
   children: React.ReactNode
+  cms?: (cms: TinaCMS) => TinaCMS
   config: Parameters<typeof TinaCloudProvider>
 }) => {
   return (
-    <TinaCloudProvider {...config}>
+    <TinaCloudProvider {...config} cmsCallback={cms}>
       {
         // @ts-ignore
         props.query ? (

@@ -470,6 +470,7 @@ export class Builder {
         }),
         astBuilder.FieldDefinition({
           name: 'sys',
+          required: true,
           type: astBuilder.TYPES.SystemInfo,
         }),
         // astBuilder.FieldDefinition({

@@ -402,6 +402,25 @@ export class Resolver {
       case 'datetime':
       case 'image':
       case 'string':
+        if (field.options) {
+          if (field.list) {
+            // FIXME: this is awaiting checkbox suppport
+            return {
+              component: 'checkbox',
+              ...field,
+              ...extraFields,
+              options: field.options,
+            }
+          }
+          return {
+            component: 'select',
+            ...field,
+            ...extraFields,
+            options: field.required
+              ? field.options
+              : [{ label: `Choose an option`, value: '' }, ...field.options],
+          }
+        }
         return {
           // Allows component to be overridden for scalars
           component: 'text',
@@ -446,7 +465,7 @@ export class Resolver {
           return {
             ...field,
             typeMap,
-            component: 'blocks',
+            component: field.list ? 'blocks' : 'not-implemented',
             templates,
             ...extraFields,
           }
@@ -463,12 +482,15 @@ export class Resolver {
         return {
           ...field,
           component: 'select',
-          options: documents.map((filepath) => {
-            return {
-              value: filepath,
-              label: filepath,
-            }
-          }),
+          options: [
+            { label: 'Choose an option', value: '' },
+            ...documents.map((filepath) => {
+              return {
+                value: filepath,
+                label: filepath,
+              }
+            }),
+          ],
           ...extraFields,
         }
       default:

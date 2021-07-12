@@ -184,49 +184,26 @@ title: "Hello, World"
 ```
 The response will be `categories: null`. Previously this would have been `[]`, which was incorrect.
 
-## `required: true` will result in a required GraphQL Type
 
-For non-lists', it __must__ be accompanied by a `defaultValue` property.
+## For a listable item which is `required: true` you _must_ provide a `ui.defaultItem` property
 
-### Why does this rule only apply to non-listable fields?
+### Why?
 
-When something is an array, it can be valid even when empty. When something is a scalar value or an object, it is not valid as `null` or `undefined`. TODO: deep-dive on this topic
+It's possible for Tina's editing capabilities to introduce an invalid state during edits to list items. Imagine the scenario where you are iterating through an array of objects, and each object has a categories array on it we'd like to render:
 
-### Deeper explanation
-
-The `defaultValue` property is only allowable for edit-mode requests (or possibly edit-mode __branches__)
-
-When specifying a field as `required: true`, the generated type will be required from GraphQL. This may sound like an obvious decision, but consider the ramications of a Tina-enabled website, where data may be presented in an incomplete state. Let's say you have a `page` collection, and one of it's properties is an `seo` object:
-```ts
-defineSchema({
-  collections: [{
-    label: 'Page',
-    name: 'page',
-    fields: [{
-      label: 'Page',
-      name: 'page',
-      type: 'string'
-      required: true
-    }, {
-      label: 'SEO',
-      name: 'seo',
-      type: 'object',
-      required: true,
-      fields: [{
-        label: "Open Graph Title",
-        name: 'ogTitle',
-        type: 'string'
-      }]
-    }]
-  }]
-})
+```tsx
+const MyPage = (props) => {
+  return props.blocks.map(block => {
+    return (
+      <>
+        <h2>{block.categories.split(",")}</h2>
+      </>
+    )
+  })
+}
 ```
+For a new item, `categories` will be null, so we'll get an error. This only happens when you're editing your page with Tina, so it's not a production-facing issue.
 
-It may be desirable for you to add a new _page_ document with the content creator. However, when you go to create the page, you won't want to edit all of the fields from the content creator modal. Instead, you'd like to create the page, redirect to it on your site and edit it contextually. We intentionally limit the options on the content creator because this is the very reason Tina is so great for editors, you shouldn't be required to provide a "title" field until you can see how it would be rendered. But this presents a chicken and egg scenario. If you want to be _certain_ that `title` is always present in your data, how can you visit that page in an edit state without "defensive coding" (ie. `getPageDocument.data?.title`).
-
-Similarly, your SEO object will likely break without some data, so we're introducing a `defaultValue` configuration. Which will only be enabled for edit-mode requests.
-
-> Note: `defaultValue` is different from `defaultItem`, `defaultItem` is for listable fields, both are valuable and can be used in conjunction with each other. `defaultValue` is not only a frontend concern, it's the acknowledgement that Tina's GraphQL API is a bit different in that in needs to be able to serve slightly invalid data.
 
 
 ## Every `type` can be a list
