@@ -28,17 +28,17 @@ const interfaceDefinitions = [
       }),
     ],
   }),
-  astBuilder.InterfaceTypeDefinition({
-    name: 'Document',
-    fields: [
-      // astBuilder.FieldDefinition({ name: "sys", type: astBuilder.TYPES.SystemInfo }),
-      astBuilder.FieldDefinition({
-        name: 'id',
-        type: astBuilder.TYPES.ID,
-        required: true,
-      }),
-    ],
-  }),
+  // astBuilder.InterfaceTypeDefinition({
+  //   name: 'Document',
+  //   fields: [
+  //     // astBuilder.FieldDefinition({ name: "sys", type: astBuilder.TYPES.SystemInfo }),
+  //     astBuilder.FieldDefinition({
+  //       name: 'id',
+  //       type: astBuilder.TYPES.ID,
+  //       required: true,
+  //     }),
+  //   ],
+  // }),
   astBuilder.InterfaceTypeDefinition({
     name: 'Connection',
     description: 'A relay-compliant pagination connection',
@@ -66,14 +66,17 @@ const scalarDefinitions = [
     fields: [
       astBuilder.FieldDefinition({
         name: 'filename',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'basename',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'breadcrumbs',
+        required: true,
         type: astBuilder.TYPES.String,
         list: true,
         args: [
@@ -85,22 +88,27 @@ const scalarDefinitions = [
       }),
       astBuilder.FieldDefinition({
         name: 'path',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'relativePath',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'extension',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'template',
+        required: true,
         type: astBuilder.TYPES.String,
       }),
       astBuilder.FieldDefinition({
         name: 'collection',
+        required: true,
         type: astBuilder.TYPES.Collection,
       }),
     ],

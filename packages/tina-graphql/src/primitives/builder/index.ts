@@ -470,6 +470,7 @@ export class Builder {
         }),
         astBuilder.FieldDefinition({
           name: 'sys',
+          required: true,
           type: astBuilder.TYPES.SystemInfo,
         }),
         // astBuilder.FieldDefinition({
@@ -725,12 +726,14 @@ export class Builder {
         return astBuilder.FieldDefinition({
           name: field.name,
           list: field.list,
+          required: field.required,
           type: astBuilder.TYPES.Scalar(field.type),
         })
       case 'object':
         return astBuilder.FieldDefinition({
           name: field.name,
           list: field.list,
+          required: field.required,
           type: await this._buildObjectOrUnionData(
             this.tinaSchema.getTemplatesForCollectable(field)
           ),
@@ -762,6 +765,7 @@ export class Builder {
 
           return astBuilder.FieldDefinition({
             name: field.name,
+            required: field.required,
             list: false,
             type: type,
           })
