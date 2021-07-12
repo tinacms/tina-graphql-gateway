@@ -11,24 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
+export * from './client'
+export * from './auth'
+export * from './hooks/use-graphql-forms'
+export { useGraphqlForms as unstable_useGraphQLForms } from './hooks/unstable-use-graphql-forms'
+export * from './utils'
 
-import { Wrapper } from '../components/helper-components'
-import { useEditState } from 'tina-graphql-gateway'
-
-const GoToEditPage: React.FC = () => {
-  const { setEdit } = useEditState()
-  const router = useRouter()
-  useEffect(() => {
-    setEdit(true)
-    router.back()
-  }, [])
-  return (
-    <Wrapper data={{}}>
-      <div>Going into edit mode...</div>
-    </Wrapper>
-  )
+/**
+ * A passthru function which allows editors
+ * to know the temlpate string is a GraphQL
+ * query or muation
+ */
+function graphql(strings: TemplateStringsArray) {
+  return strings[0]
 }
-
-export default GoToEditPage
+export { graphql }
