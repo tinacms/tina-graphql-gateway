@@ -43,12 +43,11 @@ export const authenticate = (clientId: string): Promise<TokenObject> => {
       }
     })
     authTab = popupWindow(
-      `https://${BASE_TINA_URL}/signin?clientId=${clientId}`,
+      `https://${BASE_TINA_URL}/signin?clientId=${clientId}&origin=${window.location.hostname}`,
       '_blank',
       window,
       1000,
-      700,
-      window.location.hostname
+      700
     )
   })
 }
