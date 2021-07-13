@@ -15,12 +15,13 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 import { Wrapper } from '../components/helper-components'
-import { useEditState } from 'tina-graphql-gateway'
+import { useEditState } from 'tina-graphql-gateway/dist/edit-state'
 
 const GoToEditPage: React.FC = () => {
-  const { setEdit } = useEditState()
+  const { edit, setEdit } = useEditState()
   const router = useRouter()
   useEffect(() => {
+    console.log('oh hi', edit)
     setEdit(true)
     router.back()
   }, [])
