@@ -50,6 +50,7 @@ export const authenticate = (clientId: string): Promise<TokenObject> => {
       700
     )
 
+    // use only to help users troubleshoot. don't use as actual cors origin for security reasons.
     authTab.postMessage(
       { source: SET_ORIGIN_EVENT, origin: window.location.hostname },
       'https://app.tinajs.dev'
