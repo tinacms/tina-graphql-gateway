@@ -33,6 +33,7 @@ const licenseIgnoreList = [
   'apps/demo/.tina/__generated__/types.ts',
   'apps/test/.tina/__generated__/types.ts',
   'examples/tina-cloud-starter/.tina/__generated__/types.ts',
+  'examples/tina-cloud-starter-experimental/.tina/__generated__/types.ts',
   'examples/tina-tailwind-sidebar-demo/.tina/__generated__/types.ts',
 ]
 

@@ -19,16 +19,16 @@ import { altairExpress } from 'altair-express-middleware'
 // @ts-ignore
 import bodyParser from 'body-parser'
 
-const gqlServer = async () => {
+const gqlServer = async (experimental: boolean = false) => {
   // This is lazily required so we can update the module
   // without having to restart the server
   const gqlPackage = require('tina-graphql')
+
   const app = express()
   const server = http.createServer(app)
   app.use(cors())
   app.use(bodyParser.json())
 
-  let projectRoot = path.join(process.cwd())
   app.use(
     '/altair',
     altairExpress({
@@ -50,11 +50,27 @@ query MyQuery {
     })
   )
 
+  const rootPath = path.join(process.cwd())
   app.post('/graphql', async (req, res) => {
-    const { query, variables } = req.body
-    const result = await gqlPackage.gql({ projectRoot, query, variables })
-    return res.json(result)
+    if (experimental) {
+      const { query, variables } = req.body
+      const result = await gqlPackage.unstable_gql({
+        rootPath,
+        query,
+        variables,
+      })
+      return res.json(result)
+    } else {
+      const { query, variables } = req.body
+      const result = await gqlPackage.gql({
+        projectRoot: rootPath,
+        query,
+        variables,
+      })
+      return res.json(result)
+    }
   })
+
   return server
 }
 
