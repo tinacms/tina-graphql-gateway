@@ -8,10 +8,8 @@
   "typings": "dist/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn tsup src/index.ts --format cjs --dts",
-    "watch": "yarn tsup src/index.ts --watch --format cjs --dts",
-    "tar": "yarn pack --out ../../builds/%s-%v.tgz",
-    "graphiql": "next dev -p 3001"
+    "build": "yarn tsup src/index.ts src/edit-state.tsx --format cjs --dts",
+    "watch": "yarn tsup src/index.ts src/edit-state.tsx --watch --format cjs --dts"
   },
   "dependencies": {
     "@graphql-codegen/core": "^1.15.4",

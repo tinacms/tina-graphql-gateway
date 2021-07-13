@@ -16,6 +16,10 @@ export * from './auth'
 export * from './hooks/use-graphql-forms'
 export { useGraphqlForms as unstable_useGraphQLForms } from './hooks/unstable-use-graphql-forms'
 export * from './utils'
+export * from './tina-cms'
+import { TinaCMSProvider } from './tina-cms'
+
+export default TinaCMSProvider
 
 /**
  * A passthru function which allows editors

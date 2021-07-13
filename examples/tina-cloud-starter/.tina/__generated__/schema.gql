@@ -95,7 +95,6 @@ type Posts_Document implements Node & Document {
   id: ID!
   sys: SystemInfo
   data: Posts_Data
-  dataJSON: JSONObject
   values: Posts_Values
   form: Posts_Form
 }
@@ -173,7 +172,6 @@ type Authors_Document implements Node & Document {
   id: ID!
   sys: SystemInfo
   data: Authors_Data
-  dataJSON: JSONObject
   values: Authors_Values
   form: Authors_Form
 }
@@ -219,7 +217,6 @@ type MarketingPages_Document implements Node & Document {
   id: ID!
   sys: SystemInfo
   data: MarketingPages_Data
-  dataJSON: JSONObject
   values: MarketingPages_Values
   form: MarketingPages_Form
 }
