@@ -95,6 +95,7 @@ interface TinaField {
   name: string
   label: string
   description?: string
+  required?: boolean
   list?: boolean
   /**
    * Any items passed to the UI field will be passed to the underlying field.
@@ -248,11 +249,13 @@ type Template<WithNamespace extends boolean> = WithNamespace extends true
       label: string
       name: string
       fields: TinaFieldInner<WithNamespace>[]
+      ui?: object
       namespace: WithNamespace extends true ? string[] : undefined
     }
   : {
       label: string
       name: string
+      ui?: object
       fields: TinaFieldInner<WithNamespace>[]
     }
 

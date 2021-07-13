@@ -321,24 +321,23 @@ export class Resolver {
       return undefined
     }
     assertShape<{ [key: string]: unknown }>(rawData, (yup) => yup.object())
+    const value = rawData[field.name]
     switch (field.type) {
       case 'string':
-        if (field.isBody) {
-          accumulator[field.name] = rawData._body
-        } else {
-          accumulator[field.name] = rawData[field.name]
-        }
+        accumulator[field.name] = field.isBody ? rawData._body : value
         break
       case 'boolean':
       case 'datetime':
       case 'reference':
       case 'image':
-        accumulator[field.name] = rawData[field.name]
+        accumulator[field.name] = value
         break
       case 'object':
-        const value = rawData[field.name]
-
         if (field.list) {
+          if (!value) {
+            return
+          }
+
           assertShape<{ [key: string]: unknown }[]>(value, (yup) =>
             yup.array().of(yup.object().required())
           )
@@ -363,6 +362,9 @@ export class Resolver {
               : payload
           })
         } else {
+          if (!value) {
+            return
+          }
           const template = await this.tinaSchema.getTemplateForData({
             data: value,
             collection: {
@@ -374,7 +376,13 @@ export class Resolver {
           await sequential(template.fields, async (field) => {
             await this.resolveFieldData(field, value, payload)
           })
-          accumulator[field.name] = payload
+          const isUnion = !!field.templates
+          accumulator[field.name] = isUnion
+            ? {
+                _template: lastItem(template.namespace),
+                ...payload,
+              }
+            : payload
         }
 
         break
@@ -394,6 +402,25 @@ export class Resolver {
       case 'datetime':
       case 'image':
       case 'string':
+        if (field.options) {
+          if (field.list) {
+            // FIXME: this is awaiting checkbox suppport
+            return {
+              component: 'checkbox',
+              ...field,
+              ...extraFields,
+              options: field.options,
+            }
+          }
+          return {
+            component: 'select',
+            ...field,
+            ...extraFields,
+            options: field.required
+              ? field.options
+              : [{ label: `Choose an option`, value: '' }, ...field.options],
+          }
+        }
         return {
           // Allows component to be overridden for scalars
           component: 'text',
@@ -438,7 +465,7 @@ export class Resolver {
           return {
             ...field,
             typeMap,
-            component: 'blocks',
+            component: field.list ? 'blocks' : 'not-implemented',
             templates,
             ...extraFields,
           }
@@ -455,12 +482,15 @@ export class Resolver {
         return {
           ...field,
           component: 'select',
-          options: documents.map((filepath) => {
-            return {
-              value: filepath,
-              label: filepath,
-            }
-          }),
+          options: [
+            { label: 'Choose an option', value: '' },
+            ...documents.map((filepath) => {
+              return {
+                value: filepath,
+                label: filepath,
+              }
+            }),
+          ],
           ...extraFields,
         }
       default:

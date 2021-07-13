@@ -126,6 +126,86 @@ cms.fields.add({
 __Why?__
 
 The reality is that under the hood this has made no difference to the backend, so we're removing it as a point of friction. Instead, `type` is the true definition of the field's _shape_, while `ui` can be used for customizing the look and behavior of the field's UI.
+
+## Defensive coding in Tina
+
+When working with GraphQL, there are 2 reasons a property may not be present.
+
+1. The data is not a required property. That is to say, if I have a blog post document, and "category" is an optional field, we'll need to make sure we factor that into how we render our page:
+
+```tsx
+const MyPage = (props) => {
+  return (
+    <>
+      <h2>{props.getPostDocument.data.title}</h2>
+      <MyCategoryComponent>{props.getPostDocument.data?.category}</MyCategoryComponent>
+    </>
+  )
+}
+```
+
+2. The query did not ask for that field:
+```graphql
+{
+  getPostDocument {
+    data {
+      title
+    }
+  }
+}
+```
+
+But with Tina, there's a 3rd scenario: the document may be in an invalid state. Meaning, we could mark the field as `required` _and_ query for the appropriate field, and _still_ not have the expected shape of data. Due to the contextual nature of Tina, it's very common to be in an intermediate state, where your data is incomplete simply because you're still working on it. Most APIs would throw an error when a document is in an invalid state. Or, more likely, you couldn't even request it.
+
+## Undefined list fields will return `null`
+
+Previously an listable field which wasn't defined in the document was treated as an emptry array. So for example:
+
+```md
+---
+title: "Hello, World"
+categories:
+  - sports
+  - movies
+---
+```
+The responsee would be `categories: ['sports', 'movies']`. If you omit the items, but kept the empty array:
+```md
+---
+title: "Hello, World"
+categories: []
+---
+```
+The responsee would be `categories: []`. If you omit the field entirely:
+```md
+---
+title: "Hello, World"
+---
+```
+The response will be `categories: null`. Previously this would have been `[]`, which was incorrect.
+
+
+## For a listable item which is `required: true` you _must_ provide a `ui.defaultItem` property
+
+### Why?
+
+It's possible for Tina's editing capabilities to introduce an invalid state during edits to list items. Imagine the scenario where you are iterating through an array of objects, and each object has a categories array on it we'd like to render:
+
+```tsx
+const MyPage = (props) => {
+  return props.blocks.map(block => {
+    return (
+      <>
+        <h2>{block.categories.split(",")}</h2>
+      </>
+    )
+  })
+}
+```
+For a new item, `categories` will be null, so we'll get an error. This only happens when you're editing your page with Tina, so it's not a production-facing issue.
+
+
+
 ## Every `type` can be a list
 
 Previously, we had a `list` field, which allowed you to supply a `field` property. Instead, _every_ primitive type can be represented as a list:
