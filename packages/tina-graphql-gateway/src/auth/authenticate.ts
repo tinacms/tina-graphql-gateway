@@ -14,6 +14,7 @@ limitations under the License.
 import popupWindow from './popupWindow'
 
 const TINA_LOGIN_EVENT = 'tinaCloudLogin'
+const SET_ORIGIN_EVENT = 'originEvent'
 export const AUTH_TOKEN_KEY = 'tinacms-auth'
 
 const BASE_TINA_URL = process.env.BASE_TINA_URL || `app.tina.io`
@@ -47,6 +48,11 @@ export const authenticate = (clientId: string): Promise<TokenObject> => {
       window,
       1000,
       700
+    )
+
+    authTab.postMessage(
+      { source: SET_ORIGIN_EVENT, origin: window.location.hostname },
+      'https://app.tinajs.dev'
     )
   })
 }
