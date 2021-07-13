@@ -31,12 +31,12 @@ jobs:
         if: matrix.channel == 'dev'
         run: |
           yarn changeset version --snapshot
-          yarn ci:publish-dev
+          yarn ci:publish-beta
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
           FORESTRYIO_NPM_AUTH_IDENT: ${{ secrets.FORESTRYIO_NPM_AUTH_IDENT }}
-          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}  
+          FORESTRYIO_NPM_AUTH_TOKEN: ${{ secrets.FORESTRYIO_NPM_AUTH_TOKEN }}
       - name: Publish
         if: matrix.channel == 'latest'
         run: yarn ci:publish

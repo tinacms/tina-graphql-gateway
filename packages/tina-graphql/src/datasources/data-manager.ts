@@ -17,7 +17,7 @@ import matter from 'gray-matter'
 import * as jsyaml from 'js-yaml'
 import DataLoader from 'dataloader'
 
-import { byTypeWorks, Section } from '../types'
+import { byTypeWorks } from '../types'
 import { FieldGroupField } from '../fields/field-group'
 import { FieldGroupListField } from '../fields/field-group-list'
 import { sequential } from '../util'

@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn pretty-quick --staged
+.yarn/releases/yarn-2.4.2.cjs pretty-quick --staged

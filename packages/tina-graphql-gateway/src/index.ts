@@ -14,6 +14,7 @@ limitations under the License.
 export * from './client'
 export * from './auth'
 export * from './hooks/use-graphql-forms'
+export { useGraphqlForms as unstable_useGraphQLForms } from './hooks/unstable-use-graphql-forms'
 export * from './utils'
 
 /**

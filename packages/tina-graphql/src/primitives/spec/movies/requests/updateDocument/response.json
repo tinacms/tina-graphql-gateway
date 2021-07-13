@@ -1,0 +1,10 @@
+{
+  "data": {
+    "updateDocument": {
+      "id": "content/movies/star-wars.md",
+      "data": {
+        "genre": "action"
+      }
+    }
+  }
+}
