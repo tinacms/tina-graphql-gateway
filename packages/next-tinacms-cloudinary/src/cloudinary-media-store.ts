@@ -19,6 +19,8 @@ import {
   MediaUploadOptions,
 } from 'tinacms'
 
+import { E_UNAUTHORIZED, E_BAD_ROUTE, interpretErrorMessage } from './errors'
+
 export class CloudinaryMediaStore implements MediaStore {
   fetchFunction = (input: RequestInfo, init?: RequestInit) => {
     return fetch(input, init)
@@ -62,6 +64,18 @@ export class CloudinaryMediaStore implements MediaStore {
   async list(options: MediaListOptions): Promise<MediaList> {
     const query = this.buildQuery(options)
     const response = await this.fetchFunction('/api/cloudinary/media' + query)
+
+    if (response.status == 401) {
+      throw E_UNAUTHORIZED
+    }
+    if (response.status == 404) {
+      throw E_BAD_ROUTE
+    }
+    if (response.status >= 500) {
+      const { e } = await response.json()
+      const error = interpretErrorMessage(e)
+      throw error
+    }
     const { items, offset } = await response.json()
     return {
       items: items.map((item) => item),
