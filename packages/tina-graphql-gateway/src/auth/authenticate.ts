@@ -47,16 +47,8 @@ export const authenticate = (clientId: string): Promise<TokenObject> => {
       '_blank',
       window,
       1000,
-      700
+      700,
+      window.location.hostname
     )
-
-    // use only to help users troubleshoot. don't use as actual cors origin for security reasons.
-    setTimeout(() => {
-      // for debugging
-      authTab.postMessage(
-        { source: SET_ORIGIN_EVENT, origin: window.location.hostname },
-        'https://app.tinajs.dev'
-      )
-    }, 5000)
   })
 }
