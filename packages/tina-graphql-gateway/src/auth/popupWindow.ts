@@ -21,7 +21,7 @@ function popupWindow(
   const y = window.top.outerHeight / 2 + window.top.screenY - h / 2
   const x = window.top.outerWidth / 2 + window.top.screenX - w / 2
   return window.open(
-    url + origin,
+    url,
     title,
     'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, copyhistory=no, width=' +
       w +
