@@ -13,8 +13,28 @@ limitations under the License.
 
 import React from 'react'
 import { useGraphqlForms, formifyCallback } from './hooks/use-graphql-forms'
+import { useGraphqlForms as unstable_useGraphqlForms } from './hooks/unstable-use-graphql-forms'
 import { TinaCloudProvider } from './auth'
 import type { TinaCMS } from 'tinacms'
+
+const SetupHooksUnstable = (props) => {
+  const [payload, isLoading] = unstable_useGraphqlForms({
+    query: (gql) => gql(props.query),
+    variables: props.variables || {},
+    formify: props.formify,
+  })
+
+  return (
+    <ErrorBoundary>
+      {isLoading ? (
+        <Loader>{props.children(props)}</Loader>
+      ) : (
+        // pass the new edit state data to the child
+        props.children({ ...props, data: payload })
+      )}
+    </ErrorBoundary>
+  )
+}
 
 const SetupHooks = (props) => {
   const [payload, isLoading] = useGraphqlForms({
@@ -84,6 +104,7 @@ export const TinaCMSProvider = ({
   children,
   cms,
   config,
+  useUnstable,
   ...props
 }: {
   query?: string
@@ -92,15 +113,22 @@ export const TinaCMSProvider = ({
   cms?: (cms: TinaCMS) => TinaCMS
   /** hook into the formify function custom form building logic */
   formify?: formifyCallback
+  useUnstable?: boolean
   config: Parameters<typeof TinaCloudProvider>
 }) => {
   return (
     <TinaCloudProvider {...config} cmsCallback={cms}>
       {props.query ? (
         // Just reset the state machine with a new key
-        <SetupHooks key={props.query} {...props}>
-          {children}
-        </SetupHooks>
+        useUnstable ? (
+          <SetupHooksUnstable key={props.query} {...props}>
+            {children}
+          </SetupHooksUnstable>
+        ) : (
+          <SetupHooks key={props.query} {...props}>
+            {children}
+          </SetupHooks>
+        )
       ) : (
         // @ts-ignore
         children(props)
