@@ -41,7 +41,7 @@ export const authenticate = (clientId: string): Promise<TokenObject> => {
         })
       }
     })
-    const origin = window.location.protocol + window.location.host
+    const origin = `${window.location.protocol}//${window.location.host}`
     authTab = popupWindow(
       `https://${BASE_TINA_URL}/signin?clientId=${clientId}&origin=${origin}`,
       '_blank',
