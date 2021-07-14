@@ -19871,15 +19871,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["immer", [
-        ["npm:9.0.3", {
-          "packageLocation": "./.yarn/cache/immer-npm-9.0.3-b0bdb6f3b3-98e0dabde5.zip/node_modules/immer/",
-          "packageDependencies": [
-            ["immer", "npm:9.0.3"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["immutable", [
         ["npm:3.7.6", {
           "packageLocation": "./.yarn/cache/immutable-npm-3.7.6-1c13b39359-33fb106a33.zip/node_modules/immutable/",
@@ -32372,7 +32363,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
@@ -32451,7 +32441,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
@@ -32537,7 +32526,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
@@ -32615,7 +32603,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
@@ -32694,7 +32681,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],
@@ -32763,7 +32749,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["final-form-arrays", "virtual:9fa808ddc23eb444daeae963888b79f6eecc2e788af5bd5d4cf4384e1787e595476726c1c23b59df8b3c681e85ae78d0a3a3f8bf34d4fce0431fbd3f94bc4db9#npm:3.0.2"],
             ["graphql", "npm:15.3.0"],
             ["graphql-tag", "virtual:cf6957b3f42ac5e6bf018567127714b571585dabbd48ddf143c614acdbdca961e567f8a0a3ba6c89d1f34a6aa2c2df96fa8164edb18de960a609168a768e8fdd#npm:2.11.0"],
-            ["immer", "npm:9.0.3"],
             ["isomorphic-unfetch", "npm:3.0.0"],
             ["lodash.get", "npm:4.4.2"],
             ["lodash.has", "npm:4.5.2"],

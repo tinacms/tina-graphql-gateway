@@ -12577,13 +12577,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"immer@npm:^9.0.3":
-  version: 9.0.3
-  resolution: "immer@npm:9.0.3"
-  checksum: 98e0dabde5361afe30fb72d6b662682af2cd9be82919d78955901dabb9851ce00e8655cf935f68f4b055f250f9f33a0f80f94f3e954e7887228ee6710c9d05b4
-  languageName: node
-  linkType: hard
-
 "immutable@npm:~3.7.6":
   version: 3.7.6
   resolution: "immutable@npm:3.7.6"
@@ -22908,7 +22901,6 @@ fsevents@^1.2.7:
     final-form-arrays: ^3.0.2
     graphql: ^15.1.0
     graphql-tag: ^2.11.0
-    immer: ^9.0.3
     isomorphic-unfetch: ^3.0.0
     lodash.get: ^4.4.2
     lodash.has: ^4.5.2

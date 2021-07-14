@@ -421,6 +421,17 @@ export class Resolver {
               : [{ label: `Choose an option`, value: '' }, ...field.options],
           }
         }
+        if (field.list) {
+          return {
+            // Allows component to be overridden for scalars
+            component: 'list',
+            field: {
+              component: 'text',
+            },
+            ...field,
+            ...extraFields,
+          }
+        }
         return {
           // Allows component to be overridden for scalars
           component: 'text',

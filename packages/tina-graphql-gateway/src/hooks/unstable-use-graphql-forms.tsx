@@ -12,11 +12,9 @@ limitations under the License.
 */
 
 import React from 'react'
-import set from 'lodash.set'
 import gql from 'graphql-tag'
 import { print } from 'graphql'
-import { produce } from 'immer'
-import { getIn } from 'final-form'
+import { getIn, setIn } from 'final-form'
 import { useCMS, Form } from 'tinacms'
 import { assertShape } from '../utils'
 
@@ -36,7 +34,7 @@ export function useGraphqlForms<T extends object>({
 }): [T, Boolean] {
   const cms = useCMS()
   const [formValues, setFormValues] = React.useState<FormValues>({})
-  const [data, setData] = React.useState<Data>({})
+  const [data, setData] = React.useState<object>(null)
   const [initialData, setInitialData] = React.useState<Data>({})
   const [pendingReset, setPendingReset] = React.useState(null)
   const [isLoading, setIsLoading] = React.useState(true)
@@ -57,38 +55,27 @@ export function useGraphqlForms<T extends object>({
             (p) => p.dataPath.join('.') === newUpdate.set
           )
           if (asyncUpdate) {
-            const nextState = await produce(data, async (draftState) => {
-              const res = await cms.api.tina.request(asyncUpdate.queryString, {
-                variables: { id: newValue },
-              })
-              set(draftState, newUpdate.set, res.node)
+            const res = await cms.api.tina.request(asyncUpdate.queryString, {
+              variables: { id: newValue },
             })
-            setData(nextState)
+            const newData = setIn(data, newUpdate.set, res.node)
+            setData(newData)
             setNewUpdate(null)
             return
           }
         }
-        // FIXME: I don't think I'm using produce 100% correctly,
-        // on subsequent updates the `item` is immuated
-        const nextState = produce(data, (draftState) => {
-          // If lookup is provided, we're in a polymorphic object, so we should populate
-          // __typename as a disambiguator, regardless of whether or not it was queried for
-          // FIXME: This assumes newValue to be an array until blocks support non-lists
-          if (newUpdate.lookup) {
-            const field = getFieldUpdate(newUpdate, activeForm, formValues)
-            if (field && field.typeMap) {
-              newValue.forEach((item) => {
-                if (!item.__typename) {
-                  item['__typename'] = field.typeMap[item._template]
-                }
-              })
-            }
+        if (newUpdate.lookup) {
+          const field = getFieldUpdate(newUpdate, activeForm, formValues)
+          if (field && field.typeMap) {
+            newValue.forEach((item) => {
+              if (!item.__typename) {
+                item['__typename'] = field.typeMap[item._template]
+              }
+            })
           }
-          set(draftState, newUpdate.set, newValue)
-          // FIXME: do it better than this, but this allows dataJSON to stay in sync
-          set(draftState, newUpdate.set.replace('data', 'dataJSON'), newValue)
-        })
-        setData(nextState)
+        }
+        const newData = setIn(data, newUpdate.set, newValue)
+        setData(newData)
         setNewUpdate(null)
       }
     }
@@ -217,7 +204,7 @@ export function useGraphqlForms<T extends object>({
               insert(...args)
             },
             move: (...args) => {
-              prepareNewUpdate(args[0])
+              prepareNewUpdate(args[0], args[0])
               move(...args)
             },
             remove: (...args) => {
@@ -303,7 +290,10 @@ const getFieldUpdate = (newUpdate, activeForm, formValues) => {
       const field = currentFields.find((field) => field.name === item)
       currentFields = field
     } else {
-      const template = currentFields.templates[value._template]
+      // Get templatable for polymorphic or homogenous
+      const template = currentFields.templates
+        ? currentFields.templates[value._template]
+        : currentFields
       currentFields = template.fields
     }
   })
