@@ -19,7 +19,7 @@ export const TinaEditProvider = ({
 }: {
   showEditButton?: boolean
   children: React.ReactNode
-  editMode: boolean
+  editMode: React.ReactNode
 }) => {
   return (
     <EditProvider>
