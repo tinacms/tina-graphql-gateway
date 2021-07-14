@@ -159,8 +159,8 @@ export class Resolver {
       }
       const templateInfo =
         this.tinaSchema.getTemplatesForCollectable(collection)
-      // @ts-ignore
-      const params = args.params[collection.name] || args.params
+      const params = this.buildParams(args)
+
       switch (templateInfo.type) {
         case 'object':
           if (params) {
@@ -176,7 +176,13 @@ export class Resolver {
           await sequential(templateInfo.templates, async (template) => {
             const templateParams = params[lastItem(template.namespace)]
             if (templateParams) {
+              if (typeof templateParams === 'string') {
+                throw new Error(
+                  `Expected to find an objet for template params, but got string`
+                )
+              }
               const values = {
+                // @ts-ignore FIXME: failing on unknown, which we don't need to know because it's recursive
                 ...this.buildFieldMutations(templateParams, template),
                 _template: lastItem(template.namespace),
               }
@@ -221,12 +227,7 @@ export class Resolver {
   }
 
   private buildFieldMutations = (
-    fieldParams: {
-      [fieldName: string]:
-        | string
-        | { [key: string]: unknown }
-        | (string | { [key: string]: unknown })[]
-    },
+    fieldParams: FieldParams,
     template: Templateable
   ) => {
     const accum: { [key: string]: unknown } = {}
@@ -401,6 +402,54 @@ export class Resolver {
     return accumulator
   }
 
+  /**
+   * A mutation looks nearly identical between updateDocument:
+   * ```graphql
+   * updateDocument(collection: $collection,relativePath: $path, params: {
+   *   post: {
+   *     title: "Hello, World"
+   *   }
+   * })`
+   * ```
+   * and `updatePostDocument`:
+   * ```graphql
+   * updatePostDocument(relativePath: $path, params: {
+   *   title: "Hello, World"
+   * })
+   * ```
+   * The problem here is that we don't know whether the payload came from `updateDocument`
+   * or `updatePostDocument` (we could, but for now it's easier not to pipe those details through),
+   * But we do know that when given a `args.collection` value, we can assume that
+   * this was a `updateDocument` request, and thus - should grab the data
+   * from the corresponding field name in the key
+   */
+  private buildParams = (args: unknown) => {
+    try {
+      assertShape<{
+        collection: string
+        params: {
+          [collectionName: string]: FieldParams
+        }
+      }>(args, (yup) =>
+        yup.object({
+          collection: yup.string().required(),
+          params: yup.object().required(),
+        })
+      )
+      return args.params[args.collection]
+    } catch (e) {
+      // we're _not_ in a `updateDocument` request
+    }
+    assertShape<{
+      params: FieldParams
+    }>(args, (yup) =>
+      yup.object({
+        params: yup.object().required(),
+      })
+    )
+    return args.params
+  }
+
   private resolveField = async ({
     namespace,
     ...field
@@ -567,4 +616,8 @@ const resolveDateInput = (
   const datePart = format(dateUTC, fixedDateFormat)
   const timePart = timeFormat ? ` ${format(dateUTC, timeFormat)}` : ''
   return `${datePart}${timePart}`
+}
+
+type FieldParams = {
+  [fieldName: string]: string | { [key: string]: unknown } | FieldParams[]
 }
