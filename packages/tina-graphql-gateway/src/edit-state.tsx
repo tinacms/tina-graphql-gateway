@@ -95,7 +95,6 @@ export const EditProvider: React.FC = ({ children }) => {
     isEditing()
   )
   const setEdit = (edit: boolean) => {
-    console.log('set it')
     // set React state and localstorage
     setEditState(edit)
     setEditing(edit)
