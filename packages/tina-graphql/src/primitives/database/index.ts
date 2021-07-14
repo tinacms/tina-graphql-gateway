@@ -191,6 +191,8 @@ export class Database {
           extra['_template'] = _template
         }
         return matter.stringify(body || '', { ...rest, ...extra })
+      case '.json':
+        return JSON.stringify(content, null, 2)
       default:
         throw new Error(`Must specify a valid format, got ${format}`)
     }
