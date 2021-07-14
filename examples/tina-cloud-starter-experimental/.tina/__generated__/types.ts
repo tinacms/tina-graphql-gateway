@@ -17,14 +17,14 @@ export type Scalars = {
 
 export type SystemInfo = {
   __typename?: 'SystemInfo';
-  filename?: Maybe<Scalars['String']>;
-  basename?: Maybe<Scalars['String']>;
-  breadcrumbs?: Maybe<Array<Maybe<Scalars['String']>>>;
-  path?: Maybe<Scalars['String']>;
-  relativePath?: Maybe<Scalars['String']>;
-  extension?: Maybe<Scalars['String']>;
-  template?: Maybe<Scalars['String']>;
-  collection?: Maybe<Collection>;
+  filename: Scalars['String'];
+  basename: Scalars['String'];
+  breadcrumbs: Array<Scalars['String']>;
+  path: Scalars['String'];
+  relativePath: Scalars['String'];
+  extension: Scalars['String'];
+  template: Scalars['String'];
+  collection: Collection;
 };
 
 
@@ -52,7 +52,7 @@ export type Connection = {
 export type Query = {
   __typename?: 'Query';
   getCollection: Collection;
-  getCollections?: Maybe<Array<Collection>>;
+  getCollections: Array<Collection>;
   node: Node;
   getDocument: DocumentNode;
   getDocumentList: DocumentConnection;
@@ -168,6 +168,8 @@ export type PostsAuthorDocument = AuthorsDocument;
 export type Posts = {
   __typename?: 'Posts';
   title?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  published?: Maybe<Scalars['Boolean']>;
   hero?: Maybe<Scalars['String']>;
   author?: Maybe<PostsAuthorDocument>;
   body?: Maybe<Scalars['String']>;
@@ -176,7 +178,7 @@ export type Posts = {
 export type PostsDocument = Node & {
   __typename?: 'PostsDocument';
   id: Scalars['ID'];
-  sys?: Maybe<SystemInfo>;
+  sys: SystemInfo;
   data: Posts;
   form: Scalars['JSON'];
   values: Scalars['JSON'];
@@ -205,7 +207,7 @@ export type Authors = {
 export type AuthorsDocument = Node & {
   __typename?: 'AuthorsDocument';
   id: Scalars['ID'];
-  sys?: Maybe<SystemInfo>;
+  sys: SystemInfo;
   data: Authors;
   form: Scalars['JSON'];
   values: Scalars['JSON'];
@@ -262,7 +264,7 @@ export type MarketingPages = {
 export type MarketingPagesDocument = Node & {
   __typename?: 'MarketingPagesDocument';
   id: Scalars['ID'];
-  sys?: Maybe<SystemInfo>;
+  sys: SystemInfo;
   data: MarketingPages;
   form: Scalars['JSON'];
   values: Scalars['JSON'];
@@ -331,6 +333,8 @@ export type DocumentMutation = {
 
 export type PostsMutation = {
   title?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  published?: Maybe<Scalars['Boolean']>;
   hero?: Maybe<Scalars['String']>;
   author?: Maybe<Scalars['String']>;
   body?: Maybe<Scalars['String']>;

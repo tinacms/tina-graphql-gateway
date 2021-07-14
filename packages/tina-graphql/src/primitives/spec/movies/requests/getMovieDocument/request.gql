@@ -17,6 +17,7 @@ query {
       title
       genre
       body
+      rating
       director {
         ... on DirectorDocument {
           data {

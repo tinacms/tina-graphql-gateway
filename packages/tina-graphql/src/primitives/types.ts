@@ -106,49 +106,62 @@ interface TinaField {
 }
 
 type ScalarType<WithNamespace extends boolean> = WithNamespace extends true
-  ? ScalarTypeWithNamespace<WithNamespace>
+  ? ScalarTypeWithNamespace
   : ScalarTypeInner
 
-interface ScalarTypeInner extends TinaField {
-  type: 'string' | 'text' | 'boolean' | 'number' | 'image' | 'datetime'
+type Option =
+  | string
+  | {
+      label: string
+      value: string
+    }
+type ScalarTypeInner = TinaField &
+  TinaScalarField & {
+    options?: Option[]
+  }
+type ScalarTypeWithNamespace = TinaField &
+  TinaScalarField & {
+    options?: Option[]
+    namespace: string[]
+  }
+type TinaScalarField =
+  | StringField
+  | BooleanField
+  | DateTimeField
+  | NumberField
+  | ImageField
+
+type StringField = {
+  type: 'string'
   isBody?: boolean
-  options?: (
-    | string
-    | {
-        label: string
-        value: string
-      }
-  )[]
 }
-interface ScalarTypeWithNamespace<WithNamespace extends boolean>
-  extends TinaField {
-  type: 'string' | 'text' | 'boolean' | 'number' | 'image' | 'datetime'
-  isBody?: boolean
-  options?: (
-    | string
-    | {
-        label: string
-        value: string
-      }
-  )[]
-  namespace: WithNamespace extends true ? string[] : undefined
+type BooleanField = {
+  type: 'boolean'
+}
+type NumberField = {
+  type: 'number'
+}
+type DateTimeField = {
+  type: 'datetime'
+  dateFormat?: string
+  timeFormat?: string
+}
+type ImageField = {
+  type: 'image'
 }
 
 export type ReferenceType<WithNamespace extends boolean> =
-  WithNamespace extends true
-    ? ReferenceTypeWithNamespace<WithNamespace>
-    : ReferenceTypeInner
+  WithNamespace extends true ? ReferenceTypeWithNamespace : ReferenceTypeInner
 export interface ReferenceTypeInner extends TinaField {
   type: 'reference'
   reverseLookup?: { label: string; name: string }
   collections: string[]
 }
-export interface ReferenceTypeWithNamespace<WithNamespace extends boolean>
-  extends TinaField {
+export interface ReferenceTypeWithNamespace extends TinaField {
   type: 'reference'
   collections: string[]
   reverseLookup?: { label: string; name: string }
-  namespace: WithNamespace extends true ? string[] : undefined
+  namespace: string[]
 }
 
 export type ObjectType<WithNamespace extends boolean> =

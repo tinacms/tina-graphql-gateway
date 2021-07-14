@@ -5,14 +5,14 @@ scalar Reference
 scalar JSON
 
 type SystemInfo {
-  filename: String
-  basename: String
-  breadcrumbs(excludeExtension: Boolean): [String]
-  path: String
-  relativePath: String
-  extension: String
-  template: String
-  collection: Collection
+  filename: String!
+  basename: String!
+  breadcrumbs(excludeExtension: Boolean): [String!]!
+  path: String!
+  relativePath: String!
+  extension: String!
+  template: String!
+  collection: Collection!
 }
 
 type PageInfo {
@@ -27,11 +27,6 @@ interface Node {
   id: ID!
 }
 
-""""""
-interface Document {
-  id: ID!
-}
-
 """A relay-compliant pagination connection"""
 interface Connection {
   totalCount: Int!
@@ -39,7 +34,7 @@ interface Connection {
 
 type Query {
   getCollection(collection: String): Collection!
-  getCollections: [Collection!]
+  getCollections: [Collection!]!
   node(id: String): Node!
   getDocument(collection: String, relativePath: String): DocumentNode!
   getDocumentList(before: String, after: String, first: Int, last: Int): DocumentConnection!
@@ -60,10 +55,13 @@ type DocumentConnection implements Connection {
 
 type Collection {
   name: String!
+  slug: String!
   label: String!
   path: String!
   format: String
   matches: String
+  templates: [JSON]
+  fields: [JSON]
   documents(before: String, after: String, first: Int, last: Int): DocumentConnection!
 }
 
@@ -95,7 +93,7 @@ type Page {
 
 type PageDocument implements Node {
   id: ID!
-  sys: SystemInfo
+  sys: SystemInfo!
   data: Page!
   form: JSON!
   values: JSON!

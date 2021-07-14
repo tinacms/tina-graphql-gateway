@@ -591,11 +591,15 @@ export class Builder {
           list: field.list,
           type: astBuilder.TYPES.Boolean,
         })
+      case 'number':
+        return astBuilder.InputValueDefinition({
+          name: field.name,
+          list: field.list,
+          type: astBuilder.TYPES.Number,
+        })
       case 'datetime':
       case 'image':
-      case 'number':
       case 'string':
-      case 'text':
         return astBuilder.InputValueDefinition({
           name: field.name,
           list: field.list,
@@ -722,7 +726,6 @@ export class Builder {
       case 'image':
       case 'number':
       case 'string':
-      case 'text':
         return astBuilder.FieldDefinition({
           name: field.name,
           list: field.list,
