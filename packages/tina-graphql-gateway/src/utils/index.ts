@@ -72,3 +72,15 @@ export function assertShape<T extends unknown>(
     throw new Error(message)
   }
 }
+
+export function safeAssertShape<T extends unknown>(
+  value: unknown,
+  yupSchema: (args: typeof yup) => yup.AnySchema
+): boolean {
+  try {
+    assertShape<T>(value, yupSchema)
+    return true
+  } catch (e) {
+    return false
+  }
+}

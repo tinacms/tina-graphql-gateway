@@ -18,7 +18,8 @@ import { print } from 'graphql'
 import { produce } from 'immer'
 import { getIn } from 'final-form'
 import { useCMS, Form } from 'tinacms'
-import { assertShape } from '../utils'
+import { ContentCreatorPlugin, OnNewDocument } from './create-page-plugin'
+import { assertShape, safeAssertShape } from '../utils'
 
 import type { FormOptions } from 'tinacms'
 import type { DocumentNode } from 'graphql'
@@ -112,6 +113,18 @@ export function useGraphqlForms<T extends object>({
         setInitialData(payload)
         setIsLoading(false)
         Object.entries(payload).map(([queryName, result]) => {
+          const canBeFormified = safeAssertShape<{
+            form: { mutationInfo: string }
+          }>(result, (yup) =>
+            yup.object({
+              values: yup.object().required(),
+              form: yup.object().required(),
+            })
+          )
+          if (!canBeFormified) {
+            // This is a list or collection query, no forms can be built
+            return
+          }
           assertShape<{
             values: object
             form: FormOptions<any, any> & {
@@ -124,7 +137,8 @@ export function useGraphqlForms<T extends object>({
             result,
             (yup) =>
               yup.object({
-                values: yup.object(),
+                values: yup.object().required(),
+                form: yup.object().required(),
               }),
             `Unable to build form shape for fields at ${queryName}`
           )
