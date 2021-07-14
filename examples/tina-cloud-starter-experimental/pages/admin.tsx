@@ -21,7 +21,6 @@ const GoToEditPage: React.FC = () => {
   const { edit, setEdit } = useEditState()
   const router = useRouter()
   useEffect(() => {
-    console.log('oh hi', edit)
     setEdit(true)
     router.back()
   }, [])
