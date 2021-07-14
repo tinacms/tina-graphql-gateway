@@ -64,7 +64,9 @@ Previous PRs to main would _not_ have triggered NPM packages to be published bec
 
 ## Creating a dev release
 
-Ensure you have created a changeset and have a clean `git` working directory
+Ensure you have created a changeset and have a clean `git` working directory. 
+
+Build your changes with `yarn build`
 
 Run `yarn changeset version --snapshot`
 
