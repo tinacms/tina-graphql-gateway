@@ -15,7 +15,7 @@ export const adminPage = `import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useEditState } from "tina-graphql-gateway";
 
-const GoToEditPage: React.FC = () => {
+const GoToEditPage = () => {
   const { setEdit } = useEditState();
   const router = useRouter();
   useEffect(() => {

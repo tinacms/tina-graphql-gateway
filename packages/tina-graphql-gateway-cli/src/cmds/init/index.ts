@@ -110,6 +110,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   const pagesPath = p.join(baseDir, useingSrc ? 'src' : '', 'pages')
   const appPath = p.join(pagesPath, '_app.js')
   const appPathTS = p.join(pagesPath, '_app.tsx')
+  const appExtension = fs.existsSync(appPath) ? '.js' : '.tsx'
   let wrapper = false
 
   if (!fs.pathExistsSync(appPath) && !fs.pathExistsSync(appPathTS)) {
@@ -121,11 +122,12 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
     const override = await prompts({
       name: 'res',
       type: 'confirm',
-      message: 'do you want us to override your _app.js?',
+      message: `do you want us to override your _app${appExtension}?`,
     })
     if (override.res) {
-      logger.info(logText('Adding _app.js ... ✅'))
-      fs.writeFileSync(appPath, AppJsContent)
+      logger.info(logText(`Adding _app${appExtension} ... ✅`))
+      const appPathWithExtension = p.join(pagesPath, `_app${appExtension}`)
+      fs.writeFileSync(appPathWithExtension, AppJsContent)
     } else {
       wrapper = true
       logger.info(
@@ -166,18 +168,29 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
 
   // update the users /admin path
   const adminPath = p.join(pagesPath, 'admin.tsx')
-  if (!adminPath) {
+  const adminPathJS = p.join(pagesPath, 'admin.js')
+  if (!fs.existsSync(adminPath) && !fs.existsSync(adminPathJS)) {
     fs.writeFileSync(adminPath, adminPage)
   } else {
-    const res = await prompts({
-      name: 'name',
-      type: 'text',
-      message: warnText(
-        'Whoops... looks like you already have an Admin.tsx. What would you like the route to be named that enters edit mode?(Click enter for `admin`): '
-      ),
+    const extension = fs.existsSync(adminPath) ? '.tsx' : 'js'
+    const override = await prompts({
+      name: 'override',
+      type: 'confirm',
+      message: `Whoops... looks like you already have an admin${extension} do you want to override it?`,
     })
-    const adminName = res.name || 'admin'
-    fs.writeFileSync(p.join(pagesPath, adminName + '.tsx'), adminPage)
+    if (override.override) {
+      fs.writeFileSync(p.join(pagesPath, 'admin' + extension), adminPage)
+    } else {
+      const res = await prompts({
+        name: 'name',
+        type: 'text',
+        message: warnText(
+          'What would you like the route to be named that enters edit mode?: '
+        ),
+      })
+      const adminName = res.name || 'admin'
+      fs.writeFileSync(p.join(pagesPath, adminName + extension), adminPage)
+    }
   }
   next()
 }
