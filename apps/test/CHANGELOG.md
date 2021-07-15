@@ -1,5 +1,20 @@
 # test
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [fdb7724b]
+- Updated dependencies [d42e2bcf]
+- Updated dependencies [5cd5ce76]
+- Updated dependencies [ab4e388b]
+- Updated dependencies [8c425440]
+- Updated dependencies [7351d92f]
+- Updated dependencies [95244e14]
+  - tina-graphql@0.2.0
+  - tina-graphql-gateway@0.4.0
+  - tina-graphql-helpers@0.1.2
+
 ## 0.1.5
 
 ### Patch Changes
