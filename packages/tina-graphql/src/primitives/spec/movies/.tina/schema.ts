@@ -26,6 +26,22 @@ const tinaSchema: TinaCloudSchema<false> = {
           type: 'string',
         },
         {
+          name: 'releaseDate',
+          label: 'Release Date',
+          type: 'datetime',
+          dateFormat: 'YYYY MM DD',
+        },
+        {
+          name: 'rating',
+          label: 'Rating',
+          type: 'number',
+        },
+        {
+          name: 'archived',
+          label: 'Archived',
+          type: 'boolean',
+        },
+        {
           name: 'genre',
           label: 'Genre',
           type: 'string',

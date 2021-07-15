@@ -26,6 +26,22 @@ export default unstable_defineSchema({
           name: 'title',
         },
         {
+          type: 'datetime',
+          label: 'Created At',
+          name: 'createdAt',
+          dateFormat: 'M DD YYYY',
+          timeFormat: '',
+          ui: {
+            dateFormat: 'MMMM DD YYYY',
+            timeFormat: false,
+          },
+        },
+        {
+          type: 'boolean',
+          label: 'Published',
+          name: 'published',
+        },
+        {
           name: 'hero',
           type: 'image',
           label: 'Hero',

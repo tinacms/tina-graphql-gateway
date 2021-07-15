@@ -17,6 +17,7 @@
       "data": {
         "title": "Star Wars",
         "genre": "scifi",
+        "rating": 10,
         "body": "\nA long, long time ago, in galaxy far far away...\n",
         "director": {
           "data": {

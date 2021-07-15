@@ -28,7 +28,7 @@
     "styled-jsx": "^3.2.5",
     "tina-cloud-next": "workspace:*",
     "tina-graphql-gateway": "workspace:*",
-    "tinacms": "0.31.0",
+    "tinacms": "^0.43.0",
     "typescript": "^3.8.3"
   }
 }
