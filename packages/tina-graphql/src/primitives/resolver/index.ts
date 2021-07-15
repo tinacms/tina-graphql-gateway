@@ -17,6 +17,9 @@ import { TinaSchema } from '../schema'
 import { assertShape, sequential, lastItem } from '../util'
 import { NAMER } from '../ast-builder'
 import { Database, CollectionDocumentListLookup } from '../database'
+import isValid from 'date-fns/isValid'
+import parseISO from 'date-fns/parseISO'
+import format from 'date-fns/format'
 
 import type { Templateable, TinaFieldEnriched } from '../types'
 interface ResolverConfig {
@@ -238,9 +241,13 @@ export class Resolver {
         throw new Error(`Expected to find field by name ${fieldName}`)
       }
       switch (field.type) {
+        case 'datetime':
+          // @ts-ignore FIXME: Argument of type 'string | { [key: string]: unknown; } | (string | { [key: string]: unknown; })[]' is not assignable to parameter of type 'string'
+          accum[fieldName] = resolveDateInput(fieldValue, field)
+          break
         case 'string':
         case 'boolean':
-        case 'text':
+        case 'number':
         case 'image':
           accum[fieldName] = fieldValue
           break
@@ -306,6 +313,7 @@ export class Resolver {
           accum[fieldName] = fieldValue
           break
         default:
+          // @ts-ignore
           throw new Error(`No mutation builder for field type ${field.type}`)
       }
     })
@@ -328,6 +336,7 @@ export class Resolver {
         break
       case 'boolean':
       case 'datetime':
+      case 'number':
       case 'reference':
       case 'image':
         accumulator[field.name] = value
@@ -398,8 +407,24 @@ export class Resolver {
   }: TinaFieldEnriched): Promise<unknown> => {
     const extraFields = field.ui || {}
     switch (field.type) {
-      case 'boolean':
+      case 'number':
+        return {
+          component: 'number',
+          ...field,
+          ...extraFields,
+        }
       case 'datetime':
+        return {
+          component: 'date',
+          ...field,
+          ...extraFields,
+        }
+      case 'boolean':
+        return {
+          component: 'toggle',
+          ...field,
+          ...extraFields,
+        }
       case 'image':
       case 'string':
         if (field.options) {
@@ -494,7 +519,52 @@ export class Resolver {
           ...extraFields,
         }
       default:
+        // @ts-ignore
         throw new Error(`Unknown field type ${field.type}`)
     }
   }
+}
+
+const DEFAULT_DATE_FORMAT = 'MMM dd, yyyy'
+const resolveDateInput = (
+  value: string,
+  field: { dateFormat?: string; timeFormat?: string }
+) => {
+  /**
+   * Convert string to `new Date()`
+   */
+  const date = parseISO(value)
+  if (!isValid(date)) {
+    throw 'Invalid Date'
+  }
+
+  /**
+   * Remove any local timezone offset (putting the date back in UTC)
+   * https://stackoverflow.com/questions/48172772/time-zone-issue-involving-date-fns-format
+   */
+  const dateUTC = new Date(
+    date.valueOf() + date.getTimezoneOffset() * 60 * 1000
+  )
+
+  /**
+   * Determine dateFormat
+   * This involves fixing inconsistencies between `moment.js` (that Tina uses to format dates)
+   * and `date-fns` (that Gateway uses to format dates).
+   * They are explained here:
+   * https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+   */
+  const dateFormat = field.dateFormat || DEFAULT_DATE_FORMAT
+  const fixedDateFormat = dateFormat.replace(/D/g, 'd').replace(/Y/g, 'y')
+
+  /**
+   * Determine timeFormat, if any
+   */
+  const timeFormat = field.timeFormat || false
+
+  /**
+   * Format `date` and `time` parts
+   */
+  const datePart = format(dateUTC, fixedDateFormat)
+  const timePart = timeFormat ? ` ${format(dateUTC, timeFormat)}` : ''
+  return `${datePart}${timePart}`
 }

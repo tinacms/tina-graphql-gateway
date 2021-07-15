@@ -6,14 +6,14 @@ scalar Reference
 scalar JSON
 
 type SystemInfo {
-  filename: String
-  basename: String
-  breadcrumbs(excludeExtension: Boolean): [String]
-  path: String
-  relativePath: String
-  extension: String
-  template: String
-  collection: Collection
+  filename: String!
+  basename: String!
+  breadcrumbs(excludeExtension: Boolean): [String!]!
+  path: String!
+  relativePath: String!
+  extension: String!
+  template: String!
+  collection: Collection!
 }
 
 type PageInfo {
@@ -28,11 +28,6 @@ interface Node {
   id: ID!
 }
 
-""""""
-interface Document {
-  id: ID!
-}
-
 """A relay-compliant pagination connection"""
 interface Connection {
   totalCount: Int!
@@ -40,7 +35,7 @@ interface Connection {
 
 type Query {
   getCollection(collection: String): Collection!
-  getCollections: [Collection!]
+  getCollections: [Collection!]!
   node(id: String): Node!
   getDocument(collection: String, relativePath: String): DocumentNode!
   getDocumentList(before: String, after: String, first: Int, last: Int): DocumentConnection!
@@ -81,6 +76,8 @@ union PostsAuthorDocument = AuthorsDocument
 
 type Posts {
   title: String
+  createdAt: String
+  published: Boolean
   hero: String
   author: PostsAuthorDocument
   body: String
@@ -88,7 +85,7 @@ type Posts {
 
 type PostsDocument implements Node {
   id: ID!
-  sys: SystemInfo
+  sys: SystemInfo!
   data: Posts!
   form: JSON!
   values: JSON!
@@ -113,7 +110,7 @@ type Authors {
 
 type AuthorsDocument implements Node {
   id: ID!
-  sys: SystemInfo
+  sys: SystemInfo!
   data: Authors!
   form: JSON!
   values: JSON!
@@ -162,7 +159,7 @@ type MarketingPages {
 
 type MarketingPagesDocument implements Node {
   id: ID!
-  sys: SystemInfo
+  sys: SystemInfo!
   data: MarketingPages!
   form: JSON!
   values: JSON!
@@ -196,6 +193,8 @@ input DocumentMutation {
 
 input PostsMutation {
   title: String
+  createdAt: String
+  published: Boolean
   hero: String
   author: String
   body: String
@@ -240,4 +239,8 @@ input MarketingPagesMutation {
   blocks: [MarketingPagesBlocksMutation]
 }
 
+schema {
+  query: Query
+  mutation: Mutation
+}
   

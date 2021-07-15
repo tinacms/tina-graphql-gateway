@@ -1,5 +1,7 @@
 ---
 title: Vote For Pedro
+createdAt: 7 15 2021
+published: true
 hero: >-
   https://res.cloudinary.com/deuzrsg3m/image/upload/v1581442161/samples/food/pot-mussels.jpg
 author: content/authors/napolean.md

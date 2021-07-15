@@ -15,6 +15,30 @@
           ]
         },
         {
+          "type": "datetime",
+          "label": "Created At",
+          "name": "createdAt",
+          "dateFormat": "M DD YYYY",
+          "timeFormat": "",
+          "ui": {
+            "dateFormat": "MMMM DD YYYY",
+            "timeFormat": false
+          },
+          "namespace": [
+            "posts",
+            "createdAt"
+          ]
+        },
+        {
+          "type": "boolean",
+          "label": "Published",
+          "name": "published",
+          "namespace": [
+            "posts",
+            "published"
+          ]
+        },
+        {
           "name": "hero",
           "type": "image",
           "label": "Hero",
