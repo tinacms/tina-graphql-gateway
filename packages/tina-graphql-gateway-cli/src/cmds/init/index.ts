@@ -170,7 +170,7 @@ export async function tinaSetup(ctx: any, next: () => void, options) {
   const adminPath = p.join(pagesPath, 'admin.tsx')
   const adminPathJS = p.join(pagesPath, 'admin.js')
   if (!fs.existsSync(adminPath) && !fs.existsSync(adminPathJS)) {
-    fs.writeFileSync(adminPath, adminPage)
+    fs.writeFileSync(adminPathJS, adminPage)
   } else {
     const extension = fs.existsSync(adminPath) ? '.tsx' : 'js'
     const override = await prompts({
