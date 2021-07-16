@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 import React from 'react'
-import { useCMS } from '@tinacms/toolkit'
+import { useCMS } from 'tinacms'
 import { ContentCreatorPlugin, OnNewDocument } from './create-page-plugin'
 
 export type FilterCollections = (
