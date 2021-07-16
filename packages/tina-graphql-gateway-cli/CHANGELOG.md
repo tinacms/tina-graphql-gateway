@@ -1,5 +1,11 @@
 # tina-graphql-gateway-cli
 
+## 0.5.0
+
+### Minor Changes
+
+- 4787d15a: Init command now uses JS for the admin page.
+
 ## 0.4.0
 
 ### Minor Changes
@@ -481,11 +487,13 @@
 
   ```md
   ---
-
   ---
+
   myBlocks:
-    - template: hero
-      title: Hello
+
+  - template: hero
+    title: Hello
+
   ---
   ```
 
@@ -493,11 +501,13 @@
 
   ```md
   ---
-
   ---
+
   myBlocks:
-    - _template: hero
-      title: Hello
+
+  - \_template: hero
+    title: Hello
+
   ---
   ```
 
