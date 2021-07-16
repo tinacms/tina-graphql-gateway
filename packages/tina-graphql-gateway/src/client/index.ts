@@ -109,18 +109,29 @@ export class Client {
   }
 
   addPendingContent = async (props) => {
-    const mutation = `mutation addPendingDocumentMutation($relativePath: String!, $template: String!, $collection: String!) {
-      addPendingDocument(relativePath: $relativePath, template: $template, collection: $collection) {
-        sys {
-          relativePath
-          path
-          breadcrumbs(excludeExtension: true)
-          collection {
-            slug
-          }
+    const mutation = `#graphql
+mutation addPendingDocumentMutation(
+  $relativePath: String!
+  $collection: String!
+  $template: String
+) {
+  addPendingDocument(
+    relativePath: $relativePath
+    template: $template
+    collection: $collection
+  ) {
+    ... on Document {
+      sys {
+        relativePath
+        path
+        breadcrumbs
+        collection {
+          slug
         }
       }
-    }`
+    }
+  }
+}`
 
     const result = await this.request(mutation, {
       variables: props,

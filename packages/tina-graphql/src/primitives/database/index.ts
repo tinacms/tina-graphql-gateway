@@ -151,9 +151,7 @@ export class Database {
     try {
       await this.getDocument(fullpath)
     } catch (e) {
-      if (e.message === `Unable to find record for ${fullpath}`) {
-        return false
-      }
+      return false
     }
 
     return true

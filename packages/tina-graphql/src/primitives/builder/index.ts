@@ -461,7 +461,10 @@ export class Builder {
     const documentTypeName = NAMER.documentTypeName(collection.namespace)
     return astBuilder.ObjectTypeDefinition({
       name: documentTypeName,
-      interfaces: [astBuilder.NamedType({ name: astBuilder.TYPES.Node })],
+      interfaces: [
+        astBuilder.NamedType({ name: astBuilder.TYPES.Node }),
+        astBuilder.NamedType({ name: astBuilder.TYPES.Document }),
+      ],
       fields: [
         astBuilder.FieldDefinition({
           name: 'id',

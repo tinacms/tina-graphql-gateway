@@ -156,6 +156,39 @@ export class Resolver {
         if (await this.database.documentExists(realPath)) {
           throw new Error(`Unable to add document, ${realPath} already exists`)
         }
+
+        const templateInfo =
+          this.tinaSchema.getTemplatesForCollectable(collection)
+        switch (templateInfo.type) {
+          case 'object':
+            await this.database.put(realPath, {})
+            break
+          case 'union':
+            // @ts-ignore
+            const templateString = args.template
+            const template = templateInfo.templates.find(
+              (template) => lastItem(template.namespace) === templateString
+            )
+            // @ts-ignore
+            if (!args.template) {
+              throw new Error(
+                `Must specify a template when creating content for a collection with multiple templates. Possible templates are: ${templateInfo.templates
+                  .map((t) => lastItem(t.namespace))
+                  .join(' ')}`
+              )
+            }
+            // @ts-ignore
+            if (!template) {
+              throw new Error(
+                `Expected to find template named ${templateString} in collection "${collectionName}" but none was found. Possible templates are: ${templateInfo.templates
+                  .map((t) => lastItem(t.namespace))
+                  .join(' ')}`
+              )
+            }
+            await this.database.put(realPath, {
+              _template: lastItem(template.namespace),
+            })
+        }
       }
       const templateInfo =
         this.tinaSchema.getTemplatesForCollectable(collection)
