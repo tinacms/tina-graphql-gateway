@@ -17,7 +17,7 @@ import {
   MediaListOptions,
   MediaStore,
   MediaUploadOptions,
-} from 'tinacms'
+} from '@tinacms/toolkit'
 
 import { E_UNAUTHORIZED, E_BAD_ROUTE, interpretErrorMessage } from './errors'
 

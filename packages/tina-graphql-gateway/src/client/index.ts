@@ -277,8 +277,6 @@ export class Client {
   }
 }
 
-export { ForestryMediaStore } from './media-store'
-
 export const DEFAULT_LOCAL_TINA_GQL_SERVER_URL = 'http://localhost:4001/graphql'
 
 export class LocalClient extends Client {

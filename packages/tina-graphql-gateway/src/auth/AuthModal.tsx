@@ -17,11 +17,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalActions,
-} from 'tinacms'
-import { StyleReset } from '@tinacms/styles'
+} from '@tinacms/toolkit'
+import { StyleReset, LoadingDots, Button } from '@tinacms/toolkit'
 import React, { useCallback, useState } from 'react'
-import { LoadingDots } from '@tinacms/form-builder'
-import { Button } from '@tinacms/styles'
 import styled from 'styled-components'
 
 interface ModalBuilderProps {

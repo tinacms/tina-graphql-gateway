@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { MediaListError } from 'tinacms'
+import { MediaListError } from '@tinacms/toolkit'
 
 export const E_DEFAULT = new MediaListError({
   title: 'An Error Occurred',

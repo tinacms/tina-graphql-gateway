@@ -17,6 +17,7 @@
     "tsup": "^3.7.0"
   },
   "devDependencies": {
+    "@tinacms/toolkit": "workspace:*",
     "@types/crypto-js": "^3.1.47",
     "@types/js-cookie": "^2.2.6",
     "@types/node": "^13.13.1",
@@ -26,16 +27,15 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "styled-components": "^5.2.0",
-    "tina-graphql-gateway": "workspace:*",
-    "tinacms": "^0.43.0"
+    "tina-graphql-gateway": "workspace:*"
   },
   "peerDependencies": {
+    "@tinacms/toolkit": "*",
     "react": ">=16.8",
     "react-dom": ">=16.8",
     "react-is": "^16.13.1 || <18.0.0",
     "styled-components": "*",
-    "tina-graphql-gateway": ">=0.4.0",
-    "tinacms": "^0.43.0"
+    "tina-graphql-gateway": ">=0.4.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

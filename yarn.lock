@@ -4017,15 +4017,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/alerts@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/alerts@npm:0.43.0"
-  peerDependencies:
-    "@tinacms/core": ">=0.7"
-  checksum: 2d0f09de1a3a7f63c2e13351789aa008e422fea9804ae2d71201307aba9f2ab9a975ea3d02da24499c2df177c87ebe097e0704d2cb996c6e897215b911dcff5f
-  languageName: node
-  linkType: hard
-
 "@tinacms/core@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/core@npm:0.31.0"
@@ -4037,13 +4028,6 @@ __metadata:
   version: 0.32.0
   resolution: "@tinacms/core@npm:0.32.0"
   checksum: 9cf5f13854790b8ce9834a59ecd21947c9ec8669baeaed79a3311859f822f426fe0d6daba0e9f1aadf1ea8b48fd392a47ba23caebba9c66f1c05514b9d57edf2
-  languageName: node
-  linkType: hard
-
-"@tinacms/core@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/core@npm:0.43.0"
-  checksum: e837dfc154bdbe26f76a41260f025a2b5f70fe19dc81bfc7f98f1eaf580f383be73ccae46769d0fd6805c7eb0c224df8319a13dcf0f8ee3078da42d67c98037d
   languageName: node
   linkType: hard
 
@@ -4069,26 +4053,6 @@ __metadata:
     react-dom: ">=16.8"
     styled-components: ">=4.1"
   checksum: 6185aa054bcf238bc263121d86fc27d11904d7b61236a33c9884ebccb06ac486ef449ddc5cade1534aa179d3f6a868818478636f41c0f7d4a384faa8aa236aae
-  languageName: node
-  linkType: hard
-
-"@tinacms/fields@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/fields@npm:0.43.0"
-  dependencies:
-    "@sambego/storybook-styles": ^1.0.0
-    "@types/react-select": ^2.0.11
-    color-string: ^1.5.3
-    moment: ">=2 <=3"
-    react-color: ^2.17.3
-    react-datetime: ^2.16.3
-    react-dismissible: ^1.3.0
-    react-dropzone: 10.1.8
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: 4741b81404af58a9bc140bada1ddb80471bcd3fb32c34586aab9ad5fda8f77388982b6c2c741d7fc9942af9e73ec70e7b552da2f2fb78b1744992b81066e1410
   languageName: node
   linkType: hard
 
@@ -4119,24 +4083,6 @@ __metadata:
     react: ">=16.8"
     styled-components: ">=4.1"
   checksum: 7c7ed3758df6c702ddf7a63638a9769c4b1e7febd8ef93f13d7736001da9fcaacb8e97553f005cfd586da23661cd1032e3cc8a3eb51c1b1c7380ac923cf23169
-  languageName: node
-  linkType: hard
-
-"@tinacms/form-builder@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/form-builder@npm:0.43.0"
-  dependencies:
-    "@tinacms/forms": ^0.43.0
-    "@tinacms/icons": ^0.42.1
-    "@tinacms/react-core": ^0.43.0
-    "@tinacms/react-modals": ^0.43.0
-    "@tinacms/styles": ^0.42.1
-    react-final-form: ^6.3.0
-  peerDependencies:
-    prop-types: ">=15"
-    react: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: 796731ef79bd4e4e6abc3569147045c2bc0936ee098f8af5618c1ba9f099940b4fc23c136acd6e37058eeb0196428fda173b478a7be9ae5726e1b7ccd4970644
   languageName: node
   linkType: hard
 
@@ -4176,18 +4122,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/forms@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/forms@npm:0.43.0"
-  dependencies:
-    final-form: ^4.20.2
-    final-form-arrays: ^3.0.1
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 4fd07f47bd6598dfd408f0e10201cd6991dbd22a8e87962fdf53d430d02bd5ba6a91285ff785fe6ebb5df33c0c611058fd14752edee63166d8a6f9306d60e6d7
-  languageName: node
-  linkType: hard
-
 "@tinacms/forms@npm:^0.5.0":
   version: 0.5.0
   resolution: "@tinacms/forms@npm:0.5.0"
@@ -4204,13 +4138,6 @@ __metadata:
   version: 0.31.0
   resolution: "@tinacms/icons@npm:0.31.0"
   checksum: 142ea1f3649240e86e15138a42c41ed44b9edf54c673bebcd00225020a40ae1d5192409afb82c3bd972ca5b7b83739d5a07fb18c96c241296f8c6114b1a3328e
-  languageName: node
-  linkType: hard
-
-"@tinacms/icons@npm:^0.42.1":
-  version: 0.42.1
-  resolution: "@tinacms/icons@npm:0.42.1"
-  checksum: 4e2bd1ff8b95dc9df7e7da5fc18d0b30f76e6effba33b2265260a9e377245e73dda05cefbda1fc0dbd738cc66d83ce39e5e19769312d43d2bbead0e5341a2586
   languageName: node
   linkType: hard
 
@@ -4232,20 +4159,6 @@ __metadata:
     react: ">=16.8"
     styled-components: ">=4.1"
   checksum: e990fc7409611781058d51bcb954ace50ebb98eade6087617afb2de8a1ba0d712e9ab21791201d7bc5710efdd89e37d654ff82590d0dd7bd50d4e507f4880e0e
-  languageName: node
-  linkType: hard
-
-"@tinacms/react-alerts@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-alerts@npm:0.43.0"
-  peerDependencies:
-    "@tinacms/alerts": ">=0.1"
-    "@tinacms/icons": ">=0.7"
-    "@tinacms/react-core": ">=0.2"
-    "@tinacms/styles": ">=0.3"
-    react: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: c2f6f7af1d932031b2f3e54c013b19c5c53adc42bc2150e694b05451b4796834d766769017dd1249f322404e6e1aaacda7053f46a4f5e2c9efc481fa1ae3f33e
   languageName: node
   linkType: hard
 
@@ -4282,18 +4195,6 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 8650d12a9462e077f1905cc4291380888f55d5f27f0803b7746ee2a0f175ee1b6681d73d1126706b7a2ff555bd8f56de27486fb4747efdae499ceef34f8b8222
-  languageName: node
-  linkType: hard
-
-"@tinacms/react-core@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-core@npm:0.43.0"
-  dependencies:
-    "@tinacms/core": ^0.43.0
-    "@tinacms/forms": ^0.43.0
-  peerDependencies:
-    react: ">=16.8"
-  checksum: d186c2fcd61440e6f72c39a31bda21b874e078895f358139235df1859d9573ac3368ad024be574ddf73aeae495b768f4f64be897629d541810d1fa6db3b7be0e
   languageName: node
   linkType: hard
 
@@ -4337,26 +4238,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-forms@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-forms@npm:0.43.0"
-  dependencies:
-    "@tinacms/form-builder": ^0.43.0
-    react-beautiful-dnd: ^11.0.5
-    react-dismissible: ^1.3.0
-  peerDependencies:
-    "@tinacms/forms": ">=0.3"
-    "@tinacms/icons": ">=0.7"
-    "@tinacms/react-core": ">=0.2"
-    "@tinacms/react-modals": ">=0.1"
-    "@tinacms/styles": ">=0.3"
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: 7994600c5ca063055d373befac6aaacd68810346cf4ecb7e839a0d09c6ac667427cd983b353abb8e9b940e78e7c8fc4d15b1f02443b7e9b5d39ef9a225b433b7
-  languageName: node
-  linkType: hard
-
 "@tinacms/react-modals@npm:^0.1":
   version: 0.1.12
   resolution: "@tinacms/react-modals@npm:0.1.12"
@@ -4385,20 +4266,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-modals@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-modals@npm:0.43.0"
-  peerDependencies:
-    "@tinacms/icons": ">=0.7"
-    "@tinacms/react-core": ">=0.2"
-    "@tinacms/styles": ">=0.3"
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: eb4f404367e56be5680814f54b1d12e7ca36f178dc0297bd50e4100ee9d2a4e477e14fec3eb5b8113a521f52c47f5c52458f48c0869d8e2b171518b56f83f97e
-  languageName: node
-  linkType: hard
-
 "@tinacms/react-screens@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/react-screens@npm:0.31.0"
@@ -4408,18 +4275,6 @@ __metadata:
     "@tinacms/react-modals": ">=0.1"
     react: ">=16.8"
   checksum: 62cc1f61466a25e81369f6f1cda2301226b2ba2551d5d3f09494fcc04af6fd5cac9f4f60527a5fd76be7e94613986f14efef8f28b712f1db829f793c0f4d68e1
-  languageName: node
-  linkType: hard
-
-"@tinacms/react-screens@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-screens@npm:0.43.0"
-  peerDependencies:
-    "@tinacms/core": ">=0.7"
-    "@tinacms/react-core": ">=0.2.9"
-    "@tinacms/react-modals": ">=0.1"
-    react: ">=16.8"
-  checksum: 65e444ce3af26b4b5fd1b0671fd0a91af0fb223128cde658207dbae8eb1e9cc819b63c73ced584cf42ad789d5681068818733177a0193bcf74398e63e65050c3
   languageName: node
   linkType: hard
 
@@ -4442,28 +4297,6 @@ __metadata:
     react: ">=16.8"
     styled-components: ">=4.1"
   checksum: 126389b927a161d54ad91a2e96a83c2c4bc52ea765a71c6bf36197f644214a935217001f7988ac55bf81df7fb22068cbf3d9567ec3c696ae99b16bc7904d82d3
-  languageName: node
-  linkType: hard
-
-"@tinacms/react-sidebar@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-sidebar@npm:0.43.0"
-  dependencies:
-    "@tinacms/core": ^0.43.0
-    "@tinacms/forms": ^0.43.0
-    react-dismissible: ^1.3.0
-  peerDependencies:
-    "@tinacms/form-builder": ">=0.3"
-    "@tinacms/icons": ">=0.8"
-    "@tinacms/react-core": ">=0.2.10"
-    "@tinacms/react-forms": ">=0.1"
-    "@tinacms/react-modals": ">=0.1"
-    "@tinacms/react-screens": ">=0.1"
-    "@tinacms/styles": ">=0.4"
-    prop-types: ">=15"
-    react: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: da6a82161ddc9aa89be98613e13cb82ea3f42d174285c8440abd3630af1d593aede476f9e9a92faabde1f980e373dd62e2801e211978f93617f1f3f835d72a2f
   languageName: node
   linkType: hard
 
@@ -4490,26 +4323,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/react-toolbar@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "@tinacms/react-toolbar@npm:0.43.0"
-  dependencies:
-    "@tinacms/core": ^0.43.0
-    "@tinacms/fields": ^0.43.0
-    "@tinacms/forms": ^0.43.0
-    react-dismissible: ^1.3.0
-  peerDependencies:
-    "@tinacms/form-builder": ">=0.3"
-    "@tinacms/icons": ">=0.8"
-    "@tinacms/react-core": ">=0.2.10"
-    "@tinacms/react-forms": ">=0.1"
-    "@tinacms/react-modals": ">=0.1"
-    "@tinacms/react-screens": ">=0.1"
-    "@tinacms/styles": ">=0.4"
-    prop-types: ">=15"
-    react: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: 932f8d2806e5d2c914a900d38f64277adf8b7ed540f54e9bcf9d209a5ff18dd91a18c3afbe14eb6466274ff495faa6f0b1d7f9314090298cb92dc0f516c4e002
+"@tinacms/scripts@npm:^0.42.1":
+  version: 0.42.1
+  resolution: "@tinacms/scripts@npm:0.42.1"
+  bin:
+    tinacms-scripts: bin/scripts.js
+  checksum: 1a873df1591142a81a9b19100d707bdc4a258c2901ece8dfe6c0c02b2d9025b35de038e5ba96d6a16d019caa9da6fb6dcedea1126a43d74834c3a6ccc185f213
   languageName: node
   linkType: hard
 
@@ -4524,16 +4343,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tinacms/styles@npm:^0.42.1":
-  version: 0.42.1
-  resolution: "@tinacms/styles@npm:0.42.1"
+"@tinacms/toolkit@0.43.0-beta.3, @tinacms/toolkit@workspace:*, @tinacms/toolkit@workspace:packages/toolkit":
+  version: 0.0.0-use.local
+  resolution: "@tinacms/toolkit@workspace:packages/toolkit"
   dependencies:
-    webfontloader: ^1.6.28
-  peerDependencies:
+    "@sambego/storybook-styles": ^1.0.0
+    "@tinacms/scripts": ^0.42.1
+    "@types/codemirror": ^0.0.71
+    "@types/color-string": ^1.5.0
+    "@types/lodash.debounce": ^4.0.6
+    "@types/lodash.get": ^4.4.5
+    "@types/react": ^17.0.14
+    "@types/react-beautiful-dnd": ^11.0.3
+    "@types/react-color": ^3.0.1
+    "@types/react-dom": ^17.0.9
+    "@types/react-select": ^2.0.11
+    "@types/storybook__react": ^4.0.2
+    "@types/styled-components": 4.1.8
+    atob: 2.1.2
+    color-string: ^1.5.3
+    cors: ^2.8.5
+    express: ^4.17.1
+    final-form: ^4.20.2
+    final-form-arrays: ^3.0.1
+    lodash.get: ^4.4.2
+    moment: ">=2 <=3"
+    multer: 1.4.2
+    prop-types: 15.7.2
+    react: 17.0.2
+    react-beautiful-dnd: ^11.0.5
+    react-color: ^2.17.3
+    react-datetime: ^2.16.3
+    react-dismissible: ^1.3.0
+    react-dom: 17.0.2
+    react-dropzone: 10.1.8
+    react-final-form: ^6.3.0
+    simple-git: 1.126.0
     styled-components: ">=4.1"
-  checksum: bd429656e170545fb677232f3269a7d8aec2fdac6472fba2536dc713d149e73b6bfd7ad73d0e23cc27481f3df5ee65cfde06b908df7cea88b3548de3cf3b7fb2
-  languageName: node
-  linkType: hard
+    tsup: ^3.7.0
+    webfontloader: 1.6.28
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+    styled-components: ">=4.1"
+  languageName: unknown
+  linkType: soft
 
 "@tootallnate/once@npm:1":
   version: 1.1.2
@@ -4634,10 +4488,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/codemirror@npm:^0.0.71":
+  version: 0.0.71
+  resolution: "@types/codemirror@npm:0.0.71"
+  dependencies:
+    "@types/tern": "*"
+  checksum: 9bd180a8b3ed16348685783c421be85329d83b8284249d307023ae33d2349c9241a99f677d4476adc942338b3e32be11e85ab09d092c0b6113da2da884836d5a
+  languageName: node
+  linkType: hard
+
 "@types/color-name@npm:^1.1.1":
   version: 1.1.1
   resolution: "@types/color-name@npm:1.1.1"
   checksum: 8311db94a9c4ecd247763b81e783ee49d87678b4ce6a7ee502e2bd5cea242b7357804a04855db009f713174bc654cc0c01c7303d40d757e5d710f5ac0368500f
+  languageName: node
+  linkType: hard
+
+"@types/color-string@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@types/color-string@npm:1.5.0"
+  checksum: 2175ef2b9723b7eb16a6e4866767fc046ed2206e49f643dd64f1f7b3c634fd02cf5f829d65fff8915e7806065c14965dff73e05240fd98a47abd47abaa3c2351
   languageName: node
   linkType: hard
 
@@ -4679,6 +4549,13 @@ __metadata:
   version: 1.39.4
   resolution: "@types/emscripten@npm:1.39.4"
   checksum: b848421e2597a0ce56b74c6427f843cfd8f26dec8eaaa1929317e9417bc06eaa934057c317cbb561ade2f5462b6906e37868608211e09f9f507dca62066795a8
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:*":
+  version: 0.0.50
+  resolution: "@types/estree@npm:0.0.50"
+  checksum: dd52d035077d4ea92ff7a1191b1b02ccd0dba76ad51d1d95e4cd81dd3cc234042b859ae9160c3059dcc5c384cd895cd860d4f18913f1033736f867543f5d4743
   languageName: node
   linkType: hard
 
@@ -4931,7 +4808,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.get@npm:^4.4.6":
+"@types/lodash.debounce@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "@types/lodash.debounce@npm:4.0.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 64952797f594f4068d2edd1e178a553647ca4ed5716c9b7673f9187d012fe5b5a0141c15ffc82c8f4d29bf13040c53001634a5b43b51a9efdfb6d4fa77ae24aa
+  languageName: node
+  linkType: hard
+
+"@types/lodash.get@npm:^4.4.5, @types/lodash.get@npm:^4.4.6":
   version: 4.4.6
   resolution: "@types/lodash.get@npm:4.4.6"
   dependencies:
@@ -5155,12 +5041,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-beautiful-dnd@npm:^11.0.3":
+  version: 11.0.6
+  resolution: "@types/react-beautiful-dnd@npm:11.0.6"
+  dependencies:
+    "@types/react": "*"
+  checksum: 2456379590583afc4c34e560195aff45ba68199adfe098c7d6c92cf94feb64af5536b7160433686c7c891d87b02a0e17c6d12adabb8c961c74eee5601ace5f06
+  languageName: node
+  linkType: hard
+
+"@types/react-color@npm:^3.0.1":
+  version: 3.0.5
+  resolution: "@types/react-color@npm:3.0.5"
+  dependencies:
+    "@types/react": "*"
+    "@types/reactcss": "*"
+  checksum: 7f61a2b41a6e6cb2de4b401db1c61d57b588c4fbc015fec8d318b8fc68cf6afcf876f9ec9de553e2e77bdb21617de7766854a624818c804a157d6fc84a7c95ae
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:*":
   version: 16.9.8
   resolution: "@types/react-dom@npm:16.9.8"
   dependencies:
     "@types/react": "*"
   checksum: 53a223c0266178bca9161301d18ee6199e8f75f88caed5c4601c5aaedaf4c68f03bd72f6aafa979254beb20759f0b68a542ce04295d704eb67ae179769c50813
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:^17.0.9":
+  version: 17.0.9
+  resolution: "@types/react-dom@npm:17.0.9"
+  dependencies:
+    "@types/react": "*"
+  checksum: 82da85bcfba524fb83946df50e433b8cc942dd30f5f3f6e0756816960ce4b85db6faa2da9f2b83124087fbe0d124580edf7b1017628b78fb28fee057e91512cb
   languageName: node
   linkType: hard
 
@@ -5211,6 +5125,26 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: ed2b57e44e8da99b13a7b0cd7d9d9159e3113a5160e25c9deae4f577cfb87f05103b54bb0e9722f48a7db3ddb3a836ade12b971bbc338d397b719886fb81efff
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^17.0.14":
+  version: 17.0.14
+  resolution: "@types/react@npm:17.0.14"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 3c5373845b0869d9ce3db16917c87707cdfdb6c08d9ca7ed90a2a097cb3cbec8d037d37e81c3cf5af721d92f8fdc62431405f1874f9a02dea6ec05e5d81e77fe
+  languageName: node
+  linkType: hard
+
+"@types/reactcss@npm:*":
+  version: 1.2.4
+  resolution: "@types/reactcss@npm:1.2.4"
+  dependencies:
+    "@types/react": "*"
+  checksum: cbed7fa340440a5afa19847b14a6fca692fc5303e1b6ad224e9bc18a9245e588411d4523565bbc5356be681fbb71feb9903cdcda12d3f7d49cee774519243e03
   languageName: node
   linkType: hard
 
@@ -5270,6 +5204,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/storybook__react@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@types/storybook__react@npm:4.0.2"
+  dependencies:
+    "@types/react": "*"
+    "@types/webpack-env": "*"
+  checksum: 8cd621cb3c1a9097d78b12e26323c7cb5295b810851162b88cc7d650bb295c44666bd8a11347e3fb9feb5f0ef044382b124c85bb210d5a5f6f231d01fca996cf
+  languageName: node
+  linkType: hard
+
+"@types/styled-components@npm:4.1.8":
+  version: 4.1.8
+  resolution: "@types/styled-components@npm:4.1.8"
+  dependencies:
+    "@types/node": "*"
+    "@types/react": "*"
+    csstype: ^2.2.0
+  checksum: b306dfbd03add39faa0a3accadeae01ed26f5311bcd7c968689409c92eeea5d96322405621764bd019765f9a06d55546f3e96e5999ef44c53c5ec7d44506a0d2
+  languageName: node
+  linkType: hard
+
 "@types/styled-components@npm:^5.1.3":
   version: 5.1.3
   resolution: "@types/styled-components@npm:5.1.3"
@@ -5279,6 +5234,15 @@ __metadata:
     "@types/react-native": "*"
     csstype: ^3.0.2
   checksum: 094b368f2cfe0f3ff69f8dc4c4f6c372512e62e1727e8c40e52ccd78174235e55386ecbc2fb44d5f5d753e6d4c0a92dcfcc2d2babe4456278cade7587f1968eb
+  languageName: node
+  linkType: hard
+
+"@types/tern@npm:*":
+  version: 0.23.4
+  resolution: "@types/tern@npm:0.23.4"
+  dependencies:
+    "@types/estree": "*"
+  checksum: c2d8ed65340d63cc86ba34c7a9bcf314e44f647bc3bdaacd585ab288946531876f8feb4b900b6e8747c5265c7ee895fb2cbe883368bd5fa9508b9f41d2dd743a
   languageName: node
   linkType: hard
 
@@ -5295,6 +5259,13 @@ __metadata:
   version: 2.0.3
   resolution: "@types/unist@npm:2.0.3"
   checksum: 42e0dc4ac75a27c4bb91a3f8e82edfd8819cacb6edda08bdfb436700ea01a587faa30017fde744b0a0b33825f5e37686398c1eb5b664cabc3a72a6b3757f85a5
+  languageName: node
+  linkType: hard
+
+"@types/webpack-env@npm:*":
+  version: 1.16.2
+  resolution: "@types/webpack-env@npm:1.16.2"
+  checksum: ae77ca15de6d2c578a4870f2274d1ec93d900a20347ae821f9d0f6a391af7e8ac69a6e99100edd4f2f665d0cf474eea0967ac29bf0bcedf4cf3738f439f46918
   languageName: node
   linkType: hard
 
@@ -6444,7 +6415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"atob@npm:^2.1.2":
+"atob@npm:2.1.2, atob@npm:^2.1.2":
   version: 2.1.2
   resolution: "atob@npm:2.1.2"
   bin:
@@ -16527,7 +16498,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"multer@npm:^1.4.2":
+"multer@npm:1.4.2, multer@npm:^1.4.2":
   version: 1.4.2
   resolution: "multer@npm:1.4.2"
   dependencies:
@@ -16701,6 +16672,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "next-tinacms-cloudinary@workspace:packages/next-tinacms-cloudinary"
   dependencies:
+    "@tinacms/toolkit": "workspace:*"
     "@types/crypto-js": ^3.1.47
     "@types/js-cookie": ^2.2.6
     "@types/node": ^13.13.1
@@ -16713,15 +16685,14 @@ fsevents@^1.2.7:
     react-dom: 16.13.1
     styled-components: ^5.2.0
     tina-graphql-gateway: "workspace:*"
-    tinacms: ^0.43.0
     tsup: ^3.7.0
   peerDependencies:
+    "@tinacms/toolkit": "*"
     react: ">=16.8"
     react-dom: ">=16.8"
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
-    tina-graphql-gateway: ">=0.3.0"
-    tinacms: ^0.43.0
+    tina-graphql-gateway: ">=0.4.0"
   languageName: unknown
   linkType: soft
 
@@ -19010,7 +18981,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.7.2, prop-types@npm:>=15, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:15.7.2, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.7.2
   resolution: "prop-types@npm:15.7.2"
   dependencies:
@@ -19540,6 +19511,19 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"react-dom@npm:17.0.2":
+  version: 17.0.2
+  resolution: "react-dom@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    scheduler: ^0.20.2
+  peerDependencies:
+    react: 17.0.2
+  checksum: 960a74ff6670766846a73097a599115963df1574833c59ca0c2fd909758ebe7a6214cd14f5e6aa63ce846d8f39fde7f3b80474ccfcfadc45dd7f3246364718c6
+  languageName: node
+  linkType: hard
+
 "react-dropzone@npm:10.1.8":
   version: 10.1.8
   resolution: "react-dropzone@npm:10.1.8"
@@ -19807,6 +19791,16 @@ fsevents@^1.2.7:
     object-assign: ^4.1.1
     prop-types: ^15.6.2
   checksum: 13dcc9ba8a7521ecc3d7e69998dbc5703ae9515308d06a94a474ad34b42f1fc109372265e924a8c9b11d20fa1828407c290b8f61617c36734c4ca907ae7e5f45
+  languageName: node
+  linkType: hard
+
+"react@npm:17.0.2":
+  version: 17.0.2
+  resolution: "react@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+  checksum: 7d0dfebafe1d297503157abb2e9acdb49852185deb8700c16f4a6faad87642f84903ab18cfc16f40b9a0dfe97540f99834982ee953e6d48b39c41608dc3e4b29
   languageName: node
   linkType: hard
 
@@ -20987,6 +20981,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"scheduler@npm:^0.20.2":
+  version: 0.20.2
+  resolution: "scheduler@npm:0.20.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+  checksum: 2ba121e53e8a438394598612ec9a8f465b39157042f912d2dd5956af643e0d45ec6937ae4eeb0a807d1945b209515263aed12fc3bca95c7a027ec2a54e76b399
+  languageName: node
+  linkType: hard
+
 "schema-utils@npm:2.6.6":
   version: 2.6.6
   resolution: "schema-utils@npm:2.6.6"
@@ -21338,6 +21342,15 @@ fsevents@^1.2.7:
     once: ^1.3.1
     simple-concat: ^1.0.0
   checksum: 91c007260dd92480b8dcd78b4310561967532e1ef9b4ec332a1aac6990c9a71d7477a8d05c84bb0165e4eb0e205fa620e37f42652dceea46c713084ae935e873
+  languageName: node
+  linkType: hard
+
+"simple-git@npm:1.126.0":
+  version: 1.126.0
+  resolution: "simple-git@npm:1.126.0"
+  dependencies:
+    debug: ^4.0.1
+  checksum: f668bbf1af855b890cb600f9287df1a6d88eb1d267ca7dcad389934194d20c83e965696444867ff78122262d10e4311de08eef8139cedc713b1f31bb45adbfb5
   languageName: node
   linkType: hard
 
@@ -22088,6 +22101,28 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"styled-components@npm:>=4.1, styled-components@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "styled-components@npm:5.3.0"
+  dependencies:
+    "@babel/helper-module-imports": ^7.0.0
+    "@babel/traverse": ^7.4.5
+    "@emotion/is-prop-valid": ^0.8.8
+    "@emotion/stylis": ^0.8.4
+    "@emotion/unitless": ^0.7.4
+    babel-plugin-styled-components: ">= 1.12.0"
+    css-to-react-native: ^3.0.0
+    hoist-non-react-statics: ^3.0.0
+    shallowequal: ^1.1.0
+    supports-color: ^5.5.0
+  peerDependencies:
+    react: ">= 16.8.0"
+    react-dom: ">= 16.8.0"
+    react-is: ">= 16.8.0"
+  checksum: 1f94f92b5dab0b0a965646079604c184e9ef31fd0546881408039a5b4d9a4ebe73b6bb62b05912f06b68392352f1fed4c2dd66a74888b2446226aa0105b681c9
+  languageName: node
+  linkType: hard
+
 "styled-components@npm:^5.1.3, styled-components@npm:^5.2.0":
   version: 5.2.0
   resolution: "styled-components@npm:5.2.0"
@@ -22107,28 +22142,6 @@ fsevents@^1.2.7:
     react-dom: ">= 16.8.0"
     react-is: ">= 16.8.0"
   checksum: 960d40732c26c49539b343a805687cea61a732e47a108f560f505b8a67f86107410b3d9d88292da249ed55cab781ba1a34950a7e548c287a13615149a37e2fe7
-  languageName: node
-  linkType: hard
-
-"styled-components@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "styled-components@npm:5.3.0"
-  dependencies:
-    "@babel/helper-module-imports": ^7.0.0
-    "@babel/traverse": ^7.4.5
-    "@emotion/is-prop-valid": ^0.8.8
-    "@emotion/stylis": ^0.8.4
-    "@emotion/unitless": ^0.7.4
-    babel-plugin-styled-components: ">= 1.12.0"
-    css-to-react-native: ^3.0.0
-    hoist-non-react-statics: ^3.0.0
-    shallowequal: ^1.1.0
-    supports-color: ^5.5.0
-  peerDependencies:
-    react: ">= 16.8.0"
-    react-dom: ">= 16.8.0"
-    react-is: ">= 16.8.0"
-  checksum: 1f94f92b5dab0b0a965646079604c184e9ef31fd0546881408039a5b4d9a4ebe73b6bb62b05912f06b68392352f1fed4c2dd66a74888b2446226aa0105b681c9
   languageName: node
   linkType: hard
 
@@ -22793,7 +22806,6 @@ fsevents@^1.2.7:
     tina-cloud-next: "workspace:*"
     tina-graphql-gateway: "workspace:*"
     tina-graphql-gateway-cli: "workspace:*"
-    tinacms: ^0.43.0
     typescript: ^3.8.3
   languageName: unknown
   linkType: soft
@@ -22810,17 +22822,14 @@ fsevents@^1.2.7:
     cloudinary-core: ^2.11.4
     lodash: ^4.17.21
     next: 10.0.5
-    next-tinacms-cloudinary: "workspace:*"
     react: ^16.13.1
     react-dom: ^16.13.1
     react-is: ^17.0.2
     react-markdown: ^5.0.3
     styled-components: ^5.1.3
     styled-jsx: ^3.2.5
-    tina-cloud-next: "workspace:*"
     tina-graphql-gateway: "workspace:*"
     tina-graphql-gateway-cli: "workspace:*"
-    tinacms: ^0.43.0
     typescript: ^3.8.3
   languageName: unknown
   linkType: soft
@@ -22887,18 +22896,10 @@ fsevents@^1.2.7:
     "@graphql-codegen/core": ^1.15.4
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.38.0
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.31.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
-    "@types/crypto-js": ^3.1.47
+    "@tinacms/toolkit": 0.43.0-beta.3
     "@types/lodash": ^4.14.169
     "@types/node": ^14.0.13
     "@types/react": ^16.9.38
-    "@types/styled-components": ^5.1.3
     "@types/yup": ^0.29.10
     "@xstate/react": ^1.1.0
     codemirror: ^5.55.0
@@ -22921,24 +22922,15 @@ fsevents@^1.2.7:
     react-dom: 16.13.1
     styled-components: ^5.2.0
     tina-graphql-helpers: "workspace:*"
-    tinacms: ^0.31.0
     tsup: ^3.7.0
     typescript: ^3.9.5
     xstate: ^4.15.1
     yup: ^0.32.0
   peerDependencies:
-    "@tinacms/core": ^0.31.0
-    "@tinacms/forms": ^0.38.0
-    "@tinacms/icons": ^0.7
-    "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.32.0
-    "@tinacms/react-modals": ^0.1
-    "@tinacms/styles": ^0.29.0
     react: ">=16.8"
     react-dom: ">=16.8"
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
-    tinacms: ^0.31.0
   languageName: unknown
   linkType: soft
 
@@ -23084,33 +23076,6 @@ fsevents@^1.2.7:
     react-dom: ">=16.8"
     styled-components: ">=4.1"
   checksum: b2eb2440632ccf573721ff6b328ed5aa8c751bdeb8db7c718a2dafe0de208ddd0c46719d21c499204cb88e28c20039f1bdff9dcfdc067e71f6bf601759940eb4
-  languageName: node
-  linkType: hard
-
-"tinacms@npm:^0.43.0":
-  version: 0.43.0
-  resolution: "tinacms@npm:0.43.0"
-  dependencies:
-    "@tinacms/alerts": ^0.43.0
-    "@tinacms/core": ^0.43.0
-    "@tinacms/fields": ^0.43.0
-    "@tinacms/form-builder": ^0.43.0
-    "@tinacms/forms": ^0.43.0
-    "@tinacms/icons": ^0.42.1
-    "@tinacms/react-alerts": ^0.43.0
-    "@tinacms/react-core": ^0.43.0
-    "@tinacms/react-forms": ^0.43.0
-    "@tinacms/react-modals": ^0.43.0
-    "@tinacms/react-screens": ^0.43.0
-    "@tinacms/react-sidebar": ^0.43.0
-    "@tinacms/react-toolbar": ^0.43.0
-    "@tinacms/styles": ^0.42.1
-    react-dropzone: ^11.1.0
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    styled-components: ">=4.1"
-  checksum: 3c596403f873329a60b2b2b0e8e7a7d279c63e6023e4640d583032e5f66a3d9d67fc4a23bce127be6b0a0ffbbef05a6000d7f26b1b6618f9ee8d49d89d04fabd
   languageName: node
   linkType: hard
 
@@ -24726,7 +24691,7 @@ typescript@^4.2.3:
   languageName: node
   linkType: hard
 
-"webfontloader@npm:^1.6.28":
+"webfontloader@npm:1.6.28, webfontloader@npm:^1.6.28":
   version: 1.6.28
   resolution: "webfontloader@npm:1.6.28"
   checksum: fea984c451eecc1566a13bdcaf04d50b0f38a032ed7c4b6d81d126f0b5434ea16a5e70d38075e21a8f6d300ff84637c329244a522f40719ebfc86bbb791f6ae3

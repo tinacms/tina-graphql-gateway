@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AddContentPlugin, Field, TinaCMS } from 'tinacms'
+import { AddContentPlugin, Field, TinaCMS } from '@tinacms/toolkit'
 
 type CollectionShape = {
   label: string

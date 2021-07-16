@@ -17,11 +17,11 @@ import gql from 'graphql-tag'
 import { print } from 'graphql'
 import { produce } from 'immer'
 import { getIn } from 'final-form'
-import { useCMS, Form } from 'tinacms'
+import { useCMS, Form } from '@tinacms/toolkit'
 import { ContentCreatorPlugin, OnNewDocument } from './create-page-plugin'
 import { assertShape, safeAssertShape } from '../utils'
 
-import type { FormOptions } from 'tinacms'
+import type { FormOptions } from '@tinacms/toolkit'
 import type { DocumentNode } from 'graphql'
 
 export function useGraphqlForms<T extends object>({
