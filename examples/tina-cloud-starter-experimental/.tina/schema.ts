@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { unstable_defineSchema } from 'tina-graphql-gateway-cli'
+import { unstable_defineSchema } from '@tinacms/cli'
 
 export default unstable_defineSchema({
   collections: [

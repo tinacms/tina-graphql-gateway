@@ -230,7 +230,7 @@ With Tina Cloud there's no need to build forms manually like you would with Tina
 This is set up for you in `./.tina/schema.ts`, let's break down what this function is doing:
 
 ```ts
-import { defineSchema } from "tina-graphql-gateway-cli";
+import { defineSchema } from "@tinacms/cli";
 
 export default defineSchema({
   collections: [

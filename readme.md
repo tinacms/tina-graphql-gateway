@@ -1,6 +1,6 @@
 # _tina-grapqhl-gateway_
 
-This monorepo contains the _tina-graphql-gateway_ and _tina-graphql-gateway-cli_ packages, which enable [Tina](https://tina.io)-powered websites to use Tina's hosted Content API.
+This monorepo contains the _tina-graphql-gateway_ and _@tinacms/cli_ packages, which enable [Tina](https://tina.io)-powered websites to use Tina's hosted Content API.
 
 ## Structure
 
@@ -16,7 +16,7 @@ Environment: `browser`
 
 Provides React hooks for fetching and building the Tina form. It also exposes a CLI for things like generating Typescript types for your content models.
 
-### _tina-graphql-gateway-cli_
+### _@tinacms/cli_
 
 Environment: `node`
 

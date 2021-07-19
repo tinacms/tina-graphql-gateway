@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 export const defaultSchema = `
-import { defineSchema } from "tina-graphql-gateway-cli";
+import { defineSchema } from "@tinacms/cli";
 
 export default defineSchema({
   collections: [

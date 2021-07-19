@@ -1,5 +1,5 @@
 {
-  "name": "tina-graphql-gateway-cli",
+  "name": "@tinacms/cli",
   "version": "0.4.0",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -74,6 +74,6 @@
   },
   "repository": {
     "url": "https://github.com/tinacms/tina-graphql-gateway.git",
-    "directory": "packages/tina-graphql-gateway-cli"
+    "directory": "packages/@tinacms/cli"
   }
 }

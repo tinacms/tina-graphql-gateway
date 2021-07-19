@@ -64,7 +64,7 @@ export async function installDeps(ctx: any, next: () => void, options) {
     'tinacms',
     'styled-components',
     'tina-graphql-gateway',
-    'tina-graphql-gateway-cli',
+    '@tinacms/cli',
   ]
 
   bar.tick({

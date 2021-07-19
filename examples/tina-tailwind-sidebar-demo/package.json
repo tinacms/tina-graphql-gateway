@@ -29,10 +29,10 @@
     "tinacms": "^0.31.0"
   },
   "devDependencies": {
+    "@tinacms/cli": "workspace:*",
     "@types/node": "^15.12.2",
     "@types/react": "^17.0.11",
     "tailwindcss": "^2.0.4",
-    "tina-graphql-gateway-cli": "workspace:*",
     "typescript": "^3.8.3"
   },
   "scripts": {

@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { defineSchema } from 'tina-graphql-gateway-cli'
+import { defineSchema } from '@tinacms/cli'
 import { PageTemplate } from './PageTemplate'
 import { ThemeTemplate } from './ThemeTemplate'
 

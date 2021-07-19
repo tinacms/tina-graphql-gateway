@@ -1,4 +1,4 @@
-# tina-graphql-gateway-cli
+# @tinacms/cli
 
 ## 0.4.0
 

@@ -285,7 +285,7 @@ export const useDocumentCreatorPlugin = (
 
                 /**
                  * Check for valid `name` based on
-                 * https://github.com/tinacms/tina-graphql-gateway/blob/682e2ed54c51520d1a87fac2887950839892f465/packages/tina-graphql-gateway-cli/src/cmds/compile/index.ts#L296
+                 * https://github.com/tinacms/tina-graphql-gateway/blob/682e2ed54c51520d1a87fac2887950839892f465/packages/@tinacms/cli/src/cmds/compile/index.ts#L296
                  * */
 
                 const isValid = /^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value)

@@ -4026,6 +4026,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tinacms/cli@workspace:*, @tinacms/cli@workspace:packages/tina-graphql-gateway-cli":
+  version: 0.0.0-use.local
+  resolution: "@tinacms/cli@workspace:packages/tina-graphql-gateway-cli"
+  dependencies:
+    "@graphql-codegen/core": ^1.17.0
+    "@graphql-codegen/typescript": ^1.17.0
+    "@graphql-codegen/typescript-operations": ^1.17.0
+    "@types/clear": 0.1.0
+    "@types/cors": 2.8.5
+    "@types/express": ^4.17.7
+    "@types/express-graphql": ^0.9.0
+    "@types/figlet": 1.2.0
+    "@types/fs-extra": ^9.0.11
+    "@types/inquirer": ^6.5.0
+    "@types/jest": 26.0.4
+    "@types/js-yaml": ^4.0.0
+    "@types/listr": 0.14.2
+    "@types/lodash": ^4.14.157
+    "@types/lodash.get": ^4.4.6
+    "@types/log4js": ^2.3.5
+    "@types/progress": ^2.0.3
+    "@types/prompts": ^2.0.13
+    "@types/yup": ^0.29.11
+    ajv: ^6.12.3
+    altair-express-middleware: ^4.0.6
+    axios: 0.19.0
+    body-parser: ^1.19.0
+    chalk: ^2.4.2
+    chokidar: ^3.5.1
+    commander: 5.1.0
+    cors: ^2.8.5
+    esm: 3.2.25
+    express: ^4.17.1
+    fast-glob: ^3.2.4
+    fs-extra: ^9.0.1
+    graphql: ^15.1.0
+    jest: 26.1.0
+    js-yaml: ^4.0.0
+    lodash: ^4.17.19
+    lodash.get: ^4.4.2
+    log4js: ^6.3.0
+    normalize-path: ^3.0.0
+    progress: ^2.0.3
+    prompts: ^2.4.1
+    tina-graphql: "workspace:*"
+    tina-graphql-helpers: "workspace:*"
+    ts-jest: ^26.5.3
+    tsup: ^4.6.1
+    typescript: ^4.2.2
+    yup: ^0.32.9
+  bin:
+    tina-gql: bin/tina-gql
+  languageName: unknown
+  linkType: soft
+
 "@tinacms/core@npm:^0.31.0":
   version: 0.31.0
   resolution: "@tinacms/core@npm:0.31.0"
@@ -9447,6 +9502,7 @@ __metadata:
   resolution: "demo@workspace:apps/demo"
   dependencies:
     "@tailwindcss/ui": ^0.3.0
+    "@tinacms/cli": "workspace:*"
     "@tinacms/core": ^0.31.0
     "@tinacms/forms": ^0.38.0
     "@tinacms/icons": ^0.7
@@ -9484,7 +9540,6 @@ __metadata:
     tailwindcss: ^1.4.6
     tina-graphql: "workspace:*"
     tina-graphql-gateway: "workspace:*"
-    tina-graphql-gateway-cli: "workspace:*"
     tina-graphql-helpers: "workspace:*"
     tinacms: 0.31.0
     typescript: ^3.8.3
@@ -16720,7 +16775,7 @@ fsevents@^1.2.7:
     react-dom: ">=16.8"
     react-is: ^16.13.1 || <18.0.0
     styled-components: "*"
-    tina-graphql-gateway: ">=0.3.0"
+    tina-graphql-gateway: ">=0.4.0"
     tinacms: ^0.43.0
   languageName: unknown
   linkType: soft
@@ -22615,6 +22670,7 @@ fsevents@^1.2.7:
   resolution: "test@workspace:apps/test"
   dependencies:
     "@tailwindcss/ui": ^0.3.0
+    "@tinacms/cli": "workspace:*"
     "@tinacms/core": ^0.31.0
     "@tinacms/forms": ^0.38.0
     "@tinacms/icons": ^0.7
@@ -22651,7 +22707,6 @@ fsevents@^1.2.7:
     tailwindcss: ^1.4.6
     tina-graphql: "workspace:*"
     tina-graphql-gateway: "workspace:*"
-    tina-graphql-gateway-cli: "workspace:*"
     tina-graphql-helpers: "workspace:*"
     tinacms: 0.31.0
     typescript: ^3.8.3
@@ -22775,6 +22830,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "tina-cloud-starter-experimental@workspace:examples/tina-cloud-starter-experimental"
   dependencies:
+    "@tinacms/cli": "workspace:*"
     "@types/js-cookie": ^2.2.6
     "@types/node": ^15.12.2
     "@types/react": ^16.9.43
@@ -22792,7 +22848,6 @@ fsevents@^1.2.7:
     styled-jsx: ^3.2.5
     tina-cloud-next: "workspace:*"
     tina-graphql-gateway: "workspace:*"
-    tina-graphql-gateway-cli: "workspace:*"
     tinacms: ^0.43.0
     typescript: ^3.8.3
   languageName: unknown
@@ -22802,6 +22857,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "tina-cloud-starter@workspace:examples/tina-cloud-starter"
   dependencies:
+    "@tinacms/cli": "workspace:*"
     "@types/js-cookie": ^2.2.6
     "@types/node": ^15.12.2
     "@types/react": ^16.9.43
@@ -22819,64 +22875,8 @@ fsevents@^1.2.7:
     styled-jsx: ^3.2.5
     tina-cloud-next: "workspace:*"
     tina-graphql-gateway: "workspace:*"
-    tina-graphql-gateway-cli: "workspace:*"
     tinacms: ^0.43.0
     typescript: ^3.8.3
-  languageName: unknown
-  linkType: soft
-
-"tina-graphql-gateway-cli@workspace:*, tina-graphql-gateway-cli@workspace:packages/tina-graphql-gateway-cli":
-  version: 0.0.0-use.local
-  resolution: "tina-graphql-gateway-cli@workspace:packages/tina-graphql-gateway-cli"
-  dependencies:
-    "@graphql-codegen/core": ^1.17.0
-    "@graphql-codegen/typescript": ^1.17.0
-    "@graphql-codegen/typescript-operations": ^1.17.0
-    "@types/clear": 0.1.0
-    "@types/cors": 2.8.5
-    "@types/express": ^4.17.7
-    "@types/express-graphql": ^0.9.0
-    "@types/figlet": 1.2.0
-    "@types/fs-extra": ^9.0.11
-    "@types/inquirer": ^6.5.0
-    "@types/jest": 26.0.4
-    "@types/js-yaml": ^4.0.0
-    "@types/listr": 0.14.2
-    "@types/lodash": ^4.14.157
-    "@types/lodash.get": ^4.4.6
-    "@types/log4js": ^2.3.5
-    "@types/progress": ^2.0.3
-    "@types/prompts": ^2.0.13
-    "@types/yup": ^0.29.11
-    ajv: ^6.12.3
-    altair-express-middleware: ^4.0.6
-    axios: 0.19.0
-    body-parser: ^1.19.0
-    chalk: ^2.4.2
-    chokidar: ^3.5.1
-    commander: 5.1.0
-    cors: ^2.8.5
-    esm: 3.2.25
-    express: ^4.17.1
-    fast-glob: ^3.2.4
-    fs-extra: ^9.0.1
-    graphql: ^15.1.0
-    jest: 26.1.0
-    js-yaml: ^4.0.0
-    lodash: ^4.17.19
-    lodash.get: ^4.4.2
-    log4js: ^6.3.0
-    normalize-path: ^3.0.0
-    progress: ^2.0.3
-    prompts: ^2.4.1
-    tina-graphql: "workspace:*"
-    tina-graphql-helpers: "workspace:*"
-    ts-jest: ^26.5.3
-    tsup: ^4.6.1
-    typescript: ^4.2.2
-    yup: ^0.32.9
-  bin:
-    tina-gql: bin/tina-gql
   languageName: unknown
   linkType: soft
 
@@ -22888,10 +22888,10 @@ fsevents@^1.2.7:
     "@graphql-codegen/typescript": ^1.15.4
     "@graphql-codegen/typescript-operations": ^1.15.4
     "@tinacms/core": ^0.31.0
+    "@tinacms/form-builder": ^0.43.0
     "@tinacms/forms": ^0.38.0
     "@tinacms/icons": ^0.7
     "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.31.0
     "@tinacms/react-modals": ^0.1
     "@tinacms/styles": ^0.29.0
     "@types/crypto-js": ^3.1.47
@@ -22928,10 +22928,10 @@ fsevents@^1.2.7:
     yup: ^0.32.0
   peerDependencies:
     "@tinacms/core": ^0.31.0
+    "@tinacms/form-builder": ^0.43.0
     "@tinacms/forms": ^0.38.0
     "@tinacms/icons": ^0.7
     "@tinacms/react-core": ^0.2
-    "@tinacms/react-forms": ^0.32.0
     "@tinacms/react-modals": ^0.1
     "@tinacms/styles": ^0.29.0
     react: ">=16.8"
@@ -23039,6 +23039,7 @@ fsevents@^1.2.7:
   version: 0.0.0-use.local
   resolution: "tina-tailwind-sidebar-demo@workspace:examples/tina-tailwind-sidebar-demo"
   dependencies:
+    "@tinacms/cli": "workspace:*"
     "@types/node": ^15.12.2
     "@types/react": ^17.0.11
     autoprefixer: ^10.2.5
@@ -23054,7 +23055,6 @@ fsevents@^1.2.7:
     styled-components: ^5.3.0
     tailwindcss: ^2.0.4
     tina-graphql-gateway: "workspace:*"
-    tina-graphql-gateway-cli: "workspace:*"
     tinacms: ^0.31.0
     typescript: ^3.8.3
   languageName: unknown
