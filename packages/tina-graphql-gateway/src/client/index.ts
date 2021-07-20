@@ -22,7 +22,7 @@ import {
 
 import { formify } from 'tina-graphql-helpers'
 // @ts-ignore
-import pack from 'tina-graphql-gateway-cli/package.json'
+import pack from 'tina-graphql-helpers/package.json'
 
 import gql from 'graphql-tag'
 import { transformPayload } from './transform-payload'
