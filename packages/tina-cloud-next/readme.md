@@ -60,7 +60,7 @@ const cms = useCMS()
 const tinaCloudClient: Client = cms.api.tina
 const uploadImage = async () => {
   const req = await tinaCloudClient.fetchWithToken(
-    `/api/upload?org=${tinaCloudClient.organizationId}&clientID=${tinaCloudClient.clientId}`
+    `/api/upload?clientID=${tinaCloudClient.clientId}`
   )
   console.log({ test: await test.json() })
 }

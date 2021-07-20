@@ -62,7 +62,7 @@ export const isAuthorized = async (
     try {
       // fetch identity from content server
       const tinaCloudRes = await fetch(
-        `https://identity.tinajs.io/realm/${org}/${clientID}/currentUser`,
+        `https://identity.tinajs.io/v2/apps/${clientID}/currentUser`,
         {
           headers: new Headers({
             'Content-Type': 'application/json',
