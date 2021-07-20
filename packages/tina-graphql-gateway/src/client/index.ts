@@ -21,6 +21,9 @@ import {
 } from 'graphql'
 
 import { formify } from 'tina-graphql-helpers'
+// @ts-ignore
+import pack from 'tina-graphql-gateway-cli/package.json'
+
 import gql from 'graphql-tag'
 import { transformPayload } from './transform-payload'
 
@@ -187,6 +190,7 @@ export class Client {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + this.getToken().id_token,
+        'Accept-Version': pack.version,
       },
       body: JSON.stringify({
         query: typeof query === 'function' ? print(query(gql)) : query,
