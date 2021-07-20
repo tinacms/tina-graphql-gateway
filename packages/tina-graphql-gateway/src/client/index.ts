@@ -252,6 +252,7 @@ export class Client {
     return await fetch(input, {
       ...init,
       headers: new Headers({
+        'Accept-Version': pack.version,
         Authorization: 'Bearer ' + this.getToken().id_token,
         ...headers,
       }),
