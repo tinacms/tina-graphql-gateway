@@ -69,45 +69,49 @@ export class ContentCreatorPlugin implements AddContentPlugin<FormShape> {
     { collection, template, relativePath }: FormShape,
     cms: TinaCMS
   ) {
-    const selectedCollection = this.collections.find(
-      (collectionItem) => collectionItem.slug === collection
-    )
-    const collectionFormat = selectedCollection.format
-
-    /**
-     * Check for and ensure `.md` or `.json` is appended to the end of `relativePath`
-     */
-    const extensionLength = -1 * (collectionFormat.length + 1)
-    let relativePathWithExt = relativePath
-    if (
-      relativePath.slice(extensionLength).toLocaleLowerCase() ===
-      `.${collectionFormat}`
-    ) {
-      relativePathWithExt = `${relativePath.slice(0, -3)}.${collectionFormat}`
-    } else {
-      relativePathWithExt = `${relativePath}.${collectionFormat}`
-    }
-
-    /**
-     * Rebuild `payload`
-     */
-    const payload: PayloadShape = {
-      relativePath: relativePathWithExt,
-      collection,
-      template,
-    }
-
     try {
-      const res = await cms.api.tina.addPendingContent(payload)
-      if (res.errors) {
-        res.errors.map((e) => {
-          cms.alerts.error(e.message)
-        })
+      const selectedCollection = this.collections.find(
+        (collectionItem) => collectionItem.slug === collection
+      )
+      const collectionFormat = selectedCollection.format
+
+      /**
+       * Check for and ensure `.md` or `.json` is appended to the end of `relativePath`
+       */
+      const extensionLength = -1 * (collectionFormat.length + 1)
+      let relativePathWithExt = relativePath
+      if (
+        relativePath.slice(extensionLength).toLocaleLowerCase() ===
+        `.${collectionFormat}`
+      ) {
+        relativePathWithExt = `${relativePath.slice(0, -3)}.${collectionFormat}`
       } else {
-        cms.alerts.info('Document created!')
-        if (typeof this.onNewDocument === 'function') {
-          this.onNewDocument(res.addPendingDocument.sys)
+        relativePathWithExt = `${relativePath}.${collectionFormat}`
+      }
+
+      /**
+       * Rebuild `payload`
+       */
+      const payload: PayloadShape = {
+        relativePath: relativePathWithExt,
+        collection,
+        template,
+      }
+
+      try {
+        const res = await cms.api.tina.addPendingContent(payload)
+        if (res.errors) {
+          res.errors.map((e) => {
+            cms.alerts.error(e.message)
+          })
+        } else {
+          cms.alerts.info('Document created!')
+          if (typeof this.onNewDocument === 'function') {
+            this.onNewDocument(res.addPendingDocument.sys)
+          }
         }
+      } catch (e) {
+        cms.alerts.error(e.message)
       }
     } catch (e) {
       cms.alerts.error(e.message)

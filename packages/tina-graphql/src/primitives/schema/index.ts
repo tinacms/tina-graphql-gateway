@@ -72,6 +72,7 @@ export class TinaSchema {
       slug: collection.name,
       ...extraFields,
       ...collection,
+      format: collection.format || 'md',
     }
   }
   public getCollections = () => {

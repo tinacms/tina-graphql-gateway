@@ -59,10 +59,24 @@ export function useGraphqlForms<T extends object>({
           )
           if (asyncUpdate) {
             const nextState = await produce(data, async (draftState) => {
-              const res = await cms.api.tina.request(asyncUpdate.queryString, {
-                variables: { id: newValue },
-              })
-              set(draftState, newUpdate.set, res.node)
+              if (newValue) {
+                const res = await cms.api.tina.request(
+                  asyncUpdate.queryString,
+                  {
+                    variables: { id: newValue },
+                  }
+                )
+                set(draftState, newUpdate.set, res.node)
+                set(
+                  draftState,
+                  newUpdate.set.replace('data', 'dataJSON'),
+                  newValue
+                )
+              } else {
+                // The selection is null, so nullify the request
+                set(draftState, newUpdate.set, null)
+                set(draftState, newUpdate.set.replace('data', 'dataJSON'), null)
+              }
             })
             setData(nextState)
             setNewUpdate(null)
@@ -213,7 +227,7 @@ export function useGraphqlForms<T extends object>({
           }
 
           const { insert, move, remove, ...rest } = form.finalForm.mutators
-          const prepareNewUpdate = (name: string, lookup?: string) => {
+          const prepareNewUpdate = (name: string, lookup?: boolean) => {
             const extra = {}
             if (lookup) {
               extra['lookup'] = lookup
@@ -227,15 +241,15 @@ export function useGraphqlForms<T extends object>({
           }
           form.finalForm.mutators = {
             insert: (...args) => {
-              prepareNewUpdate(args[0], args[0])
+              prepareNewUpdate(args[0], true)
               insert(...args)
             },
             move: (...args) => {
-              prepareNewUpdate(args[0])
+              prepareNewUpdate(args[0], true)
               move(...args)
             },
             remove: (...args) => {
-              prepareNewUpdate(args[0])
+              prepareNewUpdate(args[0], true)
               remove(...args)
             },
             ...rest,
