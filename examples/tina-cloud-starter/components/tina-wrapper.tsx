@@ -15,7 +15,6 @@ import { TinaCloudProvider } from 'tina-graphql-gateway'
 import React from 'react'
 import { useGraphqlForms } from 'tina-graphql-gateway'
 import { LoadingPage } from './Spinner'
-import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 
 /**
  * This gets loaded dynamically in "pages/_app.js"
@@ -24,11 +23,14 @@ import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 const TinaWrapper = (props) => {
   return (
     <TinaCloudProvider
-      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      // clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      // branch="main"
+      // isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
+      // organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+      clientId=""
       branch="main"
-      isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
-      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      mediaStore={TinaCloudCloudinaryMediaStore}
+      isLocalClient={true}
+      organization=""
     >
       <Inner {...props} />
     </TinaCloudProvider>

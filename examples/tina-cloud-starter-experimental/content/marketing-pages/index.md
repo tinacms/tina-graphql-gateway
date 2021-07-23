@@ -1,6 +1,6 @@
 ---
 blocks:
-  - messageHeader: Welcome to the Tina Cloud Starter
+  - messageHeader: Welcome to the Tina Cloud Starter!
     messageBody: >
       The Tina Cloud project is an opinionated approach to working with the
       TinaCMS system that enables you to focus on building sites the way you're

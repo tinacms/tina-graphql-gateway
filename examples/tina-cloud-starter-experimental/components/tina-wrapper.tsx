@@ -24,11 +24,15 @@ import { TinaCloudCloudinaryMediaStore } from 'next-tinacms-cloudinary'
 const TinaWrapper = (props) => {
   return (
     <TinaCloudProvider
-      clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      clientId=""
       branch="main"
-      isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
-      organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
-      mediaStore={TinaCloudCloudinaryMediaStore}
+      isLocalClient={true}
+      organization=""
+      // clientId={process.env.NEXT_PUBLIC_TINA_CLIENT_ID}
+      // branch="main"
+      // isLocalClient={Boolean(Number(process.env.NEXT_PUBLIC_USE_LOCAL_CLIENT))}
+      // organization={process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+      // mediaStore={TinaCloudCloudinaryMediaStore}
     >
       <Inner {...props} />
     </TinaCloudProvider>

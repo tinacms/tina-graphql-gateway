@@ -13,7 +13,7 @@ limitations under the License.
 
 import { ModalBuilder } from './AuthModal'
 import React, { useState } from 'react'
-import { TinaCMS, TinaProvider, MediaStore } from 'tinacms'
+import { TinaCMS, TinaProvider, MediaStore } from '@tinacms/toolkit'
 
 import { Client } from '../client'
 import type { TokenObject } from './authenticate'

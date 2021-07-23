@@ -12,8 +12,8 @@ limitations under the License.
 */
 
 import React from 'react'
-import { useCMS } from 'tinacms'
-import type { TinaCMS, Form, FormOptions } from 'tinacms'
+import { useCMS } from '@tinacms/toolkit'
+import type { TinaCMS, Form, FormOptions } from '@tinacms/toolkit'
 import { createFormMachine } from './form-service'
 import { createMachine, spawn, StateSchema, assign } from 'xstate'
 import { useMachine } from '@xstate/react'

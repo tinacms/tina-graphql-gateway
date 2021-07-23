@@ -14,7 +14,7 @@ limitations under the License.
 import finalFormArrays from 'final-form-arrays'
 import { getIn, setIn } from 'final-form'
 import type { NodeFormEvent, NodeFormContext } from './form-service'
-import type { Form } from 'tinacms'
+import type { Form } from '@tinacms/toolkit'
 
 export const fixMutators = (args: {
   context: NodeFormContext
@@ -50,8 +50,11 @@ export const fixMutators = (args: {
   }
 
   const {
+    // @ts-ignore
     move: moveCopy,
+    // @ts-ignore
     remove: removeCopy,
+    // @ts-ignore
     insert: insertCopy,
   } = {
     ...form.finalForm.mutators,

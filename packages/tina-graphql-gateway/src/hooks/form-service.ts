@@ -19,7 +19,7 @@ import {
   sendParent,
 } from 'xstate'
 import { splitQuery } from 'tina-graphql-helpers'
-import { Form, TinaCMS } from 'tinacms'
+import { Form, TinaCMS } from '@tinacms/toolkit'
 
 import type { Client } from '../client'
 import type { DocumentNode } from './use-graphql-forms'
@@ -344,6 +344,7 @@ ${mutation}
   }
 
   const createForm = (formConfig) => {
+    console.log('form', Form)
     const form = new Form(formConfig)
     context.cms.plugins.add(form)
     return form
